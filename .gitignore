@@ -1,0 +1,32 @@
+# IntelliJ
+*.iml
+.idea/
+!.idea/codeStyles/
+.run
+
+# Gradle
+out/
+build/
+.gradle/
+
+# Kotlin
+.kotlin/
+
+
+# Generated sources
+src/generated
+
+# OS specific
+.DS_Store
+.devcontainer
+
+# LSP (kotlin-language-server)
+*.db
+
+.http
+
+.out/
+node_modules/
+
+# Local gradle user home (sandbox)
+.gradle-home/
