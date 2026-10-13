@@ -1,11 +1,5 @@
-// Avhengigheter felles for alle moduler er definert i rot build.gradle.kts
 plugins {
+    kotlin("jvm")
+    id("org.jlleitschuh.gradle.ktlint")
     `java-test-fixtures`
-}
-
-sourceSets {
-    testFixtures {
-        kotlin.srcDir("testFixtures")
-        resources.srcDir("testFixtures")
-    }
 }

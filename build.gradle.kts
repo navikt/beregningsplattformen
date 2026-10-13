@@ -1,50 +1,46 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.4.20"
-    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
+    kotlin("jvm") version "2.4.20" apply false
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0" apply false
 }
 
 val kotestVersion = "6.2.5"
 
 subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        extensions.configure<KotlinJvmProjectExtension> {
+            jvmToolchain(25)
+        }
 
-    tasks {
-        withType<KotlinCompile> {
+        tasks.withType<KotlinCompile> {
             compilerOptions.jvmTarget = JVM_25
         }
 
-        withType<Test> {
-            useJUnitPlatform()
+        dependencies {
+            add("testImplementation", "io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+            add("testImplementation", "io.kotest:kotest-runner-junit5:$kotestVersion")
         }
     }
 
-    sourceSets {
-        main {
-            kotlin.srcDir("main")
-            resources.srcDir("main")
-        }
-        test {
-            kotlin.srcDir("test")
-            resources.srcDir("test")
+    allprojects {
+        repositories {
+            mavenCentral()
         }
     }
-}
 
-allprojects {
-    repositories {
-        mavenCentral()
-    }
+    tasks.withType<Test> {
+        useJUnitPlatform()
 
-    kotlin {
-        jvmToolchain(25)
-    }
-
-    dependencies {
-        testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-        testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+        testLogging {
+            showExceptions = true
+            showStackTraces = true
+            exceptionFormat = FULL
+            events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        }
     }
 }
