@@ -21,7 +21,7 @@ internal data class SimuleringsResultatLinje301(
     val kodeBeh: String,
     val kontotekst: String,
     val belop: BigDecimal,
-    val fradragTillegg: no.nav.utbetaling.beregning.oppdrag.xml.TfradragTillegg,
+    val fradragTillegg: TfradragTillegg,
     val grad: BigInteger? = null,
     val saksbehId: String,
 )

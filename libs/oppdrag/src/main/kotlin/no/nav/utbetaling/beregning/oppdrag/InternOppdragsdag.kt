@@ -3,6 +3,7 @@ package no.nav.utbetaling.beregning.oppdrag
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDate.EPOCH
+
 import no.nav.utbetaling.beregning.oppdrag.Endring.Companion.gjeldende
 import no.nav.utbetaling.beregning.oppdrag.Endring.Companion.ingenEndringer
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
@@ -203,7 +204,10 @@ internal sealed interface Endring<T> {
             eksisterende: Endring<T>?,
             ny: Endring<T>?,
         ) = when (ny) {
-            is Opphevet -> null
+            is Opphevet -> {
+                require(eksisterende is Satt) { "Kan ikke feilregistrere en endring som ikke finnes." }
+                null
+            }
             is Satt -> ny
             else -> eksisterende
         }
@@ -228,7 +232,13 @@ internal fun avventingerFra(oppdrag110: Oppdrag110): Tidslinje<Endring<Avventing
         val tom = checkNotNull(avvent118.datoAvventTom) { "datoAvventTom må være satt på avventing" }
         val årsak =
             when (avvent118.kodeArsak?.uppercase()) {
-                "AVAV" -> Avventingsårsak.Avregning(til = checkNotNull(avvent118.datoOverfores) { "datoOverfores må være satt for avventing pga. avregning" })
+                "AVAV" ->
+                    Avventingsårsak.Avregning(
+                        til =
+                            checkNotNull(avvent118.datoOverfores) {
+                                "datoOverfores må være satt for avventing pga. avregning"
+                            },
+                    )
                 "AVRK" -> Avventingsårsak.Refusjonskrav(avvent118.datoOverfores)
                 else -> error("Kjenner ikke til avventingsårsak ${avvent118.kodeArsak}")
             }
@@ -248,8 +258,10 @@ internal fun omposteringerFra(oppdrag110: Oppdrag110): Tidslinje<Endring<Omposte
     val saksbehandlerId = ompostering116.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehId på ompostering")
     return Tidslinje
         .Builder<Endring<Ompostering>>()
-        .periode(ÅpenPeriode(ompostering116.datoOmposterFom ?: EPOCH), Endring.fra(ompostering116.feilreg, Opplysning(saksbehandlerId, ompostering)))
-        .build()
+        .periode(
+            ÅpenPeriode(ompostering116.datoOmposterFom ?: EPOCH),
+            Endring.fra(ompostering116.feilreg, Opplysning(saksbehandlerId, ompostering)),
+        ).build()
 }
 
 internal fun <T> String?.mapVerdi(block: (verdi: String) -> T) =

@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate.EPOCH
+
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
@@ -82,12 +83,14 @@ internal object Statuser {
             "HVIL" to Status.Hvilende,
             "SPER" to Status.Sperret,
             "OPPH" to Status.Opphørt,
-            "REAK" to Status.Aktiv, // Gir ikke mening å ha Reaktivert som status, det er mer en beskjed fra fagrutinen om å gjøre linjen(e) aktive igjen
+            // Gir ikke mening å ha Reaktivert som status, det er mer en beskjed fra fagrutinen om å gjøre linjen(e) aktive igjen
+            "REAK" to Status.Aktiv,
         )
 
     private val oppdragstatuser =
         mapOf(
-            "OPNY" to Status.Opphørt, // Sidestilles med Opphørt. Uavhengig av status lar vi ikke nye linjer påvirkes av oppdragstatusen
+            // Sidestilles med Opphørt. Uavhengig av status lar vi ikke nye linjer påvirkes av oppdragstatusen
+            "OPNY" to Status.Opphørt,
             "OPPH" to Status.Opphørt,
             "HVIL" to Status.Hvilende,
             "SPER" to Status.Sperret,

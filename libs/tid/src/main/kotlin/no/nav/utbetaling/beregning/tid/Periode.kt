@@ -96,9 +96,7 @@ sealed interface Periode {
 
             fun Iterable<LukketPeriode>.grupperSammenhengendePerioderMedHensynTilHelg() = merge(MERGE_OVER_HELG)
 
-            private fun Iterable<LukketPeriode>.merge(
-                erForlengelse: (forrigeDag: LocalDate, nesteDag: LocalDate) -> Boolean,
-            ): List<LukketPeriode> =
+            private fun Iterable<LukketPeriode>.merge(erForlengelse: (forrigeDag: LocalDate, nesteDag: LocalDate) -> Boolean): List<LukketPeriode> =
                 sortedBy { it.fom }
                     .fold(mutableListOf()) { resultat, neste ->
                         when (val sammenslått = resultat.lastOrNull()?.merge(neste, erForlengelse)) {
@@ -112,8 +110,7 @@ sealed interface Periode {
 
             private val MERGE_OVER_HELG = { venstre: LocalDate, høyre: LocalDate -> venstre.erRettFørMedHensynTilHelg(høyre) }
 
-            private fun LocalDate.erRettFørMedHensynTilHelg(other: LocalDate) =
-                nesteDag == other || (nesteDag < other && (nesteDag til other.forrigeDag).all { it.erHelg })
+            private fun LocalDate.erRettFørMedHensynTilHelg(other: LocalDate) = nesteDag == other || (nesteDag < other && (nesteDag til other.forrigeDag).all { it.erHelg })
 
             private val LocalDate.erHelg get() = dayOfWeek == SATURDAY || dayOfWeek == SUNDAY
         }

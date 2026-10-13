@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
+
 import no.nav.utbetaling.beregning.oppdrag.Kjedbar.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
@@ -52,7 +53,11 @@ class Oppdragstidslinje private constructor(
 
     private fun kombinerMed(
         other: Oppdragstidslinje,
-        transform: (kjede: Kjede, eksisterende: Tidslinje<InternOppdragsdag>, ny: Tidslinje<InternOppdragsdag>) -> Tidslinje<InternOppdragsdag>,
+        transform: (
+            kjede: Kjede,
+            eksisterende: Tidslinje<InternOppdragsdag>,
+            ny: Tidslinje<InternOppdragsdag>,
+        ) -> Tidslinje<InternOppdragsdag>,
     ): Oppdragstidslinje {
         // Her leter vi etter kjeder som hører sammen, så her finner vi ting som hører i samme kjede på en annen måte enn KjedetTidslinjesamling som
         // kun sjekker likhet på allerede etablerte kjeder
@@ -86,7 +91,9 @@ class Oppdragstidslinje private constructor(
         val endretOppdragstidslinje = this - other
 
         return kombinerMed(endretOppdragstidslinje) { kjede, eksisterendeTidslinje, endretTidslinje ->
-            val oppdragstatus = endretOppdragstidslinje.oppdragsendringer[kjede.internOppdragId]?.oppdragstatus ?: Tidslinje.Builder<Statusendring>().build()
+            val oppdragstatus =
+                endretOppdragstidslinje.oppdragsendringer[kjede.internOppdragId]?.oppdragstatus
+                    ?: Tidslinje.Builder<Statusendring>().build()
             val (kjedeSluttdato, kjedestatus) = endretOppdragstidslinje.kjedeendringerFor(kjede)
             val endretPeriode = endretTidslinje.periode()
             val utgangspunkt =
@@ -147,7 +154,8 @@ class Oppdragstidslinje private constructor(
             } ?: Periode.ÅpenPeriode(LocalDate.MAX)
 
         private fun oppdragsverdierFra(oppdrag110: Oppdrag110): Oppdragsverdier {
-            val oppdragSaksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
+            val oppdragSaksbehandlerId =
+                oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
             return Oppdragsverdier(
                 oppdragId = oppdrag110.oppdragsId?.let { Opplysning(oppdragSaksbehandlerId, OppdragId(it)) },
                 stønadId = oppdrag110.stonadId.mapVerdi { StønadId(it) }?.let { Opplysning(oppdragSaksbehandlerId, it) },
@@ -231,8 +239,12 @@ class Oppdragstidslinje private constructor(
                             // Verdier som entydig kan utledes fra verdier i linjen
                             .mapVerdier { oppdragsLinje150 ->
                                 InternOppdragsdag.Builder(
-                                    delytelseId = oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) } ?: error("Mangler delytelseId på linjenivå"),
-                                    linjeSaksbehandlerId = oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på linjenivå"),
+                                    delytelseId =
+                                        oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) }
+                                            ?: error("Mangler delytelseId på linjenivå"),
+                                    linjeSaksbehandlerId =
+                                        oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) }
+                                            ?: error("Mangler saksbehandlerId på linjenivå"),
                                     refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                     henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                     sats = oppdragsLinje150.sats,
@@ -274,7 +286,11 @@ class Oppdragstidslinje private constructor(
                         Kjede(
                             fagområde = tidslinje.first().second.fagområde,
                             fagsystemId = tidslinje.first().second.fagsystemId,
-                            delytelseIder = tidslinje.flatMap { (_, oppdragsdag) -> listOfNotNull(oppdragsdag.delytelseId, oppdragsdag.refDelytelseId) }.toSet(),
+                            delytelseIder =
+                                tidslinje
+                                    .flatMap { (_, oppdragsdag) ->
+                                        listOfNotNull(oppdragsdag.delytelseId, oppdragsdag.refDelytelseId)
+                                    }.toSet(),
                         )
                     }
 

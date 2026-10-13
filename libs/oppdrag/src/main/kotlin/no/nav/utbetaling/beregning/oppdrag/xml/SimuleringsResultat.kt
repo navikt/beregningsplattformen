@@ -9,5 +9,5 @@ internal data class SimuleringsResultat(
     val gjelderId: String,
     val gjelderNavn: String,
     val kodeFaggruppe: String,
-    val simuleringsPerioder: List<no.nav.utbetaling.beregning.oppdrag.xml.SimuleringsPerioder> = emptyList(),
+    val simuleringsPerioder: List<SimuleringsPerioder> = emptyList(),
 )

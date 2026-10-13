@@ -1,7 +1,5 @@
 package no.nav.utbetaling.beregning.tid
 
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import java.time.DayOfWeek
 import java.time.DayOfWeek.FRIDAY
 import java.time.DayOfWeek.MONDAY
@@ -12,6 +10,9 @@ import java.time.DayOfWeek.TUESDAY
 import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate
 import java.time.YearMonth
+
+import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
+import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 
 private const val DEFAULT_ÅR = 2024 // Starter på en mandag
 

@@ -1,10 +1,13 @@
 package no.nav.utbetaling.beregning.tid
 
+import java.time.LocalDate
+
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.grupperSammenhengendePerioder
@@ -13,7 +16,6 @@ import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.nesteDag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.somLukketPeriode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
-import java.time.LocalDate
 
 class PeriodeTest :
     FunSpec({

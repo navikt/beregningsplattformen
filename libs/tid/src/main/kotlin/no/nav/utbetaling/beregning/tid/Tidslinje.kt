@@ -1,5 +1,8 @@
 package no.nav.utbetaling.beregning.tid
 
+import java.time.LocalDate
+import java.util.TreeMap
+
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.grupperSammenhengendePerioder
@@ -8,8 +11,6 @@ import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.overlappe
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.somLukketPeriode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
-import java.time.LocalDate
-import java.util.TreeMap
 
 class Tidslinje<T> private constructor(
     private val knekkpunkter: TreeMap<LocalDate, T?>,

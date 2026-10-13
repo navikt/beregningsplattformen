@@ -10,7 +10,7 @@ internal data class SimuleringsStoppNivaa(
     val forfall: LocalDate,
     val kid: String,
     val kodeFagomraade: String,
-    val simuleringsLinjer: List<no.nav.utbetaling.beregning.oppdrag.xml.SimuleringsLinjer> = emptyList(),
+    val simuleringsLinjer: List<SimuleringsLinjer> = emptyList(),
     val oppdragsId: Long = 0,
     val stoppnivaId: Int = 0,
     val utbetalesTilId: String,

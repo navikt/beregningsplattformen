@@ -38,7 +38,10 @@ internal data class Linjer(
         private fun List<OppdragsLinje150>.sortertLinjerNyestFørst(): List<OppdragsLinje150> {
             if (size <= 1) return this
 
-            val eldste = singleOrNull { it.refDelytelseId == null } ?: first() // TODO: Trenger man en smarte måte å finne eldste linje annet enn å stole pårekkefølge?
+            val eldste =
+                singleOrNull {
+                    it.refDelytelseId == null
+                } ?: first() // TODO: Trenger man en smarte måte å finne eldste linje annet enn å stole pårekkefølge?
             val eldsteFørst = mutableListOf(eldste)
 
             var forrige: OppdragsLinje150 = eldste
