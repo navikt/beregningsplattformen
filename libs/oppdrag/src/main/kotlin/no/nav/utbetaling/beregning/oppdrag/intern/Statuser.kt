@@ -11,6 +11,11 @@ import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
+internal data class Statusendring(
+    val status: Opplysning<Status>,
+    val unntatt: Set<DelytelseId>,
+)
+
 internal object Statuser {
     internal fun fra(oppdrag110: Oppdrag110): Tidslinje<Statusendring> {
         val builder = Tidslinje.Builder<Statusendring>()

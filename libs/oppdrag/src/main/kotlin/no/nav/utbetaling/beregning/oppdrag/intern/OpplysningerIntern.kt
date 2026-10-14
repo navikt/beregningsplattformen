@@ -21,44 +21,6 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Endring.Companion.gjeldende
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
-internal data class Statusendring(
-    val status: Opplysning<Status>,
-    val unntatt: Set<DelytelseId>,
-)
-
-internal data class Kjedeendringer(
-    val sluttdato: LocalDate?,
-    val kjedestatus: Tidslinje<Statusendring>,
-)
-
-internal data class Oppdragsendringer(
-    val oppdragstatus: Tidslinje<Statusendring>,
-)
-
-internal data class Oppdragsverdier(
-    val oppdragId: Opplysning<OppdragId>?,
-    val stønadId: Opplysning<StønadId>?,
-    val utbetalingsfrekvens: Opplysning<Utbetalingsfrekvens>?,
-    val bilagstype: Opplysning<Bilagstype>?,
-    val forfall: Opplysning<LocalDate>?,
-) {
-    fun medNyeVedierFra(ny: Oppdragsverdier) =
-        Oppdragsverdier(
-            oppdragId = velgNullableOpplysning(ny.oppdragId, oppdragId),
-            stønadId = velgNullableOpplysning(ny.stønadId, stønadId),
-            utbetalingsfrekvens = velgNullableOpplysning(ny.utbetalingsfrekvens, utbetalingsfrekvens),
-            bilagstype = velgNullableOpplysning(ny.bilagstype, bilagstype),
-            forfall = velgNullableOpplysning(ny.forfall, forfall),
-        )
-}
-
-internal data class InternOppdragId(
-    val fagområde: Fagområde,
-    val fagsystemId: FagsystemId,
-)
-
-internal val Kjede.internOppdragId get() = InternOppdragId(fagområde, fagsystemId)
-
 internal data class OpplysningerIntern(
     val delytelseId: DelytelseId,
     val refDelytelseId: DelytelseId?,
@@ -145,6 +107,37 @@ internal data class OpplysningerIntern(
             statusendring: Statusendring?,
         ) = velgStatus(oppdragsdag, statusendring?.status, statusendring?.unntatt ?: emptySet())
     }
+}
+
+internal data class Kjedeendringer(
+    val sluttdato: LocalDate?,
+    val kjedestatus: Tidslinje<Statusendring>,
+)
+
+internal data class InternOppdragId(
+    val fagområde: Fagområde,
+    val fagsystemId: FagsystemId,
+)
+
+internal data class Oppdragsendringer(
+    val oppdragstatus: Tidslinje<Statusendring>,
+)
+
+internal data class Oppdragsverdier(
+    val oppdragId: Opplysning<OppdragId>?,
+    val stønadId: Opplysning<StønadId>?,
+    val utbetalingsfrekvens: Opplysning<Utbetalingsfrekvens>?,
+    val bilagstype: Opplysning<Bilagstype>?,
+    val forfall: Opplysning<LocalDate>?,
+) {
+    fun medNyeVedierFra(ny: Oppdragsverdier) =
+        Oppdragsverdier(
+            oppdragId = velgNullableOpplysning(ny.oppdragId, oppdragId),
+            stønadId = velgNullableOpplysning(ny.stønadId, stønadId),
+            utbetalingsfrekvens = velgNullableOpplysning(ny.utbetalingsfrekvens, utbetalingsfrekvens),
+            bilagstype = velgNullableOpplysning(ny.bilagstype, bilagstype),
+            forfall = velgNullableOpplysning(ny.forfall, forfall),
+        )
 }
 
 internal fun <T> velgNullableOpplysning(

@@ -15,7 +15,6 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
 import no.nav.utbetaling.beregning.oppdrag.intern.Statuser
-import no.nav.utbetaling.beregning.oppdrag.intern.internOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.mapVerdi
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag

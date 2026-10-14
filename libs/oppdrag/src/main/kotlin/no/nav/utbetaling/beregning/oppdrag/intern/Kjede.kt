@@ -13,6 +13,8 @@ internal data class Kjede(
 
     operator fun plus(other: Kjede) = copy(delytelseIder = delytelseIder + other.delytelseIder)
 
+    val internOppdragId get() = InternOppdragId(fagområde, fagsystemId)
+
     companion object {
         fun <T> Iterable<Pair<Kjede, T>>.grupperPåKjede(): Map<Kjede, List<T>> {
             val grupperteKjeder = mutableMapOf<Kjede, List<T>>()
