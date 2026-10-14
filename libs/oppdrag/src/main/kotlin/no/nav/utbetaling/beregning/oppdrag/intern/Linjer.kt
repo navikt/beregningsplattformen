@@ -40,6 +40,7 @@ internal data class Linjer(
         private fun List<OppdragsLinje150>.sortertLinjerNyestFørst(): List<OppdragsLinje150> {
             if (size <= 1) return this
 
+            val linjePerRefDelytelseId = associateBy { it.refDelytelseId() }
             val eldste =
                 singleOrNull {
                     it.refDelytelseId == null
@@ -49,7 +50,9 @@ internal data class Linjer(
             var forrige: OppdragsLinje150 = eldste
 
             while (eldsteFørst.size != this.size) {
-                val nestEldste = singleOrThrow { it.refDelytelseId() == forrige.delytelseId() }
+                val nestEldste =
+                    linjePerRefDelytelseId[forrige.delytelseId()]
+                        ?: error("Fant ikke neste linje i kjeden")
                 eldsteFørst.add(nestEldste)
                 forrige = nestEldste
             }
@@ -84,12 +87,6 @@ internal data class Linjer(
                 }
             return Tidslinje.Builder<OppdragsLinje150>().periode(periode, this).build()
         }
-
-        private fun <T> List<T>.singleOrThrow(predicate: (T) -> Boolean) =
-            filter(predicate).let {
-                check(it.size == 1) { "Fikk ${it.size} som matchet predikatet." }
-                it.first()
-            }
 
         private fun OppdragsLinje150.delytelseId() = delytelseId.mapVerdi { DelytelseId(it) } ?: error("delytelseId må være satt!")
 
