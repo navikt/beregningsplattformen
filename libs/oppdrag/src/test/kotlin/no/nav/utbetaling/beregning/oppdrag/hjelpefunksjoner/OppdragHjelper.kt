@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
+import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.xml.Avvent118
 import no.nav.utbetaling.beregning.oppdrag.xml.Bilagstype113
 import no.nav.utbetaling.beregning.oppdrag.xml.Ompostering116
@@ -12,10 +13,49 @@ import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.oppdrag.xml.TfradragTillegg
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatus
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatusLinje
-import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.mars
 
-internal fun oppdrag110(
+internal fun oppdragstidslinje(
+    kodeFagområde: String = "AAP",
+    fagsystemId: String = "${UUID.randomUUID()}",
+    kodeAksjon: String = "1",
+    kodeEndring: String = "NY",
+    oppdragGjelderId: String = "11111111111",
+    oppdragGjelderFom: LocalDate = LocalDate.EPOCH,
+    saksbehandlerId: String = "Z999999",
+    linjer: List<OppdragsLinje150> = emptyList(),
+    avventinger: List<Avvent118> = emptyList(),
+    bilagstype: String? = null,
+    forfall: LocalDate? = null,
+    ompostering: Ompostering116? = null,
+    oppdragsId: Long? = null,
+    stønadId: String? = null,
+    utbetalingsfrekvens: String? = null,
+    kodeStatus: TkodeStatus? = null,
+    datoStatusFom: LocalDate? = null,
+) = FraXmlFormat.opprett(
+    oppdrag110(
+        kodeFagområde = kodeFagområde,
+        fagsystemId = fagsystemId,
+        kodeAksjon = kodeAksjon,
+        kodeEndring = kodeEndring,
+        oppdragGjelderId = oppdragGjelderId,
+        oppdragGjelderFom = oppdragGjelderFom,
+        saksbehandlerId = saksbehandlerId,
+        linjer = linjer,
+        avventinger = avventinger,
+        bilagstype = bilagstype,
+        forfall = forfall,
+        ompostering = ompostering,
+        oppdragsId = oppdragsId,
+        stønadId = stønadId,
+        utbetalingsfrekvens = utbetalingsfrekvens,
+        kodeStatus = kodeStatus,
+        datoStatusFom = datoStatusFom,
+    ),
+)
+
+private fun oppdrag110(
     kodeFagområde: String = "AAP",
     fagsystemId: String = "${UUID.randomUUID()}",
     kodeAksjon: String = "1",
@@ -51,47 +91,6 @@ internal fun oppdrag110(
     utbetFrekvens = utbetalingsfrekvens,
     kodeStatus = kodeStatus,
     datoStatusFom = datoStatusFom,
-)
-
-internal fun oppdrag(
-    kodeFagområde: String = "AAP",
-    fagsystemId: String = "${UUID.randomUUID()}",
-    kodeAksjon: String = "1",
-    kodeEndring: String = "NY",
-    oppdragGjelderId: String = "11111111111",
-    oppdragGjelderFom: LocalDate = LocalDate.EPOCH,
-    saksbehandlerId: String = "Z999999",
-    linjer: List<OppdragsLinje150> = emptyList(),
-    avventinger: List<Avvent118> = emptyList(),
-    bilagstype: String? = null,
-    forfall: LocalDate? = null,
-    ompostering: Ompostering116? = null,
-    oppdragsId: Long? = null,
-    stønadId: String? = null,
-    utbetalingsfrekvens: String? = null,
-    kodeStatus: TkodeStatus? = null,
-    datoStatusFom: LocalDate? = null,
-) = XmlOppdrag(
-    oppdrag110 =
-        oppdrag110(
-            kodeFagområde = kodeFagområde,
-            fagsystemId = fagsystemId,
-            kodeAksjon = kodeAksjon,
-            kodeEndring = kodeEndring,
-            oppdragGjelderId = oppdragGjelderId,
-            oppdragGjelderFom = oppdragGjelderFom,
-            saksbehandlerId = saksbehandlerId,
-            linjer = linjer,
-            avventinger = avventinger,
-            bilagstype = bilagstype,
-            forfall = forfall,
-            ompostering = ompostering,
-            oppdragsId = oppdragsId,
-            stønadId = stønadId,
-            utbetalingsfrekvens = utbetalingsfrekvens,
-            kodeStatus = kodeStatus,
-            datoStatusFom = datoStatusFom,
-        ),
 )
 
 internal fun linje(

@@ -14,6 +14,7 @@ import tools.jackson.dataformat.xml.XmlMapper
 import tools.jackson.module.kotlin.convertValue
 import tools.jackson.module.kotlin.kotlinModule
 
+import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 
@@ -72,7 +73,7 @@ sealed interface Oppdrag {
         private fun fraOppdrag110(oppdrag110: List<Oppdrag110>): Oppdrag {
             val oppdragstidslinje =
                 oppdrag110.foldIndexed(Oppdragstidslinje()) { index, sammenslått, etOppdrag110 ->
-                    runCatching { sammenslått + Oppdragstidslinje.fraOppdrag110(etOppdrag110) }
+                    runCatching { sammenslått + FraXmlFormat.opprett(etOppdrag110) }
                         .getOrElse { feil ->
                             return UgyldigOppdrag(IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil))
                         }

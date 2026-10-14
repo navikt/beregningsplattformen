@@ -9,7 +9,7 @@ import io.kotest.matchers.shouldBe
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.avventing
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.avventinger
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdrag
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedAvventing
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
@@ -22,21 +22,19 @@ class AvventingTest :
             val fagsystemId = "${UUID.randomUUID()}"
 
             val førsteInnsendingMedAvventing =
-                oppdrag(
+                oppdragstidslinje(
                     fagsystemId = fagsystemId,
                     linjer = listOf(linje(fom = 1.januar, tom = 31.januar, sats = 100, delytelseId = "1")),
                     avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar)),
                 )
 
             val andreInnsendingUtenAvventing =
-                oppdrag(
+                oppdragstidslinje(
                     fagsystemId = fagsystemId,
                     linjer = listOf(linje(fom = 1.januar, tom = 31.januar, sats = 200, refDelytelseId = "1", delytelseId = "2")),
                 )
 
-            val resultat =
-                Oppdragstidslinje.fraXmlOppdrag(førsteInnsendingMedAvventing) +
-                    Oppdragstidslinje.fraXmlOppdrag(andreInnsendingUtenAvventing)
+            val resultat = førsteInnsendingMedAvventing + andreInnsendingUtenAvventing
 
             resultat.satserMedAvventing() skalVæreLik
                 mapOf(
@@ -52,12 +50,10 @@ class AvventingTest :
             val linjer = listOf(linje(fom = 1.januar, tom = 31.januar, delytelseId = "1"))
 
             val førsteInnsendingMedAvventing =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = linjer,
-                        avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar, kodeArsak = "AVRK")),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = linjer,
+                    avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar, kodeArsak = "AVRK")),
                 )
 
             førsteInnsendingMedAvventing.avventinger() skalVæreLik
@@ -68,12 +64,10 @@ class AvventingTest :
                 )
 
             val andreInnsendingFjernerAvventing =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = linjer,
-                        avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar, kodeArsak = "AVRK", feilreg = "j")),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = linjer,
+                    avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar, kodeArsak = "AVRK", feilreg = "j")),
                 )
 
             val resultat = førsteInnsendingMedAvventing + andreInnsendingFjernerAvventing
@@ -87,21 +81,17 @@ class AvventingTest :
             val linjer = listOf(linje(fom = 1.januar, tom = 31.januar, sats = 100, delytelseId = "1"))
 
             val førsteInnsendingMedAvventing =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = linjer,
-                        avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = linjer,
+                    avventinger = listOf(avventing(fom = 10.januar, tom = 20.januar)),
                 )
 
             val andreInnsendingFjernerAvventing =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = linjer,
-                        avventinger = listOf(avventing(fom = 1.januar, tom = 9.januar, feilreg = "j")),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = linjer,
+                    avventinger = listOf(avventing(fom = 1.januar, tom = 9.januar, feilreg = "j")),
                 )
 
             val exception =

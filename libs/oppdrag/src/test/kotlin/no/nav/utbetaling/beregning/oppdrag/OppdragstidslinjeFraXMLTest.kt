@@ -1,10 +1,11 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.Filhjelper
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.assertGjenskaptfraTidslinjer
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satser
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.april
 import no.nav.utbetaling.beregning.tid.mars
@@ -12,7 +13,7 @@ import no.nav.utbetaling.beregning.tid.mars
 /**
  * Tester for å bygge en Oppdragstidslinje fra et Oppdrag XML
  */
-class OppdragstidslinjeTest :
+class OppdragstidslinjeFraXMLTest :
     FunSpec({
         context("Bygger tidslinje fra et enkelt oppdrag") {
             test("Leser et oppdrag fra XML") {
@@ -24,7 +25,7 @@ class OppdragstidslinjeTest :
         }
     })
 
-internal fun fraXml(vararg xml: String): Oppdragstidslinje =
+private fun fraXml(vararg xml: String): Oppdragstidslinje =
     when (val oppdrag = Oppdrag.fraXml(*xml)) {
         is Oppdrag.Utbetaling -> oppdrag.oppdragstidslinje
         is Oppdrag.Simulering -> oppdrag.oppdragstidslinje
@@ -32,16 +33,3 @@ internal fun fraXml(vararg xml: String): Oppdragstidslinje =
         is Oppdrag.UgyldigKombinasjon -> throw oppdrag.feil
         is Oppdrag.UgyldigOppdrag -> throw oppdrag.feil
     }
-
-private fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
-    associate { (periode, oppdragsdager) ->
-        periode to
-            oppdragsdager.values.map(velg).toSet()
-    }
-
-private fun Oppdragstidslinje.satser() = perPeriode { it.sats.opplysning.toInt() }
-
-private fun Oppdragstidslinje.assertGjenskaptfraTidslinjer() {
-    val fraTidslinjer = Oppdragstidslinje.fraTidslinjer(tidslinjeIterator().asSequence().toList())
-    fraTidslinjer shouldBeEqual this
-}

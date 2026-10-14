@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
+import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjer
 import no.nav.utbetaling.beregning.tid.Periode
 
 fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
@@ -43,7 +44,7 @@ fun Oppdragstidslinje.statuser() = perPeriode { it.status.opplysning }
 fun Oppdragstidslinje.delytelseIdMedStatus() = perPeriode { it.delytelseId.id to it.status.opplysning }
 
 fun Oppdragstidslinje.assertGjenskaptfraTidslinjer() {
-    val fraTidslinjer = Oppdragstidslinje.fraTidslinjer(tidslinjeIterator().asSequence().toList())
+    val fraTidslinjer = FraTidslinjer.opprett(tidslinjeIterator().asSequence().toList())
     fraTidslinjer shouldBeEqual this
 }
 

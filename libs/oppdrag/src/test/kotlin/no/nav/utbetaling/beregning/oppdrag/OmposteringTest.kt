@@ -9,7 +9,7 @@ import io.kotest.matchers.shouldBe
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.OMPOSTERINGSKODE
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.ompostering
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdrag
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedOmpostering
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.januar
@@ -18,11 +18,9 @@ class OmposteringTest :
     FunSpec({
         test("Uten fom dato gjelder alle dagene i oppdraget") {
             val innsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        ompostering = ompostering(),
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    ompostering = ompostering(),
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             innsending.satserMedOmpostering() shouldBe mapOf(januar to setOf(100 to OMPOSTERINGSKODE))
@@ -30,11 +28,9 @@ class OmposteringTest :
 
         test("Med fom dato gjelder den bare fra og med fom datoen") {
             val innsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        ompostering = ompostering(fom = 10.januar),
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    ompostering = ompostering(fom = 10.januar),
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             innsending.satserMedOmpostering() shouldBe
@@ -48,20 +44,16 @@ class OmposteringTest :
             val fagsystemId = "${UUID.randomUUID()}"
 
             val førsteInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(),
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(),
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             val andreInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
                 )
 
             val resultat = førsteInnsending + andreInnsending
@@ -73,20 +65,16 @@ class OmposteringTest :
             val fagsystemId = "${UUID.randomUUID()}"
 
             val førsteInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(fom = 10.januar),
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(fom = 10.januar),
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             val andreInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
                 )
 
             val resultat = førsteInnsending + andreInnsending
@@ -102,21 +90,17 @@ class OmposteringTest :
             val fagsystemId = "${UUID.randomUUID()}"
 
             val førsteInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(),
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(),
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             val andreInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(fom = 10.januar, kode = "N"),
-                        linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(fom = 10.januar, kode = "N"),
+                    linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
                 )
 
             val resultat = førsteInnsending + andreInnsending
@@ -132,21 +116,17 @@ class OmposteringTest :
             val fagsystemId = "${UUID.randomUUID()}"
 
             val førsteInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(fom = 10.januar),
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(fom = 10.januar),
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             val opphever =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(fom = 10.januar, feilreg = "J"),
-                        linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(fom = 10.januar, feilreg = "J"),
+                    linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
                 )
 
             val resultat = førsteInnsending + opphever
@@ -158,20 +138,16 @@ class OmposteringTest :
             val fagsystemId = "${UUID.randomUUID()}"
 
             val førsteInnsending =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    linjer = listOf(linje(delytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 100)),
                 )
 
             val opphever =
-                Oppdragstidslinje.fraXmlOppdrag(
-                    oppdrag(
-                        fagsystemId = fagsystemId,
-                        ompostering = ompostering(fom = 20.januar, feilreg = "J"),
-                        linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
-                    ),
+                oppdragstidslinje(
+                    fagsystemId = fagsystemId,
+                    ompostering = ompostering(fom = 20.januar, feilreg = "J"),
+                    linjer = listOf(linje(delytelseId = "2", refDelytelseId = "1", fom = 1.januar, tom = 31.januar, sats = 200)),
                 )
 
             val exception =

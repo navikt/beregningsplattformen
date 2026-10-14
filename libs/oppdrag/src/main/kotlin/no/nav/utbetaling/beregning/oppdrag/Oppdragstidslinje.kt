@@ -2,8 +2,6 @@ package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
 
-import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjer
-import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
@@ -12,8 +10,6 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
-import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
-import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
@@ -169,15 +165,5 @@ class Oppdragstidslinje private constructor(
             kidnummer = opplysningerIntern.kidnummer,
             status = opplysningerIntern.status,
         )
-
-        // TODO: Disse funksjonene kan fjernes
-        internal fun fraXmlOppdrag(xmlOppdrag: XmlOppdrag): Oppdragstidslinje {
-            val oppdrag110 = xmlOppdrag.oppdrag110 ?: return Oppdragstidslinje()
-            return fraOppdrag110(oppdrag110)
-        }
-
-        internal fun fraOppdrag110(oppdrag110: Oppdrag110) = FraXmlFormat.opprett(oppdrag110)
-
-        internal fun fraTidslinjer(tidslinjer: List<Tidslinje<Opplysninger>>) = FraTidslinjer.opprett(tidslinjer)
     }
 }
