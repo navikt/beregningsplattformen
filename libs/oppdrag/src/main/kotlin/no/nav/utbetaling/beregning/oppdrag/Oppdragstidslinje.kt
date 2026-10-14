@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
+import no.nav.utbetaling.beregning.oppdrag.intern.Avventinger
 
 import no.nav.utbetaling.beregning.oppdrag.intern.Endring
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
@@ -13,7 +14,6 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
 import no.nav.utbetaling.beregning.oppdrag.intern.Statuser
-import no.nav.utbetaling.beregning.oppdrag.intern.avventingerFra
 import no.nav.utbetaling.beregning.oppdrag.intern.internOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.mapVerdi
 import no.nav.utbetaling.beregning.oppdrag.intern.omposteringerFra
@@ -259,7 +259,7 @@ class Oppdragstidslinje private constructor(
                     // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
                     .mapValues { (_, builderTidslinje) ->
                         builderTidslinje
-                            .kombinerMed(avventingerFra(oppdrag110)) { _, builder, avventing ->
+                            .kombinerMed(Avventinger.fra(oppdrag110)) { _, builder, avventing ->
                                 builder?.copy(avventingsårsakEndring = avventing)
                             }.kombinerMed(omposteringerFra(oppdrag110)) { _, builder, ompostering ->
                                 builder?.copy(omposteringEndring = ompostering)
