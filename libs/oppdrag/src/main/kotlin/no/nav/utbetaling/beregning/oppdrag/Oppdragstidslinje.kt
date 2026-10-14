@@ -1,8 +1,8 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
-import no.nav.utbetaling.beregning.oppdrag.intern.Avventinger
 
+import no.nav.utbetaling.beregning.oppdrag.intern.Avventinger
 import no.nav.utbetaling.beregning.oppdrag.intern.Endring
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragsdag
@@ -316,8 +316,8 @@ class Oppdragstidslinje private constructor(
                             refDelytelseId = oppdragsdag.refDelytelseId,
                             sats = oppdragsdag.sats,
                             henvisning = oppdragsdag.henvisning,
-                            avventingsårsakEndring = oppdragsdag.avventingsårsak?.let { Endring.Satt(it) },
-                            omposteringEndring = oppdragsdag.ompostering?.let { Endring.Satt(it) },
+                            avventingsårsakEndring = oppdragsdag.avventingsårsak?.let { Endring.Registrert(it) },
+                            omposteringEndring = oppdragsdag.ompostering?.let { Endring.Registrert(it) },
                             kidnummer = oppdragsdag.kidnummer,
                             status = oppdragsdag.status,
                         )

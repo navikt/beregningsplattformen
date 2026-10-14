@@ -165,49 +165,6 @@ private fun <T> velgOpplysning(
     gammel: Opplysning<T>,
 ) = ny.takeUnless { it.opplysning == gammel.opplysning } ?: gammel
 
-internal sealed interface Endring<T> {
-    val opplysning: Opplysning<T>
-
-    data class Satt<T>(
-        override val opplysning: Opplysning<T>,
-    ) : Endring<T>
-
-    data class Opphevet<T>(
-        override val opplysning: Opplysning<T>,
-    ) : Endring<T>
-
-    companion object {
-        private val FEILREGISTRERT_VERDIER = setOf("j", "ja", "y", "yes")
-
-        private fun String?.erFeilregistrert() = mapVerdi { it.lowercase() in FEILREGISTRERT_VERDIER } == true
-
-        fun <T> Endring<T>?.gjeldende() = (this as? Satt)?.opplysning
-
-        fun <T> ingenEndringer() = Tidslinje.Builder<Endring<T>>().build()
-
-        fun <T> velg(
-            eksisterende: Endring<T>?,
-            ny: Endring<T>?,
-        ) = when (ny) {
-            is Opphevet -> {
-                require(eksisterende is Satt) { "Kan ikke feilregistrere en endring som ikke finnes." }
-                null
-            }
-            is Satt -> ny
-            else -> eksisterende
-        }
-
-        fun <T> fra(
-            feilreg: String?,
-            opplysning: Opplysning<T>,
-        ): Endring<T> =
-            when (feilreg.erFeilregistrert()) {
-                true -> Opphevet(opplysning)
-                false -> Satt(opplysning)
-            }
-    }
-}
-
 // Lager en tidslinje av endringer på Ompostering
 internal fun omposteringerFra(oppdrag110: Oppdrag110): Tidslinje<Endring<Ompostering>> {
     val ompostering116 = oppdrag110.ompostering116 ?: return Endring.Companion.ingenEndringer()
