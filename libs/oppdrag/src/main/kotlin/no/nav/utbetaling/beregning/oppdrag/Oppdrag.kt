@@ -27,15 +27,15 @@ sealed interface Oppdrag {
     ) : Oppdrag
 
     data class UgyldigFormat(
-        val feil: String,
+        val feil: Throwable,
     ) : Oppdrag
 
     data class UgyldigOppdrag(
-        val feil: String,
+        val feil: Throwable,
     ) : Oppdrag
 
     data class UgyldigKombinasjon(
-        val feil: String,
+        val feil: Throwable,
     ) : Oppdrag
 
     companion object {
@@ -43,7 +43,9 @@ sealed interface Oppdrag {
             val xmlOppdrag =
                 xml.mapIndexed { index, enXml ->
                     runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }
-                        .getOrElse { return UgyldigFormat("Feil på xml nummer ${index + 1}: ${it.message}") }
+                        .getOrElse { feil ->
+                            return UgyldigFormat(IllegalArgumentException("Feil på xml nummer ${index + 1}", feil))
+                        }
                 }
 
             return fraOppdrag110(xmlOppdrag.mapNotNull { it.oppdrag110 })
@@ -57,9 +59,11 @@ sealed interface Oppdrag {
                         when {
                             jsonNode.isArray -> jsonMapper.convertValue<List<Oppdrag110>>(jsonNode)
                             jsonNode.isObject -> listOf(jsonMapper.convertValue<Oppdrag110>(jsonNode))
-                            else -> return UgyldigFormat("Feil på json nummer ${index + 1}: Må være JSON Objekt eller Array")
+                            else -> return UgyldigFormat(IllegalArgumentException("Feil på json nummer ${index + 1}: Må være JSON Objekt eller Array, var ${jsonNode.nodeType.name}"))
                         }
-                    }.getOrElse { return UgyldigFormat("Feil på json nummer ${index + 1}: ${it.message}") }
+                    }.getOrElse { feil ->
+                        return UgyldigFormat(IllegalArgumentException("Feil på json nummer ${index + 1}", feil))
+                    }
                 }
 
             return fraOppdrag110(oppdrag110)
@@ -69,14 +73,16 @@ sealed interface Oppdrag {
             val oppdragstidslinje =
                 oppdrag110.foldIndexed(Oppdragstidslinje()) { index, sammenslått, etOppdrag110 ->
                     runCatching { sammenslått + Oppdragstidslinje.fraOppdrag110(etOppdrag110) }
-                        .getOrElse { return UgyldigOppdrag("Feil på oppdrag nummer ${index + 1}: ${it.message}") }
+                        .getOrElse { feil ->
+                            return UgyldigOppdrag(IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil))
+                        }
                 }
 
             val aksjonskoder = oppdrag110.map { it.kodeAksjon.trim() }.toSet()
 
             return when {
-                aksjonskoder.isEmpty() -> UgyldigOppdrag("Det er ikke sendt inn noen oppdrag")
-                aksjonskoder.size > 1 -> UgyldigKombinasjon("Det er sendt inn aksjonskoder på tvers av opprettelse og simulering!")
+                aksjonskoder.isEmpty() -> UgyldigOppdrag(IllegalArgumentException("Det er ikke sendt inn noen oppdrag"))
+                aksjonskoder.size > 1 -> UgyldigKombinasjon(IllegalArgumentException("Det er sendt inn aksjonskoder på tvers av opprettelse og simulering!"))
                 aksjonskoder.single() == SIMULERING -> Simulering(oppdragstidslinje)
                 else -> Utbetaling(oppdragstidslinje)
             }

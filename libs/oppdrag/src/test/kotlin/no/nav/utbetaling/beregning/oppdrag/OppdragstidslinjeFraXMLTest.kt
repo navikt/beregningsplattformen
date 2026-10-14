@@ -28,9 +28,9 @@ internal fun fraXml(vararg xml: String): Oppdragstidslinje =
     when (val oppdrag = Oppdrag.fraXml(*xml)) {
         is Oppdrag.Utbetaling -> oppdrag.oppdragstidslinje
         is Oppdrag.Simulering -> oppdrag.oppdragstidslinje
-        is Oppdrag.UgyldigFormat -> error(oppdrag.feil)
-        is Oppdrag.UgyldigKombinasjon -> error(oppdrag.feil)
-        is Oppdrag.UgyldigOppdrag -> error(oppdrag.feil)
+        is Oppdrag.UgyldigFormat -> throw oppdrag.feil
+        is Oppdrag.UgyldigKombinasjon -> throw oppdrag.feil
+        is Oppdrag.UgyldigOppdrag -> throw oppdrag.feil
     }
 
 private fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
