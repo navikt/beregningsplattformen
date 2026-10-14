@@ -2,7 +2,6 @@ package no.nav.utbetaling.beregning.oppdrag.intern
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDate.EPOCH
 
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
@@ -12,7 +11,6 @@ import no.nav.utbetaling.beregning.oppdrag.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.Henvisning
 import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Ompostering
-import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
 import no.nav.utbetaling.beregning.oppdrag.OppdragId
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
@@ -20,9 +18,7 @@ import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.intern.Endring.Companion.gjeldende
-import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.tid.Periode
-import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
 internal data class Statusendring(
@@ -164,23 +160,6 @@ private fun <T> velgOpplysning(
     ny: Opplysning<T>,
     gammel: Opplysning<T>,
 ) = ny.takeUnless { it.opplysning == gammel.opplysning } ?: gammel
-
-// Lager en tidslinje av endringer på Ompostering
-internal fun omposteringerFra(oppdrag110: Oppdrag110): Tidslinje<Endring<Ompostering>> {
-    val ompostering116 = oppdrag110.ompostering116 ?: return Endring.Companion.ingenEndringer()
-    val ompostering =
-        Ompostering(
-            kode = Omposteringskode(ompostering116.omPostering),
-            registrert = Tidspunkt.fra(ompostering116.tidspktReg),
-        )
-    val saksbehandlerId = ompostering116.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehId på ompostering")
-    return Tidslinje
-        .Builder<Endring<Ompostering>>()
-        .periode(
-            ÅpenPeriode(ompostering116.datoOmposterFom ?: EPOCH),
-            Endring.fra(ompostering116.feilreg, Opplysning(saksbehandlerId, ompostering)),
-        ).build()
-}
 
 internal fun <T> String?.mapVerdi(block: (verdi: String) -> T) =
     when {

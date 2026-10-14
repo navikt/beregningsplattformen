@@ -10,13 +10,13 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjedeendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Linjer
+import no.nav.utbetaling.beregning.oppdrag.intern.Omposteringer.fra
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
 import no.nav.utbetaling.beregning.oppdrag.intern.Statuser
 import no.nav.utbetaling.beregning.oppdrag.intern.internOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.mapVerdi
-import no.nav.utbetaling.beregning.oppdrag.intern.omposteringerFra
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
@@ -261,7 +261,7 @@ class Oppdragstidslinje private constructor(
                         builderTidslinje
                             .kombinerMed(Avventinger.fra(oppdrag110)) { _, builder, avventing ->
                                 builder?.copy(avventingsårsakEndring = avventing)
-                            }.kombinerMed(omposteringerFra(oppdrag110)) { _, builder, ompostering ->
+                            }.kombinerMed(fra(oppdrag110)) { _, builder, ompostering ->
                                 builder?.copy(omposteringEndring = ompostering)
                             }
                     }

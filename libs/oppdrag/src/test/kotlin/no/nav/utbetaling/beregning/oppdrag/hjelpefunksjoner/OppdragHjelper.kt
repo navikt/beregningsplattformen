@@ -133,7 +133,7 @@ internal fun avventing(
 
 internal fun ompostering(
     fom: LocalDate? = null,
-    kode: String = "J",
+    kode: String = "J", // TODO: sjekk om dette er riktig
     feilreg: String? = null,
     registrert: String = "2024-01-15-12.34.56.123456",
     saksbehandlerId: String = "Z999999",
