@@ -27,10 +27,8 @@ subprojects {
         }
     }
 
-    allprojects {
-        repositories {
-            mavenCentral()
-        }
+    repositories {
+        mavenCentral()
     }
 
     tasks.withType<Test> {

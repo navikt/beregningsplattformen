@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.oppdrag
+package no.nav.utbetaling.beregning.oppdrag.intern
 
 import java.util.UUID
 
@@ -6,6 +6,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
+import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.OMPOSTERINGSKODE
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.ompostering
