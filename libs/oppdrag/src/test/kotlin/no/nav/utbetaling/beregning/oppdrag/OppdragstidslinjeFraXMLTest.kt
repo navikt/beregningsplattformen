@@ -5,7 +5,6 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.Filhjelper
-import no.nav.utbetaling.beregning.oppdrag.intern.Oppdrag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.april
 import no.nav.utbetaling.beregning.tid.mars
@@ -34,7 +33,7 @@ internal fun fraXml(vararg xml: String): Oppdragstidslinje =
         is Oppdrag.UgyldigOppdrag -> error(oppdrag.feil)
     }
 
-private fun <T> Oppdragstidslinje.perPeriode(velg: (Oppdragsdag) -> T) =
+private fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
     associate { (periode, oppdragsdager) ->
         periode to
             oppdragsdager.values.map(velg).toSet()

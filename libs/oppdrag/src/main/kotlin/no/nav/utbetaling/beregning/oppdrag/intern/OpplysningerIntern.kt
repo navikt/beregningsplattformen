@@ -59,7 +59,7 @@ internal data class InternOppdragId(
 
 internal val Kjede.internOppdragId get() = InternOppdragId(fagområde, fagsystemId)
 
-internal data class InternOppdragsdag(
+internal data class OpplysningerIntern(
     val delytelseId: DelytelseId,
     val refDelytelseId: DelytelseId?,
     val sats: Opplysning<BigDecimal>,
@@ -72,8 +72,8 @@ internal data class InternOppdragsdag(
     val avventingsårsak = avventingsårsakEndring?.gjeldende()
     val ompostering = omposteringEndring?.gjeldende()
 
-    private fun medNyeVerdierFra(ny: InternOppdragsdag) =
-        InternOppdragsdag(
+    private fun medNyeVerdierFra(ny: OpplysningerIntern) =
+        OpplysningerIntern(
             delytelseId = ny.delytelseId,
             refDelytelseId = ny.refDelytelseId,
             sats = velgOpplysning(ny.sats, sats),
@@ -103,7 +103,7 @@ internal data class InternOppdragsdag(
             }
 
         fun build() =
-            InternOppdragsdag(
+            OpplysningerIntern(
                 delytelseId = delytelseId,
                 refDelytelseId = refDelytelseId,
                 sats = Opplysning(linjeSaksbehandlerId, sats),
@@ -117,8 +117,8 @@ internal data class InternOppdragsdag(
 
     companion object {
         fun velg(
-            eksisterende: InternOppdragsdag?,
-            ny: InternOppdragsdag?,
+            eksisterende: OpplysningerIntern?,
+            ny: OpplysningerIntern?,
             periode: Periode,
             kjedeendringsperiode: Periode,
         ) = when {
@@ -131,7 +131,7 @@ internal data class InternOppdragsdag(
         }
 
         private fun velgStatus(
-            oppdragsdag: InternOppdragsdag?,
+            oppdragsdag: OpplysningerIntern?,
             status: Opplysning<Status>?,
             unntatt: Set<DelytelseId> = emptySet(),
         ) = when {
@@ -141,7 +141,7 @@ internal data class InternOppdragsdag(
         }
 
         fun velgStatus(
-            oppdragsdag: InternOppdragsdag?,
+            oppdragsdag: OpplysningerIntern?,
             statusendring: Statusendring?,
         ) = velgStatus(oppdragsdag, statusendring?.status, statusendring?.unntatt ?: emptySet())
     }

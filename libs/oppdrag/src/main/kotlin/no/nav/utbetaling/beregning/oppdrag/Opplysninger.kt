@@ -89,7 +89,7 @@ sealed interface Avventingsårsak {
     ) : Avventingsårsak
 }
 
-data class Oppdragsdag(
+data class Opplysninger(
     val fagområde: Fagområde,
     val fagsystemId: FagsystemId,
     val delytelseId: DelytelseId,

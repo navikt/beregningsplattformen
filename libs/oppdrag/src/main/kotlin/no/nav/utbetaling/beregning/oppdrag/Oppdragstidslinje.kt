@@ -5,7 +5,6 @@ import java.time.LocalDate
 import no.nav.utbetaling.beregning.oppdrag.intern.Avventinger
 import no.nav.utbetaling.beregning.oppdrag.intern.Endring
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
-import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragsdag
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjedeendringer
@@ -13,6 +12,7 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Linjer
 import no.nav.utbetaling.beregning.oppdrag.intern.Omposteringer.fra
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
+import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
 import no.nav.utbetaling.beregning.oppdrag.intern.Statuser
 import no.nav.utbetaling.beregning.oppdrag.intern.internOppdragId
@@ -29,17 +29,17 @@ class Oppdragstidslinje private constructor(
     // Verdier som er lik for hele oppdraget på tvers av alle kjeder
     private val oppdragsverdier: Map<InternOppdragId, Oppdragsverdier>,
     // Tidslinjene for hver enkelt kjede
-    private val kjeder: Map<Kjede, Tidslinje<InternOppdragsdag>>,
+    private val kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>>,
     // Endringer fra dagens oppdrag110 som påvirker hele oppdraget, ikke bare for den enkelte innsendingen
     private val oppdragsendringer: Map<InternOppdragId, Oppdragsendringer>,
     // Endringer fra dagens oppdrag110 som påvirker hele kjeden, ikke bare den kjededelen i den enkelte innsendingen
     private val kjedeendringer: Map<Kjede, Kjedeendringer>,
     // Det eksponerte 'API'-et til Oppdragstidslinje som alle utenom dette biblioteket forholder seg til
-    tidslinjer: Map<Kjede, Tidslinje<Oppdragsdag>>,
-) : Tidslinjesamling<Kjede, Oppdragsdag> by DefaultTidslinjesamling(tidslinjer) {
+    tidslinjer: Map<Kjede, Tidslinje<Opplysninger>>,
+) : Tidslinjesamling<Kjede, Opplysninger> by DefaultTidslinjesamling(tidslinjer) {
     internal constructor(
         oppdragsverdier: Map<InternOppdragId, Oppdragsverdier> = emptyMap(),
-        kjeder: Map<Kjede, Tidslinje<InternOppdragsdag>> = emptyMap(),
+        kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>> = emptyMap(),
         oppdragsendringer: Map<InternOppdragId, Oppdragsendringer> = emptyMap(),
         kjedeendringer: Map<Kjede, Kjedeendringer> = emptyMap(),
     ) : this(
@@ -47,7 +47,7 @@ class Oppdragstidslinje private constructor(
         kjeder = kjeder.filterValues { !it.isEmpty() },
         tidslinjer =
             kjeder.filterValues { !it.isEmpty() }.mapValues { (kjede, tidslinje) ->
-                tidslinje.mapVerdier { somOppdragsdag(kjede, oppdragsverdier[kjede.internOppdragId], it) }
+                tidslinje.mapVerdier { somOpplysninger(kjede, oppdragsverdier[kjede.internOppdragId], it) }
             },
         oppdragsendringer = oppdragsendringer,
         kjedeendringer = kjedeendringer,
@@ -57,9 +57,9 @@ class Oppdragstidslinje private constructor(
         other: Oppdragstidslinje,
         transform: (
             kjede: Kjede,
-            eksisterende: Tidslinje<InternOppdragsdag>,
-            ny: Tidslinje<InternOppdragsdag>,
-        ) -> Tidslinje<InternOppdragsdag>,
+            eksisterende: Tidslinje<OpplysningerIntern>,
+            ny: Tidslinje<OpplysningerIntern>,
+        ) -> Tidslinje<OpplysningerIntern>,
     ): Oppdragstidslinje {
         // Her leter vi etter kjeder som hører sammen, så her finner vi ting som hører i samme kjede på en annen måte enn KjedetTidslinjesamling som
         // kun sjekker likhet på allerede etablerte kjeder
@@ -67,7 +67,7 @@ class Oppdragstidslinje private constructor(
             (this.kjeder.toList() + other.kjeder.toList())
                 .grupperPåKjede()
                 .mapValues { (kjede, tidslinjer) ->
-                    val tom = Tidslinje.Builder<InternOppdragsdag>().build()
+                    val tom = Tidslinje.Builder<OpplysningerIntern>().build()
                     val (eksisterende, ny) =
                         when (tidslinjer.size) {
                             1 -> if (kjede in this.kjeder.keys) tidslinjer.single() to tom else tom to tidslinjer.single()
@@ -106,11 +106,11 @@ class Oppdragstidslinje private constructor(
 
             utgangspunkt
                 .kombinerMed(endretTidslinje) { periode, eksisterendeOppdragsdag, nyOppdragsdag ->
-                    InternOppdragsdag.velg(eksisterendeOppdragsdag, nyOppdragsdag, periode, endretPeriode)
+                    OpplysningerIntern.velg(eksisterendeOppdragsdag, nyOppdragsdag, periode, endretPeriode)
                 }.kombinerMed(oppdragstatus) { _, oppdragsdag, statusendring ->
-                    InternOppdragsdag.velgStatus(oppdragsdag, statusendring)
+                    OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
                 }.kombinerMed(kjedestatus) { _, oppdragsdag, statusendring ->
-                    InternOppdragsdag.velgStatus(oppdragsdag, statusendring)
+                    OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
                 }
         }
     }
@@ -185,26 +185,26 @@ class Oppdragstidslinje private constructor(
                 )
             }
 
-        private fun somOppdragsdag(
+        private fun somOpplysninger(
             kjede: Kjede,
             oppdragsverdier: Oppdragsverdier?,
-            internOppdragsdag: InternOppdragsdag,
-        ) = Oppdragsdag(
+            opplysningerIntern: OpplysningerIntern,
+        ) = Opplysninger(
             fagområde = kjede.fagområde,
             fagsystemId = kjede.fagsystemId,
-            delytelseId = internOppdragsdag.delytelseId,
-            refDelytelseId = internOppdragsdag.refDelytelseId,
-            sats = internOppdragsdag.sats,
+            delytelseId = opplysningerIntern.delytelseId,
+            refDelytelseId = opplysningerIntern.refDelytelseId,
+            sats = opplysningerIntern.sats,
             oppdragId = oppdragsverdier?.oppdragId,
-            henvisning = internOppdragsdag.henvisning,
+            henvisning = opplysningerIntern.henvisning,
             stønadId = oppdragsverdier?.stønadId,
             forfall = oppdragsverdier?.forfall,
             utbetalingsfrekvens = oppdragsverdier?.utbetalingsfrekvens,
             bilagstype = oppdragsverdier?.bilagstype,
-            avventingsårsak = internOppdragsdag.avventingsårsak,
-            ompostering = internOppdragsdag.ompostering,
-            kidnummer = internOppdragsdag.kidnummer,
-            status = internOppdragsdag.status,
+            avventingsårsak = opplysningerIntern.avventingsårsak,
+            ompostering = opplysningerIntern.ompostering,
+            kidnummer = opplysningerIntern.kidnummer,
+            status = opplysningerIntern.status,
         )
 
         private val utbetalingsfrekvenser =
@@ -238,7 +238,7 @@ class Oppdragstidslinje private constructor(
                         linjer.aktive
                             // Verdier som entydig kan utledes fra verdier i linjen
                             .mapVerdier { oppdragsLinje150 ->
-                                InternOppdragsdag.Builder(
+                                OpplysningerIntern.Builder(
                                     delytelseId =
                                         oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) }
                                             ?: error("Mangler delytelseId på linjenivå"),
@@ -278,7 +278,7 @@ class Oppdragstidslinje private constructor(
             )
         }
 
-        internal fun fraTidslinjer(tidslinjer: List<Tidslinje<Oppdragsdag>>): Oppdragstidslinje {
+        internal fun fraTidslinjer(tidslinjer: List<Tidslinje<Opplysninger>>): Oppdragstidslinje {
             val tidslinjerPerKjede =
                 tidslinjer
                     .filterNot { it.isEmpty() }
@@ -311,7 +311,7 @@ class Oppdragstidslinje private constructor(
             val kjeder =
                 tidslinjerPerKjede.mapValues { (_, tidslinje) ->
                     tidslinje.mapVerdier { oppdragsdag ->
-                        InternOppdragsdag(
+                        OpplysningerIntern(
                             delytelseId = oppdragsdag.delytelseId,
                             refDelytelseId = oppdragsdag.refDelytelseId,
                             sats = oppdragsdag.sats,

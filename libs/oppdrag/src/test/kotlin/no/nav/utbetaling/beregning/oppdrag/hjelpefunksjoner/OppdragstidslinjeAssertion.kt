@@ -4,11 +4,11 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
-import no.nav.utbetaling.beregning.oppdrag.Oppdragsdag
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
+import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.tid.Periode
 
-fun <T> Oppdragstidslinje.perPeriode(velg: (Oppdragsdag) -> T) =
+fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
     associate { (periode, oppdragsdager) ->
         periode to
             oppdragsdager.values.map(velg).toSet()

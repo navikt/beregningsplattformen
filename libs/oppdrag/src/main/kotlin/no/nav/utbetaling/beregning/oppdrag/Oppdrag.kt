@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.oppdrag.intern
+package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -14,7 +14,6 @@ import tools.jackson.dataformat.xml.XmlMapper
 import tools.jackson.module.kotlin.convertValue
 import tools.jackson.module.kotlin.kotlinModule
 
-import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 
