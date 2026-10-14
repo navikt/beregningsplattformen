@@ -1,6 +1,6 @@
 package no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner
 
-import no.nav.utbetaling.beregning.oppdrag.Oppdrag
+import no.nav.utbetaling.beregning.oppdrag.intern.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 
 object Filhjelper {

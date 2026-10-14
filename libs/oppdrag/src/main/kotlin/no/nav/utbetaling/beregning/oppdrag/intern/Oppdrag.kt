@@ -1,9 +1,10 @@
-package no.nav.utbetaling.beregning.oppdrag
+package no.nav.utbetaling.beregning.oppdrag.intern
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import kotlin.jvm.java
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.ObjectMapper

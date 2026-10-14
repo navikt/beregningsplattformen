@@ -1,6 +1,6 @@
-package no.nav.utbetaling.beregning.oppdrag
+package no.nav.utbetaling.beregning.oppdrag.intern
 
-import no.nav.utbetaling.beregning.oppdrag.Kjedbar.Companion.grupperPåKjede
+import no.nav.utbetaling.beregning.oppdrag.intern.Kjedbar.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag

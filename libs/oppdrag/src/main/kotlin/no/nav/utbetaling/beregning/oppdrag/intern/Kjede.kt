@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.oppdrag
+package no.nav.utbetaling.beregning.oppdrag.intern
 
 @JvmInline
 value class Fagområde(

@@ -5,6 +5,7 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.Filhjelper
+import no.nav.utbetaling.beregning.oppdrag.intern.Oppdrag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.april
 import no.nav.utbetaling.beregning.tid.mars

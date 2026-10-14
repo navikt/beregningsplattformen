@@ -3,6 +3,9 @@ package no.nav.utbetaling.beregning.oppdrag
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
+import no.nav.utbetaling.beregning.oppdrag.intern.DelytelseId
+import no.nav.utbetaling.beregning.oppdrag.intern.Fagområde
+import no.nav.utbetaling.beregning.oppdrag.intern.FagsystemId
 
 @JvmInline
 value class SaksbehandlerId(

@@ -1,11 +1,22 @@
-package no.nav.utbetaling.beregning.oppdrag
+package no.nav.utbetaling.beregning.oppdrag.intern
 
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDate.EPOCH
+import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
+import no.nav.utbetaling.beregning.oppdrag.Bilagstype
 
-import no.nav.utbetaling.beregning.oppdrag.Endring.Companion.gjeldende
-import no.nav.utbetaling.beregning.oppdrag.Endring.Companion.ingenEndringer
+import no.nav.utbetaling.beregning.oppdrag.intern.Endring.Companion.gjeldende
+import no.nav.utbetaling.beregning.oppdrag.Henvisning
+import no.nav.utbetaling.beregning.oppdrag.Kidnummer
+import no.nav.utbetaling.beregning.oppdrag.Ompostering
+import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
+import no.nav.utbetaling.beregning.oppdrag.OppdragId
+import no.nav.utbetaling.beregning.oppdrag.Opplysning
+import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
+import no.nav.utbetaling.beregning.oppdrag.Status
+import no.nav.utbetaling.beregning.oppdrag.StønadId
+import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
@@ -249,7 +260,7 @@ internal fun avventingerFra(oppdrag110: Oppdrag110): Tidslinje<Endring<Avventing
 
 // Lager en tidslinje av endringer på Ompostering
 internal fun omposteringerFra(oppdrag110: Oppdrag110): Tidslinje<Endring<Ompostering>> {
-    val ompostering116 = oppdrag110.ompostering116 ?: return ingenEndringer()
+    val ompostering116 = oppdrag110.ompostering116 ?: return Endring.Companion.ingenEndringer()
     val ompostering =
         Ompostering(
             kode = Omposteringskode(ompostering116.omPostering),
