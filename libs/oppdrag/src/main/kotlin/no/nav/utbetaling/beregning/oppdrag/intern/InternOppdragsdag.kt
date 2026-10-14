@@ -3,10 +3,12 @@ package no.nav.utbetaling.beregning.oppdrag.intern
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDate.EPOCH
+
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
-
-import no.nav.utbetaling.beregning.oppdrag.intern.Endring.Companion.gjeldende
+import no.nav.utbetaling.beregning.oppdrag.DelytelseId
+import no.nav.utbetaling.beregning.oppdrag.Fagområde
+import no.nav.utbetaling.beregning.oppdrag.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.Henvisning
 import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Ompostering
@@ -17,39 +19,12 @@ import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
+import no.nav.utbetaling.beregning.oppdrag.intern.Endring.Companion.gjeldende
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 import no.nav.utbetaling.beregning.tid.Tidslinje
-
-internal fun Kjede.hørerTil(other: Kjede) = fagområde == other.fagområde && fagsystemId == other.fagsystemId && delytelseIder.intersect(other.delytelseIder).isNotEmpty()
-
-private operator fun Kjede.plus(other: Kjede) = copy(delytelseIder = delytelseIder + other.delytelseIder)
-
-internal data class Kjedbar<T>(
-    val kjede: Kjede,
-    val verdi: T,
-) {
-    companion object {
-        fun <T> List<Kjedbar<T>>.grupperPåKjede(): Map<Kjede, List<T>> {
-            val kjeder = mutableMapOf<Kjede, List<T>>()
-            forEach { kjedbar ->
-                val treff = kjeder.entries.filter { (kjede, _) -> kjede.hørerTil(kjedbar.kjede) }
-                if (treff.isEmpty()) {
-                    kjeder[kjedbar.kjede] = listOf(kjedbar.verdi)
-                    return@forEach
-                }
-                val treffKjeder = treff.map { it.key }
-                val samletKjede = treffKjeder.reduce { sammenslått, kjede -> sammenslått + kjede } + kjedbar.kjede
-                val samletVerdi = treff.flatMap { it.value } + kjedbar.verdi
-                treffKjeder.forEach { kjeder.remove(it) }
-                kjeder[samletKjede] = samletVerdi
-            }
-            return kjeder.toMap()
-        }
-    }
-}
 
 internal data class Statusendring(
     val status: Opplysning<Status>,

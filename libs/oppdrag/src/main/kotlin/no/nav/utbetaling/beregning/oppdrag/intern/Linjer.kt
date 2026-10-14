@@ -1,6 +1,9 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import no.nav.utbetaling.beregning.oppdrag.intern.Kjedbar.Companion.grupperPåKjede
+import no.nav.utbetaling.beregning.oppdrag.DelytelseId
+import no.nav.utbetaling.beregning.oppdrag.Fagområde
+import no.nav.utbetaling.beregning.oppdrag.FagsystemId
+import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag
@@ -19,8 +22,7 @@ internal data class Linjer(
             val gruppertPåKjede =
                 oppdrag110.oppdragsLinje150
                     .map { linje ->
-                        val kjede = Kjede(fagområde, fagsystemId, linje.delytelseIder())
-                        Kjedbar(kjede, linje)
+                        Kjede(fagområde, fagsystemId, linje.delytelseIder()) to linje
                     }.grupperPåKjede()
 
             return gruppertPåKjede.mapValues { (_, linjer) ->

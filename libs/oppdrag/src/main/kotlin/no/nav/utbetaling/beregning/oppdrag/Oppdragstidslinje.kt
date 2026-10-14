@@ -1,16 +1,12 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
-import no.nav.utbetaling.beregning.oppdrag.intern.DelytelseId
+
 import no.nav.utbetaling.beregning.oppdrag.intern.Endring
-import no.nav.utbetaling.beregning.oppdrag.intern.Fagområde
-import no.nav.utbetaling.beregning.oppdrag.intern.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragsdag
-import no.nav.utbetaling.beregning.oppdrag.intern.Kjedbar
-
-import no.nav.utbetaling.beregning.oppdrag.intern.Kjedbar.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
+import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjedeendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Linjer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
@@ -18,7 +14,6 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
 import no.nav.utbetaling.beregning.oppdrag.intern.Statuser
 import no.nav.utbetaling.beregning.oppdrag.intern.avventingerFra
-import no.nav.utbetaling.beregning.oppdrag.intern.hørerTil
 import no.nav.utbetaling.beregning.oppdrag.intern.internOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.mapVerdi
 import no.nav.utbetaling.beregning.oppdrag.intern.omposteringerFra
@@ -58,18 +53,6 @@ class Oppdragstidslinje private constructor(
         kjedeendringer = kjedeendringer,
     )
 
-    init {
-        require(
-            this.kjeder.keys ==
-                this.kjeder.entries
-                    .map { (kjede) -> Kjedbar(kjede, Any()) }
-                    .grupperPåKjede()
-                    .keys,
-        ) {
-            "Kjedene i Oppdragstidslinje er ikke gruppert på riktig måte!"
-        }
-    }
-
     private fun kombinerMed(
         other: Oppdragstidslinje,
         transform: (
@@ -81,7 +64,7 @@ class Oppdragstidslinje private constructor(
         // Her leter vi etter kjeder som hører sammen, så her finner vi ting som hører i samme kjede på en annen måte enn KjedetTidslinjesamling som
         // kun sjekker likhet på allerede etablerte kjeder
         val kjeder =
-            (this.kjeder.kjedbar() + other.kjeder.kjedbar())
+            (this.kjeder.toList() + other.kjeder.toList())
                 .grupperPåKjede()
                 .mapValues { (kjede, tidslinjer) ->
                     val tom = Tidslinje.Builder<InternOppdragsdag>().build()
@@ -154,8 +137,6 @@ class Oppdragstidslinje private constructor(
     }
 
     companion object {
-        private fun Map<Kjede, Tidslinje<InternOppdragsdag>>.kjedbar() = map { (kjede, tidslinje) -> Kjedbar(kjede, tidslinje) }
-
         private fun Map<InternOppdragId, Oppdragsverdier>.medNyeVedierFra(ny: Map<InternOppdragId, Oppdragsverdier>): Map<InternOppdragId, Oppdragsverdier> =
             (keys + ny.keys).associateWith { internOppdragId ->
                 val eksisterende = this[internOppdragId]

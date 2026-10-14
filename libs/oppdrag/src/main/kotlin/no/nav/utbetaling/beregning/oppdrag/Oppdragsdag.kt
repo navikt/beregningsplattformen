@@ -3,18 +3,10 @@ package no.nav.utbetaling.beregning.oppdrag
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
-import no.nav.utbetaling.beregning.oppdrag.intern.DelytelseId
-import no.nav.utbetaling.beregning.oppdrag.intern.Fagområde
-import no.nav.utbetaling.beregning.oppdrag.intern.FagsystemId
 
 @JvmInline
 value class SaksbehandlerId(
     val id: String,
-)
-
-data class Opplysning<T>(
-    val saksbehandlerId: SaksbehandlerId,
-    val opplysning: T,
 )
 
 @JvmInline
@@ -42,12 +34,49 @@ value class Kidnummer(
     val nummer: String,
 )
 
+@JvmInline
+value class Omposteringskode(
+    val kode: String,
+)
+
+@JvmInline
+value class Fagområde(
+    val fagområde: String,
+)
+
+@JvmInline
+value class FagsystemId(
+    val id: String,
+)
+
+@JvmInline
+value class DelytelseId(
+    val id: String,
+)
+
+data class Opplysning<T>(
+    val saksbehandlerId: SaksbehandlerId,
+    val opplysning: T,
+)
+
+data class Ompostering(
+    val kode: Omposteringskode,
+    val registrert: Instant,
+)
+
 enum class Utbetalingsfrekvens {
     Daglig,
     Ukentlig,
     Månedlig,
     PerFjortendeDag,
     Engangsutbetaling,
+}
+
+enum class Status {
+    Aktiv,
+    Hvilende,
+    Sperret,
+    Opphørt,
 }
 
 sealed interface Avventingsårsak {
@@ -58,23 +87,6 @@ sealed interface Avventingsårsak {
     data class Refusjonskrav(
         val til: LocalDate?,
     ) : Avventingsårsak
-}
-
-@JvmInline
-value class Omposteringskode(
-    val kode: String,
-)
-
-data class Ompostering(
-    val kode: Omposteringskode,
-    val registrert: Instant,
-)
-
-enum class Status {
-    Aktiv,
-    Hvilende,
-    Sperret,
-    Opphørt,
 }
 
 data class Oppdragsdag(
