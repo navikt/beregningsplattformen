@@ -2,20 +2,16 @@ package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
 
-import no.nav.utbetaling.beregning.oppdrag.intern.Avventinger
-import no.nav.utbetaling.beregning.oppdrag.intern.Endring
+import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjer
+import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjedeendringer
-import no.nav.utbetaling.beregning.oppdrag.intern.Linjer
-import no.nav.utbetaling.beregning.oppdrag.intern.Omposteringer.fra
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
-import no.nav.utbetaling.beregning.oppdrag.intern.Statuser
-import no.nav.utbetaling.beregning.oppdrag.intern.mapVerdi
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
@@ -152,38 +148,6 @@ class Oppdragstidslinje private constructor(
                 if (tom == null) Periode.ÅpenPeriode(fom) else fom til tom
             } ?: Periode.ÅpenPeriode(LocalDate.MAX)
 
-        private fun oppdragsverdierFra(oppdrag110: Oppdrag110): Oppdragsverdier {
-            val oppdragSaksbehandlerId =
-                oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
-            return Oppdragsverdier(
-                oppdragId = oppdrag110.oppdragsId?.let { Opplysning(oppdragSaksbehandlerId, OppdragId(it)) },
-                stønadId = oppdrag110.stonadId.mapVerdi { StønadId(it) }?.let { Opplysning(oppdragSaksbehandlerId, it) },
-                utbetalingsfrekvens =
-                    oppdrag110.utbetFrekvens
-                        .mapVerdi { utbetalingsfrekvenser[it] ?: error("Kjenner ikke til utbetalingsfrekvens $it") }
-                        ?.let { Opplysning(oppdragSaksbehandlerId, it) },
-                bilagstype =
-                    oppdrag110.bilagstype113
-                        ?.bilagsType
-                        ?.mapVerdi { Bilagstype(it) }
-                        ?.let { Opplysning(oppdragSaksbehandlerId, it) },
-                forfall = oppdrag110.datoForfall?.let { Opplysning(oppdragSaksbehandlerId, it) },
-            )
-        }
-
-        private fun oppdragsendringerFra(oppdrag110: Oppdrag110) =
-            Oppdragsendringer(
-                oppdragstatus = Statuser.fra(oppdrag110),
-            )
-
-        private fun kjedeendringerFra(linjerPerKjede: Map<Kjede, Linjer>) =
-            linjerPerKjede.mapValues { (_, linjer) ->
-                Kjedeendringer(
-                    sluttdato = (linjer.aktive.lastOrNull()?.first as? Periode.LukketPeriode)?.tom,
-                    kjedestatus = Statuser.fra(linjer),
-                )
-            }
-
         private fun somOpplysninger(
             kjede: Kjede,
             oppdragsverdier: Oppdragsverdier?,
@@ -206,124 +170,14 @@ class Oppdragstidslinje private constructor(
             status = opplysningerIntern.status,
         )
 
-        private val utbetalingsfrekvenser =
-            mapOf(
-                "DAG" to Utbetalingsfrekvens.Daglig,
-                "UKE" to Utbetalingsfrekvens.Ukentlig,
-                "MND" to Utbetalingsfrekvens.Månedlig,
-                "14DG" to Utbetalingsfrekvens.PerFjortendeDag,
-                "ENG" to Utbetalingsfrekvens.Engangsutbetaling,
-            )
-
+        // TODO: Disse funksjonene kan fjernes
         internal fun fraXmlOppdrag(xmlOppdrag: XmlOppdrag): Oppdragstidslinje {
             val oppdrag110 = xmlOppdrag.oppdrag110 ?: return Oppdragstidslinje()
             return fraOppdrag110(oppdrag110)
         }
 
-        internal fun fraOppdrag110(oppdrag110: Oppdrag110): Oppdragstidslinje {
-            val internOppdragId =
-                InternOppdragId(
-                    fagområde = oppdrag110.kodeFagomraade.mapVerdi { Fagområde(it) } ?: error("Mangler kodeFagomraade på oppdragsnivå"),
-                    fagsystemId = oppdrag110.fagsystemId.mapVerdi { FagsystemId(it) } ?: error("Mangler fagsystemId på oppdragsnivå"),
-                )
+        internal fun fraOppdrag110(oppdrag110: Oppdrag110) = FraXmlFormat.opprett(oppdrag110)
 
-            val linjerPerKjede = Linjer.fra(oppdrag110)
-            val kjedeendringer = kjedeendringerFra(linjerPerKjede)
-
-            val kjeder =
-                linjerPerKjede
-                    .mapValues { (kjede, linjer) ->
-                        val statuser = kjedeendringer[kjede]?.kjedestatus ?: Tidslinje.Builder<Statusendring>().build()
-                        linjer.aktive
-                            // Verdier som entydig kan utledes fra verdier i linjen
-                            .mapVerdier { oppdragsLinje150 ->
-                                OpplysningerIntern.Builder(
-                                    delytelseId =
-                                        oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) }
-                                            ?: error("Mangler delytelseId på linjenivå"),
-                                    linjeSaksbehandlerId =
-                                        oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) }
-                                            ?: error("Mangler saksbehandlerId på linjenivå"),
-                                    refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
-                                    henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
-                                    sats = oppdragsLinje150.sats,
-                                    kidnummer = oppdragsLinje150.kid.mapVerdi { Kidnummer(it) },
-                                )
-                            }
-                            // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
-                            .kombinerMed(statuser) { _, builder, statusendring ->
-                                builder?.medStatus(statusendring)
-                            }
-                    }
-                    // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
-                    .mapValues { (_, builderTidslinje) ->
-                        builderTidslinje
-                            .kombinerMed(Avventinger.fra(oppdrag110)) { _, builder, avventing ->
-                                builder?.copy(avventingsårsakEndring = avventing)
-                            }.kombinerMed(fra(oppdrag110)) { _, builder, ompostering ->
-                                builder?.copy(omposteringEndring = ompostering)
-                            }
-                    }
-                    // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier
-                    .mapValues { (_, builderTidslinje) ->
-                        builderTidslinje.mapVerdier { it.build() }
-                    }
-
-            return Oppdragstidslinje(
-                oppdragsverdier = mapOf(internOppdragId to oppdragsverdierFra(oppdrag110)),
-                kjeder = kjeder,
-                oppdragsendringer = mapOf(internOppdragId to oppdragsendringerFra(oppdrag110)),
-                kjedeendringer = kjedeendringer,
-            )
-        }
-
-        internal fun fraTidslinjer(tidslinjer: List<Tidslinje<Opplysninger>>): Oppdragstidslinje {
-            val tidslinjerPerKjede =
-                tidslinjer
-                    .filterNot { it.isEmpty() }
-                    .associateBy { tidslinje ->
-                        Kjede(
-                            fagområde = tidslinje.first().second.fagområde,
-                            fagsystemId = tidslinje.first().second.fagsystemId,
-                            delytelseIder =
-                                tidslinje
-                                    .flatMap { (_, oppdragsdag) ->
-                                        listOfNotNull(oppdragsdag.delytelseId, oppdragsdag.refDelytelseId)
-                                    }.toSet(),
-                        )
-                    }
-
-            val oppdragsverdier =
-                tidslinjerPerKjede.entries
-                    .groupBy({ (kjede, _) -> kjede.internOppdragId }, { (_, tidslinje) -> tidslinje.first().second })
-                    .mapValues { (_, førsteDager) ->
-                        val oppdragsdag = førsteDager.first()
-                        Oppdragsverdier(
-                            oppdragId = oppdragsdag.oppdragId,
-                            stønadId = oppdragsdag.stønadId,
-                            forfall = oppdragsdag.forfall,
-                            utbetalingsfrekvens = oppdragsdag.utbetalingsfrekvens,
-                            bilagstype = oppdragsdag.bilagstype,
-                        )
-                    }
-
-            val kjeder =
-                tidslinjerPerKjede.mapValues { (_, tidslinje) ->
-                    tidslinje.mapVerdier { oppdragsdag ->
-                        OpplysningerIntern(
-                            delytelseId = oppdragsdag.delytelseId,
-                            refDelytelseId = oppdragsdag.refDelytelseId,
-                            sats = oppdragsdag.sats,
-                            henvisning = oppdragsdag.henvisning,
-                            avventingsårsakEndring = oppdragsdag.avventingsårsak?.let { Endring.Registrert(it) },
-                            omposteringEndring = oppdragsdag.ompostering?.let { Endring.Registrert(it) },
-                            kidnummer = oppdragsdag.kidnummer,
-                            status = oppdragsdag.status,
-                        )
-                    }
-                }
-
-            return Oppdragstidslinje(oppdragsverdier = oppdragsverdier, kjeder = kjeder)
-        }
+        internal fun fraTidslinjer(tidslinjer: List<Tidslinje<Opplysninger>>) = FraTidslinjer.opprett(tidslinjer)
     }
 }
