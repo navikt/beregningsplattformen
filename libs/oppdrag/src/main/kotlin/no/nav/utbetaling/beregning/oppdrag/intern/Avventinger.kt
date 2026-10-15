@@ -8,8 +8,8 @@ import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
 internal object Avventinger {
-    fun fra(oppdrag110: Oppdrag110): Tidslinje<Endring<Avventingsårsak>> {
-        val builder = Tidslinje.Builder<Endring<Avventingsårsak>>()
+    fun fra(oppdrag110: Oppdrag110): Tidslinje<FeilregistrerbarOpplysning<Avventingsårsak>> {
+        val builder = Tidslinje.Builder<FeilregistrerbarOpplysning<Avventingsårsak>>()
         val saksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
         oppdrag110.avvent118.forEach { avvent118 ->
             val fom = checkNotNull(avvent118.datoAvventFom) { "datoAvventFom må være satt på avventing" }
@@ -26,7 +26,7 @@ internal object Avventinger {
                     "AVRK" -> Avventingsårsak.Refusjonskrav(avvent118.datoOverfores)
                     else -> error("Kjenner ikke til avventingsårsak ${avvent118.kodeArsak}")
                 }
-            builder.periode(fom til tom, Endring.fra(avvent118.feilreg, Opplysning(saksbehandlerId, årsak)))
+            builder.periode(fom til tom, FeilregistrerbarOpplysning.fra(avvent118.feilreg, Opplysning(saksbehandlerId, årsak)))
         }
         return builder.build()
     }

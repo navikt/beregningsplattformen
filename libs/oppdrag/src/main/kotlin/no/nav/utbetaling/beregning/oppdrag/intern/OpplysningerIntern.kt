@@ -17,7 +17,7 @@ import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
-import no.nav.utbetaling.beregning.oppdrag.intern.Endring.Companion.gjeldende
+import no.nav.utbetaling.beregning.oppdrag.intern.FeilregistrerbarOpplysning.Companion.gjeldende
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
@@ -28,8 +28,8 @@ internal data class OpplysningerIntern(
     val henvisning: Opplysning<Henvisning>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
-    private val avventingsårsakEndring: Endring<Avventingsårsak>?,
-    private val omposteringEndring: Endring<Ompostering>?,
+    private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
+    private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
 ) {
     val avventingsårsak = avventingsårsakEndring?.gjeldende()
     val ompostering = omposteringEndring?.gjeldende()
@@ -41,8 +41,8 @@ internal data class OpplysningerIntern(
             sats = velgOpplysning(ny.sats, sats),
             henvisning = velgNullableOpplysning(ny.henvisning, henvisning),
             kidnummer = velgNullableOpplysning(ny.kidnummer, kidnummer),
-            avventingsårsakEndring = Endring.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
-            omposteringEndring = Endring.velg(this.omposteringEndring, ny.omposteringEndring),
+            avventingsårsakEndring = FeilregistrerbarOpplysning.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
+            omposteringEndring = FeilregistrerbarOpplysning.velg(this.omposteringEndring, ny.omposteringEndring),
             status = velgOpplysning(ny.status, this.status),
         )
 
@@ -53,8 +53,8 @@ internal data class OpplysningerIntern(
         private val henvisning: Henvisning?,
         private val sats: BigDecimal,
         private val kidnummer: Kidnummer?,
-        private val avventingsårsakEndring: Endring<Avventingsårsak>? = null,
-        private val omposteringEndring: Endring<Ompostering>? = null,
+        private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
+        private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>? = null,
         private val status: Status? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =

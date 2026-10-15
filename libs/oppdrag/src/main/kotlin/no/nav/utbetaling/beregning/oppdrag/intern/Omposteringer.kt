@@ -11,8 +11,8 @@ import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
 internal object Omposteringer {
-    fun fra(oppdrag110: Oppdrag110): Tidslinje<Endring<Ompostering>> {
-        val ompostering116 = oppdrag110.ompostering116 ?: return Endring.Companion.ingenEndringer()
+    fun fra(oppdrag110: Oppdrag110): Tidslinje<FeilregistrerbarOpplysning<Ompostering>> {
+        val ompostering116 = oppdrag110.ompostering116 ?: return FeilregistrerbarOpplysning.Companion.ingenEndringer()
         val ompostering =
             Ompostering(
                 kode = Omposteringskode(ompostering116.omPostering),
@@ -20,10 +20,10 @@ internal object Omposteringer {
             )
         val saksbehandlerId = ompostering116.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehId på ompostering")
         return Tidslinje
-            .Builder<Endring<Ompostering>>()
+            .Builder<FeilregistrerbarOpplysning<Ompostering>>()
             .periode(
                 ÅpenPeriode(ompostering116.datoOmposterFom ?: EPOCH),
-                Endring.fra(ompostering116.feilreg, Opplysning(saksbehandlerId, ompostering)),
+                FeilregistrerbarOpplysning.fra(ompostering116.feilreg, Opplysning(saksbehandlerId, ompostering)),
             ).build()
     }
 }
