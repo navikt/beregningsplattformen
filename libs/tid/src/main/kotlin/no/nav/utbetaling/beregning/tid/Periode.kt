@@ -5,6 +5,8 @@ import java.time.DayOfWeek.SUNDAY
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
+
 sealed interface Periode {
     val fom: LocalDate
 
@@ -69,51 +71,6 @@ sealed interface Periode {
         override fun iterator() = generateSequence(fom) { dag -> dag.nesteDag.takeIf { it <= tom } }.iterator()
 
         override fun toString(): String = fom.format(FORMATTER) + " til " + tom.format(FORMATTER)
-
-        private fun merge(
-            other: LukketPeriode,
-            erForlengelse: (forrigeDag: LocalDate, nesteDag: LocalDate) -> Boolean,
-        ): LukketPeriode? {
-            val hengerSammen = overlapperMed(other) || erForlengelse(tom, other.fom)
-            return LukketPeriode(fom, maxOf(tom, other.tom)).takeIf { hengerSammen }
-        }
-
-        companion object {
-            infix fun LocalDate.til(tom: LocalDate) = LukketPeriode(this, tom)
-
-            fun LocalDate.somLukketPeriode() = this til this
-
-            val LocalDate.forrigeDag get() = minusDays(1)
-
-            val LocalDate.nesteDag get() = plusDays(1)
-
-            fun Iterable<Periode>.overlapper(): Boolean =
-                sortedBy { it.fom }
-                    .zipWithNext()
-                    .any { (nåværende, neste) -> nåværende.overlapperMed(neste) }
-
-            fun Iterable<LukketPeriode>.grupperSammenhengendePerioder() = merge(MERGE_KANT_I_KANT)
-
-            fun Iterable<LukketPeriode>.grupperSammenhengendePerioderMedHensynTilHelg() = merge(MERGE_OVER_HELG)
-
-            private fun Iterable<LukketPeriode>.merge(erForlengelse: (forrigeDag: LocalDate, nesteDag: LocalDate) -> Boolean): List<LukketPeriode> =
-                sortedBy { it.fom }
-                    .fold(mutableListOf()) { resultat, neste ->
-                        when (val sammenslått = resultat.lastOrNull()?.merge(neste, erForlengelse)) {
-                            null -> resultat.add(neste)
-                            else -> resultat[resultat.lastIndex] = sammenslått
-                        }
-                        resultat
-                    }
-
-            private val MERGE_KANT_I_KANT = { venstre: LocalDate, høyre: LocalDate -> venstre.nesteDag == høyre }
-
-            private val MERGE_OVER_HELG = { venstre: LocalDate, høyre: LocalDate -> venstre.erRettFørMedHensynTilHelg(høyre) }
-
-            private fun LocalDate.erRettFørMedHensynTilHelg(other: LocalDate) = nesteDag == other || (nesteDag < other && (nesteDag til other.forrigeDag).all { it.erHelg })
-
-            private val LocalDate.erHelg get() = dayOfWeek == SATURDAY || dayOfWeek == SUNDAY
-        }
     }
 
     private companion object {
@@ -125,3 +82,46 @@ sealed interface Periode {
         ): Periode = if (tom == null) ÅpenPeriode(fom) else LukketPeriode(fom, tom)
     }
 }
+
+infix fun LocalDate.til(tom: LocalDate) = LukketPeriode(this, tom)
+
+fun LocalDate.somLukketPeriode() = this til this
+
+val LocalDate.forrigeDag: LocalDate get() = minusDays(1)
+
+val LocalDate.nesteDag: LocalDate get() = plusDays(1)
+
+fun Iterable<Periode>.overlapper(): Boolean =
+    sortedBy { it.fom }
+        .zipWithNext()
+        .any { (nåværende, neste) -> nåværende.overlapperMed(neste) }
+
+fun Iterable<LukketPeriode>.grupperSammenhengendePerioder() = slåSammen(MERGE_KANT_I_KANT)
+
+fun Iterable<LukketPeriode>.grupperSammenhengendePerioderMedHensynTilHelg() = slåSammen(MERGE_OVER_HELG)
+
+private fun Iterable<LukketPeriode>.slåSammen(erForlengelse: (forrigeDag: LocalDate, nesteDag: LocalDate) -> Boolean): List<LukketPeriode> =
+    sortedBy { it.fom }
+        .fold(mutableListOf()) { resultat, neste ->
+            when (val sammenslått = resultat.lastOrNull()?.slåSammenMed(neste, erForlengelse)) {
+                null -> resultat.add(neste)
+                else -> resultat[resultat.lastIndex] = sammenslått
+            }
+            resultat
+        }
+
+private fun LukketPeriode.slåSammenMed(
+    other: LukketPeriode,
+    erForlengelse: (forrigeDag: LocalDate, nesteDag: LocalDate) -> Boolean,
+): LukketPeriode? {
+    val hengerSammen = overlapperMed(other) || erForlengelse(tom, other.fom)
+    return LukketPeriode(fom, maxOf(tom, other.tom)).takeIf { hengerSammen }
+}
+
+private val MERGE_KANT_I_KANT = { venstre: LocalDate, høyre: LocalDate -> venstre.nesteDag == høyre }
+
+private val MERGE_OVER_HELG = { venstre: LocalDate, høyre: LocalDate -> venstre.erRettFørMedHensynTilHelg(høyre) }
+
+private fun LocalDate.erRettFørMedHensynTilHelg(other: LocalDate) = nesteDag == other || (nesteDag < other && (nesteDag til other.forrigeDag).all { it.erHelg })
+
+private val LocalDate.erHelg get() = dayOfWeek == SATURDAY || dayOfWeek == SUNDAY

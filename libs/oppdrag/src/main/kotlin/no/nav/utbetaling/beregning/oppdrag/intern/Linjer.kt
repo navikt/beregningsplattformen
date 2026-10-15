@@ -6,10 +6,10 @@ import no.nav.utbetaling.beregning.oppdrag.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 import no.nav.utbetaling.beregning.tid.Tidslinje
+import no.nav.utbetaling.beregning.tid.forrigeDag
+import no.nav.utbetaling.beregning.tid.til
 
 internal data class Linjer(
     val aktive: Tidslinje<OppdragsLinje150>,

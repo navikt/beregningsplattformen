@@ -4,12 +4,6 @@ import java.time.LocalDate
 import java.util.TreeMap
 
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.grupperSammenhengendePerioder
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.nesteDag
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.overlapper
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.somLukketPeriode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 
 class Tidslinje<T> private constructor(

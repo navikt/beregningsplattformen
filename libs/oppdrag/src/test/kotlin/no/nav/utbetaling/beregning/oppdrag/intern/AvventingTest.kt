@@ -15,9 +15,9 @@ import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedAvventing
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.mars
+import no.nav.utbetaling.beregning.tid.til
 
 class AvventingTest :
     FunSpec({

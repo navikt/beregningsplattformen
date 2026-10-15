@@ -4,13 +4,13 @@ import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Tidslinje
+import no.nav.utbetaling.beregning.tid.til
 
 internal object Avventinger {
     fun fra(oppdrag110: Oppdrag110): Tidslinje<FeilregistrerbarOpplysning<Avventingsårsak>> {
         val builder = Tidslinje.Builder<FeilregistrerbarOpplysning<Avventingsårsak>>()
-        val saksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
+        val saksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragsnivå")
         oppdrag110.avvent118.forEach { avvent118 ->
             val fom = checkNotNull(avvent118.datoAvventFom) { "datoAvventFom må være satt på avventing" }
             val tom = checkNotNull(avvent118.datoAvventTom) { "datoAvventTom må være satt på avventing" }

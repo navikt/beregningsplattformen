@@ -7,9 +7,9 @@ import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.Filhjelper
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satser
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.februar
 import no.nav.utbetaling.beregning.tid.mars
+import no.nav.utbetaling.beregning.tid.til
 
 class OppdragstidslinjeFraJSONTest :
     FunSpec({
