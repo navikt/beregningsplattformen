@@ -6,6 +6,7 @@ import no.nav.utbetaling.beregning.oppdrag.DelytelseId
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Status
+import no.nav.utbetaling.beregning.oppdrag.intern.Linjer.Companion.delytelseId
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
@@ -58,8 +59,6 @@ internal object Statuser {
 
         return builder.build()
     }
-
-    private fun OppdragsLinje150.delytelseId() = delytelseId?.let { DelytelseId(it) } ?: error("Mangler delytelseId på linjenivå")
 
     /**
      Oppdragssystemet opererer med følgende statuser:

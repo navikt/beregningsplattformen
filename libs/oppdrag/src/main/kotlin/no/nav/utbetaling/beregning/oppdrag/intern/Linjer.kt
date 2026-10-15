@@ -88,10 +88,10 @@ internal data class Linjer(
             return Tidslinje.Builder<OppdragsLinje150>().periode(periode, this).build()
         }
 
-        private fun OppdragsLinje150.delytelseId() = delytelseId.mapVerdi { DelytelseId(it) } ?: error("delytelseId må være satt!")
-
         private fun OppdragsLinje150.refDelytelseId() = refDelytelseId.mapVerdi { DelytelseId(it) }
 
         private fun OppdragsLinje150.delytelseIder() = listOfNotNull(delytelseId(), refDelytelseId()).toSet()
+
+        fun OppdragsLinje150.delytelseId() = delytelseId.mapVerdi { DelytelseId(it) } ?: error("delytelseId må være satt!")
     }
 }
