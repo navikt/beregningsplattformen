@@ -5,31 +5,25 @@ import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.Filhjelper
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.assertGjenskaptfraTidslinjer
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satser
+import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.april
 import no.nav.utbetaling.beregning.tid.mars
 
-/**
- * Tester for å bygge en Oppdragstidslinje fra et Oppdrag XML
- */
 class OppdragstidslinjeFraXMLTest :
     FunSpec({
-        context("Bygger tidslinje fra et enkelt oppdrag") {
-            test("Leser et oppdrag fra XML") {
-                val xml = Filhjelper.lesFil("xml/NyttOppdragMedSkyldnerOgKravhaver.xml")
-                val tidslinje = fraXml(xml)
-                tidslinje.satser() shouldBe mapOf(31.mars(2025) til 11.april(2025) to setOf(974))
-                tidslinje.assertGjenskaptfraTidslinjer()
+        test("Tolker oppdrag med skyldner og kravhaver") {
+            val xml = Filhjelper.lesFil("xml/NyttOppdragMedSkyldnerOgKravhaver.xml")
+            val oppdrag = FraXmlFormat.oppdrag110FraXml(xml)
+            oppdrag.size shouldBe 1
+
+            (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true
+
+            assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(oppdrag.single()) { resultat ->
+                resultat.satser() shouldBe mapOf(31.mars(2025) til 11.april(2025) to setOf(974))
+                resultat.assertGjenskaptfraTidslinjer()
             }
         }
     })
-
-private fun fraXml(vararg xml: String): Oppdragstidslinje =
-    when (val oppdrag = Oppdrag.fraXml(*xml)) {
-        is Oppdrag.Utbetaling -> oppdrag.oppdragstidslinje
-        is Oppdrag.Simulering -> oppdrag.oppdragstidslinje
-        is Oppdrag.UgyldigFormat -> throw oppdrag.feil
-        is Oppdrag.UgyldigKombinasjon -> throw oppdrag.feil
-        is Oppdrag.UgyldigOppdrag -> throw oppdrag.feil
-    }

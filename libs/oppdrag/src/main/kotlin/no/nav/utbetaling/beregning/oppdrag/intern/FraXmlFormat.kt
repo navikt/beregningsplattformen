@@ -1,5 +1,17 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.module.SimpleModule
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.convertValue
+import tools.jackson.module.kotlin.kotlinModule
+
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
 import no.nav.utbetaling.beregning.oppdrag.DelytelseId
 import no.nav.utbetaling.beregning.oppdrag.Fagområde
@@ -14,6 +26,7 @@ import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.intern.Omposteringer.fra
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
+import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
@@ -75,6 +88,41 @@ internal object FraXmlFormat {
         )
     }
 
+    /** JSON'en er også XML-formatet, bare i en JSON-drakt **/
+    fun oppdrag110FraJson(vararg json: String) =
+        json.flatMapIndexed { index, enJson ->
+            val jsonNode =
+                runCatching {
+                    jsonMapper.readTree(enJson)
+                }.getOrElse { feil -> throw IllegalArgumentException("Ugyldig JSON!", feil) }
+
+            when {
+                jsonNode.isArray -> jsonMapper.convertValue<List<Oppdrag110>>(jsonNode)
+                jsonNode.isObject -> listOf(jsonMapper.convertValue<Oppdrag110>(jsonNode))
+                else -> throw IllegalArgumentException("Feil på json nummer ${index + 1}: Må være JSON Objekt eller Array, var ${jsonNode.nodeType.name}")
+            }
+        }
+
+    fun oppdrag110FraXml(vararg xml: String): List<Oppdrag110> {
+        val xmlOppdrag =
+            xml.mapIndexed { index, enXml ->
+                runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }
+                    .getOrElse { feil ->
+                        throw IllegalArgumentException("Feil på xml nummer ${index + 1}", feil)
+                    }
+            }
+
+        return xmlOppdrag.mapNotNull { it.oppdrag110 }
+    }
+
+    fun fraOppdrag110(oppdrag110: List<Oppdrag110>) =
+        oppdrag110.foldIndexed(Oppdragstidslinje()) { index, sammenslått, etOppdrag110 ->
+            runCatching { sammenslått + FraXmlFormat.opprett(etOppdrag110) }
+                .getOrElse { feil ->
+                    throw IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil)
+                }
+        }
+
     private fun oppdragsverdierFra(oppdrag110: Oppdrag110): Oppdragsverdier {
         val oppdragSaksbehandlerId =
             oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
@@ -115,4 +163,20 @@ internal object FraXmlFormat {
             "14DG" to Utbetalingsfrekvens.PerFjortendeDag,
             "ENG" to Utbetalingsfrekvens.Engangsutbetaling,
         )
+
+    private val xmlMapper: ObjectMapper =
+        XmlMapper
+            .builder()
+            .defaultUseWrapper(false)
+            .addModule(SimpleModule().addDeserializer(LocalDate::class.java, LocalDateDeserializer(DateTimeFormatter.ISO_OFFSET_DATE)))
+            .addModule(kotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+            .build()
+
+    private val jsonMapper: ObjectMapper =
+        JsonMapper
+            .builder()
+            .addModule(kotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+            .build()
 }

@@ -7,6 +7,8 @@ import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjer
+import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
+import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.tid.Periode
 
 fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
@@ -50,6 +52,29 @@ fun Oppdragstidslinje.assertGjenskaptfraTidslinjer() {
 
 infix fun <T> Map<Periode, T>.skalVæreLik(expected: Map<Periode, T>) {
     this.mapKeys { (periode, _) -> periode.toString() } shouldBe expected.mapKeys { (periode, _) -> periode.toString() }
+}
+
+internal fun assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(
+    oppdrag110: Oppdrag110,
+    assertionBlock: (resultat: Oppdragstidslinje) -> Unit,
+) {
+    val oppdragstidslinjeFraEnInnsending = FraXmlFormat.opprett(oppdrag110)
+    oppdragstidslinjeFraEnInnsending.assertGjenskaptfraTidslinjer()
+
+    assertionBlock(oppdragstidslinjeFraEnInnsending)
+
+    val oppdelt =
+        oppdrag110.oppdragsLinje150.map { linje ->
+            oppdrag110.copy(
+                oppdragsLinje150 = listOf(linje),
+            )
+        }
+
+    val oppdragstidslinjeFraOppdeltInnsending = FraXmlFormat.fraOppdrag110(oppdelt)
+    oppdragstidslinjeFraOppdeltInnsending.assertGjenskaptfraTidslinjer()
+    assertionBlock(oppdragstidslinjeFraOppdeltInnsending)
+
+    oppdragstidslinjeFraEnInnsending shouldBeEqual oppdragstidslinjeFraOppdeltInnsending
 }
 
 val OMPOSTERINGSKODE = Omposteringskode("J")
