@@ -17,6 +17,8 @@ import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatus
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatusLinje
 import no.nav.utbetaling.beregning.tid.mars
 
+internal val defaultBostedsenhet = listOf(OppdragsEnhet120(typeEnhet = "BOS", enhet = "9999", datoEnhetFom = LocalDate.EPOCH))
+
 internal fun oppdragstidslinje(
     kodeFagområde: String = "AAP",
     fagsystemId: String = "${UUID.randomUUID()}",
@@ -35,7 +37,7 @@ internal fun oppdragstidslinje(
     utbetalingsfrekvens: String? = null,
     kodeStatus: TkodeStatus? = null,
     datoStatusFom: LocalDate? = null,
-    enheter: List<OppdragsEnhet120> = emptyList(),
+    enheter: List<OppdragsEnhet120> = defaultBostedsenhet,
 ) = FraXmlFormat.opprett(
     oppdrag110(
         kodeFagområde = kodeFagområde,
@@ -77,7 +79,7 @@ internal fun oppdrag110(
     utbetalingsfrekvens: String? = null,
     kodeStatus: TkodeStatus? = null,
     datoStatusFom: LocalDate? = null,
-    enheter: List<OppdragsEnhet120> = emptyList(),
+    enheter: List<OppdragsEnhet120> = defaultBostedsenhet,
 ) = Oppdrag110(
     kodeAksjon = kodeAksjon,
     kodeEndring = kodeEndring,

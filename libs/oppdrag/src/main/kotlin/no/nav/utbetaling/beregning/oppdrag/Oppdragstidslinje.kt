@@ -38,7 +38,13 @@ class Oppdragstidslinje private constructor(
         kjeder = kjeder.filterValues { !it.isEmpty() },
         tidslinjer =
             kjeder.filterValues { !it.isEmpty() }.mapValues { (kjede, tidslinje) ->
-                tidslinje.mapVerdier { somOpplysninger(kjede, oppdragsverdier[kjede.internOppdragId], it) }
+                tidslinje.mapVerdier { opplysningerIntern ->
+                    kombinerTilOpplysninger(
+                        kjede = kjede,
+                        oppdragsverdier = oppdragsverdier.getValue(kjede.internOppdragId),
+                        opplysningerIntern = opplysningerIntern,
+                    )
+                }
             },
         oppdragsendringer = oppdragsendringer,
         kjedeendringer = kjedeendringer,
@@ -144,9 +150,9 @@ class Oppdragstidslinje private constructor(
                 if (tom == null) Periode.ÅpenPeriode(fom) else fom til tom
             } ?: Periode.ÅpenPeriode(LocalDate.MAX)
 
-        private fun somOpplysninger(
+        private fun kombinerTilOpplysninger(
             kjede: Kjede,
-            oppdragsverdier: Oppdragsverdier?,
+            oppdragsverdier: Oppdragsverdier,
             opplysningerIntern: OpplysningerIntern,
         ) = Opplysninger(
             fagområde = kjede.fagområde,
@@ -154,18 +160,18 @@ class Oppdragstidslinje private constructor(
             delytelseId = opplysningerIntern.delytelseId,
             refDelytelseId = opplysningerIntern.refDelytelseId,
             sats = opplysningerIntern.sats,
-            oppdragId = oppdragsverdier?.oppdragId,
+            oppdragId = oppdragsverdier.oppdragId,
             henvisning = opplysningerIntern.henvisning,
-            stønadId = oppdragsverdier?.stønadId,
-            forfall = oppdragsverdier?.forfall,
-            utbetalingsfrekvens = oppdragsverdier?.utbetalingsfrekvens,
-            bilagstype = oppdragsverdier?.bilagstype,
+            stønadId = oppdragsverdier.stønadId,
+            forfall = oppdragsverdier.forfall,
+            utbetalingsfrekvens = oppdragsverdier.utbetalingsfrekvens,
+            bilagstype = oppdragsverdier.bilagstype,
             avventingsårsak = opplysningerIntern.avventingsårsak,
             ompostering = opplysningerIntern.ompostering,
             kidnummer = opplysningerIntern.kidnummer,
             status = opplysningerIntern.status,
-            bostedsenhet = Opplysning(SaksbehandlerId("123"), Bostedsenhet("8020")),
-            behandlendeEnhet = Opplysning(SaksbehandlerId("124"), BehandlendeEnhet("8021")),
+            bostedsenhet = opplysningerIntern.bostedsenhet ?: error("Mangler bostedsenhet for delytelse ${opplysningerIntern.delytelseId}"),
+            nullableBehandlendeEnhet = opplysningerIntern.behandlendeEnhet,
         )
     }
 }

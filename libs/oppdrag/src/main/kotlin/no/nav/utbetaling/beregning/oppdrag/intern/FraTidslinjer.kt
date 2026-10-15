@@ -47,6 +47,8 @@ internal object FraTidslinjer {
                         omposteringEndring = oppdragsdag.ompostering?.let { FeilregistrerbarOpplysning.Registrert(it) },
                         kidnummer = oppdragsdag.kidnummer,
                         status = oppdragsdag.status,
+                        bostedsenhet = oppdragsdag.bostedsenhet,
+                        behandlendeEnhet = oppdragsdag.nullableBehandlendeEnhet,
                     )
                 }
             }

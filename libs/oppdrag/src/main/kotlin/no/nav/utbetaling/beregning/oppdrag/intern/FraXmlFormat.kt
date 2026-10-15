@@ -24,7 +24,6 @@ import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
-import no.nav.utbetaling.beregning.oppdrag.intern.Omposteringer.fra
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.Periode
@@ -71,8 +70,12 @@ internal object FraXmlFormat {
                     builderTidslinje
                         .kombinerMed(Avventinger.fra(oppdrag110)) { _, builder, avventing ->
                             builder?.copy(avventingsårsakEndring = avventing)
-                        }.kombinerMed(fra(oppdrag110)) { _, builder, ompostering ->
+                        }.kombinerMed(Omposteringer.fra(oppdrag110)) { _, builder, ompostering ->
                             builder?.copy(omposteringEndring = ompostering)
+                        }.kombinerMed(Enheter.bostedsenheterFra(oppdrag110)) { _, builder, bostedsenhet ->
+                            builder?.copy(bostedsenhet = bostedsenhet)
+                        }.kombinerMed(Enheter.behandlendeEnheterFra(oppdrag110)) { _, builder, behandlendeEnhet ->
+                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier

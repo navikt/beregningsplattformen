@@ -114,5 +114,7 @@ data class Opplysninger(
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
     val bostedsenhet: Opplysning<Bostedsenhet>,
-    val behandlendeEnhet: Opplysning<BehandlendeEnhet>,
-)
+    internal val nullableBehandlendeEnhet: Opplysning<BehandlendeEnhet>?,
+) {
+    val behandlendeEnhet = nullableBehandlendeEnhet ?: Opplysning(bostedsenhet.saksbehandlerId, BehandlendeEnhet(bostedsenhet.opplysning.enhet))
+}

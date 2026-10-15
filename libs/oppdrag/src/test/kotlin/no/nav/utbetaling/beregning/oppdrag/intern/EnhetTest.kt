@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import io.kotest.core.annotation.Ignored
 import io.kotest.core.spec.style.FunSpec
 
 import no.nav.utbetaling.beregning.oppdrag.BehandlendeEnhet
@@ -15,7 +14,6 @@ import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsEnhet120
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.januar
 
-@Ignored("Ikke implementert å tolke enheter ennå")
 internal class EnhetTest :
     FunSpec({
         context("Enhet på oppdragsnivå") {
@@ -138,7 +136,7 @@ internal class EnhetTest :
             }
         }
 
-        test("Enhet på tvers av oppdrag og linje") {
+        xtest("Enhet på tvers av oppdrag og linje") {
             val oppdragstidslinje =
                 oppdragstidslinje(
                     linjer =

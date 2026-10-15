@@ -4,7 +4,9 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
+import no.nav.utbetaling.beregning.oppdrag.BehandlendeEnhet
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
+import no.nav.utbetaling.beregning.oppdrag.Bostedsenhet
 import no.nav.utbetaling.beregning.oppdrag.DelytelseId
 import no.nav.utbetaling.beregning.oppdrag.Fagområde
 import no.nav.utbetaling.beregning.oppdrag.FagsystemId
@@ -28,6 +30,8 @@ internal data class OpplysningerIntern(
     val henvisning: Opplysning<Henvisning>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
+    val bostedsenhet: Opplysning<Bostedsenhet>?,
+    val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
     private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
 ) {
@@ -44,6 +48,8 @@ internal data class OpplysningerIntern(
             avventingsårsakEndring = FeilregistrerbarOpplysning.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
             omposteringEndring = FeilregistrerbarOpplysning.velg(this.omposteringEndring, ny.omposteringEndring),
             status = velgOpplysning(ny.status, this.status),
+            bostedsenhet = velgNullableOpplysning(ny.bostedsenhet, this.bostedsenhet),
+            behandlendeEnhet = velgNullableOpplysning(ny.behandlendeEnhet, this.behandlendeEnhet),
         )
 
     data class Builder(
@@ -56,6 +62,8 @@ internal data class OpplysningerIntern(
         private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
         private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>? = null,
         private val status: Status? = null,
+        private val bostedsenhet: Opplysning<Bostedsenhet>? = null,
+        private val behandlendeEnhet: Opplysning<BehandlendeEnhet>? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             apply {
@@ -74,6 +82,8 @@ internal data class OpplysningerIntern(
                 avventingsårsakEndring = avventingsårsakEndring,
                 omposteringEndring = omposteringEndring,
                 status = Opplysning(linjeSaksbehandlerId, (status ?: Status.Aktiv)),
+                bostedsenhet = bostedsenhet,
+                behandlendeEnhet = behandlendeEnhet,
             )
     }
 
