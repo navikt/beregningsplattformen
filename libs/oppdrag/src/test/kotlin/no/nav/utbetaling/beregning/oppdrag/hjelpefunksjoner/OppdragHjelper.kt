@@ -55,7 +55,7 @@ internal fun oppdragstidslinje(
     ),
 )
 
-private fun oppdrag110(
+internal fun oppdrag110(
     kodeFagområde: String = "AAP",
     fagsystemId: String = "${UUID.randomUUID()}",
     kodeAksjon: String = "1",

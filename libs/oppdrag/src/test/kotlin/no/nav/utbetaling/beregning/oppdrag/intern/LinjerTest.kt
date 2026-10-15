@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
-import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
@@ -136,13 +136,6 @@ class LinjerTest :
     })
 
 private fun oppdrag(vararg linjer: OppdragsLinje150) =
-    Oppdrag110(
-        kodeAksjon = "1",
-        kodeEndring = "NY",
-        kodeFagomraade = "AAP",
-        fagsystemId = "test",
-        oppdragGjelderId = "test",
-        datoOppdragGjelderFom = 1.januar,
-        saksbehId = "test",
-        oppdragsLinje150 = linjer.toList(),
+    oppdrag110(
+        linjer = linjer.toList(),
     )
