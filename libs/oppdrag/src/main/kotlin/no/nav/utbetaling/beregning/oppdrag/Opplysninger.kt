@@ -64,6 +64,14 @@ data class Ompostering(
     val registrert: Instant,
 )
 
+data class Bostedsenhet(
+    val enhet: String,
+)
+
+data class BehandlendeEnhet(
+    val enhet: String,
+)
+
 enum class Utbetalingsfrekvens {
     Daglig,
     Ukentlig,
@@ -105,4 +113,6 @@ data class Opplysninger(
     val ompostering: Opplysning<Ompostering>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
+    val bostedsenhet: Opplysning<Bostedsenhet>,
+    val behandlendeEnhet: Opplysning<BehandlendeEnhet>
 )

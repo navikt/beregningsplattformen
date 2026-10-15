@@ -164,6 +164,8 @@ class Oppdragstidslinje private constructor(
             ompostering = opplysningerIntern.ompostering,
             kidnummer = opplysningerIntern.kidnummer,
             status = opplysningerIntern.status,
+            bostedsenhet = Opplysning(SaksbehandlerId("123"), Bostedsenhet("8020")),
+            behandlendeEnhet = Opplysning(SaksbehandlerId("123"), BehandlendeEnhet("8020"))
         )
     }
 }
