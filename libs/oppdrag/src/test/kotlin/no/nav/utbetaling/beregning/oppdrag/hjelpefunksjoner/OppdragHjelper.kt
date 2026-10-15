@@ -7,8 +7,10 @@ import java.util.UUID
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.xml.Avvent118
 import no.nav.utbetaling.beregning.oppdrag.xml.Bilagstype113
+import no.nav.utbetaling.beregning.oppdrag.xml.LinjeEnhet160
 import no.nav.utbetaling.beregning.oppdrag.xml.Ompostering116
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
+import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsEnhet120
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.oppdrag.xml.TfradragTillegg
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatus
@@ -33,6 +35,7 @@ internal fun oppdragstidslinje(
     utbetalingsfrekvens: String? = null,
     kodeStatus: TkodeStatus? = null,
     datoStatusFom: LocalDate? = null,
+    enheter: List<OppdragsEnhet120> = emptyList(),
 ) = FraXmlFormat.opprett(
     oppdrag110(
         kodeFagområde = kodeFagområde,
@@ -52,6 +55,7 @@ internal fun oppdragstidslinje(
         utbetalingsfrekvens = utbetalingsfrekvens,
         kodeStatus = kodeStatus,
         datoStatusFom = datoStatusFom,
+        enheter = enheter,
     ),
 )
 
@@ -73,6 +77,7 @@ internal fun oppdrag110(
     utbetalingsfrekvens: String? = null,
     kodeStatus: TkodeStatus? = null,
     datoStatusFom: LocalDate? = null,
+    enheter: List<OppdragsEnhet120> = emptyList(),
 ) = Oppdrag110(
     kodeAksjon = kodeAksjon,
     kodeEndring = kodeEndring,
@@ -91,6 +96,7 @@ internal fun oppdrag110(
     utbetFrekvens = utbetalingsfrekvens,
     kodeStatus = kodeStatus,
     datoStatusFom = datoStatusFom,
+    oppdragsEnhet120 = enheter,
 )
 
 internal fun linje(
@@ -104,6 +110,7 @@ internal fun linje(
     datoKidFom: LocalDate? = null,
     kodeStatusLinje150: TkodeStatusLinje? = null,
     datoStatusFom: LocalDate? = null,
+    enheter: List<LinjeEnhet160> = emptyList(),
 ) = OppdragsLinje150(
     kodeEndringLinje = "NY",
     delytelseId = delytelseId,
@@ -120,6 +127,7 @@ internal fun linje(
     datoKidFom = datoKidFom,
     kodeStatusLinje = kodeStatusLinje150,
     datoStatusFom = datoStatusFom,
+    linjeEnhet160 = enheter,
 )
 
 internal fun avventing(
