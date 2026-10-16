@@ -8,16 +8,12 @@ import no.nav.utbetaling.beregning.tid.Tidslinje
  *  Om den er feilregistert må nåsituasjonen være at opplysningen er registrert, ellers får man en feilmelding.
  *  Eksempler; Avventing & Tekst
  */
-internal sealed interface FeilregistrerbarOpplysning<T> {
-    val opplysning: Opplysning<T>
-
+internal sealed interface FeilregistrerbarOpplysning<out T> {
     data class Registrert<T>(
-        override val opplysning: Opplysning<T>,
+        val opplysning: Opplysning<T>,
     ) : FeilregistrerbarOpplysning<T>
 
-    data class Feilregistrert<T>(
-        override val opplysning: Opplysning<T>,
-    ) : FeilregistrerbarOpplysning<T>
+    object Feilregistrert : FeilregistrerbarOpplysning<Nothing>
 
     companion object {
         private val FEILREGISTRERT_VERDIER = setOf("j", "ja", "y", "yes")
@@ -32,7 +28,7 @@ internal sealed interface FeilregistrerbarOpplysning<T> {
             eksisterende: FeilregistrerbarOpplysning<T>?,
             ny: FeilregistrerbarOpplysning<T>?,
         ) = when (ny) {
-            is Feilregistrert -> {
+            Feilregistrert -> {
                 require(eksisterende is Registrert) { "Kan ikke feilregistrere en endring som ikke finnes." }
                 null
             }
@@ -45,7 +41,7 @@ internal sealed interface FeilregistrerbarOpplysning<T> {
             opplysning: Opplysning<T>,
         ): FeilregistrerbarOpplysning<T> =
             when (feilreg.erFeilregistrert()) {
-                true -> Feilregistrert(opplysning)
+                true -> Feilregistrert
                 false -> Registrert(opplysning)
             }
     }
