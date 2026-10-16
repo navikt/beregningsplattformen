@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
 
 plugins {
     kotlin("jvm") version "2.4.20" apply false
@@ -12,6 +13,15 @@ plugins {
 val kotestVersion = "6.2.5"
 
 subprojects {
+    plugins.withId("org.jlleitschuh.gradle.ktlint") {
+        tasks.named("build") {
+            dependsOn("ktlintFormat")
+        }
+        tasks.withType<KtLintCheckTask>().configureEach {
+            dependsOn("ktlintFormat")
+        }
+    }
+
     plugins.withId("org.jetbrains.kotlin.jvm") {
         extensions.configure<KotlinJvmProjectExtension> {
             jvmToolchain(25)
