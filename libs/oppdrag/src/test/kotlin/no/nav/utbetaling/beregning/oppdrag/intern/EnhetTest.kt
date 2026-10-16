@@ -11,8 +11,8 @@ import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.oppdrag.xml.LinjeEnhet160
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsEnhet120
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.januar
+import no.nav.utbetaling.beregning.tid.til
 
 internal class EnhetTest :
     FunSpec({

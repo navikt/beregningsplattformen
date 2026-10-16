@@ -66,10 +66,10 @@ internal data class OpplysningerIntern(
         private val behandlendeEnhet: Opplysning<BehandlendeEnhet>? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
-            apply {
-                if (statusendring == null) return this
-                if (delytelseId in statusendring.unntatt) return this
-                return copy(status = statusendring.status.opplysning)
+            when {
+                statusendring == null -> this
+                delytelseId in statusendring.unntatt -> this
+                else -> copy(status = statusendring.status.opplysning)
             }
 
         fun build() =
@@ -140,7 +140,7 @@ internal data class Oppdragsverdier(
     val bilagstype: Opplysning<Bilagstype>?,
     val forfall: Opplysning<LocalDate>?,
 ) {
-    fun medNyeVedierFra(ny: Oppdragsverdier) =
+    fun medNyeVerdierFra(ny: Oppdragsverdier) =
         Oppdragsverdier(
             oppdragId = velgNullableOpplysning(ny.oppdragId, oppdragId),
             stønadId = velgNullableOpplysning(ny.stønadId, stønadId),
@@ -154,7 +154,6 @@ internal fun <T> velgNullableOpplysning(
     ny: Opplysning<T>?,
     eksisterende: Opplysning<T>?,
 ) = when {
-    ny == null && eksisterende == null -> null
     ny != null && eksisterende != null -> velgOpplysning(ny, eksisterende)
     else -> ny ?: eksisterende
 }

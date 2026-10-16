@@ -12,9 +12,9 @@ import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
 import no.nav.utbetaling.beregning.tid.Periode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Tidslinje
 import no.nav.utbetaling.beregning.tid.Tidslinjesamling
+import no.nav.utbetaling.beregning.tid.til
 
 class Oppdragstidslinje private constructor(
     // Verdier som er lik for hele oppdraget på tvers av alle kjeder
@@ -74,7 +74,7 @@ class Oppdragstidslinje private constructor(
                     transform(kjede, eksisterende, ny)
                 }
         return Oppdragstidslinje(
-            oppdragsverdier = this.oppdragsverdier.medNyeVedierFra(other.oppdragsverdier),
+            oppdragsverdier = this.oppdragsverdier.medNyeVerdierFra(other.oppdragsverdier),
             kjeder = kjeder,
             oppdragsendringer = other.oppdragsendringer,
             kjedeendringer = other.kjedeendringer,
@@ -134,12 +134,12 @@ class Oppdragstidslinje private constructor(
     }
 
     companion object {
-        private fun Map<InternOppdragId, Oppdragsverdier>.medNyeVedierFra(ny: Map<InternOppdragId, Oppdragsverdier>): Map<InternOppdragId, Oppdragsverdier> =
+        private fun Map<InternOppdragId, Oppdragsverdier>.medNyeVerdierFra(ny: Map<InternOppdragId, Oppdragsverdier>): Map<InternOppdragId, Oppdragsverdier> =
             (keys + ny.keys).associateWith { internOppdragId ->
                 val eksisterende = this[internOppdragId]
                 val nyVerdi = ny[internOppdragId]
                 when {
-                    eksisterende != null && nyVerdi != null -> eksisterende.medNyeVedierFra(nyVerdi)
+                    eksisterende != null && nyVerdi != null -> eksisterende.medNyeVerdierFra(nyVerdi)
                     else -> eksisterende ?: nyVerdi!!
                 }
             }

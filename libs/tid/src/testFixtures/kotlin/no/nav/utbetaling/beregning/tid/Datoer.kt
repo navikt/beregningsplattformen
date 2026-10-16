@@ -12,7 +12,6 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 
 private const val DEFAULT_ÅR = 2024 // Starter på en mandag
 

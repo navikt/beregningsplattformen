@@ -4,7 +4,6 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 
 class TidslinjesamlingTest :
@@ -31,7 +30,7 @@ class TidslinjesamlingTest :
                 )
         }
 
-        test("periodeIterator skal beholde begge verdiene når to tidslinjer har lik verdi i samme periode") {
+        test("perioder skal beholde begge verdiene når to tidslinjer har lik verdi i samme periode") {
             val samling =
                 DefaultTidslinjesamling(
                     mapOf(
@@ -40,7 +39,7 @@ class TidslinjesamlingTest :
                     ),
                 )
 
-            samling.periodeIterator().toList() shouldBe listOf(januar to listOf("lik", "lik"))
+            samling.perioderIterator().toList() shouldBe listOf(januar to listOf("lik", "lik"))
         }
 
         test("skal la den kryssende visningen være åpen når en av tidslinjene er åpen") {
@@ -78,7 +77,7 @@ class TidslinjesamlingTest :
             DefaultTidslinjesamling(mapOf("a" to Tidslinje.Builder<String>().build())).isEmpty() shouldBe true
         }
 
-        test("periodeIterator skal gi flat visning likt en tidslinjesamling") {
+        test("perioder skal gi flat visning likt en tidslinjesamling") {
             val samling =
                 DefaultTidslinjesamling(
                     mapOf(
@@ -87,7 +86,7 @@ class TidslinjesamlingTest :
                     ),
                 )
 
-            samling.periodeIterator().toList() shouldBe
+            samling.perioderIterator().toList() shouldBe
                 listOf(
                     (1.januar til 9.januar) to listOf("A"),
                     (10.januar til 20.januar) to listOf("A", "B"),

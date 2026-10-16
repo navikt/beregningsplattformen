@@ -9,12 +9,6 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.forrigeDag
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.grupperSammenhengendePerioder
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.grupperSammenhengendePerioderMedHensynTilHelg
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.nesteDag
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.somLukketPeriode
-import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode.Companion.til
 import no.nav.utbetaling.beregning.tid.Periode.ÅpenPeriode
 
 class PeriodeTest :

@@ -39,15 +39,18 @@ sealed interface Oppdrag {
 
             val aksjonskoder = oppdrag110.map { it.kodeAksjon.trim() }.toSet()
 
+            when {
+                aksjonskoder.isEmpty() -> return UgyldigOppdrag(IllegalArgumentException("Det er ikke sendt inn noen oppdrag!"))
+                aksjonskoder.size > 1 -> return UgyldigKombinasjon(IllegalArgumentException("Det er sendt inn aksjonskoder på tvers av utbetaling og simulering!"))
+            }
+
             val oppdragstidslinje =
                 runCatching { FraXmlFormat.fraOppdrag110(oppdrag110) }.getOrElse { feil ->
                     return UgyldigOppdrag(feil)
                 }
 
-            return when {
-                aksjonskoder.isEmpty() -> UgyldigOppdrag(IllegalArgumentException("Det er ikke sendt inn noen oppdrag!"))
-                aksjonskoder.size > 1 -> UgyldigKombinasjon(IllegalArgumentException("Det er sendt inn aksjonskoder på tvers av utbetaling og simulering!"))
-                aksjonskoder.single() == SIMULERING -> Simulering(oppdragstidslinje)
+            return when (aksjonskoder.single()) {
+                SIMULERING -> Simulering(oppdragstidslinje)
                 else -> Utbetaling(oppdragstidslinje)
             }
         }

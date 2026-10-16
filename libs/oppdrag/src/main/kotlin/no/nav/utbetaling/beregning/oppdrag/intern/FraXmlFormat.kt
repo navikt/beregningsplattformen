@@ -40,6 +40,11 @@ internal object FraXmlFormat {
         val linjerPerKjede = Linjer.fra(oppdrag110)
         val kjedeendringer = kjedeendringerFra(linjerPerKjede)
 
+        val avventinger by lazy { Avventinger.fra(oppdrag110) }
+        val omposteringer by lazy { Omposteringer.fra(oppdrag110) }
+        val bostedsenheter by lazy { Enheter.bostedsenheterFra(oppdrag110) }
+        val behandlendeEnheter by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
+
         val kjeder =
             linjerPerKjede
                 .mapValues { (kjede, linjer) ->
@@ -68,13 +73,13 @@ internal object FraXmlFormat {
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
                 .mapValues { (_, builderTidslinje) ->
                     builderTidslinje
-                        .kombinerMed(Avventinger.fra(oppdrag110)) { _, builder, avventing ->
+                        .kombinerMed(avventinger) { _, builder, avventing ->
                             builder?.copy(avventingsårsakEndring = avventing)
-                        }.kombinerMed(Omposteringer.fra(oppdrag110)) { _, builder, ompostering ->
+                        }.kombinerMed(omposteringer) { _, builder, ompostering ->
                             builder?.copy(omposteringEndring = ompostering)
-                        }.kombinerMed(Enheter.bostedsenheterFra(oppdrag110)) { _, builder, bostedsenhet ->
+                        }.kombinerMed(bostedsenheter) { _, builder, bostedsenhet ->
                             builder?.copy(bostedsenhet = bostedsenhet)
-                        }.kombinerMed(Enheter.behandlendeEnheterFra(oppdrag110)) { _, builder, behandlendeEnhet ->
+                        }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
                             builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }
                 }
@@ -128,7 +133,7 @@ internal object FraXmlFormat {
 
     private fun oppdragsverdierFra(oppdrag110: Oppdrag110): Oppdragsverdier {
         val oppdragSaksbehandlerId =
-            oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragNivå")
+            oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragsnivå")
         return Oppdragsverdier(
             oppdragId = oppdrag110.oppdragsId?.let { Opplysning(oppdragSaksbehandlerId, OppdragId(it)) },
             stønadId = oppdrag110.stonadId.mapVerdi { StønadId(it) }?.let { Opplysning(oppdragSaksbehandlerId, it) },
