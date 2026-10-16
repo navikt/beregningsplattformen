@@ -42,8 +42,8 @@ internal object FraXmlFormat {
 
         val avventinger by lazy { Avventinger.fra(oppdrag110) }
         val omposteringer by lazy { Omposteringer.fra(oppdrag110) }
-        val bostedsenheterFraOppdrag by lazy { Enheter.bostedsenheterFra(oppdrag110) }
-        val behandlendeEnheterFraOppdrag by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
+        val bostedsenheter by lazy { Enheter.bostedsenheterFra(oppdrag110) }
+        val behandlendeEnheter by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
 
         val kjeder =
             linjerPerKjede
@@ -64,10 +64,6 @@ internal object FraXmlFormat {
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
                         .kombinerMed(statuser) { _, builder, statusendring ->
                             builder?.medStatus(statusendring)
-                        }.kombinerMed(Enheter.bostedsenheterFra(linjer, bostedsenheterFraOppdrag)) { _, builder, bostedsenhet ->
-                            builder?.copy(bostedsenhet = bostedsenhet)
-                        }.kombinerMed(Enheter.behandlendeEnheterFra(linjer, behandlendeEnheterFraOppdrag)) { _, builder, behandlendeEnhet ->
-                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }
                 }
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
@@ -77,6 +73,10 @@ internal object FraXmlFormat {
                             builder?.copy(avventingsårsakEndring = avventing)
                         }.kombinerMed(omposteringer) { _, builder, ompostering ->
                             builder?.copy(omposteringEndring = ompostering)
+                        }.kombinerMed(bostedsenheter) { _, builder, bostedsenhet ->
+                            builder?.copy(bostedsenhet = bostedsenhet)
+                        }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
+                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier

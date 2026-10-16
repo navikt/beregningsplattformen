@@ -12,31 +12,26 @@ internal object Enheter {
     private const val BOSTEDSENHET = "BOS"
     private const val BEHANDLENDE_ENHET = "BEH"
 
-    fun bostedsenheterFra(oppdrag110: Oppdrag110) = enheterFra(oppdrag110, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
+    fun bostedsenheterFra(oppdrag110: Oppdrag110) =
+        enheterFra(oppdrag110, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
+            .validerEnheter(
+                oppdrag110 = oppdrag110,
+                enhetstype = BOSTEDSENHET,
+            )
 
-    fun behandlendeEnheterFra(oppdrag110: Oppdrag110) = enheterFra(oppdrag110, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
-
-    fun bostedsenheterFra(
-        linjer: Linjer,
-        bostedsenheterFraOppdrag: Tidslinje<Opplysning<Bostedsenhet>>,
-    ) = enheterFra(linjer, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
-        .kombinerMed(bostedsenheterFraOppdrag) { _, bostedsenhetFraLinje, bostedsenhetFraOppdrag ->
-            bostedsenhetFraLinje ?: bostedsenhetFraOppdrag
-        }.validerEnheter(linjer, BOSTEDSENHET)
-
-    fun behandlendeEnheterFra(
-        linjer: Linjer,
-        behandlendeEnheterFraOppdrag: Tidslinje<Opplysning<BehandlendeEnhet>>,
-    ) = enheterFra(linjer, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
-        .kombinerMed(behandlendeEnheterFraOppdrag) { _, behandlendeEnhetFraLinje, behandlendeEnhetFraOppdrag ->
-            behandlendeEnhetFraLinje ?: behandlendeEnhetFraOppdrag
-        }.validerEnheter(linjer, BEHANDLENDE_ENHET)
+    fun behandlendeEnheterFra(oppdrag110: Oppdrag110) =
+        enheterFra(oppdrag110, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
+            .validerEnheter(
+                oppdrag110 = oppdrag110,
+                enhetstype = BEHANDLENDE_ENHET,
+            )
 
     private fun <T> Tidslinje<T>.validerEnheter(
-        linjer: Linjer,
+        oppdrag110: Oppdrag110,
         enhetstype: String,
     ): Tidslinje<T> {
-        val linjerOppgittTom = (linjer.aktive.lastOrNull()?.first as? Periode.LukketPeriode)?.tom ?: return this
+        if (oppdrag110.oppdragsLinje150.any { it.datoVedtakTom == null }) return this
+        val linjerOppgittTom = oppdrag110.oppdragsLinje150.maxOf { it.datoVedtakTom!! }
         forEach { (endretEnhetPeriode, _) ->
             require(endretEnhetPeriode.fom <= linjerOppgittTom) {
                 "Oppgitt $enhetstype-enhet fra og med $endretEnhetPeriode, men siste linje slutter $linjerOppgittTom."
@@ -58,25 +53,6 @@ internal object Enheter {
                 periode = Periode.ÅpenPeriode(enhetOppdrag110.datoEnhetFom),
                 verdi = Opplysning(saksbehandlerId, tilEnhet(enhetsnummer)),
             )
-        }
-        return builder.build()
-    }
-
-    private fun <T> enheterFra(
-        linjer: Linjer,
-        typeEnhet: String,
-        tilEnhet: (enhetsnummer: String) -> T,
-    ): Tidslinje<Opplysning<T>> {
-        val builder = Tidslinje.Builder<Opplysning<T>>()
-        linjer.alle.forEach { linje ->
-            val saksbehandlerId = SaksbehandlerId(linje.saksbehId)
-            linje.linjeEnhet160.filter { it.typeEnhet == typeEnhet }.sortedBy { it.datoEnhetFom }.forEach { linjeEnhet160 ->
-                val enhetsnummer = linjeEnhet160.enhet ?: error("Mangler enhet på linjenivå") // TODO: Sjekk med Steinar
-                builder.periode(
-                    periode = Periode.ÅpenPeriode(linjeEnhet160.datoEnhetFom),
-                    verdi = Opplysning(saksbehandlerId, tilEnhet(enhetsnummer)),
-                )
-            }
         }
         return builder.build()
     }
