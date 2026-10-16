@@ -76,7 +76,7 @@ internal object FraXmlFormat {
                         }.kombinerMed(bostedsenheter) { _, builder, bostedsenhet ->
                             builder?.copy(bostedsenhet = bostedsenhet)
                         }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
-                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
+                            builder?.copy(behandlendeEnhetEndring = behandlendeEnhet)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier
