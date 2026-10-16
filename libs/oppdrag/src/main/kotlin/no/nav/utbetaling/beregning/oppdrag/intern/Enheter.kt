@@ -13,18 +13,27 @@ internal object Enheter {
     private const val BEHANDLENDE_ENHET = "BEH"
 
     fun bostedsenheterFra(oppdrag110: Oppdrag110) =
-        enheterFra(oppdrag110, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
-            .validerEnheter(
-                oppdrag110 = oppdrag110,
-                enhetstype = BOSTEDSENHET,
-            )
+        enheterFra(oppdrag110, typeEnhet = BOSTEDSENHET, ::Bostedsenhet).validerEnheter(
+            oppdrag110 = oppdrag110,
+            enhetstype = BOSTEDSENHET,
+        )
 
-    fun behandlendeEnheterFra(oppdrag110: Oppdrag110) =
-        enheterFra(oppdrag110, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
-            .validerEnheter(
-                oppdrag110 = oppdrag110,
-                enhetstype = BEHANDLENDE_ENHET,
+    fun behandlendeEnheterFra(oppdrag110: Oppdrag110): Tidslinje<FeilregistrerbarOpplysning<BehandlendeEnhet>> {
+        val builder = Tidslinje.Builder<FeilregistrerbarOpplysning<BehandlendeEnhet>>()
+        val saksbehandlerId = SaksbehandlerId(oppdrag110.saksbehId)
+        oppdrag110.oppdragsEnhet120.filter { it.typeEnhet == BEHANDLENDE_ENHET }.sortedBy { it.datoEnhetFom }.forEach { enhetOppdrag110 ->
+            val behandlendeEnhet =
+                when (val enhetsnummer = enhetOppdrag110.enhet) {
+                    null -> FeilregistrerbarOpplysning.Feilregistrert
+                    else -> FeilregistrerbarOpplysning.Registrert(Opplysning(saksbehandlerId, BehandlendeEnhet(enhetsnummer)))
+                }
+            builder.periode(
+                periode = Periode.ÅpenPeriode(enhetOppdrag110.datoEnhetFom),
+                verdi = behandlendeEnhet,
             )
+        }
+        return builder.build()
+    }
 
     private fun <T> Tidslinje<T>.validerEnheter(
         oppdrag110: Oppdrag110,

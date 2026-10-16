@@ -31,12 +31,13 @@ internal data class OpplysningerIntern(
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
     val bostedsenhet: Opplysning<Bostedsenhet>?,
-    val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
+    private val behandlendeEnhetEndring: FeilregistrerbarOpplysning<BehandlendeEnhet>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
     private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
 ) {
     val avventingsårsak = avventingsårsakEndring?.gjeldende()
     val ompostering = omposteringEndring?.gjeldende()
+    val behandlendeEnhet = behandlendeEnhetEndring.gjeldende()
 
     private fun medNyeVerdierFra(ny: OpplysningerIntern) =
         OpplysningerIntern(
@@ -45,11 +46,11 @@ internal data class OpplysningerIntern(
             sats = velgOpplysning(ny.sats, sats),
             henvisning = velgNullableOpplysning(ny.henvisning, henvisning),
             kidnummer = velgNullableOpplysning(ny.kidnummer, kidnummer),
-            avventingsårsakEndring = FeilregistrerbarOpplysning.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
-            omposteringEndring = FeilregistrerbarOpplysning.velg(this.omposteringEndring, ny.omposteringEndring),
             status = velgOpplysning(ny.status, this.status),
             bostedsenhet = velgNullableOpplysning(ny.bostedsenhet, this.bostedsenhet),
-            behandlendeEnhet = velgNullableOpplysning(ny.behandlendeEnhet, this.behandlendeEnhet),
+            omposteringEndring = FeilregistrerbarOpplysning.velg(this.omposteringEndring, ny.omposteringEndring),
+            avventingsårsakEndring = FeilregistrerbarOpplysning.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
+            behandlendeEnhetEndring = FeilregistrerbarOpplysning.velg(this.behandlendeEnhetEndring, ny.behandlendeEnhetEndring),
         )
 
     data class Builder(
@@ -63,7 +64,7 @@ internal data class OpplysningerIntern(
         private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>? = null,
         private val status: Status? = null,
         private val bostedsenhet: Opplysning<Bostedsenhet>? = null,
-        private val behandlendeEnhet: Opplysning<BehandlendeEnhet>? = null,
+        private val behandlendeEnhetEndring: FeilregistrerbarOpplysning<BehandlendeEnhet>? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             when {
@@ -83,7 +84,7 @@ internal data class OpplysningerIntern(
                 omposteringEndring = omposteringEndring,
                 status = Opplysning(linjeSaksbehandlerId, (status ?: Status.Aktiv)),
                 bostedsenhet = bostedsenhet,
-                behandlendeEnhet = behandlendeEnhet,
+                behandlendeEnhetEndring = behandlendeEnhetEndring,
             )
     }
 
