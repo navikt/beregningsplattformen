@@ -39,7 +39,7 @@ class TidslinjesamlingTest :
                     ),
                 )
 
-            samling.perioder().toList() shouldBe listOf(januar to listOf("lik", "lik"))
+            samling.perioderIterator().toList() shouldBe listOf(januar to listOf("lik", "lik"))
         }
 
         test("skal la den kryssende visningen være åpen når en av tidslinjene er åpen") {
@@ -86,7 +86,7 @@ class TidslinjesamlingTest :
                     ),
                 )
 
-            samling.perioder().toList() shouldBe
+            samling.perioderIterator().toList() shouldBe
                 listOf(
                     (1.januar til 9.januar) to listOf("A"),
                     (10.januar til 20.januar) to listOf("A", "B"),

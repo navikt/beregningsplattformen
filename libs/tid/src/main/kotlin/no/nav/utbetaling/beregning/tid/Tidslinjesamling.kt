@@ -13,7 +13,7 @@ interface Tidslinjesamling<K, V> : Iterable<Pair<Periode, Map<K, V>>> {
 
     fun tidslinjeIterator(): Iterator<Tidslinje<V>>
 
-    fun perioder(): Iterable<Pair<Periode, List<V>>> = map { (periode, verdier) -> periode to verdier.values.toList() }
+    fun perioderIterator(): Iterable<Pair<Periode, List<V>>> = map { (periode, verdier) -> periode to verdier.values.toList() }
 
     fun <U, R> kombinerMed(
         other: Tidslinjesamling<K, U>,
