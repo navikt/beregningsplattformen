@@ -19,18 +19,33 @@ internal object Enheter {
     fun bostedsenheterFra(
         linjer: Linjer,
         bostedsenheterFraOppdrag: Tidslinje<Opplysning<Bostedsenhet>>,
-    ) = enheterFra(linjer, typeEnhet = BOSTEDSENHET, ::Bostedsenhet).kombinerMed(bostedsenheterFraOppdrag) { _, bostedsenhetFraLinje, bostedsenhetFraOppdrag ->
-        bostedsenhetFraLinje ?: bostedsenhetFraOppdrag
-    }
+    ) = enheterFra(linjer, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
+        .kombinerMed(bostedsenheterFraOppdrag) { _, bostedsenhetFraLinje, bostedsenhetFraOppdrag ->
+            bostedsenhetFraLinje ?: bostedsenhetFraOppdrag
+        }.validerEnheter(linjer, BOSTEDSENHET)
 
     fun behandlendeEnheterFra(
         linjer: Linjer,
         behandlendeEnheterFraOppdrag: Tidslinje<Opplysning<BehandlendeEnhet>>,
-    ) = enheterFra(linjer, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet).kombinerMed(behandlendeEnheterFraOppdrag) { _, behandlendeEnhetFraLinje, behandlendeEnhetFraOppdrag ->
-        behandlendeEnhetFraLinje ?: behandlendeEnhetFraOppdrag
+    ) = enheterFra(linjer, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
+        .kombinerMed(behandlendeEnheterFraOppdrag) { _, behandlendeEnhetFraLinje, behandlendeEnhetFraOppdrag ->
+            behandlendeEnhetFraLinje ?: behandlendeEnhetFraOppdrag
+        }.validerEnheter(linjer, BEHANDLENDE_ENHET)
+
+    private fun <T> Tidslinje<T>.validerEnheter(
+        linjer: Linjer,
+        enhetstype: String,
+    ): Tidslinje<T> {
+        val linjerOppgittTom = (linjer.aktive.lastOrNull()?.first as? Periode.LukketPeriode)?.tom ?: return this
+        forEach { (endretEnhetPeriode, _) ->
+            require(endretEnhetPeriode.fom <= linjerOppgittTom) {
+                "Oppgitt $enhetstype-enhet fra og med $endretEnhetPeriode, men siste linje slutter $linjerOppgittTom."
+            }
+        }
+        return this
     }
 
-    fun <T> enheterFra(
+    private fun <T> enheterFra(
         oppdrag110: Oppdrag110,
         typeEnhet: String,
         tilEnhet: (enhetsnummer: String) -> T,

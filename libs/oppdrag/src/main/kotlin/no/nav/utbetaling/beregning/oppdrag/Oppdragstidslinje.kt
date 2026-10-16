@@ -170,7 +170,7 @@ class Oppdragstidslinje private constructor(
             ompostering = opplysningerIntern.ompostering,
             kidnummer = opplysningerIntern.kidnummer,
             status = opplysningerIntern.status,
-            bostedsenhet = opplysningerIntern.bostedsenhet ?: error("Mangler bostedsenhet for delytelse ${opplysningerIntern.delytelseId}"),
+            bostedsenhet = opplysningerIntern.bostedsenhet ?: error("Mangler bostedsenhet for ${opplysningerIntern.delytelseId}"),
             nullableBehandlendeEnhet = opplysningerIntern.behandlendeEnhet,
         )
     }
