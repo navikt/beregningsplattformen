@@ -9,11 +9,28 @@ import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
 internal object Enheter {
-    fun bostedsenheterFra(oppdrag110: Oppdrag110) = enheterFra(oppdrag110, typeEnhet = "BOS", ::Bostedsenhet)
+    private const val BOSTEDSENHET = "BOS"
+    private const val BEHANDLENDE_ENHET = "BEH"
 
-    fun behandlendeEnheterFra(oppdrag110: Oppdrag110) = enheterFra(oppdrag110, typeEnhet = "BEH", ::BehandlendeEnhet)
+    fun bostedsenheterFra(oppdrag110: Oppdrag110) = enheterFra(oppdrag110, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
 
-    private fun <T> enheterFra(
+    fun behandlendeEnheterFra(oppdrag110: Oppdrag110) = enheterFra(oppdrag110, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
+
+    fun bostedsenheterFra(
+        linjer: Linjer,
+        bostedsenheterFraOppdrag: Tidslinje<Opplysning<Bostedsenhet>>,
+    ) = enheterFra(linjer, typeEnhet = BOSTEDSENHET, ::Bostedsenhet).kombinerMed(bostedsenheterFraOppdrag) { _, bostedsenhetFraLinje, bostedsenhetFraOppdrag ->
+        bostedsenhetFraLinje ?: bostedsenhetFraOppdrag
+    }
+
+    fun behandlendeEnheterFra(
+        linjer: Linjer,
+        behandlendeEnheterFraOppdrag: Tidslinje<Opplysning<BehandlendeEnhet>>,
+    ) = enheterFra(linjer, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet).kombinerMed(behandlendeEnheterFraOppdrag) { _, behandlendeEnhetFraLinje, behandlendeEnhetFraOppdrag ->
+        behandlendeEnhetFraLinje ?: behandlendeEnhetFraOppdrag
+    }
+
+    fun <T> enheterFra(
         oppdrag110: Oppdrag110,
         typeEnhet: String,
         tilEnhet: (enhetsnummer: String) -> T,
@@ -26,6 +43,25 @@ internal object Enheter {
                 periode = Periode.ÅpenPeriode(enhetOppdrag110.datoEnhetFom),
                 verdi = Opplysning(saksbehandlerId, tilEnhet(enhetsnummer)),
             )
+        }
+        return builder.build()
+    }
+
+    private fun <T> enheterFra(
+        linjer: Linjer,
+        typeEnhet: String,
+        tilEnhet: (enhetsnummer: String) -> T,
+    ): Tidslinje<Opplysning<T>> {
+        val builder = Tidslinje.Builder<Opplysning<T>>()
+        linjer.alle.forEach { linje ->
+            val saksbehandlerId = SaksbehandlerId(linje.saksbehId)
+            linje.linjeEnhet160.filter { it.typeEnhet == typeEnhet }.sortedBy { it.datoEnhetFom }.forEach { linjeEnhet160 ->
+                val enhetsnummer = linjeEnhet160.enhet ?: error("Mangler enhet på linjenivå") // TODO: Sjekk med Steinar
+                builder.periode(
+                    periode = Periode.ÅpenPeriode(linjeEnhet160.datoEnhetFom),
+                    verdi = Opplysning(saksbehandlerId, tilEnhet(enhetsnummer)),
+                )
+            }
         }
         return builder.build()
     }

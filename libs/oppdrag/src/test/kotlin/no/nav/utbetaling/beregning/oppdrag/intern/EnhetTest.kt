@@ -136,7 +136,7 @@ internal class EnhetTest :
             }
         }
 
-        xtest("Enhet på tvers av oppdrag og linje") {
+        test("Enhet på tvers av oppdrag og linje") {
             val oppdragstidslinje =
                 oppdragstidslinje(
                     linjer =

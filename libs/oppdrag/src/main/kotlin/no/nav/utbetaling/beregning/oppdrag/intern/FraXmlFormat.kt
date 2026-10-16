@@ -42,8 +42,8 @@ internal object FraXmlFormat {
 
         val avventinger by lazy { Avventinger.fra(oppdrag110) }
         val omposteringer by lazy { Omposteringer.fra(oppdrag110) }
-        val bostedsenheter by lazy { Enheter.bostedsenheterFra(oppdrag110) }
-        val behandlendeEnheter by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
+        val bostedsenheterFraOppdrag by lazy { Enheter.bostedsenheterFra(oppdrag110) }
+        val behandlendeEnheterFraOppdrag by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
 
         val kjeder =
             linjerPerKjede
@@ -53,12 +53,8 @@ internal object FraXmlFormat {
                         // Verdier som entydig kan utledes fra verdier i linjen
                         .mapVerdier { oppdragsLinje150 ->
                             OpplysningerIntern.Builder(
-                                delytelseId =
-                                    oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) }
-                                        ?: error("Mangler delytelseId på linjenivå"),
-                                linjeSaksbehandlerId =
-                                    oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) }
-                                        ?: error("Mangler saksbehandlerId på linjenivå"),
+                                delytelseId = oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) } ?: error("Mangler delytelseId på linjenivå"),
+                                linjeSaksbehandlerId = oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på linjenivå"),
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                 sats = oppdragsLinje150.sats,
@@ -68,6 +64,10 @@ internal object FraXmlFormat {
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
                         .kombinerMed(statuser) { _, builder, statusendring ->
                             builder?.medStatus(statusendring)
+                        }.kombinerMed(Enheter.bostedsenheterFra(linjer, bostedsenheterFraOppdrag)) { _, builder, bostedsenhet ->
+                            builder?.copy(bostedsenhet = bostedsenhet)
+                        }.kombinerMed(Enheter.behandlendeEnheterFra(linjer, behandlendeEnheterFraOppdrag)) { _, builder, behandlendeEnhet ->
+                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }
                 }
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
@@ -77,10 +77,6 @@ internal object FraXmlFormat {
                             builder?.copy(avventingsårsakEndring = avventing)
                         }.kombinerMed(omposteringer) { _, builder, ompostering ->
                             builder?.copy(omposteringEndring = ompostering)
-                        }.kombinerMed(bostedsenheter) { _, builder, bostedsenhet ->
-                            builder?.copy(bostedsenhet = bostedsenhet)
-                        }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
-                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier
@@ -114,10 +110,9 @@ internal object FraXmlFormat {
     fun oppdrag110FraXml(vararg xml: String): List<Oppdrag110> {
         val xmlOppdrag =
             xml.mapIndexed { index, enXml ->
-                runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }
-                    .getOrElse { feil ->
-                        throw IllegalArgumentException("Feil på xml nummer ${index + 1}", feil)
-                    }
+                runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }.getOrElse { feil ->
+                    throw IllegalArgumentException("Feil på xml nummer ${index + 1}", feil)
+                }
             }
 
         return xmlOppdrag.mapNotNull { it.oppdrag110 }
@@ -125,22 +120,17 @@ internal object FraXmlFormat {
 
     fun fraOppdrag110(oppdrag110: List<Oppdrag110>) =
         oppdrag110.foldIndexed(Oppdragstidslinje()) { index, sammenslått, etOppdrag110 ->
-            runCatching { sammenslått + FraXmlFormat.opprett(etOppdrag110) }
-                .getOrElse { feil ->
-                    throw IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil)
-                }
+            runCatching { sammenslått + FraXmlFormat.opprett(etOppdrag110) }.getOrElse { feil ->
+                throw IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil)
+            }
         }
 
     private fun oppdragsverdierFra(oppdrag110: Oppdrag110): Oppdragsverdier {
-        val oppdragSaksbehandlerId =
-            oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragsnivå")
+        val oppdragSaksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragsnivå")
         return Oppdragsverdier(
             oppdragId = oppdrag110.oppdragsId?.let { Opplysning(oppdragSaksbehandlerId, OppdragId(it)) },
             stønadId = oppdrag110.stonadId.mapVerdi { StønadId(it) }?.let { Opplysning(oppdragSaksbehandlerId, it) },
-            utbetalingsfrekvens =
-                oppdrag110.utbetFrekvens
-                    .mapVerdi { utbetalingsfrekvenser[it] ?: error("Kjenner ikke til utbetalingsfrekvens $it") }
-                    ?.let { Opplysning(oppdragSaksbehandlerId, it) },
+            utbetalingsfrekvens = oppdrag110.utbetFrekvens.mapVerdi { utbetalingsfrekvenser[it] ?: error("Kjenner ikke til utbetalingsfrekvens $it") }?.let { Opplysning(oppdragSaksbehandlerId, it) },
             bilagstype =
                 oppdrag110.bilagstype113
                     ?.bilagsType
