@@ -1,13 +1,12 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
-internal object GjelderId {
+internal object GjelderIder {
     fun fra(oppdrag110: Oppdrag110): Tidslinje<Personidentifikator> {
         val builder = Tidslinje.Builder<Personidentifikator>()
 
@@ -18,13 +17,16 @@ internal object GjelderId {
             .build()
     }
 
-    fun fra(oppdragstidslinje: Oppdragstidslinje): Tidslinje<Opplysning<Personidentifikator>> {
+    fun fra(tidslinje: Tidslinje<OpplysningerIntern>): Tidslinje<Opplysning<Personidentifikator>> {
         val builder = Tidslinje.Builder<Opplysning<Personidentifikator>>()
+        val (periode, gjelderId) =
+            tidslinje
+                .lastOrNull { (_, opplysninger) -> opplysninger.gjelderId != null }
+                ?.let { (periode, opplysninger) -> periode to checkNotNull(opplysninger.gjelderId) }
+                ?: return builder.build()
 
-        oppdragstidslinje.perioderIterator().forEach periode@{ (periode, opplysninger) ->
-            val gjelder = opplysninger.lastOrNull { it.gjelderId != null }?.gjelderId ?: return@periode
-            builder.periode(Periode.ÅpenPeriode(periode.fom), gjelder)
-        }
-        return builder.build()
+        return builder
+            .periode(Periode.ÅpenPeriode(periode.fom), gjelderId)
+            .build()
     }
 }

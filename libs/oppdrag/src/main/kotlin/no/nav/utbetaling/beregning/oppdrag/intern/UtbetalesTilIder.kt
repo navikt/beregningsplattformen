@@ -8,7 +8,7 @@ import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
-internal object UtbetalesTilId {
+internal object UtbetalesTilIder {
     fun fra(linjer: Linjer): Tidslinje<UtbetalesTil> {
         val builder = Tidslinje.Builder<UtbetalesTil>()
 
@@ -35,11 +35,14 @@ internal object UtbetalesTilId {
     fun fra(tidslinje: Tidslinje<OpplysningerIntern>): Tidslinje<Opplysning<UtbetalesTil>> {
         val builder = Tidslinje.Builder<Opplysning<UtbetalesTil>>()
 
-        tidslinje.forEach periode@{ (periode, opplysninger) ->
-            val utbetalesTil = opplysninger.utbetalesTil ?: return@periode
-            builder.periode(Periode.ÅpenPeriode(periode.fom), utbetalesTil)
-        }
+        val (periode, utbetalesTil) =
+            tidslinje
+                .lastOrNull { (_, opplysninger) -> opplysninger.utbetalesTil != null }
+                ?.let { (periode, opplysninger) -> periode to checkNotNull(opplysninger.utbetalesTil) }
+                ?: return builder.build()
 
-        return builder.build()
+        return builder
+            .periode(Periode.ÅpenPeriode(periode.fom), utbetalesTil)
+            .build()
     }
 }

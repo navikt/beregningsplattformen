@@ -44,6 +44,7 @@ internal object FraXmlFormat {
         val omposteringer by lazy { Omposteringer.fra(oppdrag110) }
         val bostedsenheter by lazy { Enheter.bostedsenheterFra(oppdrag110) }
         val behandlendeEnheter by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
+        val gjelderIder by lazy { GjelderIder.fra(oppdrag110) }
 
         val kjeder =
             linjerPerKjede
@@ -65,7 +66,7 @@ internal object FraXmlFormat {
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
                         .kombinerMed(statuser) { _, builder, statusendring ->
                             builder?.medStatus(statusendring)
-                        }.kombinerMed(UtbetalesTilId.fra(linjer)) { _, builder, utbetalesTil ->
+                        }.kombinerMed(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
                             builder?.copy(utbetalesTil = utbetalesTil)
                         }
                 }
@@ -80,7 +81,7 @@ internal object FraXmlFormat {
                             builder?.copy(bostedsenhet = bostedsenhet)
                         }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
                             builder?.copy(behandlendeEnhet = behandlendeEnhet)
-                        }.kombinerMed(GjelderId.fra(oppdrag110)) { _, builder, gjelderId ->
+                        }.kombinerMed(gjelderIder) { _, builder, gjelderId ->
                             builder?.copy(gjelderId = gjelderId)
                         }
                 }
