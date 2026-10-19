@@ -50,6 +50,7 @@ internal object FraTidslinjer {
                         status = oppdragsdag.status,
                         bostedsenhet = oppdragsdag.bostedsenhet,
                         behandlendeEnhet = oppdragsdag.nullableBehandlendeEnhet,
+                        utbetalesTil = oppdragsdag.utbetalesTil,
                     )
                 }
             }

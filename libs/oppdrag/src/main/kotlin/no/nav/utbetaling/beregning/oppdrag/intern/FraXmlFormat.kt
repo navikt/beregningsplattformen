@@ -65,6 +65,8 @@ internal object FraXmlFormat {
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
                         .kombinerMed(statuser) { _, builder, statusendring ->
                             builder?.medStatus(statusendring)
+                        }.kombinerMed(UtbetalesTilId.fra(linjer)) { _, builder, utbetalesTil ->
+                            builder?.copy(utbetalesTil = utbetalesTil)
                         }
                 }
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene

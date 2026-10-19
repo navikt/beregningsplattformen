@@ -113,6 +113,8 @@ internal fun linje(
     kodeStatusLinje150: TkodeStatusLinje? = null,
     datoStatusFom: LocalDate? = null,
     enheter: List<LinjeEnhet160> = emptyList(),
+    utbetalesTilId: String? = null,
+    datoUtbetalesTilIdFom: LocalDate? = null,
 ) = OppdragsLinje150(
     kodeEndringLinje = "NY",
     delytelseId = delytelseId,
@@ -130,6 +132,8 @@ internal fun linje(
     kodeStatusLinje = kodeStatusLinje150,
     datoStatusFom = datoStatusFom,
     linjeEnhet160 = enheter,
+    utbetalesTilId = utbetalesTilId,
+    datoUtbetalesTilIdFom = datoUtbetalesTilIdFom,
 )
 
 internal fun avventing(

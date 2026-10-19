@@ -11,6 +11,7 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
+import no.nav.utbetaling.beregning.oppdrag.intern.UtbetalesTilId
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
@@ -102,6 +103,7 @@ class Oppdragstidslinje private constructor(
                     null -> eksisterendeTidslinje
                     else -> eksisterendeTidslinje.begrensetTil(kjedeSluttdato)
                 }
+            val videreførUtbetalesTilFra = UtbetalesTilId.fra(eksisterendeTidslinje)
 
             utgangspunkt
                 .kombinerMed(endretTidslinje) { periode, eksisterendeOppdragsdag, nyOppdragsdag ->
@@ -112,6 +114,8 @@ class Oppdragstidslinje private constructor(
                     OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
                 }.kombinerMed(videreførGjelderIdFra) { _, oppdragsdag, gjelderId ->
                     OpplysningerIntern.videreførGjelderId(oppdragsdag, gjelderId)
+                }.kombinerMed(videreførUtbetalesTilFra) { _, oppdragsdag, utbetalesTil ->
+                    OpplysningerIntern.videreførUtbetalesTil(oppdragsdag, utbetalesTil)
                 }
         }
     }
@@ -177,6 +181,7 @@ class Oppdragstidslinje private constructor(
             status = opplysningerIntern.status,
             bostedsenhet = opplysningerIntern.bostedsenhet ?: error("Mangler bostedsenhet for ${opplysningerIntern.delytelseId}"),
             nullableBehandlendeEnhet = opplysningerIntern.behandlendeEnhet,
+            utbetalesTil = opplysningerIntern.utbetalesTil,
         )
     }
 }

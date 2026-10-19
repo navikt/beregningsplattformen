@@ -19,6 +19,7 @@ import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
+import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.intern.FeilregistrerbarOpplysning.Companion.gjeldende
 import no.nav.utbetaling.beregning.tid.Periode
@@ -34,6 +35,7 @@ internal data class OpplysningerIntern(
     val bostedsenhet: Opplysning<Bostedsenhet>?,
     val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
     val gjelderId: Opplysning<Personidentifikator>?,
+    val utbetalesTil: Opplysning<UtbetalesTil>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
     private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
 ) {
@@ -53,6 +55,7 @@ internal data class OpplysningerIntern(
             bostedsenhet = velgNullableOpplysning(ny.bostedsenhet, this.bostedsenhet),
             behandlendeEnhet = velgNullableOpplysning(ny.behandlendeEnhet, this.behandlendeEnhet),
             gjelderId = velgNullableOpplysning(ny.gjelderId, this.gjelderId),
+            utbetalesTil = velgNullableOpplysning(ny.utbetalesTil, this.utbetalesTil),
         )
 
     data class Builder(
@@ -69,6 +72,7 @@ internal data class OpplysningerIntern(
         private val bostedsenhet: Opplysning<Bostedsenhet>? = null,
         private val behandlendeEnhet: Opplysning<BehandlendeEnhet>? = null,
         private val gjelderId: Personidentifikator? = null,
+        private val utbetalesTil: UtbetalesTil? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             when {
@@ -89,7 +93,8 @@ internal data class OpplysningerIntern(
                 status = Opplysning(linjeSaksbehandlerId, (status ?: Status.Aktiv)),
                 bostedsenhet = bostedsenhet,
                 behandlendeEnhet = behandlendeEnhet,
-                gjelderId = gjelderId?.let { Opplysning(linjeSaksbehandlerId, it) },
+                gjelderId = gjelderId?.let { Opplysning(oppdragSaksbehandlerId, it) },
+                utbetalesTil = utbetalesTil?.let { Opplysning(linjeSaksbehandlerId, it) },
             )
     }
 
@@ -132,6 +137,17 @@ internal data class OpplysningerIntern(
             oppdragsdag.gjelderId != null -> oppdragsdag
             // Om det mangler så viderefører vi gjelderId
             else -> oppdragsdag.copy(gjelderId = gjelderId)
+        }
+
+        fun videreførUtbetalesTil(
+            oppdragsdag: OpplysningerIntern?,
+            utbetalesTil: Opplysning<UtbetalesTil>?,
+        ) = when {
+            oppdragsdag == null || utbetalesTil == null -> oppdragsdag
+            // Om det er satt en utbetalesTil eksplisitt brukes den
+            oppdragsdag.utbetalesTil != null -> oppdragsdag
+            // Om det mangler så viderefører vi utbetalesTIl
+            else -> oppdragsdag.copy(utbetalesTil = utbetalesTil)
         }
     }
 }

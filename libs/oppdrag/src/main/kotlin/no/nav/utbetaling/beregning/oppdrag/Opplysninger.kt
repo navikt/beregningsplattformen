@@ -10,6 +10,16 @@ value class Personidentifikator(
 )
 
 @JvmInline
+value class Organisasjonsnummer(
+    val nummer: String,
+)
+
+@JvmInline
+value class SamhandlerId(
+    val tssId: String,
+)
+
+@JvmInline
 value class SaksbehandlerId(
     val id: String,
 )
@@ -77,6 +87,20 @@ data class BehandlendeEnhet(
     val enhet: String,
 )
 
+sealed interface UtbetalesTil {
+    data class Person(
+        val personidentifikator: Personidentifikator,
+    ) : UtbetalesTil
+
+    data class Organisasjon(
+        val organisasjonsnummer: Organisasjonsnummer,
+    ) : UtbetalesTil
+
+    data class Samhandler(
+        val samhandler: SamhandlerId,
+    ) : UtbetalesTil
+}
+
 enum class Utbetalingsfrekvens {
     Daglig,
     Ukentlig,
@@ -108,6 +132,7 @@ data class Opplysninger(
     val delytelseId: DelytelseId,
     val refDelytelseId: DelytelseId?,
     val gjelderId: Opplysning<Personidentifikator>?,
+    val utbetalesTil: Opplysning<UtbetalesTil>?,
     val sats: Opplysning<BigDecimal>,
     val oppdragId: Opplysning<OppdragId>?,
     val henvisning: Opplysning<Henvisning>?,
