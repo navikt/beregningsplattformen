@@ -144,8 +144,10 @@ data class Opplysninger(
     val ompostering: Opplysning<Ompostering>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
-    val bostedsenhet: Opplysning<Bostedsenhet>,
-    internal val nullableBehandlendeEnhet: Opplysning<BehandlendeEnhet>?,
-) {
-    val behandlendeEnhet = nullableBehandlendeEnhet ?: Opplysning(bostedsenhet.saksbehandlerId, BehandlendeEnhet(bostedsenhet.opplysning.enhet))
-}
+    val bostedsenhet: Opplysning<Bostedsenhet>?,
+    val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
+    /** TODO: Eksempelvis gjelderId, utbetalesTil, bostedsenhet må ikke være satt alle innsendinger,
+     *  men når man har kombinert alle innsendinger til en tidslinje, da må disse verdiene være satt.
+     *  Burde man introdusert noe som en SammenslåtteOpplysninger el.lig. som håndterer dette?
+     */
+)
