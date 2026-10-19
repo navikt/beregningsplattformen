@@ -59,8 +59,8 @@ class Oppdragstidslinje private constructor(
             ny: Tidslinje<OpplysningerIntern>,
         ) -> Tidslinje<OpplysningerIntern>,
     ): Oppdragstidslinje {
-        // Her leter vi etter kjeder som hører sammen, så her finner vi ting som hører i samme kjede på en annen måte enn KjedetTidslinjesamling som
-        // kun sjekker likhet på allerede etablerte kjeder
+        // Her kombinerer vi kjeder som hører sammen basert på den linkede kjeden som bruker delytelseId og refDelytelseId.
+        // Derfor gjøres det ikke en likhetssjekk for å finne rett kjede, men finner kjeder som hører sammen og kombinerer tidslinjene for disse.
         val kjeder =
             (this.kjeder.toList() + other.kjeder.toList())
                 .grupperPåKjede()
@@ -103,24 +103,24 @@ class Oppdragstidslinje private constructor(
                 }
 
             utgangspunkt
-                .kombinerMed(endretTidslinje) { periode, eksisterendeOppdragsdag, nyOppdragsdag ->
-                    OpplysningerIntern.velg(eksisterendeOppdragsdag, nyOppdragsdag, periode, endretPeriode)
-                }.kombinerMed(oppdragstatus) { _, oppdragsdag, statusendring ->
-                    OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
-                }.kombinerMed(kjedestatus) { _, oppdragsdag, statusendring ->
-                    OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
-                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, oppdragsdag, gjelderId ->
-                    OpplysningerIntern.videreførGjelderId(oppdragsdag, gjelderId)
-                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, oppdragsdag, utbetalesTil ->
-                    OpplysningerIntern.videreførUtbetalesTil(oppdragsdag, utbetalesTil)
+                .kombinerMed(endretTidslinje) { periode, eksisterendeOpplysninger, nyeOpplysninger ->
+                    OpplysningerIntern.velg(eksisterendeOpplysninger, nyeOpplysninger, periode, endretPeriode)
+                }.kombinerMed(oppdragstatus) { _, opplysninger, statusendring ->
+                    OpplysningerIntern.velgStatus(opplysninger, statusendring)
+                }.kombinerMed(kjedestatus) { _, opplysninger, statusendring ->
+                    OpplysningerIntern.velgStatus(opplysninger, statusendring)
+                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, opplysninger, gjelderId ->
+                    OpplysningerIntern.videreførGjelderId(opplysninger, gjelderId)
+                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
+                    OpplysningerIntern.videreførUtbetalesTil(opplysninger, utbetalesTil)
                 }
         }
     }
 
     operator fun minus(other: Oppdragstidslinje) =
         kombinerMed(other) { _, eksisterendeTidslinje, nyTidslinje ->
-            eksisterendeTidslinje.kombinerMed(nyTidslinje) { _, eksisterendeOppdragsdag, nyOppdragsdag ->
-                nyOppdragsdag.takeUnless { it == eksisterendeOppdragsdag }
+            eksisterendeTidslinje.kombinerMed(nyTidslinje) { _, eksisterendeOpplysninger, nyeOpplysninger ->
+                nyeOpplysninger.takeUnless { it == eksisterendeOpplysninger }
             }
         }
 
