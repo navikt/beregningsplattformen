@@ -11,9 +11,8 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
-
-import no.nav.utbetaling.beregning.utils.logger
-import no.nav.utbetaling.beregning.utils.secureLog
+import no.nav.utbetaling.beregning.log.logger
+import no.nav.utbetaling.beregning.log.secureLog
 
 private val httpLog = logger("http")
 

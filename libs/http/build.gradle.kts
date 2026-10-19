@@ -7,7 +7,7 @@ plugins {
 val ktorVersion = "3.6.0"
 
 dependencies {
-    api(project(":libs:utils"))
+    api(project(":libs:log"))
     api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     api("io.ktor:ktor-client-cio:$ktorVersion")
     api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")

@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.utils
+package no.nav.utbetaling.beregning.log
 
 import java.io.IOException
 import java.io.OutputStream
@@ -11,6 +11,7 @@ import ch.qos.logback.classic.spi.ThrowableProxyUtil
 import ch.qos.logback.core.CoreConstants
 import ch.qos.logback.core.OutputStreamAppender
 import ch.qos.logback.core.encoder.EncoderBase
+import kotlin.collections.iterator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
