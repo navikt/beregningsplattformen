@@ -13,7 +13,7 @@ import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
 
-import no.nav.utbetaling.beregning.log.Log
+import no.nav.utbetaling.beregning.log.secureLog
 
 fun StatusPagesConfig.statusPageConfig() {
     exception<RequestValidationException> { call, _ ->
@@ -44,11 +44,11 @@ private suspend fun ApplicationCall.logOgResponder(
     apiError: ApiError,
 ) {
     if (status.value >= 500) {
-        Log.error(
+        secureLog.error(
             "HTTP-forespørsel feilet: status=${status.value}, metode=${request.httpMethod.value}, path=${request.path()}",
         )
     } else {
-        Log.warn(
+        secureLog.warn(
             "HTTP-forespørsel avvist: status=${status.value}, metode=${request.httpMethod.value}, path=${request.path()}",
         )
     }
