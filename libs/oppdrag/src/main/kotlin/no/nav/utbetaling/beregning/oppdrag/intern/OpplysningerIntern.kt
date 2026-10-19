@@ -149,6 +149,18 @@ internal data class OpplysningerIntern(
             // Om det mangler så viderefører vi utbetalesTIl
             else -> oppdragsdag.copy(utbetalesTil = utbetalesTil)
         }
+
+        fun <T> Tidslinje<OpplysningerIntern>.viderefør(selector: (OpplysningerIntern) -> Opplysning<T>?): Tidslinje<Opplysning<T>> {
+            val builder = Tidslinje.Builder<Opplysning<T>>()
+            val (fraOgMed, verdi) =
+                lastOrNull { (_, opplysninger) -> selector(opplysninger) != null }
+                    ?.let { (periode, opplysninger) -> periode.fom to checkNotNull(selector(opplysninger)) }
+                    ?: return builder.build()
+
+            return builder
+                .periode(Periode.ÅpenPeriode(fraOgMed), verdi)
+                .build()
+        }
     }
 }
 

@@ -2,7 +2,6 @@ package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
 
-import no.nav.utbetaling.beregning.oppdrag.intern.GjelderIder
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
@@ -10,8 +9,8 @@ import no.nav.utbetaling.beregning.oppdrag.intern.Kjedeendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
+import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern.Companion.viderefør
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
-import no.nav.utbetaling.beregning.oppdrag.intern.UtbetalesTilIder
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
@@ -102,7 +101,6 @@ class Oppdragstidslinje private constructor(
                     null -> eksisterendeTidslinje
                     else -> eksisterendeTidslinje.begrensetTil(kjedeSluttdato)
                 }
-            val videreførUtbetalesTilFra = UtbetalesTilIder.fra(eksisterendeTidslinje)
 
             utgangspunkt
                 .kombinerMed(endretTidslinje) { periode, eksisterendeOppdragsdag, nyOppdragsdag ->
@@ -111,9 +109,9 @@ class Oppdragstidslinje private constructor(
                     OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
                 }.kombinerMed(kjedestatus) { _, oppdragsdag, statusendring ->
                     OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
-                }.kombinerMed(GjelderIder.fra(eksisterendeTidslinje)) { _, oppdragsdag, gjelderId ->
+                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, oppdragsdag, gjelderId ->
                     OpplysningerIntern.videreførGjelderId(oppdragsdag, gjelderId)
-                }.kombinerMed(videreførUtbetalesTilFra) { _, oppdragsdag, utbetalesTil ->
+                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, oppdragsdag, utbetalesTil ->
                     OpplysningerIntern.videreførUtbetalesTil(oppdragsdag, utbetalesTil)
                 }
         }

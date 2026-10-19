@@ -97,7 +97,7 @@ sealed interface UtbetalesTil {
     ) : UtbetalesTil
 
     data class Samhandler(
-        val samhandler: SamhandlerId,
+        val samhandlerId: SamhandlerId,
     ) : UtbetalesTil
 }
 

@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.tid.Periode
@@ -14,19 +13,6 @@ internal object GjelderIder {
 
         return builder
             .periode(Periode.ÅpenPeriode(oppdrag110.datoOppdragGjelderFom), gjelderId)
-            .build()
-    }
-
-    fun fra(tidslinje: Tidslinje<OpplysningerIntern>): Tidslinje<Opplysning<Personidentifikator>> {
-        val builder = Tidslinje.Builder<Opplysning<Personidentifikator>>()
-        val (periode, gjelderId) =
-            tidslinje
-                .lastOrNull { (_, opplysninger) -> opplysninger.gjelderId != null }
-                ?.let { (periode, opplysninger) -> periode to checkNotNull(opplysninger.gjelderId) }
-                ?: return builder.build()
-
-        return builder
-            .periode(Periode.ÅpenPeriode(periode.fom), gjelderId)
             .build()
     }
 }
