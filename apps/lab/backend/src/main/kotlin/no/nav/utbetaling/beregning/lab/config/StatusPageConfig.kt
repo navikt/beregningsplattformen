@@ -16,18 +16,19 @@ import io.ktor.server.response.respond
 import no.nav.utbetaling.beregning.log.secureLog
 
 fun StatusPagesConfig.statusPageConfig() {
-    exception<RequestValidationException> { call, _ ->
-        call.logOgResponder(HttpStatusCode.BadRequest, "Ugyldig forespørsel.")
+    exception<RequestValidationException> { call, cause ->
+        call.logOgResponder(HttpStatusCode.BadRequest, cause.reasons.toString(), cause)
     }
 
-    exception<BadRequestException> { call, _ ->
-        call.logOgResponder(HttpStatusCode.BadRequest, "Ugyldig forespørsel.")
+    exception<BadRequestException> { call, cause ->
+        call.logOgResponder(HttpStatusCode.BadRequest, cause.message, cause)
     }
 
-    exception<Throwable> { call, _ ->
+    exception<Throwable> { call, cause ->
         call.logOgResponder(
             HttpStatusCode.InternalServerError,
-            "En teknisk feil har oppstått. Ta kontakt med utviklerne",
+            cause.message ?: "En teknisk feil har oppstått. Ta kontakt med utviklerne",
+            cause,
         )
     }
 }
@@ -35,21 +36,25 @@ fun StatusPagesConfig.statusPageConfig() {
 private suspend fun ApplicationCall.logOgResponder(
     status: HttpStatusCode,
     message: String?,
+    cause: Throwable,
 ) {
-    logOgResponder(status, createApiError(status, message, this))
+    logOgResponder(status, createApiError(status, message, this), cause)
 }
 
 private suspend fun ApplicationCall.logOgResponder(
     status: HttpStatusCode,
     apiError: ApiError,
+    cause: Throwable,
 ) {
     if (status.value >= 500) {
         secureLog.error(
             "HTTP-forespørsel feilet: status=${status.value}, metode=${request.httpMethod.value}, path=${request.path()}",
+            cause,
         )
     } else {
         secureLog.warn(
             "HTTP-forespørsel avvist: status=${status.value}, metode=${request.httpMethod.value}, path=${request.path()}",
+            cause,
         )
     }
     respond(status, apiError)
