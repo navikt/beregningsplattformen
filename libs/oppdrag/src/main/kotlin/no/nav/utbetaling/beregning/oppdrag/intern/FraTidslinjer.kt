@@ -41,6 +41,7 @@ internal object FraTidslinjer {
                     OpplysningerIntern(
                         delytelseId = oppdragsdag.delytelseId,
                         refDelytelseId = oppdragsdag.refDelytelseId,
+                        gjelderId = oppdragsdag.gjelderId,
                         sats = oppdragsdag.sats,
                         henvisning = oppdragsdag.henvisning,
                         avventingsårsakEndring = oppdragsdag.avventingsårsak?.let { FeilregistrerbarOpplysning.Registrert(it) },

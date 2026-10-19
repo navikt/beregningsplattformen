@@ -2,6 +2,7 @@ package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
 
+import no.nav.utbetaling.beregning.oppdrag.intern.GjelderId
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
@@ -88,6 +89,7 @@ class Oppdragstidslinje private constructor(
 
     operator fun plus(other: Oppdragstidslinje): Oppdragstidslinje {
         val endretOppdragstidslinje = this - other
+        val videreførGjelderIdFra = GjelderId.fra(this)
 
         return kombinerMed(endretOppdragstidslinje) { kjede, eksisterendeTidslinje, endretTidslinje ->
             val oppdragstatus =
@@ -108,6 +110,8 @@ class Oppdragstidslinje private constructor(
                     OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
                 }.kombinerMed(kjedestatus) { _, oppdragsdag, statusendring ->
                     OpplysningerIntern.velgStatus(oppdragsdag, statusendring)
+                }.kombinerMed(videreførGjelderIdFra) { _, oppdragsdag, gjelderId ->
+                    OpplysningerIntern.videreførGjelderId(oppdragsdag, gjelderId)
                 }
         }
     }
@@ -159,6 +163,7 @@ class Oppdragstidslinje private constructor(
             fagsystemId = kjede.fagsystemId,
             delytelseId = opplysningerIntern.delytelseId,
             refDelytelseId = opplysningerIntern.refDelytelseId,
+            gjelderId = opplysningerIntern.gjelderId,
             sats = opplysningerIntern.sats,
             oppdragId = oppdragsverdier.oppdragId,
             henvisning = opplysningerIntern.henvisning,

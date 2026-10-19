@@ -54,6 +54,7 @@ internal object FraXmlFormat {
                         .mapVerdier { oppdragsLinje150 ->
                             OpplysningerIntern.Builder(
                                 delytelseId = oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) } ?: error("Mangler delytelseId på linjenivå"),
+                                oppdragSaksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på oppdragsnivå"),
                                 linjeSaksbehandlerId = oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på linjenivå"),
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
@@ -77,6 +78,8 @@ internal object FraXmlFormat {
                             builder?.copy(bostedsenhet = bostedsenhet)
                         }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
                             builder?.copy(behandlendeEnhet = behandlendeEnhet)
+                        }.kombinerMed(GjelderId.fra(oppdrag110)) { _, builder, gjelderId ->
+                            builder?.copy(gjelderId = gjelderId)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier

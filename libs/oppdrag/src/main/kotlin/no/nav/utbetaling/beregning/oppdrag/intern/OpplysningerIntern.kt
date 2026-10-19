@@ -15,6 +15,7 @@ import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Ompostering
 import no.nav.utbetaling.beregning.oppdrag.OppdragId
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
+import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
@@ -32,6 +33,7 @@ internal data class OpplysningerIntern(
     val status: Opplysning<Status>,
     val bostedsenhet: Opplysning<Bostedsenhet>?,
     val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
+    val gjelderId: Opplysning<Personidentifikator>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
     private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
 ) {
@@ -50,11 +52,13 @@ internal data class OpplysningerIntern(
             status = velgOpplysning(ny.status, this.status),
             bostedsenhet = velgNullableOpplysning(ny.bostedsenhet, this.bostedsenhet),
             behandlendeEnhet = velgNullableOpplysning(ny.behandlendeEnhet, this.behandlendeEnhet),
+            gjelderId = velgNullableOpplysning(ny.gjelderId, this.gjelderId),
         )
 
     data class Builder(
         private val delytelseId: DelytelseId,
         private val linjeSaksbehandlerId: SaksbehandlerId,
+        private val oppdragSaksbehandlerId: SaksbehandlerId,
         private val refDelytelseId: DelytelseId?,
         private val henvisning: Henvisning?,
         private val sats: BigDecimal,
@@ -64,6 +68,7 @@ internal data class OpplysningerIntern(
         private val status: Status? = null,
         private val bostedsenhet: Opplysning<Bostedsenhet>? = null,
         private val behandlendeEnhet: Opplysning<BehandlendeEnhet>? = null,
+        private val gjelderId: Personidentifikator? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             when {
@@ -84,6 +89,7 @@ internal data class OpplysningerIntern(
                 status = Opplysning(linjeSaksbehandlerId, (status ?: Status.Aktiv)),
                 bostedsenhet = bostedsenhet,
                 behandlendeEnhet = behandlendeEnhet,
+                gjelderId = gjelderId?.let { Opplysning(linjeSaksbehandlerId, it) },
             )
     }
 
@@ -116,6 +122,17 @@ internal data class OpplysningerIntern(
             oppdragsdag: OpplysningerIntern?,
             statusendring: Statusendring?,
         ) = velgStatus(oppdragsdag, statusendring?.status, statusendring?.unntatt ?: emptySet())
+
+        fun videreførGjelderId(
+            oppdragsdag: OpplysningerIntern?,
+            gjelderId: Opplysning<Personidentifikator>?,
+        ) = when {
+            oppdragsdag == null || gjelderId == null -> oppdragsdag
+            // Om det er satt en gjelderId eksplisitt brukes den
+            oppdragsdag.gjelderId != null -> oppdragsdag
+            // Om det mangler så viderefører vi gjelderId
+            else -> oppdragsdag.copy(gjelderId = gjelderId)
+        }
     }
 }
 

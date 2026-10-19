@@ -5,6 +5,11 @@ import java.time.Instant
 import java.time.LocalDate
 
 @JvmInline
+value class Personidentifikator(
+    val identifikator: String,
+)
+
+@JvmInline
 value class SaksbehandlerId(
     val id: String,
 )
@@ -102,6 +107,7 @@ data class Opplysninger(
     val fagsystemId: FagsystemId,
     val delytelseId: DelytelseId,
     val refDelytelseId: DelytelseId?,
+    val gjelderId: Opplysning<Personidentifikator>?,
     val sats: Opplysning<BigDecimal>,
     val oppdragId: Opplysning<OppdragId>?,
     val henvisning: Opplysning<Henvisning>?,
