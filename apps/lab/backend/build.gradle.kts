@@ -12,6 +12,7 @@ val micrometerVersion = "1.17.1"
 
 dependencies {
     implementation(project(":libs:oppdrag"))
+    implementation(project(":libs:tid")) // TODO: Hvorfor trenger jeg denne? Bør oppdrag ha en avhengighet på tid?
     implementation(project(":libs:http"))
     implementation(project(":libs:kotlinx"))
     implementation(project(":libs:log"))

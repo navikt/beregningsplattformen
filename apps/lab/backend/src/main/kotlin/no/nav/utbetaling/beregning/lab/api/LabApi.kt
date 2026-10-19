@@ -1,7 +1,7 @@
 package no.nav.utbetaling.beregning.lab.api
 
 import io.ktor.server.request.receiveText
-import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
@@ -16,7 +16,7 @@ fun Route.labApi(oppdragTolkningService: OppdragTolkningService) {
         post("tolkOppdrag") {
             val oppdrag = Oppdrag.fraXml(call.receiveText())
             val oppdragstidslinje = oppdragTolkningService.tolkOppdrag(oppdrag)
-            call.respond(oppdragstidslinje)
+            call.respondText { oppdragstidslinje.toString() }
         }
     }
 }
