@@ -1,0 +1,41 @@
+.laboratorium {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ax-space-16);
+}
+
+.laboratorium__panel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40rem;
+  padding: clamp(var(--ax-space-16), 4vw, var(--ax-space-24));
+  border: 1px solid var(--ax-border-neutral-subtle);
+  border-radius: var(--ax-radius-12);
+  background: var(--ax-bg-meta-purple-moderateA);
+}
+
+.laboratorium__overskrift {
+  margin-block-end: var(--ax-space-24);
+  text-align: center;
+}
+
+.laboratorium__skjema {
+  display: grid;
+  gap: var(--ax-space-16);
+}
+
+.laboratorium__xmlfelt {
+  width: 100%;
+}
+
+.laboratorium__status {
+  margin: 0;
+}
+
+.laboratorium__respons {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

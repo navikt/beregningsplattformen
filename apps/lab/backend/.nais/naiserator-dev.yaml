@@ -1,0 +1,63 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: beregningsplattformen-lab-backend
+  namespace: beregningsplattform
+  annotations:
+    github.com/repository: "navikt/beregningsplattformen"
+    github.com/repository-url: "https://github.com/navikt/beregningsplattformen"
+  labels:
+    team: beregningsplattform
+    app.kubernetes.io/part-of: beregningsplattformen
+    app.kubernetes.io/component: backend
+spec:
+  image: "{{{ image }}}"
+  port: 8080
+  replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 75
+  liveness:
+    path: /internal/isAlive
+    initialDelay: 5
+    timeout: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  readiness:
+    path: /internal/isReady
+    initialDelay: 5
+    periodSeconds: 5
+    timeout: 5
+  resources:
+    limits:
+      memory: 4096Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  prometheus:
+    enabled: true
+    path: /internal/metrics
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: false
+      claims:
+        extra:
+          - NAVident
+        groups:
+          - id: "854613b8-41f7-41bf-97c1-7c2d1104cc5a" # 0000-CA-Beregningsplattformen-Lab
+  accessPolicy:
+    inbound:
+      rules:
+        - application: azure-token-generator
+          namespace: nais
+        - application: beregningsplattformen-lab-frontend
+          cluster: dev-gcp
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system

@@ -1,0 +1,35 @@
+name: Manual deploy lab to dev-gcp
+
+on:
+  workflow_dispatch:
+    inputs:
+      application:
+        description: Velg app som skal bygges og deployes
+        required: true
+        type: choice
+        options:
+          - backend
+          - frontend
+
+permissions: {}
+
+jobs:
+  deploy-backend:
+    if: ${{ inputs.application == 'backend' }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: ./.github/workflows/deploy-lab-backend-dev.yaml
+    secrets: inherit
+
+  deploy-frontend:
+    if: ${{ inputs.application == 'frontend' }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: ./.github/workflows/deploy-lab-frontend-dev.yaml
+    secrets: inherit

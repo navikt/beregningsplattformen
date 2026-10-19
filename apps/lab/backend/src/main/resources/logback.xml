@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="no.nav.utbetaling.beregning.log.LogJsonEncoder"/>
+    </appender>
+
+    <appender name="secureLog" class="no.nav.utbetaling.beregning.log.LogTcpAppender">
+        <destination>team-logs.nais-system:5170</destination>
+        <encoder class="no.nav.utbetaling.beregning.log.LogJsonEncoder">
+            <customFields>{"google_cloud_project":"${GOOGLE_CLOUD_PROJECT}","nais_namespace_name":"beregningsplattform","nais_pod_name":"${HOSTNAME}","nais_container_name":"beregningsplattformen-lab-backend"}</customFields>
+        </encoder>
+    </appender>
+
+    <appender name="auditLog" class="no.nav.utbetaling.beregning.log.LogTcpAppender">
+        <destination>team-logs.nais-system:5170</destination>
+        <encoder class="no.nav.utbetaling.beregning.log.LogJsonEncoder">
+            <customFields>{"google_cloud_project":"${GOOGLE_CLOUD_PROJECT}","nais_namespace_name":"beregningsplattform","nais_pod_name":"${HOSTNAME}","nais_container_name":"beregningsplattformen-lab-backend","team_audit":"beregningsplattform"}</customFields>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="json"/>
+    </root>
+
+    <logger name="appLog"       level="INFO"    additivity="false"><appender-ref ref="json"/></logger>
+    <logger name="secureLog"    level="TRACE"   additivity="false"><appender-ref ref="secureLog"/></logger>
+    <logger name="audit"        level="INFO"    additivity="false"><appender-ref ref="auditLog"/></logger>
+    <logger name="http"         level="INFO"    additivity="false"><appender-ref ref="json"/></logger>
+</configuration>

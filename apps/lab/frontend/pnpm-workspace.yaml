@@ -1,0 +1,5 @@
+overrides: {}
+engineStrict: true
+saveExact: true
+ignoreScripts: true
+minimumReleaseAge: 10080

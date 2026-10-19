@@ -14,11 +14,12 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldEndWith
+import org.slf4j.LoggerFactory
+import org.slf4j.MDC
+
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.log.LogJsonEncoder
 import no.nav.utbetaling.beregning.log.LogTcpAppender
-import org.slf4j.LoggerFactory
-import org.slf4j.MDC
 
 class LogTest :
     FunSpec({

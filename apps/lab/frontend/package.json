@@ -1,0 +1,69 @@
+{
+	"name": "beregningsplattformen-lab-frontend",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite --mode mock",
+		"dev:backend": "vite --mode backend",
+		"dev:backend-q1": "vite --mode backend-q1",
+		"build": "tsc && vite build",
+		"biome:check": "biome check --files-ignore-unknown=true",
+		"biome:fix": "biome check --write --no-errors-on-unmatched",
+		"stylelint:check": "stylelint '**/*.css'",
+		"stylelint:fix": "stylelint '**/*.css' --fix",
+		"prepare": "husky",
+		"pnpm:resolve": "node scripts/resolve-pnpm-version.mjs"
+	},
+	"dependencies": {
+		"@nais/apm": "0.7.2",
+		"@navikt/aksel-icons": "8.17.2",
+		"@navikt/ds-css": "8.17.2",
+		"@navikt/ds-react": "8.17.2",
+		"axios": "1.20.0",
+		"dayjs": "1.11.23",
+		"react": "19.3.0",
+		"react-dom": "19.3.0",
+		"swr": "2.5.1",
+		"zod": "4.6.5",
+		"zustand": "5.0.15"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.14",
+		"@navikt/aksel-stylelint": "8.17.2",
+		"@types/node": "26.6.3",
+		"@types/react": "19.3.0",
+		"@types/react-dom": "19.3.0",
+		"@vitejs/plugin-react": "6.1.1",
+		"husky": "9.1.7",
+		"lint-staged": "17.6.0",
+		"msw": "3.0.0",
+		"stylelint": "17.15.0",
+		"stylelint-config-standard": "40.0.0",
+		"typescript": "7.0.2",
+		"vite": "8.3.1"
+	},
+	"msw": {
+		"workerDirectory": [
+			"public"
+		]
+	},
+	"stylelint": {
+		"extends": [
+			"stylelint-config-standard",
+			"@navikt/aksel-stylelint/recommended"
+		],
+		"rules": {
+			"selector-class-pattern": "^[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)*(--[a-z][a-z0-9-]*)?$",
+			"custom-property-pattern": "[a-z][a-zA-Z0-9-]+"
+		}
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": "biome check --write --no-errors-on-unmatched",
+		"*.css": "stylelint --fix"
+	},
+	"engines": {
+		"pnpm": ">=11.28.5",
+		"node": ">=24.14.1"
+	},
+	"packageManager": "pnpm@11.28.5+sha512.484563d30b4c2ad27cb48aa94ff2b302dbcebc8ff6bf28816c2589886e146ce7f76f354f3bc1a438e6f5e9768c302aa0a6f7add8232903cd4cf81426cbc14d9e"
+}

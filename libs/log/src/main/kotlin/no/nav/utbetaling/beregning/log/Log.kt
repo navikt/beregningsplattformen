@@ -6,12 +6,13 @@ import java.net.Socket
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
+import kotlin.collections.iterator
+
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.ThrowableProxyUtil
 import ch.qos.logback.core.CoreConstants
 import ch.qos.logback.core.OutputStreamAppender
 import ch.qos.logback.core.encoder.EncoderBase
-import kotlin.collections.iterator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC

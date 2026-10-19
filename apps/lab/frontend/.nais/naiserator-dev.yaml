@@ -1,0 +1,66 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: beregningsplattformen-lab-frontend
+  namespace: beregningsplattform
+  annotations:
+    github.com/repository: "navikt/beregningsplattformen"
+    github.com/repository-url: "https://github.com/navikt/beregningsplattformen"
+  labels:
+    team: beregningsplattform
+    app.kubernetes.io/part-of: beregningsplattformen
+    app.kubernetes.io/component: frontend
+spec:
+  image: "{{ image }}"
+  port: 8080
+  liveness:
+    path: /internal/isAlive
+    initialDelay: 10
+  readiness:
+    path: /internal/isReady
+    initialDelay: 10
+  replicas:
+    min: 1
+    max: 2
+  ingresses:
+    - "https://beregningsplattformen-lab.intern.dev.nav.no"
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: "50m"
+      memory: 256Mi
+  prometheus:
+    enabled: true
+    path: /internal/metrics
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: nodejs
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: false
+      claims:
+        extra:
+          - NAVident
+        groups:
+          - id: "854613b8-41f7-41bf-97c1-7c2d1104cc5a" # 0000-CA-Beregningsplattformen-Lab
+    sidecar:
+      enabled: true
+      autoLogin: true
+      autoLoginIgnorePaths:
+        - /internal/*
+  accessPolicy:
+    outbound:
+      rules:
+        - application: beregningsplattformen-lab-backend
+          cluster: dev-gcp
+        - application: logging
+          namespace: nais-system
+
+  env:
+    - name: LAB_BACKEND_URL
+      value: "http://beregningsplattformen-lab-backend.beregningsplattform.svc.cluster.local"
+    - name: LAB_BACKEND_AUDIENCE
+      value: "api://dev-gcp.beregningsplattform.beregningsplattformen-lab-backend/.default"
