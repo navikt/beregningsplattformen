@@ -20,6 +20,11 @@ sealed interface Oppdrag {
         val feil: Throwable,
     ) : Oppdrag
 
+    data class Metrikk(
+        val felt: String,
+        val tags: Map<String, String>,
+    )
+
     companion object {
         fun fraXml(vararg xml: String) =
             lagOppdrag {
