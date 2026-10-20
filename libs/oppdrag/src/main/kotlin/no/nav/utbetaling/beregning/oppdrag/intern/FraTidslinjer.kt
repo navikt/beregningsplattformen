@@ -49,7 +49,7 @@ internal object FraTidslinjer {
                         kidnummer = oppdragsdag.kidnummer,
                         status = oppdragsdag.status,
                         bostedsenhet = oppdragsdag.bostedsenhet,
-                        behandlendeEnhet = oppdragsdag.nullableBehandlendeEnhet,
+                        behandlendeEnhet = oppdragsdag.behandlendeEnhet,
                         utbetalesTil = oppdragsdag.utbetalesTil,
                     )
                 }
