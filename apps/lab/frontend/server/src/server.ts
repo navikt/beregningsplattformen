@@ -37,6 +37,15 @@ server.use(
     }),
 );
 
+server.get("/send-inn-oppdrags-xml", (request, response, next) => {
+	if (request.path !== "/send-inn-oppdrags-xml") {
+		next();
+		return;
+	}
+
+	response.sendFile(path.join(BUILD_PATH, "index.html"));
+});
+
 function asyncHandler(
     fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>,
 ) {

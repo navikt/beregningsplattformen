@@ -2,8 +2,9 @@
   box-sizing: border-box;
   display: flex;
   min-height: 100vh;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   padding: var(--ax-space-32);
 }
 
@@ -17,9 +18,9 @@
   background: var(--ax-bg-meta-purple-moderateA);
 }
 
-.laboratorium__overskrift {
-  margin-block-end: var(--ax-space-24);
-  text-align: center;
+.laboratorium__intro,
+.laboratorium__advarsel {
+  margin-block: 0 var(--ax-space-16);
 }
 
 .laboratorium__skjema {
@@ -29,6 +30,22 @@
 
 .laboratorium__xmlfelt {
   width: 100%;
+}
+
+.laboratorium__feltkolonne {
+  display: grid;
+  gap: var(--ax-space-24);
+}
+
+.laboratorium__handlinger {
+  align-items: center;
+}
+
+.laboratorium__xmlforhandsvisning {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .laboratorium__tidslinje {
