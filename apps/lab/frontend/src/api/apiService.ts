@@ -1,13 +1,13 @@
 import { axiosPostFetcher } from "./config/apiConfig";
 
 const BASE_URI = {
-	BACKEND_API: "/api",
+	BACKEND_API: "/lab-backend-api/api/v1",
 };
 
 export async function postTolkOppdrag(xml: string, signal?: AbortSignal) {
 	return await axiosPostFetcher<string, string>(
 		BASE_URI.BACKEND_API,
-		"/lab",
+		"/tolkOppdrag",
 		xml,
 		{
 			signal,

@@ -7,14 +7,30 @@ import { initApm } from "./util/apm";
 
 initApm();
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <React.StrictMode>
-        <div className="page-wrapper">
-            <div className="page-layout">
-                <main>
-                    <Lab />
-                </main>
+const startMsw = async () => {
+	if (import.meta.env.MODE !== "mock") return;
+
+	try {
+		const { worker } = await import("../mock/browser");
+		await worker.start({
+			onUnhandledFrame: "bypass",
+		});
+	} catch (error) {
+		// biome-ignore lint/suspicious/noConsole: <in case of error>
+		console.error("Failed to start MSW", error);
+	}
+};
+
+startMsw().then(() => {
+    ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+        <React.StrictMode>
+            <div className="page-wrapper">
+                <div className="page-layout">
+                    <main>
+                        <Lab />
+                    </main>
+                </div>
             </div>
-        </div>
-    </React.StrictMode>
-);
+        </React.StrictMode>
+    );
+});

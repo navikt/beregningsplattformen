@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "vite --mode mock",
     "dev:backend": "vite --mode backend",
-    "dev:backend-q1": "vite --mode backend-q1",
     "build": "tsc && vite build",
     "biome:check": "biome check --files-ignore-unknown=true",
     "biome:fix": "biome check --write --no-errors-on-unmatched",

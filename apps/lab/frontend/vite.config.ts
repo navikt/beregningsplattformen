@@ -4,25 +4,29 @@ import { brotliCompressSync, constants, gzipSync } from "node:zlib";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
-const compressible = /\.(js|css|html|svg|json|ico)$/;
+const COMPRESSIBLE = /\.(js|css|html|svg|json|ico)$/;
 
+/**
+ * Kreves av `express-static-gzip` i server/src/server.ts, som stille faller
+ * tilbake til ukomprimert levering hvis .br/.gz mangler.
+ */
 function precompressAssets(): Plugin {
-  let outputDirectory = "";
+  let outDir = "";
 
   return {
     name: "precompress-assets",
     apply: "build",
     configResolved(config) {
-      outputDirectory = resolve(config.root, config.build.outDir);
+      outDir = resolve(config.root, config.build.outDir);
     },
     closeBundle() {
-      const entries = readdirSync(outputDirectory, {
+      const entries = readdirSync(outDir, {
         recursive: true,
         withFileTypes: true,
       });
 
       for (const entry of entries) {
-        if (!entry.isFile() || !compressible.test(entry.name)) continue;
+        if (!entry.isFile() || !COMPRESSIBLE.test(entry.name)) continue;
 
         const file = join(entry.parentPath, entry.name);
         const source = readFileSync(file);
@@ -39,41 +43,50 @@ function precompressAssets(): Plugin {
   };
 }
 
-export default defineConfig(({ command }) => ({
-  plugins: [react(), precompressAssets()],
-  build: {
-    rolldownOptions: {
-      output: {
-        codeSplitting: {
-          groups: [
-            {
-              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
-              name: "react",
-            },
-            { test: /node_modules[\\/]@navikt[\\/]/, name: "aksel" },
-            { test: /node_modules[\\/]/, name: "vendor" },
-          ],
+export default defineConfig(({ command }) => {
+  const isProductionBuild = command === "build";
+
+  return {
+    plugins: [react(), precompressAssets()],
+
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              {
+                test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+                name: "react",
+              },
+              { test: /node_modules[\\/]@navikt[\\/]/, name: "aksel" },
+              {
+                test: /node_modules[\\/](@grafana|@nais)[\\/]/,
+                name: "apm",
+              },
+              { test: /node_modules[\\/]/, name: "vendor" },
+            ],
+          },
         },
       },
     },
-  },
-  css: {
-    modules: {
-      generateScopedName:
-        command === "build" ? "[hash:base64:6]" : "[name]__[local]___[hash:base64:5]",
+
+    css: {
+      modules: {
+        // Hashet i prod så kildefilnavn ikke lekker til klienten.
+        generateScopedName: isProductionBuild
+          ? "[hash:base64:6]"
+          : "[name]__[local]___[hash:base64:5]",
+      },
     },
-  },
-  server: {
-    host: "localhost",
-    strictPort: true,
-    proxy:
-      command === "serve"
-        ? {
-            "/api/lab": {
-              target: "http://localhost:3000",
-              changeOrigin: true,
-            },
-          }
-        : undefined,
-  },
-}));
+
+    server: {
+      proxy: {
+          "/lab-backend-api/api/v1": {
+            target: "http://localhost:8080",
+            rewrite: (path: string) => path.replace(/^\/lab-backend-api/, ""),
+            changeOrigin: true,
+          },
+        }
+    },
+  };
+});
