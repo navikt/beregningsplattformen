@@ -94,7 +94,7 @@ internal object Statuser {
             "REAK" to Status.Aktiv,
         )
 
-    private val oppdragstatuser =
+    internal val oppdragstatuser =
         mapOf(
             // Sidestilles med Opphørt. Uavhengig av status lar vi ikke nye linjer påvirkes av oppdragstatusen
             "OPNY" to Status.Opphørt,
