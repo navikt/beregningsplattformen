@@ -14,8 +14,8 @@ import no.nav.utbetaling.beregning.tid.til
 
 class OppdragstidslinjeFraXMLTest :
     FunSpec({
-        test("Tolker oppdrag med skyldner og kravhaver") {
-            val xml = Filhjelper.lesFil("xml/NyttOppdragMedSkyldnerOgKravhaver.xml")
+        test("Tolker oppdrag med skyldner") {
+            val xml = Filhjelper.lesFil("xml/NyttOppdragMedSkyldner.xml")
             val oppdrag = FraXmlFormat.oppdrag110FraXml(xml)
             oppdrag.size shouldBe 1
 
