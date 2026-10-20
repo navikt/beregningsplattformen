@@ -47,9 +47,9 @@ function asyncHandler(
 
 server.use(express.text({ type: "application/xml" }));
 
-server.post("/api/lab", asyncHandler(async (request, response) => {
+server.post("/api/v1/tolk-oppdrag", asyncHandler(async (request, response) => {
   const backendUrl = new URL(
-    "/api/lab/v1/tolkOppdrag",
+    "/api/v1/tolk-oppdrag",
     config.backendUrl,
   ).toString();
   await sendRequest(
