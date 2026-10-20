@@ -18,7 +18,6 @@ import no.nav.utbetaling.beregning.oppdrag.Fagområde
 import no.nav.utbetaling.beregning.oppdrag.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.Henvisning
 import no.nav.utbetaling.beregning.oppdrag.Kidnummer
-import no.nav.utbetaling.beregning.oppdrag.OppdragId
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
@@ -135,7 +134,6 @@ internal object FraXmlFormat {
     private fun oppdragsverdierFra(oppdrag110: Oppdrag110): Oppdragsverdier {
         val oppdragSaksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandler på oppdragsnivå")
         return Oppdragsverdier(
-            oppdragId = oppdrag110.oppdragsId?.let { Opplysning(oppdragSaksbehandlerId, OppdragId(it)) },
             stønadId = oppdrag110.stonadId.mapVerdi { StønadId(it) }?.let { Opplysning(oppdragSaksbehandlerId, it) },
             utbetalingsfrekvens = oppdrag110.utbetFrekvens.mapVerdi { utbetalingsfrekvenser[it] ?: error("Kjenner ikke til utbetalingsfrekvens $it") }?.let { Opplysning(oppdragSaksbehandlerId, it) },
             bilagstype =

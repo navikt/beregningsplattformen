@@ -25,11 +25,6 @@ value class SaksbehandlerId(
 )
 
 @JvmInline
-value class OppdragId(
-    val id: Long,
-)
-
-@JvmInline
 value class Bilagstype(
     val type: String,
 )
@@ -134,7 +129,6 @@ data class Opplysninger(
     val gjelderId: Opplysning<Personidentifikator>?,
     val utbetalesTil: Opplysning<UtbetalesTil>?,
     val sats: Opplysning<BigDecimal>,
-    val oppdragId: Opplysning<OppdragId>?,
     val henvisning: Opplysning<Henvisning>?,
     val stønadId: Opplysning<StønadId>?,
     val forfall: Opplysning<LocalDate>?,

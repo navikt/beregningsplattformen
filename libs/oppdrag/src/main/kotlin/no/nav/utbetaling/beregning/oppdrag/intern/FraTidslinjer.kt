@@ -27,7 +27,6 @@ internal object FraTidslinjer {
                 .mapValues { (_, førsteDager) ->
                     val oppdragsdag = førsteDager.first()
                     Oppdragsverdier(
-                        oppdragId = oppdragsdag.oppdragId,
                         stønadId = oppdragsdag.stønadId,
                         forfall = oppdragsdag.forfall,
                         utbetalingsfrekvens = oppdragsdag.utbetalingsfrekvens,

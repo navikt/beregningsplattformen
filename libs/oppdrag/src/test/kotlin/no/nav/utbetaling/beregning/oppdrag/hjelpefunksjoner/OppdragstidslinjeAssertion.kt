@@ -31,8 +31,6 @@ fun Oppdragstidslinje.satserMedHenvisning() = perPeriode { it.sats.opplysning.to
 
 fun Oppdragstidslinje.satserMedForfall() = perPeriode { it.sats.opplysning.toInt() to it.forfall?.opplysning }
 
-fun Oppdragstidslinje.satserMedOppdragId() = perPeriode { it.sats.opplysning.toInt() to it.oppdragId?.opplysning }
-
 fun Oppdragstidslinje.satserMedStønadId() = perPeriode { it.sats.opplysning.toInt() to it.stønadId?.opplysning }
 
 fun Oppdragstidslinje.satserMedUtbetalingsfrekvens() = perPeriode { it.sats.opplysning.toInt() to it.utbetalingsfrekvens?.opplysning }

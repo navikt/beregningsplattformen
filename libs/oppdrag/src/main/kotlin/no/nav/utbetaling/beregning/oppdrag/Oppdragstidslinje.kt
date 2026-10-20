@@ -166,7 +166,6 @@ class Oppdragstidslinje private constructor(
             refDelytelseId = opplysningerIntern.refDelytelseId,
             gjelderId = opplysningerIntern.gjelderId,
             sats = opplysningerIntern.sats,
-            oppdragId = oppdragsverdier.oppdragId,
             henvisning = opplysningerIntern.henvisning,
             stønadId = oppdragsverdier.stønadId,
             forfall = oppdragsverdier.forfall,

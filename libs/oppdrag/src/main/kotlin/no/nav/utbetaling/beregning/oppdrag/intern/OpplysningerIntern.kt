@@ -13,7 +13,6 @@ import no.nav.utbetaling.beregning.oppdrag.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.Henvisning
 import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Ompostering
-import no.nav.utbetaling.beregning.oppdrag.OppdragId
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
@@ -180,7 +179,6 @@ internal data class Oppdragsendringer(
 )
 
 internal data class Oppdragsverdier(
-    val oppdragId: Opplysning<OppdragId>?,
     val stønadId: Opplysning<StønadId>?,
     val utbetalingsfrekvens: Opplysning<Utbetalingsfrekvens>?,
     val bilagstype: Opplysning<Bilagstype>?,
@@ -188,7 +186,6 @@ internal data class Oppdragsverdier(
 ) {
     fun medNyeVerdierFra(ny: Oppdragsverdier) =
         Oppdragsverdier(
-            oppdragId = velgNullableOpplysning(ny.oppdragId, oppdragId),
             stønadId = velgNullableOpplysning(ny.stønadId, stønadId),
             utbetalingsfrekvens = velgNullableOpplysning(ny.utbetalingsfrekvens, utbetalingsfrekvens),
             bilagstype = velgNullableOpplysning(ny.bilagstype, bilagstype),
