@@ -2,16 +2,16 @@
   box-sizing: border-box;
   display: flex;
   min-height: 100vh;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: var(--ax-space-16);
+  padding: var(--ax-space-32);
 }
 
 .laboratorium__panel {
   box-sizing: border-box;
   width: 100%;
-  max-width: 40rem;
-  padding: clamp(var(--ax-space-16), 4vw, var(--ax-space-24));
+  max-width: 90rem;
+  padding: var(--ax-space-32);
   border: 1px solid var(--ax-border-neutral-subtle);
   border-radius: var(--ax-radius-12);
   background: var(--ax-bg-meta-purple-moderateA);
@@ -30,6 +30,52 @@
 .laboratorium__xmlfelt {
   width: 100%;
 }
+
+.laboratorium__tidslinje {
+  display: grid;
+  gap: var(--ax-space-16);
+  margin-block-start: var(--ax-space-32);
+}
+
+.laboratorium__kjedeetikett {
+  min-height: var(--ax-space-32);
+}
+
+.laboratorium__utvidknapp,
+.laboratorium__pilplass {
+  box-sizing: border-box;
+  width: var(--ax-space-32);
+  height: var(--ax-space-32);
+  flex: 0 0 var(--ax-space-32);
+}
+
+.laboratorium__pilplass {
+  display: inline-block;
+}
+
+/* Group the two native timeline rows into one visual history panel. */
+/* stylelint-disable selector-pseudo-class-no-unknown, aksel/no-class-override */
+.laboratorium__tidslinje :global(.aksel-timeline__row):has(
+    > .laboratorium__historikkgruppe-topp
+  ),
+.laboratorium__tidslinje :global(.aksel-timeline__row):has(
+    > .laboratorium__historikkgruppe-bunn
+  ) {
+  margin-block: 0;
+  padding-block: var(--ax-space-8);
+  background-color: var(--ax-bg-neutral-soft);
+}
+
+.laboratorium__tidslinje
+  :global(.aksel-timeline__row):has(> .laboratorium__historikkgruppe-topp) {
+  border-radius: var(--ax-radius-12) var(--ax-radius-12) 0 0;
+}
+
+.laboratorium__tidslinje
+  :global(.aksel-timeline__row):has(> .laboratorium__historikkgruppe-bunn) {
+  border-radius: 0 0 var(--ax-radius-12) var(--ax-radius-12);
+}
+/* stylelint-enable selector-pseudo-class-no-unknown, aksel/no-class-override */
 
 .laboratorium__status {
   margin: 0;

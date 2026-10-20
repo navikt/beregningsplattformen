@@ -1,0 +1,29 @@
+{
+    "tidslinjer": {
+        "1": [
+            {
+                "fomDato": "2024-01-01",
+                "tomDato": "2024-01-14",
+                "mottaker": "Mohammed Nordmann",
+                "melding": "Eksempelmelding",
+                "status": "aktiv"
+            }
+        ],
+        "2": [
+            {
+                "fomDato": "2024-01-11",
+                "tomDato": null,
+                "mottaker": "Mohammed Nordmann",
+                "melding": "Eksempelmelding",
+                "status": "aktiv"
+            },
+            {
+                "fomDato": "2024-01-15",
+                "tomDato": "2024-02-01",
+                "mottaker": "Ola Nordmann",
+                "melding": "Eksempelmelding",
+                "status": "historisk"
+            }
+        ]
+    }
+}
