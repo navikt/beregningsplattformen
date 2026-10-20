@@ -3,7 +3,6 @@ package no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
-import no.nav.utbetaling.beregning.oppdrag.Omposteringskode
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjer
@@ -34,8 +33,6 @@ fun Oppdragstidslinje.satserMedForfall() = perPeriode { it.sats.opplysning.toInt
 fun Oppdragstidslinje.satserMedStønadId() = perPeriode { it.sats.opplysning.toInt() to it.stønadId?.opplysning }
 
 fun Oppdragstidslinje.satserMedUtbetalingsfrekvens() = perPeriode { it.sats.opplysning.toInt() to it.utbetalingsfrekvens?.opplysning }
-
-fun Oppdragstidslinje.satserMedOmpostering() = perPeriode { it.sats.opplysning.toInt() to it.ompostering?.opplysning?.kode }
 
 fun Oppdragstidslinje.satserMedKid() = perPeriode { it.sats.opplysning.toInt() to it.kidnummer?.opplysning?.nummer }
 
@@ -74,5 +71,3 @@ internal fun assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(
 
     oppdragstidslinjeFraEnInnsending shouldBeEqual oppdragstidslinjeFraOppdeltInnsending
 }
-
-val OMPOSTERINGSKODE = Omposteringskode("J")

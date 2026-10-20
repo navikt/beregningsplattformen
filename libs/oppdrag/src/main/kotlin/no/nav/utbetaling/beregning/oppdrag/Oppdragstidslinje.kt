@@ -172,7 +172,6 @@ class Oppdragstidslinje private constructor(
             utbetalingsfrekvens = oppdragsverdier.utbetalingsfrekvens,
             bilagstype = oppdragsverdier.bilagstype,
             avventingsårsak = opplysningerIntern.avventingsårsak,
-            ompostering = opplysningerIntern.ompostering,
             kidnummer = opplysningerIntern.kidnummer,
             status = opplysningerIntern.status,
             bostedsenhet = opplysningerIntern.bostedsenhet,

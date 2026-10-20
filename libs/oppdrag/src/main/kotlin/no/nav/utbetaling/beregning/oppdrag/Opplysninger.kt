@@ -1,7 +1,6 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.math.BigDecimal
-import java.time.Instant
 import java.time.LocalDate
 
 @JvmInline
@@ -45,11 +44,6 @@ value class Kidnummer(
 )
 
 @JvmInline
-value class Omposteringskode(
-    val kode: String,
-)
-
-@JvmInline
 value class Fagområde(
     val fagområde: String,
 )
@@ -67,11 +61,6 @@ value class DelytelseId(
 data class Opplysning<T>(
     val saksbehandlerId: SaksbehandlerId,
     val opplysning: T,
-)
-
-data class Ompostering(
-    val kode: Omposteringskode,
-    val registrert: Instant,
 )
 
 data class Bostedsenhet(
@@ -135,7 +124,6 @@ data class Opplysninger(
     val utbetalingsfrekvens: Opplysning<Utbetalingsfrekvens>?,
     val bilagstype: Opplysning<Bilagstype>?,
     val avventingsårsak: Opplysning<Avventingsårsak>?,
-    val ompostering: Opplysning<Ompostering>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
     val bostedsenhet: Opplysning<Bostedsenhet>?,

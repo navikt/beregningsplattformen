@@ -41,7 +41,6 @@ internal object FraXmlFormat {
         val kjedeendringer = kjedeendringerFra(linjerPerKjede)
 
         val avventinger by lazy { Avventinger.fra(oppdrag110) }
-        val omposteringer by lazy { Omposteringer.fra(oppdrag110) }
         val bostedsenheter by lazy { Enheter.bostedsenheterFra(oppdrag110) }
         val behandlendeEnheter by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
         val gjelderIder by lazy { GjelderIder.fra(oppdrag110) }
@@ -75,8 +74,6 @@ internal object FraXmlFormat {
                     builderTidslinje
                         .kombinerMed(avventinger) { _, builder, avventing ->
                             builder?.copy(avventingsårsakEndring = avventing)
-                        }.kombinerMed(omposteringer) { _, builder, ompostering ->
-                            builder?.copy(omposteringEndring = ompostering)
                         }.kombinerMed(bostedsenheter) { _, builder, bostedsenhet ->
                             builder?.copy(bostedsenhet = bostedsenhet)
                         }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
