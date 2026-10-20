@@ -81,9 +81,8 @@ export default defineConfig(({ command }) => {
 
     server: {
       proxy: {
-          "/lab-backend-api/api/v1": {
+          "/api/v1": {
             target: "http://localhost:8080",
-            rewrite: (path: string) => path.replace(/^\/lab-backend-api/, ""),
             changeOrigin: true,
           },
         }

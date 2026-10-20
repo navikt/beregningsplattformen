@@ -9,11 +9,11 @@ import io.ktor.server.routing.route
 import no.nav.utbetaling.beregning.lab.service.OppdragTolkningService
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
-const val LAB_API_PATH = "api/lab/v1"
+const val API_V1 = "/api/v1"
 
 fun Route.labApi(oppdragTolkningService: OppdragTolkningService) {
-    route(LAB_API_PATH) {
-        post("tolkOppdrag") {
+    route(API_V1) {
+        post("tolk-oppdrag") {
             val oppdrag = Oppdrag.fraXml(call.receiveText())
             val oppdragstidslinje = oppdragTolkningService.tolkOppdrag(oppdrag)
             call.respondText { oppdragstidslinje.toString() }
