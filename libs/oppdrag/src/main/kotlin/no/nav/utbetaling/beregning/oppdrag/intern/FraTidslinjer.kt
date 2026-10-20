@@ -49,7 +49,7 @@ internal object FraTidslinjer {
                         kidnummer = oppdragsdag.kidnummer,
                         status = oppdragsdag.status,
                         bostedsenhet = oppdragsdag.bostedsenhet,
-                        behandlendeEnhet = oppdragsdag.behandlendeEnhet,
+                        behandlendeEnhetEndring = oppdragsdag.behandlendeEnhet?.let { FeilregistrerbarOpplysning.Registrert(it) },
                         utbetalesTil = oppdragsdag.utbetalesTil,
                     )
                 }

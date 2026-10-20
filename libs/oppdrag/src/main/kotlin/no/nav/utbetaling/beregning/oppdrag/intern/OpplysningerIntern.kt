@@ -33,14 +33,15 @@ internal data class OpplysningerIntern(
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
     val bostedsenhet: Opplysning<Bostedsenhet>?,
-    val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
     val gjelderId: Opplysning<Personidentifikator>?,
     val utbetalesTil: Opplysning<UtbetalesTil>?,
+    private val behandlendeEnhetEndring: FeilregistrerbarOpplysning<BehandlendeEnhet>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
     private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
 ) {
     val avventingsårsak = avventingsårsakEndring?.gjeldende()
     val ompostering = omposteringEndring?.gjeldende()
+    val behandlendeEnhet = behandlendeEnhetEndring?.gjeldende()
 
     private fun medNyeVerdierFra(ny: OpplysningerIntern) =
         OpplysningerIntern(
@@ -53,7 +54,7 @@ internal data class OpplysningerIntern(
             omposteringEndring = FeilregistrerbarOpplysning.velg(this.omposteringEndring, ny.omposteringEndring),
             status = velgOpplysning(ny.status, this.status),
             bostedsenhet = velgNullableOpplysning(ny.bostedsenhet, this.bostedsenhet),
-            behandlendeEnhet = velgNullableOpplysning(ny.behandlendeEnhet, this.behandlendeEnhet),
+            behandlendeEnhetEndring = FeilregistrerbarOpplysning.velg(this.behandlendeEnhetEndring, ny.behandlendeEnhetEndring),
             gjelderId = velgNullableOpplysning(ny.gjelderId, this.gjelderId),
             utbetalesTil = velgNullableOpplysning(ny.utbetalesTil, this.utbetalesTil),
         )
@@ -66,13 +67,13 @@ internal data class OpplysningerIntern(
         private val henvisning: Henvisning?,
         private val sats: BigDecimal,
         private val kidnummer: Kidnummer?,
-        private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
-        private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>? = null,
         private val status: Status? = null,
-        private val bostedsenhet: Opplysning<Bostedsenhet>? = null,
-        private val behandlendeEnhet: Opplysning<BehandlendeEnhet>? = null,
+        private val bostedsenhet: Bostedsenhet? = null,
         private val gjelderId: Personidentifikator? = null,
         private val utbetalesTil: UtbetalesTil? = null,
+        private val behandlendeEnhet: FeilregistrerbarOpplysning<BehandlendeEnhet>? = null,
+        private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
+        private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             when {
@@ -91,8 +92,8 @@ internal data class OpplysningerIntern(
                 avventingsårsakEndring = avventingsårsakEndring,
                 omposteringEndring = omposteringEndring,
                 status = Opplysning(linjeSaksbehandlerId, (status ?: Status.Aktiv)),
-                bostedsenhet = bostedsenhet,
-                behandlendeEnhet = behandlendeEnhet,
+                bostedsenhet = bostedsenhet?.let { Opplysning(oppdragSaksbehandlerId, it) },
+                behandlendeEnhetEndring = behandlendeEnhet,
                 gjelderId = gjelderId?.let { Opplysning(oppdragSaksbehandlerId, it) },
                 utbetalesTil = utbetalesTil?.let { Opplysning(linjeSaksbehandlerId, it) },
             )

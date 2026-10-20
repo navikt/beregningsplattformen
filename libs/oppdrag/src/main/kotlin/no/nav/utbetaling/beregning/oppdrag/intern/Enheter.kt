@@ -12,19 +12,34 @@ internal object Enheter {
     private const val BOSTEDSENHET = "BOS"
     private const val BEHANDLENDE_ENHET = "BEH"
 
-    fun bostedsenheterFra(oppdrag110: Oppdrag110) =
-        enheterFra(oppdrag110, typeEnhet = BOSTEDSENHET, ::Bostedsenhet)
-            .validerEnheter(
-                oppdrag110 = oppdrag110,
-                enhetstype = BOSTEDSENHET,
+    fun bostedsenheterFra(oppdrag110: Oppdrag110): Tidslinje<Bostedsenhet> {
+        val builder = Tidslinje.Builder<Bostedsenhet>()
+        oppdrag110.oppdragsEnhet120.filter { it.typeEnhet == BOSTEDSENHET }.sortedBy { it.datoEnhetFom }.forEach { enhetOppdrag110 ->
+            val enhetsnummer = enhetOppdrag110.enhet ?: error("Mangler enhet på oppdragsnivå")
+            builder.periode(
+                periode = Periode.ÅpenPeriode(enhetOppdrag110.datoEnhetFom),
+                verdi = Bostedsenhet(enhetsnummer),
             )
+        }
+        return builder.build().validerEnheter(oppdrag110, BOSTEDSENHET)
+    }
 
-    fun behandlendeEnheterFra(oppdrag110: Oppdrag110) =
-        enheterFra(oppdrag110, typeEnhet = BEHANDLENDE_ENHET, ::BehandlendeEnhet)
-            .validerEnheter(
-                oppdrag110 = oppdrag110,
-                enhetstype = BEHANDLENDE_ENHET,
+    fun behandlendeEnheterFra(oppdrag110: Oppdrag110): Tidslinje<FeilregistrerbarOpplysning<BehandlendeEnhet>> {
+        val builder = Tidslinje.Builder<FeilregistrerbarOpplysning<BehandlendeEnhet>>()
+        val saksbehandlerId = SaksbehandlerId(oppdrag110.saksbehId)
+        oppdrag110.oppdragsEnhet120.filter { it.typeEnhet == BEHANDLENDE_ENHET }.sortedBy { it.datoEnhetFom }.forEach { enhetOppdrag110 ->
+            val opplysning =
+                when (val enhetsnummer = enhetOppdrag110.enhet) {
+                    null -> FeilregistrerbarOpplysning.Feilregistrert
+                    else -> FeilregistrerbarOpplysning.Registrert(Opplysning(saksbehandlerId, BehandlendeEnhet(enhetsnummer)))
+                }
+            builder.periode(
+                periode = Periode.ÅpenPeriode(enhetOppdrag110.datoEnhetFom),
+                verdi = opplysning,
             )
+        }
+        return builder.build().validerEnheter(oppdrag110, BEHANDLENDE_ENHET)
+    }
 
     private fun <T> Tidslinje<T>.validerEnheter(
         oppdrag110: Oppdrag110,
@@ -38,22 +53,5 @@ internal object Enheter {
             }
         }
         return this
-    }
-
-    private fun <T> enheterFra(
-        oppdrag110: Oppdrag110,
-        typeEnhet: String,
-        tilEnhet: (enhetsnummer: String) -> T,
-    ): Tidslinje<Opplysning<T>> {
-        val builder = Tidslinje.Builder<Opplysning<T>>()
-        val saksbehandlerId = SaksbehandlerId(oppdrag110.saksbehId)
-        oppdrag110.oppdragsEnhet120.filter { it.typeEnhet == typeEnhet }.sortedBy { it.datoEnhetFom }.forEach { enhetOppdrag110 ->
-            val enhetsnummer = enhetOppdrag110.enhet ?: error("Mangler enhet på oppdragsnivå")
-            builder.periode(
-                periode = Periode.ÅpenPeriode(enhetOppdrag110.datoEnhetFom),
-                verdi = Opplysning(saksbehandlerId, tilEnhet(enhetsnummer)),
-            )
-        }
-        return builder.build()
     }
 }
