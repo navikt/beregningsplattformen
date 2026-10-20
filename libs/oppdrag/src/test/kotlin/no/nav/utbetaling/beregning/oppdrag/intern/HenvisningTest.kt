@@ -5,9 +5,10 @@ import java.util.UUID
 import io.kotest.core.spec.style.FunSpec
 
 import no.nav.utbetaling.beregning.oppdrag.Henvisning
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedHenvisning
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.til
@@ -53,3 +54,5 @@ class HenvisningTest :
             resultat.satserMedHenvisning() skalVæreLik mapOf(januar to setOf(100 to Henvisning("H1"), 200 to null))
         }
     })
+
+private fun Oppdragstidslinje.satserMedHenvisning() = perPeriode { it.sats.opplysning.toInt() to it.henvisning?.opplysning }

@@ -5,9 +5,10 @@ import java.util.UUID
 import io.kotest.core.spec.style.FunSpec
 
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedBilagstype
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.tid.januar
 
@@ -43,3 +44,5 @@ class BilagstypeTest :
             resultat.satserMedBilagstype() skalVæreLik mapOf(januar to setOf(100 to Bilagstype("K231"), 200 to null))
         }
     })
+
+private fun Oppdragstidslinje.satserMedBilagstype() = perPeriode { it.sats.opplysning.toInt() to it.bilagstype?.opplysning }

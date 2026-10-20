@@ -18,28 +18,6 @@ fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
 
 fun Oppdragstidslinje.satser() = perPeriode { it.sats.opplysning.toInt() }
 
-fun Oppdragstidslinje.satserPerFagsystemId() = perPeriode { it.fagsystemId.id to it.sats.opplysning.toInt() }
-
-fun Oppdragstidslinje.avventinger() = perPeriode { it.avventingsårsak }
-
-fun Oppdragstidslinje.satserMedAvventing() = perPeriode { it.sats.opplysning.toInt() to it.avventingsårsak?.opplysning }
-
-fun Oppdragstidslinje.satserMedBilagstype() = perPeriode { it.sats.opplysning.toInt() to it.bilagstype?.opplysning }
-
-fun Oppdragstidslinje.satserMedHenvisning() = perPeriode { it.sats.opplysning.toInt() to it.henvisning?.opplysning }
-
-fun Oppdragstidslinje.satserMedForfall() = perPeriode { it.sats.opplysning.toInt() to it.forfall?.opplysning }
-
-fun Oppdragstidslinje.satserMedStønadId() = perPeriode { it.sats.opplysning.toInt() to it.stønadId?.opplysning }
-
-fun Oppdragstidslinje.satserMedUtbetalingsfrekvens() = perPeriode { it.sats.opplysning.toInt() to it.utbetalingsfrekvens?.opplysning }
-
-fun Oppdragstidslinje.satserMedKid() = perPeriode { it.sats.opplysning.toInt() to it.kidnummer?.opplysning?.nummer }
-
-fun Oppdragstidslinje.statuser() = perPeriode { it.status.opplysning }
-
-fun Oppdragstidslinje.delytelseIdMedStatus() = perPeriode { it.delytelseId.id to it.status.opplysning }
-
 fun Oppdragstidslinje.assertGjenskaptfraTidslinjer() {
     val fraTidslinjer = FraTidslinjer.opprett(tidslinjeIterator().asSequence().toList())
     fraTidslinjer shouldBeEqual this

@@ -5,12 +5,12 @@ import java.util.UUID
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Status
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.delytelseIdMedStatus
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.statuser
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatus
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatusLinje
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatusLinje.OPPH
@@ -198,3 +198,7 @@ class StatusTest :
                 )
         }
     })
+
+private fun Oppdragstidslinje.statuser() = perPeriode { it.status.opplysning }
+
+private fun Oppdragstidslinje.delytelseIdMedStatus() = perPeriode { it.delytelseId.id to it.status.opplysning }

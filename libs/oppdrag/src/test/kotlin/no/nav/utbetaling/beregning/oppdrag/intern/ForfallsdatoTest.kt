@@ -5,9 +5,10 @@ import java.util.UUID
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedForfall
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.mars
 
@@ -43,3 +44,5 @@ class ForfallsdatoTest :
             resultat.satserMedForfall() shouldBe mapOf(januar to setOf(100 to 15.mars, 200 to null))
         }
     })
+
+private fun Oppdragstidslinje.satserMedForfall() = perPeriode { it.sats.opplysning.toInt() to it.forfall?.opplysning }

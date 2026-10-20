@@ -10,8 +10,8 @@ import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.assertGjenskaptfraTidslinjer
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satser
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserPerFagsystemId
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.tid.februar
 import no.nav.utbetaling.beregning.tid.januar
@@ -149,3 +149,5 @@ class KjedeTest :
             gammel.assertGjenskaptfraTidslinjer()
         }
     })
+
+private fun Oppdragstidslinje.satserPerFagsystemId() = perPeriode { it.fagsystemId.id to it.sats.opplysning.toInt() }

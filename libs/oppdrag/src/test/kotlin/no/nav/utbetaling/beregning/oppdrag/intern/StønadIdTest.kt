@@ -4,10 +4,11 @@ import java.util.UUID
 
 import io.kotest.core.spec.style.FunSpec
 
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedStønadId
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.tid.februar
 import no.nav.utbetaling.beregning.tid.januar
@@ -66,3 +67,5 @@ class StønadIdTest :
                 )
         }
     })
+
+private fun Oppdragstidslinje.satserMedStønadId() = perPeriode { it.sats.opplysning.toInt() to it.stønadId?.opplysning }

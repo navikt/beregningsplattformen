@@ -6,10 +6,11 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedUtbetalingsfrekvens
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.tid.februar
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.til
@@ -74,3 +75,5 @@ class UtbetalingsfrekvensTest :
                 )
         }
     })
+
+private fun Oppdragstidslinje.satserMedUtbetalingsfrekvens() = perPeriode { it.sats.opplysning.toInt() to it.utbetalingsfrekvens?.opplysning }

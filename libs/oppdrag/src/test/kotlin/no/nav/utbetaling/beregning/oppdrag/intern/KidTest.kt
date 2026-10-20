@@ -5,9 +5,10 @@ import java.util.UUID
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.satserMedKid
+import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.til
 
@@ -35,3 +36,5 @@ class KidTest :
                 )
         }
     })
+
+private fun Oppdragstidslinje.satserMedKid() = perPeriode { it.sats.opplysning.toInt() to it.kidnummer?.opplysning?.nummer }
