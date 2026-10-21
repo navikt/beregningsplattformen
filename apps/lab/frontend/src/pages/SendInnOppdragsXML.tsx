@@ -29,6 +29,19 @@ interface XmlUtkast {
 	feltverdier: Record<string, string>;
 }
 
+type KjedePeriodeDTO =
+	OppdragstidslinjeDTO["kjeder"][number]["kjedeVersjoner"][number]["kjedePerioder"][number];
+
+function formaterFeltnavn(feltnavn: string) {
+	return feltnavn.replace(/([A-Z])/g, " $1");
+}
+
+function formaterFeltverdi(feltnavn: string, verdi: string | null) {
+	if (verdi !== null) return verdi;
+	if (feltnavn === "tilDato") return "Ingen sluttdato";
+	return "Ingen verdi";
+}
+
 export default function SendInnOppdragsXML() {
 	const [xmlUtkast, settXmlUtkast] = useState<XmlUtkast[]>([
 		{ id: 1, xmlMal: oppdragsXmlTypedTemplate, feltverdier: {} },
@@ -48,9 +61,9 @@ export default function SendInnOppdragsXML() {
 		kjedeId: string;
 		versjonsindeks: number;
 		periodeindeks: number;
-		fraDato: string;
-		tilDato: string | null;
-		utbetalesTil: string;
+		fagområde: string;
+		fagsystemId: string;
+		periode: KjedePeriodeDTO;
 		historisk: boolean;
 	} | null>(null);
 	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(4);
@@ -363,9 +376,9 @@ export default function SendInnOppdragsXML() {
 																	kjedeId: kjede.id,
 																	versjonsindeks,
 																	periodeindeks,
-																	fraDato: periode.fraDato,
-																	tilDato: periode.tilDato,
-																	utbetalesTil: periode.utbetalesTil,
+																	fagområde: kjede.fagområde,
+																	fagsystemId: kjede.fagsystemId,
+																	periode,
 																	historisk,
 																},
 													)
@@ -378,9 +391,12 @@ export default function SendInnOppdragsXML() {
 												}
 												status={historisk ? "warning" : "success"}
 											>
-												<p>Fra dato: {periode.fraDato}</p>
-												<p>Til dato: {periode.tilDato ?? "Ingen sluttdato"}</p>
-												<p>Utbetales til: {periode.utbetalesTil}</p>
+												{Object.entries(periode).map(([feltnavn, verdi]) => (
+													<p key={feltnavn}>
+														{formaterFeltnavn(feltnavn)}:{" "}
+														{formaterFeltverdi(feltnavn, verdi)}
+													</p>
+												))}
 											</Timeline.Period>
 										);
 									};
@@ -493,21 +509,23 @@ export default function SendInnOppdragsXML() {
 							</Heading>
 							<dl className={styles["laboratorium__periodedetaljer-liste"]}>
 								<div>
-									<dt>Fra dato</dt>
-									<dd>{valgtPeriode.fraDato}</dd>
-								</div>
-								<div>
-									<dt>Til dato</dt>
-									<dd>{valgtPeriode.tilDato ?? "Ingen sluttdato"}</dd>
-								</div>
-								<div>
-									<dt>Utbetales til</dt>
-									<dd>{valgtPeriode.utbetalesTil}</dd>
-								</div>
-								<div>
 									<dt>Kjede-ID</dt>
 									<dd>{valgtPeriode.kjedeId}</dd>
 								</div>
+								<div>
+									<dt>Fagområde</dt>
+									<dd>{valgtPeriode.fagområde}</dd>
+								</div>
+								<div>
+									<dt>Fagsystem-ID</dt>
+									<dd>{valgtPeriode.fagsystemId}</dd>
+								</div>
+								{Object.entries(valgtPeriode.periode).map(([feltnavn, verdi]) => (
+									<div key={feltnavn}>
+										<dt>{formaterFeltnavn(feltnavn)}</dt>
+										<dd>{formaterFeltverdi(feltnavn, verdi)}</dd>
+									</div>
+								))}
 							</dl>
 						</section>
 					)}
