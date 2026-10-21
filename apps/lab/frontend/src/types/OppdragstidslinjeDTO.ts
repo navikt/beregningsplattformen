@@ -3,8 +3,8 @@ import { z } from "zod";
 export const kjedePerioderSchema = z.object({
 	fraDato: z.iso.date(),
 	tilDato: z.iso.date().nullable(),
-	utbetalesTil: z.string(),
-});
+    status: z.string(),
+}).catchall(z.string().nullable());
 
 export const kjedeVersjonSchema = z.object({
 	kjedePerioder: z.array(kjedePerioderSchema),
@@ -12,6 +12,8 @@ export const kjedeVersjonSchema = z.object({
 
 export const kjedeSchema = z.object({
 	id: z.uuid(),
+    fagområde: z.string(),
+    fagsystemId: z.string(),
 	kjedeVersjoner: z.array(kjedeVersjonSchema),
 });
 
