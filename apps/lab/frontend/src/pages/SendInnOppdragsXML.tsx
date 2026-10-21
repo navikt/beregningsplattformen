@@ -1,97 +1,72 @@
-import { ChevronDownIcon, ChevronRightIcon } from "@navikt/aksel-icons";
 import {
-	Accordion,
+	ChevronDownIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	PlusIcon,
+} from "@navikt/aksel-icons";
+import {
 	BodyShort,
 	Box,
 	Button,
-	Fieldset,
 	Heading,
-	HGrid,
-	HStack,
 	LocalAlert,
-	Textarea,
-	TextField,
 	Timeline,
+	ToggleGroup,
 } from "@navikt/ds-react";
-import { isAxiosError } from "axios";
-import { type SubmitEvent, useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import tidslinjeData from "../../mock/tidslinje.json";
-import { postTolkOppdrag } from "../api/apiService";
-import { OppdragDatoFelt } from "../components/OppdragDatoFelt";
-import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
-import { HttpStatusCodeError } from "../types/Error";
-import { fillTypedTemplate, templateFields } from "../util/template";
+import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
 import styles from "./SendInnOppdragsXML.module.css";
 
 export default function SendInnOppdragsXML() {
-	const [xmlMal, settXmlMal] = useState(oppdragsXmlTypedTemplate);
-	const [xmlMalOpen, settXmlMalOpen] = useState(false);
-	const [xmlFeil, settXmlFeil] = useState(false);
-	const [feltverdier, settFeltverdier] = useState<Record<string, string>>({});
-	const [resultat, settResultat] = useState<string | null>(null);
-	const [respons, settRespons] = useState<string | null>(null);
-	const [sender, settSender] = useState(false);
-	const [visHistorikkKjede2, settVisHistorikkKjede2] = useState(false);
+	const [xmlUtkast, settXmlUtkast] = useState([1]);
+	const [valgtXmlId, settValgtXmlId] = useState(1);
+	const nesteXmlId = useRef(2);
+	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
+		() => new Set(),
+	);
 	const [valgtPeriode, settValgtPeriode] = useState<{
 		id: string;
-		melding: string;
-		status: string;
+		kjedeId: string;
+		versjonsindeks: number;
+		periodeindeks: number;
+		fraDato: string;
+		tilDato: string | null;
+		utbetalesTil: string;
+		historisk: boolean;
 	} | null>(null);
-	const felter = useMemo(() => templateFields(xmlMal), [xmlMal]);
-	const generertXml = useMemo(
-		() => fillTypedTemplate(xmlMal, felter, feltverdier),
-		[xmlMal, felter, feltverdier],
+	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(4);
+	const allePerioder = tidslinjeData.kjeder.flatMap((kjede) =>
+		kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 	);
-	const fjernResultat = () => {
-		settResultat(null);
-		settRespons(null);
-	};
-
-	const labels: Record<string, string> = {
-		datoVedtakFom: "Fra dato",
-		datoVedtakTom: "Til dato",
-		sats: "Sats",
-		oppdragGjelderId: "Gjelder",
-		utbetalesTilId: "Utbetales til",
-		vedtakssats: "Vedtakssats",
-	};
-
-	const handterInnsending = async (hendelse: SubmitEvent<HTMLFormElement>) => {
-		hendelse.preventDefault();
-		if (sender) return;
-
-		settResultat(null);
-		settRespons(null);
-		if (!generertXml.trim()) {
-			settXmlFeil(true);
-			settResultat("Skriv inn et XML-oppdrag.");
-			return;
-		}
-		settXmlFeil(false);
-		settSender(true);
-
-		try {
-			settRespons(await postTolkOppdrag(generertXml));
-			settResultat("XML-en er behandlet.");
-		} catch (error) {
-			if (isAxiosError<string>(error) && error.response) {
-				settRespons(error.response.data);
-			}
-			settResultat(
-				error instanceof HttpStatusCodeError ||
-					(isAxiosError(error) && error.response)
-					? "Kunne ikke behandle XML-en. Kontroller innholdet og prøv igjen."
-					: "Kunne ikke behandle XML-en. Prøv igjen.",
-			);
-		} finally {
-			settSender(false);
-		}
+	const [tidslinjeStart, settTidslinjeStart] = useState<Date | null>(() => {
+		if (allePerioder.length === 0) return null;
+		const tidligsteDato = new Date(
+			Math.min(
+				...allePerioder.map((periode) => new Date(periode.fraDato).getTime()),
+			),
+		);
+		return new Date(tidligsteDato.getFullYear(), tidligsteDato.getMonth(), 1);
+	});
+	const tidslinjeSlutt = tidslinjeStart
+		? new Date(
+				tidslinjeStart.getFullYear(),
+				tidslinjeStart.getMonth() + tidslinjeMåneder,
+				0,
+			)
+		: null;
+	const flyttTidslinje = (antallMåneder: number) => {
+		settTidslinjeStart((start) =>
+			start
+				? new Date(start.getFullYear(), start.getMonth() + antallMåneder, 1)
+				: start,
+		);
 	};
 
 	return (
 		<main className={styles.laboratorium}>
 			<section
-				className={styles.laboratorium__panel}
+				className={`${styles.laboratorium__panel} ${styles["laboratorium__panel--xml"]}`}
 				aria-labelledby="lab-heading"
 			>
 				<p className={styles.laboratorium__intro}>
@@ -106,340 +81,254 @@ export default function SendInnOppdragsXML() {
 						Ikke lim inn personopplysninger eller reelle ID-er.
 					</LocalAlert.Content>
 				</LocalAlert>
-				<form
-					className={styles.laboratorium__skjema}
-					onSubmit={handterInnsending}
-					aria-busy={sender}
-				>
-					<Accordion>
-						<Accordion.Item
-							open={xmlMalOpen || xmlFeil}
-							onOpenChange={settXmlMalOpen}
+				<fieldset className={styles.laboratorium__xmlvalg}>
+					<legend className="aksel-sr-only">Velg XML-utkast</legend>
+					{xmlUtkast.map((xmlId) => (
+						<Button
+							key={xmlId}
+							type="button"
+							variant={valgtXmlId === xmlId ? "primary" : "secondary"}
+							aria-pressed={valgtXmlId === xmlId}
+							onClick={() => settValgtXmlId(xmlId)}
 						>
-							<Accordion.Header>XML-mal</Accordion.Header>
-							<Accordion.Content>
-								<Textarea
-									className={styles.laboratorium__xmlfelt}
-									label="XML-mal"
-									error={xmlFeil ? "Skriv inn et XML-oppdrag." : undefined}
-									description="Malmarkører i klammeparenteser blir erstattet med verdiene fra feltene under."
-									minRows={16}
-									readOnly={sender}
-									value={xmlMal}
-									onChange={(hendelse) => {
-										const nyMal = hendelse.target.value;
-										fjernResultat();
-										settXmlFeil(false);
-										settXmlMal(nyMal);
-										const nyeFelter = templateFields(nyMal);
-										settFeltverdier((forrige) =>
-											Object.fromEntries(
-												nyeFelter.map((felt) => [
-													felt.key,
-													forrige[felt.key] ?? felt.value,
-												]),
-											),
-										);
-									}}
-								/>
-							</Accordion.Content>
-						</Accordion.Item>
-						<Accordion.Item>
-							<Accordion.Header>Forhåndsvis XML</Accordion.Header>
-							<Accordion.Content>
-								<pre className={styles.laboratorium__xmlforhandsvisning}>
-									{generertXml}
-								</pre>
-							</Accordion.Content>
-						</Accordion.Item>
-					</Accordion>
-					<HGrid columns={{ xs: 1, md: 2 }} gap="space-32" align="start">
-						{[
-							[
-								{ kind: "pnr", legend: "Oppdrag", name: "oppdragGjelderId" },
-								{ kind: "dato", legend: "Vedtaksperiode", name: undefined },
-								{ kind: "pnr", legend: "Mottaker", name: "utbetalesTilId" },
-							],
-							[{ kind: "number", legend: "Satser", name: undefined }],
-						].map((grupper) => (
-							<div
-								key={grupper[0].legend}
-								className={styles.laboratorium__feltkolonne}
-							>
-								<Heading level="2" size="small">
-									{grupper[0].kind === "number" ? "Satser" : "Oppdragsdetaljer"}
-								</Heading>
-								{grupper.map(({ kind, legend, name }) => {
-									const gruppefelter = felter.filter(
-										(felt) =>
-											felt.kind === kind && (!name || felt.name === name),
-									);
-									if (gruppefelter.length === 0) return null;
+							XML {xmlId}
+						</Button>
+					))}
+				</fieldset>
+				{xmlUtkast.map((xmlId) => (
+					<div key={xmlId} hidden={valgtXmlId !== xmlId}>
+						<OppdragsXmlSkjema nummer={xmlId} />
+					</div>
+				))}
+				<div className={styles.laboratorium__leggtil}>
+					<Button
+						type="button"
+						variant="secondary"
+						icon={<PlusIcon aria-hidden />}
+						onClick={() => {
+							const nyttXmlId = nesteXmlId.current;
+							nesteXmlId.current += 1;
+							settXmlUtkast((utkast) => [...utkast, nyttXmlId]);
+							settValgtXmlId(nyttXmlId);
+						}}
+					>
+						Legg til XML
+					</Button>
+				</div>
+			</section>
+			<section
+				className={`${styles.laboratorium__panel} ${styles.laboratorium__tidslinje}`}
+				aria-labelledby="tidslinje-heading"
+			>
+				<Heading id="tidslinje-heading" level="2" size="medium">
+					Tidslinjer
+				</Heading>
+				{allePerioder.length === 0 ? (
+					<BodyShort>Ingen tidslinjer å vise.</BodyShort>
+				) : (
+					tidslinjeStart &&
+					tidslinjeSlutt && (
+						<>
+							<div className={styles.laboratorium__tidslinjenavigasjon}>
+								<BodyShort aria-live="polite">
+									Viser {tidslinjeStart.toLocaleDateString("nb-NO")}–
+									{tidslinjeSlutt.toLocaleDateString("nb-NO")}
+								</BodyShort>
+								<div className={styles.laboratorium__tidslinjekontroller}>
+									<ToggleGroup
+										aria-label="Antall måneder i perioden"
+										data-color="neutral"
+										size="small"
+										value={String(tidslinjeMåneder)}
+										onChange={(value) => settTidslinjeMåneder(Number(value))}
+									>
+										<ToggleGroup.Item value="2" label="2 måneder" />
+										<ToggleGroup.Item value="4" label="4 måneder" />
+										<ToggleGroup.Item value="8" label="8 måneder" />
+									</ToggleGroup>
+									<div className={styles.laboratorium__tidslinjepaginering}>
+										<Button
+											type="button"
+											data-color="neutral"
+											variant="secondary"
+											size="small"
+											icon={<ChevronLeftIcon aria-hidden />}
+											aria-label="Forrige periode"
+											onClick={() => flyttTidslinje(-tidslinjeMåneder)}
+										/>
+										<Button
+											type="button"
+											data-color="neutral"
+											variant="secondary"
+											size="small"
+											icon={<ChevronRightIcon aria-hidden />}
+											aria-label="Neste periode"
+											onClick={() => flyttTidslinje(tidslinjeMåneder)}
+										/>
+									</div>
+								</div>
+							</div>
+							<Timeline startDate={tidslinjeStart} endDate={tidslinjeSlutt}>
+								{tidslinjeData.kjeder.flatMap((kjede, kjedeindeks) => {
+									const aktivVersjon = kjede.kjedeVersjoner[0];
+									if (!aktivVersjon) return [];
 
-									return (
-										<Fieldset
-											key={legend}
-											legend={legend}
-											hideLegend={kind !== "dato"}
-										>
-											<HGrid
-												columns={{
-													xs: 1,
-													sm: kind === "dato" ? "max-content max-content" : 1,
-												}}
-												gap="space-16"
+									const harHistorikk = kjede.kjedeVersjoner.length > 1;
+									const erUtvidet = utvidedeKjeder.has(kjede.id);
+									const kjedeId = encodeURIComponent(kjede.id);
+									const kjedeLabel = `Kjede ${kjedeindeks + 1}`;
+
+									const lagPeriode = (
+										periode: (typeof aktivVersjon.kjedePerioder)[number],
+										versjonsindeks: number,
+										periodeindeks: number,
+										historisk: boolean,
+									) => {
+										const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
+
+										return (
+											<Timeline.Period
+												key={periodeId}
+												id={periodeId}
+												aria-controls="periodedetaljer"
+												isActive={valgtPeriode?.id === periodeId}
+												onSelectPeriod={() =>
+													settValgtPeriode({
+														id: periodeId,
+														kjedeId: kjede.id,
+														versjonsindeks,
+														periodeindeks,
+														fraDato: periode.fraDato,
+														tilDato: periode.tilDato,
+														utbetalesTil: periode.utbetalesTil,
+														historisk,
+													})
+												}
+												start={new Date(periode.fraDato)}
+												end={
+													periode.tilDato
+														? new Date(periode.tilDato)
+														: new Date()
+												}
+												status={historisk ? "warning" : "success"}
 											>
-												{gruppefelter.map((felt) => {
-													const label = labels[felt.name] ?? felt.name;
-													const value = feltverdier[felt.key] ?? felt.value;
-													const onChange = (nyVerdi: string) => {
-														fjernResultat();
-														settXmlFeil(false);
-														settFeltverdier((forrige) => ({
-															...forrige,
-															[felt.key]: nyVerdi,
-														}));
-													};
+												<p>Fra dato: {periode.fraDato}</p>
+												<p>Til dato: {periode.tilDato ?? "Ingen sluttdato"}</p>
+												<p>Utbetales til: {periode.utbetalesTil}</p>
+											</Timeline.Period>
+										);
+									};
 
-													if (felt.kind === "dato") {
-														return (
-															<OppdragDatoFelt
-																key={felt.key}
-																label={label}
-																value={value}
-																readOnly={sender}
-																onChange={onChange}
-															/>
-														);
-													}
+									const historikkRader =
+										harHistorikk && erUtvidet
+											? kjede.kjedeVersjoner.slice(1).map((versjon, indeks) => {
+													const versjonsindeks = indeks + 1;
 
 													return (
-														<TextField
-															key={felt.key}
-															label={label}
-															type={felt.kind === "number" ? "number" : "text"}
-															autoComplete={
-																felt.kind === "pnr" ? "off" : undefined
+														<Timeline.Row
+															key={`rad-kjede-${kjedeId}-${versjonsindeks}`}
+															id={`rad-kjede-${kjedeId}-${versjonsindeks}`}
+															label={
+																<div
+																	className={
+																		styles.laboratorium__tidslinjeetikett
+																	}
+																>
+																	<BodyShort as="h3" size="small">
+																		Historikk
+																	</BodyShort>
+																</div>
 															}
-															value={value}
-															readOnly={sender}
-															onChange={(hendelse) =>
-																onChange(hendelse.target.value)
-															}
-														/>
+														>
+															{versjon.kjedePerioder.map(
+																(periode, periodeindeks) =>
+																	lagPeriode(
+																		periode,
+																		versjonsindeks,
+																		periodeindeks,
+																		true,
+																	),
+															)}
+														</Timeline.Row>
 													);
-												})}
-											</HGrid>
-										</Fieldset>
-									);
-								})}
-							</div>
-						))}
-					</HGrid>
-					<HStack
-						className={styles.laboratorium__handlinger}
-						gap="space-8"
-						wrap
-					>
-						<Button type="submit" loading={sender} disabled={sender}>
-							Behandle XML
-						</Button>
-						<Button
-							type="button"
-							variant="secondary"
-							disabled={sender}
-							onClick={() => {
-								fjernResultat();
-								settXmlFeil(false);
-								settFeltverdier({});
-							}}
-						>
-							Nullstill felter
-						</Button>
-						<Button
-							type="button"
-							variant="secondary"
-							disabled={sender}
-							onClick={() => {
-								fjernResultat();
-								settXmlFeil(false);
-								settXmlMal(oppdragsXmlTypedTemplate);
-								settFeltverdier({});
-							}}
-						>
-							Tilbakestill standardmal
-						</Button>
-					</HStack>
-					{resultat && (
-						<p className={styles.laboratorium__status} role="status">
-							{resultat}
-						</p>
-					)}
-				</form>
-				<section
-					className={styles.laboratorium__tidslinje}
-					aria-labelledby="tidslinje-heading"
-				>
-					<Heading id="tidslinje-heading" level="2" size="medium">
-						Tidslinjer
-					</Heading>
-					<Timeline>
-						{Object.entries(tidslinjeData.tidslinjer).map(
-							([kjedeId, innslag]) => {
-								const gjeldende = innslag[0];
-								if (!gjeldende) return null;
+												})
+											: [];
 
-								const harHistorikk = kjedeId === "2" && innslag.length > 1;
-
-								return (
-									<Timeline.Row
-										key={kjedeId}
-										className={
-											harHistorikk && visHistorikkKjede2
-												? styles["laboratorium__historikkgruppe-topp"]
-												: undefined
-										}
-										label={
-											<HStack
-												className={styles.laboratorium__kjedeetikett}
-												gap="space-8"
-												align="center"
-												wrap={false}
-											>
-												{harHistorikk ? (
-													<Button
-														className={styles.laboratorium__utvidknapp}
-														variant="tertiary"
-														data-color="neutral"
-														size="small"
-														icon={
-															visHistorikkKjede2 ? (
-																<ChevronDownIcon aria-hidden />
-															) : (
-																<ChevronRightIcon aria-hidden />
-															)
-														}
-														aria-label={
-															visHistorikkKjede2
-																? "Skjul historiske perioder for kjede 2"
-																: "Vis historiske perioder for kjede 2"
-														}
-														aria-expanded={visHistorikkKjede2}
-														aria-controls={
-															visHistorikkKjede2
-																? "historikk-kjede-2"
-																: undefined
-														}
-														onClick={() => {
-															settVisHistorikkKjede2((vis) => !vis);
-															if (valgtPeriode?.id.startsWith("historisk-")) {
-																settValgtPeriode(null);
+									return [
+										<Timeline.Row
+											key={`rad-kjede-${kjedeId}-0`}
+											id={`rad-kjede-${kjedeId}-0`}
+											label={
+												<div className={styles.laboratorium__tidslinjeetikett}>
+													<BodyShort as="h3" size="small" weight="semibold">
+														{kjedeLabel}
+													</BodyShort>
+													{harHistorikk && (
+														<Button
+															type="button"
+															size="xsmall"
+															variant="tertiary"
+															icon={
+																erUtvidet ? (
+																	<ChevronDownIcon aria-hidden />
+																) : (
+																	<ChevronRightIcon aria-hidden />
+																)
 															}
-														}}
-													/>
-												) : (
-													<span
-														className={styles.laboratorium__pilplass}
-														aria-hidden="true"
-													/>
-												)}
-												<BodyShort as="h3" size="small" weight="semibold">
-													Kjede {kjedeId}
-												</BodyShort>
-											</HStack>
-										}
-									>
-										<Timeline.Period
-											id={`periode-${kjedeId}`}
-											aria-controls="periodedetaljer"
-											isActive={valgtPeriode?.id === `periode-${kjedeId}`}
-											onSelectPeriod={() =>
-												settValgtPeriode({
-													id: `periode-${kjedeId}`,
-													melding: gjeldende.melding,
-													status: gjeldende.status,
-												})
+															aria-label={`${erUtvidet ? "Skjul" : "Vis"} historikk for ${kjedeLabel}`}
+															aria-expanded={erUtvidet}
+															onClick={() => {
+																if (
+																	erUtvidet &&
+																	valgtPeriode?.kjedeId === kjede.id &&
+																	valgtPeriode.historisk
+																) {
+																	settValgtPeriode(null);
+																}
+																settUtvidedeKjeder((utvidede) => {
+																	const nyeUtvidede = new Set(utvidede);
+																	if (nyeUtvidede.has(kjede.id)) {
+																		nyeUtvidede.delete(kjede.id);
+																	} else {
+																		nyeUtvidede.add(kjede.id);
+																	}
+																	return nyeUtvidede;
+																});
+															}}
+														/>
+													)}
+												</div>
 											}
-											start={new Date(gjeldende.fomDato)}
-											end={
-												gjeldende.tomDato
-													? new Date(gjeldende.tomDato)
-													: new Date()
-											}
-											status="info"
-											statusLabel="Nåværende situasjon"
 										>
-											<p>Fom dato: {gjeldende.fomDato}</p>
-											<p>Tom dato: {gjeldende.tomDato ?? "Ingen sluttdato"}</p>
-											<p>Navn: {gjeldende.mottaker}</p>
-										</Timeline.Period>
-									</Timeline.Row>
-								);
-							},
-						)}
-						{visHistorikkKjede2 &&
-							tidslinjeData.tidslinjer["2"].slice(1).length > 0 && (
-								<Timeline.Row
-									id="historikk-kjede-2"
-									className={styles["laboratorium__historikkgruppe-bunn"]}
-									label={
-										<span className="aksel-sr-only">
-											Historiske perioder i kjede 2
-										</span>
-									}
-								>
-									{tidslinjeData.tidslinjer["2"].slice(1).map((periode) => (
-										<Timeline.Period
-											key={`historikk-${periode.fomDato}`}
-											id={`historisk-${periode.fomDato}`}
-											aria-controls="periodedetaljer"
-											isActive={
-												valgtPeriode?.id === `historisk-${periode.fomDato}`
-											}
-											onSelectPeriod={() =>
-												settValgtPeriode({
-													id: `historisk-${periode.fomDato}`,
-													melding: periode.melding,
-													status: periode.status,
-												})
-											}
-											start={new Date(periode.fomDato)}
-											end={
-												periode.tomDato ? new Date(periode.tomDato) : new Date()
-											}
-											status="neutral"
-											statusLabel="Historisk situasjon"
-										>
-											<p>Fom dato: {periode.fomDato}</p>
-											<p>Tom dato: {periode.tomDato ?? "Ingen sluttdato"}</p>
-											<p>Navn: {periode.mottaker}</p>
-										</Timeline.Period>
-									))}
-								</Timeline.Row>
-							)}
-					</Timeline>
-					<Box
-						id="periodedetaljer"
-						aria-controls={valgtPeriode?.id}
-						aria-live="polite"
-					>
-						{valgtPeriode && (
-							<Box background="neutral-soft" padding="space-16">
-								<Heading level="3" size="small">
-									Detaljer for valgt periode
-								</Heading>
-								<p>Melding: {valgtPeriode.melding}</p>
-								<p>Status: {valgtPeriode.status}</p>
-							</Box>
-						)}
-					</Box>
-				</section>
-				{respons !== null && (
-					<section aria-labelledby="respons-heading">
-						<h2 id="respons-heading">Respons fra backend</h2>
-						<pre className={styles.laboratorium__respons}>{respons}</pre>
-					</section>
+											{aktivVersjon.kjedePerioder.map(
+												(periode, periodeindeks) =>
+													lagPeriode(periode, 0, periodeindeks, false),
+											)}
+										</Timeline.Row>,
+										...historikkRader,
+									];
+								})}
+							</Timeline>
+						</>
+					)
 				)}
+				<Box
+					id="periodedetaljer"
+					aria-controls={valgtPeriode?.id}
+					aria-live="polite"
+				>
+					{valgtPeriode && (
+						<Box background="neutral-soft" padding="space-16">
+							<Heading level="3" size="small">
+								Detaljer for valgt periode
+							</Heading>
+							<p>Kjede-ID: {valgtPeriode.kjedeId}</p>
+							<p>Fra dato: {valgtPeriode.fraDato}</p>
+							<p>Til dato: {valgtPeriode.tilDato ?? "Ingen sluttdato"}</p>
+							<p>Utbetales til: {valgtPeriode.utbetalesTil}</p>
+						</Box>
+					)}
+				</Box>
 			</section>
 		</main>
 	);

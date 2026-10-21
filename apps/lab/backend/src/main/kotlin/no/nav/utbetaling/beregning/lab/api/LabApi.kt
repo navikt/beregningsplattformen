@@ -1,22 +1,56 @@
 package no.nav.utbetaling.beregning.lab.api
 
-import io.ktor.server.request.receiveText
-import io.ktor.server.response.respondText
+import kotlin.time.Clock
+
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.path
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
-import no.nav.utbetaling.beregning.lab.service.OppdragTolkningService
+import no.nav.utbetaling.beregning.lab.config.ApiError
+import no.nav.utbetaling.beregning.lab.dto.toDTO
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
 const val API_V1 = "/api/v1"
 
-fun Route.labApi(oppdragTolkningService: OppdragTolkningService) {
+fun Route.labApi() {
     route(API_V1) {
         post("tolk-oppdrag") {
-            val oppdrag = Oppdrag.fraXml(call.receiveText())
-            val oppdragstidslinje = oppdragTolkningService.tolkOppdrag(oppdrag)
-            call.respondText { oppdragstidslinje.toString() }
+            val requestBody = call.receive<Test>()
+            when (val oppdrag = Oppdrag.fraXml(*requestBody.xml.toTypedArray())) {
+                is Oppdrag.UgyldigOppdrag, is Oppdrag.UgyldigKombinasjon -> {
+                    val status = HttpStatusCode.BadRequest
+                    val message =
+                        if (oppdrag is Oppdrag.UgyldigOppdrag) {
+                            "Ugyldig oppdrag."
+                        } else {
+                            "Ugyldig kombinasjon av oppdrag."
+                        }
+                    call.respond(
+                        status,
+                        ApiError(
+                            timestamp = Clock.System.now(),
+                            status = status.value,
+                            error = status.description,
+                            message = message,
+                            path = call.request.path(),
+                        ),
+                    )
+                }
+
+                is Oppdrag.Simulering ->
+                    call.respond {
+                        oppdrag.oppdragstidslinje.toDTO()
+                    }
+
+                is Oppdrag.Utbetaling ->
+                    call.respond(
+                        oppdrag.oppdragstidslinje.toDTO(),
+                    )
+            }
         }
     }
 }

@@ -1,0 +1,38 @@
+.skjema {
+  display: grid;
+  gap: var(--ax-space-16);
+}
+
+.skjema__form {
+  display: grid;
+  gap: var(--ax-space-16);
+}
+
+.skjema__xmlfelt {
+  width: 100%;
+}
+
+.skjema__feltkolonne {
+  display: grid;
+  gap: var(--ax-space-24);
+}
+
+.skjema__handlinger {
+  align-items: center;
+}
+
+.skjema__xmlforhandsvisning {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.skjema__status {
+  margin: 0;
+}
+
+.skjema__respons {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

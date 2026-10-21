@@ -11,7 +11,6 @@ import no.nav.utbetaling.beregning.lab.config.commonConfig
 import no.nav.utbetaling.beregning.lab.config.loadEnv
 import no.nav.utbetaling.beregning.lab.config.routingConfig
 import no.nav.utbetaling.beregning.lab.config.securityConfig
-import no.nav.utbetaling.beregning.lab.service.OppdragTolkningService
 import no.nav.utbetaling.beregning.log.Log
 
 fun main() {
@@ -21,12 +20,11 @@ fun main() {
 private fun Application.module() {
     PropertiesConfig.load(environment.config.loadEnv())
     val applicationState = ApplicationState()
-    val oppdragTolkningService = OppdragTolkningService()
 
     applicationLifecycleConfig(applicationState)
     commonConfig()
     securityConfig(PropertiesConfig.azureAdProperties)
-    routingConfig(oppdragTolkningService, applicationState)
+    routingConfig(applicationState)
 
     Log.info("Application started with profile: ${PropertiesConfig.applicationProperties.profile}")
 }
