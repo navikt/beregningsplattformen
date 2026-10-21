@@ -16,7 +16,7 @@ class OppdragstidslinjeFraXMLTest :
     FunSpec({
         test("Tolker oppdrag med skyldner") {
             val xml = Filhjelper.lesFil("xml/NyttOppdragMedSkyldner.xml")
-            val oppdrag = FraXmlFormat.oppdrag110FraXml(xml)
+            val oppdrag = FraXmlFormat.oppdrag110FraXml(xml).values
             oppdrag.size shouldBe 1
 
             (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true

@@ -15,7 +15,7 @@ class OppdragstidslinjeFraJSONTest :
     FunSpec({
         test("Tolker oppdrag med komplisert kjeding") {
             val json = Filhjelper.lesFil("json/oppdrag_med_komplisert_kjeding.json")
-            val oppdrag = FraXmlFormat.oppdrag110FraJson(json)
+            val oppdrag = FraXmlFormat.oppdrag110FraJson(json).values
             oppdrag.size shouldBe 1
 
             (Oppdrag.fraJson(json) is Oppdrag.Utbetaling) shouldBe true

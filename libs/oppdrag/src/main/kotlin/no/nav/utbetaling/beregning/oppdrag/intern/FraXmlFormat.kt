@@ -4,12 +4,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.JsonNode
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.module.SimpleModule
 import tools.jackson.dataformat.xml.XmlMapper
-import tools.jackson.module.kotlin.convertValue
 import tools.jackson.module.kotlin.kotlinModule
 
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
@@ -96,32 +96,49 @@ internal object FraXmlFormat {
     }
 
     /** JSON'en er også XML-formatet, bare i en JSON-drakt **/
-    fun oppdrag110FraJson(vararg json: String) =
-        json.flatMapIndexed { index, enJson ->
-            val jsonNode =
-                runCatching {
-                    jsonMapper.readTree(enJson)
-                }.getOrElse { feil -> throw IllegalArgumentException("Ugyldig JSON!", feil) }
+    fun oppdrag110FraJson(vararg json: String): Map<JsonNode, Oppdrag110> {
+        val nodes =
+            json.flatMapIndexed { index, enJson ->
+                val node =
+                    runCatching { jsonMapper.readTree(enJson) }.getOrElse { feil ->
+                        throw IllegalArgumentException("Ugyldig JSON!", feil)
+                    }
 
-            when {
-                jsonNode.isArray -> jsonMapper.convertValue<List<Oppdrag110>>(jsonNode)
-                jsonNode.isObject -> listOf(jsonMapper.convertValue<Oppdrag110>(jsonNode))
-                else -> throw IllegalArgumentException("Feil på json nummer ${index + 1}: Må være JSON Objekt eller Array, var ${jsonNode.nodeType.name}")
-            }
-        }
-
-    fun oppdrag110FraXml(vararg xml: String): List<Oppdrag110> {
-        val xmlOppdrag =
-            xml.mapIndexed { index, enXml ->
-                runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }.getOrElse { feil ->
-                    throw IllegalArgumentException("Feil på xml nummer ${index + 1}", feil)
+                when {
+                    node.isArray -> node
+                    node.isObject -> listOf(node)
+                    else -> throw IllegalArgumentException("Feil på json nummer ${index + 1}: Må være JSON Objekt eller Array, var ${node.nodeType.name}")
                 }
             }
 
-        return xmlOppdrag.mapNotNull { it.oppdrag110 }
+        return nodes
+            .mapIndexed { index, node ->
+                node to
+                    runCatching { jsonMapper.convertValue(node, Oppdrag110::class.java) }.getOrElse { feil ->
+                        throw IllegalArgumentException("Ugyldig på json nummer ${index + 1}", feil)
+                    }
+            }.toMap()
     }
 
-    fun fraOppdrag110(oppdrag110: List<Oppdrag110>) =
+    fun oppdrag110FraXml(vararg xml: String) =
+        xml
+            .mapIndexedNotNull { index, enXml ->
+                val node =
+                    runCatching { xmlMapper.readTree(enXml) }.getOrElse { feil ->
+                        throw IllegalArgumentException("Ugyldig xml nummer ${index + 1}", feil)
+                    }
+
+                val xmlOppdrag =
+                    runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }.getOrElse { feil ->
+                        throw IllegalArgumentException("Ugyldig på xml nummer ${index + 1}", feil)
+                    }
+                when (val oppdrag110 = xmlOppdrag.oppdrag110) {
+                    null -> null
+                    else -> node to oppdrag110
+                }
+            }.toMap()
+
+    fun fraOppdrag110(oppdrag110: Iterable<Oppdrag110>) =
         oppdrag110.foldIndexed(Oppdragstidslinje()) { index, sammenslått, etOppdrag110 ->
             runCatching { sammenslått + FraXmlFormat.opprett(etOppdrag110) }.getOrElse { feil ->
                 throw IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil)

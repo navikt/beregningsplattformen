@@ -15,7 +15,7 @@ internal object Metrikker {
     private fun JsonNode.erFraJson() = hasNonNull("oppdragsLinje150")
 
     private fun JsonNode.spesialhåndterJson(): JsonNode {
-        val oppdrag110 = FraXmlFormat.oppdrag110FraJson(this.toString()).single()
+        val oppdrag110 = FraXmlFormat.oppdrag110FraJson(this.toString()).values.single()
         val oppdrag = XmlOppdrag(oppdrag110 = oppdrag110)
         return xmlMapper.valueToTree(oppdrag)
     }

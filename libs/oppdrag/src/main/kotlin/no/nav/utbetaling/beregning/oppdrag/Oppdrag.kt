@@ -28,12 +28,12 @@ sealed interface Oppdrag {
     companion object {
         fun fraXml(vararg xml: String) =
             lagOppdrag {
-                FraXmlFormat.oppdrag110FraXml(*xml)
+                FraXmlFormat.oppdrag110FraXml(*xml).values.toList()
             }
 
         fun fraJson(vararg json: String) =
             lagOppdrag {
-                FraXmlFormat.oppdrag110FraJson(*json)
+                FraXmlFormat.oppdrag110FraJson(*json).values.toList()
             }
 
         private fun lagOppdrag(oppdrag110: () -> List<Oppdrag110>): Oppdrag {
