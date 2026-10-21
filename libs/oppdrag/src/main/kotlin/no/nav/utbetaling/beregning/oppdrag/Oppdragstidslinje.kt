@@ -1,6 +1,10 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.time.LocalDate
+import java.util.UUID
+
+import kotlin.uuid.Uuid
+import kotlin.uuid.toJavaUuid
 
 import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
@@ -27,8 +31,8 @@ class Oppdragstidslinje private constructor(
     // Endringer fra dagens oppdrag110 som påvirker hele kjeden, ikke bare den kjededelen i den enkelte innsendingen
     private val kjedeendringer: Map<Kjede, Kjedeendringer>,
     // Det eksponerte 'API'-et til Oppdragstidslinje som alle utenom dette biblioteket forholder seg til
-    tidslinjer: Map<Kjede, Tidslinje<Opplysninger>>,
-) : Tidslinjesamling<Kjede, Opplysninger> by DefaultTidslinjesamling(tidslinjer) {
+    tidslinjer: Map<UUID, Tidslinje<Opplysninger>>,
+) : Tidslinjesamling<UUID, Opplysninger> by DefaultTidslinjesamling(tidslinjer) {
     internal constructor(
         oppdragsverdier: Map<InternOppdragId, Oppdragsverdier> = emptyMap(),
         kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>> = emptyMap(),
@@ -38,14 +42,15 @@ class Oppdragstidslinje private constructor(
         oppdragsverdier = oppdragsverdier,
         kjeder = kjeder.filterValues { !it.isEmpty() },
         tidslinjer =
-            kjeder.filterValues { !it.isEmpty() }.mapValues { (kjede, tidslinje) ->
-                tidslinje.mapVerdier { opplysningerIntern ->
-                    kombinerTilOpplysninger(
-                        kjede = kjede,
-                        oppdragsverdier = oppdragsverdier.getValue(kjede.internOppdragId),
-                        opplysningerIntern = opplysningerIntern,
-                    )
-                }
+            kjeder.entries.associate { (kjede, tidslinje) ->
+                kjede.id.toJavaUuid() to
+                    tidslinje.mapVerdier { opplysningerIntern ->
+                        kombinerTilOpplysninger(
+                            kjede = kjede,
+                            oppdragsverdier = oppdragsverdier.getValue(kjede.internOppdragId),
+                            opplysningerIntern = opplysningerIntern,
+                        )
+                    }
             },
         oppdragsendringer = oppdragsendringer,
         kjedeendringer = kjedeendringer,
@@ -131,8 +136,8 @@ class Oppdragstidslinje private constructor(
     override fun toString(): String {
         if (isEmpty()) return "Tom Oppdragstidslinje"
         return buildString {
-            kjeder.forEach { (fagområde, fagsystemId), tidslinje ->
-                appendLine("FagsystemId ${fagsystemId.id} for ${fagområde.fagområde}:")
+            kjeder.forEach { (id: Uuid, fagområde, fagsystemId), tidslinje ->
+                appendLine("FagsystemId ${fagsystemId.id} for ${fagområde.fagområde} ($id):")
                 append(tidslinje.toString())
             }
         }

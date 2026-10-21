@@ -22,7 +22,7 @@ internal data class Linjer(
             val gruppertPåKjede =
                 oppdrag110.oppdragsLinje150
                     .map { linje ->
-                        Kjede(fagområde, fagsystemId, linje.delytelseIder()) to linje
+                        Kjede(fagområde = fagområde, fagsystemId = fagsystemId, delytelseIder = linje.delytelseIder()) to linje
                     }.grupperPåKjede()
 
             return gruppertPåKjede.mapValues { (_, linjer) ->

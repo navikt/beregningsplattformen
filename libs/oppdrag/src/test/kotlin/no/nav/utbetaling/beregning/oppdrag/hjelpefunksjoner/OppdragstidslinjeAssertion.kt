@@ -5,9 +5,10 @@ import io.kotest.matchers.shouldBe
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
-import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjer
+import no.nav.utbetaling.beregning.oppdrag.intern.FraTidslinjesamling
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
+import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
 import no.nav.utbetaling.beregning.tid.Periode
 
 fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
@@ -19,8 +20,8 @@ fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
 fun Oppdragstidslinje.satser() = perPeriode { it.sats.opplysning.toInt() }
 
 fun Oppdragstidslinje.assertGjenskaptfraTidslinjer() {
-    val fraTidslinjer = FraTidslinjer.opprett(tidslinjeIterator().asSequence().toList())
-    fraTidslinjer shouldBeEqual this
+    val fraTidslinjesamling = FraTidslinjesamling.opprett(DefaultTidslinjesamling(tidslinjer))
+    fraTidslinjesamling shouldBeEqual this
 }
 
 infix fun <T> Map<Periode, T>.skalVæreLik(expected: Map<Periode, T>) {
@@ -47,5 +48,26 @@ internal fun assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(
     oppdragstidslinjeFraOppdeltInnsending.assertGjenskaptfraTidslinjer()
     assertionBlock(oppdragstidslinjeFraOppdeltInnsending)
 
-    oppdragstidslinjeFraEnInnsending shouldBeEqual oppdragstidslinjeFraOppdeltInnsending
+    oppdragstidslinjeFraEnInnsending shouldBeEqual oppdragstidslinjeFraOppdeltInnsending.medKjedeIderFra(oppdragstidslinjeFraEnInnsending)
+}
+
+/**
+ * Ettersom kjedeIder genereres runtime vil det genereres unike ider når vi tester med oppdelt innsending.
+ * Bruker denne for å bruke idene fra den samlede innsendingen slik at vi kan sammenligne at de funksjonelle
+ * tolkningene er like uavhengig av hvor mange innsendinger som er brukt.
+ */
+private fun Oppdragstidslinje.medKjedeIderFra(oppdragstidslinje: Oppdragstidslinje): Oppdragstidslinje {
+    val kjedeIder =
+        oppdragstidslinje.tidslinjer.entries
+            .mapIndexed { index, (kjedeId) -> index to kjedeId }
+            .toMap()
+
+    val tidslinjesamling =
+        DefaultTidslinjesamling(
+            this.tidslinjer.entries
+                .mapIndexed { index, (_, tidslinje) ->
+                    kjedeIder.getValue(index) to tidslinje
+                }.toMap(),
+        )
+    return FraTidslinjesamling.opprett(tidslinjesamling)
 }
