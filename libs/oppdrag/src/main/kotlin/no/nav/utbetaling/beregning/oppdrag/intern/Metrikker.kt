@@ -7,9 +7,15 @@ import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat.xmlMapper
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 
 internal object Metrikker {
-    fun fra(oppdrag: List<JsonNode>) =
+    fun fra(oppdrag: Iterable<JsonNode>) =
         oppdrag.flatMap { node ->
-            fra(node = node.normalisert())
+            fra(
+                node =
+                    when (node.erFraJson()) {
+                        true -> node.spesialhåndterJson()
+                        false -> node
+                    },
+            )
         }
 
     private fun JsonNode.erFraJson() = hasNonNull("oppdragsLinje150")
@@ -19,12 +25,6 @@ internal object Metrikker {
         val oppdrag = XmlOppdrag(oppdrag110 = oppdrag110)
         return xmlMapper.valueToTree(oppdrag)
     }
-
-    private fun JsonNode.normalisert() =
-        when (erFraJson()) {
-            true -> spesialhåndterJson()
-            false -> this
-        }
 
     private fun fra(
         node: JsonNode,
@@ -37,7 +37,6 @@ internal object Metrikker {
 
         return when {
             node.isObject -> {
-                val tagsMedNodeTag = tags.medTag(node.tagOrNull())
                 node
                     .properties()
                     .asSequence()
@@ -46,7 +45,7 @@ internal object Metrikker {
                         fra(
                             node = value,
                             path = path.nestePath(key),
-                            tags = tagsMedNodeTag,
+                            tags = tags.medTag(node.tagOrNull()),
                         ).asSequence()
                     }.toSet()
             }
@@ -122,11 +121,9 @@ internal object Metrikker {
             "kodeKlassifik",
         )
 
-    private fun String.sanitisertMed(regex: Regex) = regex.replace(this, "_")
+    private fun String.gyldigMetrikknavn() = replace(navnRegex, "_")
 
-    private fun String.gyldigMetrikknavn() = sanitisertMed(navnRegex)
-
-    private fun String.gyldigMetrikkverdi() = sanitisertMed(verdiRegex)
+    private fun String.gyldigMetrikkverdi() = replace(verdiRegex, "_")
 
     private val navnRegex = Regex("(^[^a-zA-Z_:])|([^a-zA-Z0-9_:])")
     private val verdiRegex = Regex("([^a-zA-Z0-9_:])")
