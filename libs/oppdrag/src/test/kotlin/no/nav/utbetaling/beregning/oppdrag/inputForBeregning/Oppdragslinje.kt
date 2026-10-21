@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.oppdrag.input_for_beregning
+package no.nav.utbetaling.beregning.oppdrag.inputForBeregning
 
 import java.math.BigDecimal
 import java.time.LocalDate

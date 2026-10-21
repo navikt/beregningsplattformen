@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.oppdrag.input_for_beregning
+package no.nav.utbetaling.beregning.oppdrag.inputForBeregning
 
 import java.time.LocalDate
 import java.time.LocalDateTime
