@@ -54,7 +54,7 @@ function asyncHandler(
     };
 }
 
-server.use(express.text({ type: "application/xml" }));
+server.use(express.json());
 
 server.post("/api/v1/tolk-oppdrag", asyncHandler(async (request, response) => {
   const backendUrl = new URL(
@@ -66,7 +66,6 @@ server.post("/api/v1/tolk-oppdrag", asyncHandler(async (request, response) => {
     response,
     backendUrl,
     "Videresender XML-forespørsel til backend",
-    "application/xml;charset=utf-8",
   );
 }));
 

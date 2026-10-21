@@ -8,38 +8,40 @@ import {
 	Textarea,
 	TextField,
 } from "@navikt/ds-react";
-import { isAxiosError } from "axios";
-import { type SubmitEvent, useId, useMemo, useState } from "react";
-import { postTolkOppdrag } from "../api/apiService";
-import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
-import { HttpStatusCodeError } from "../types/Error";
+import { useMemo, useState } from "react";
 import { fillTypedTemplate, templateFields } from "../util/template";
 import { OppdragDatoFelt } from "./OppdragDatoFelt";
 import styles from "./OppdragsXmlSkjema.module.css";
 
 interface OppdragsXmlSkjemaProps {
 	nummer: number;
+	xmlMal: string;
+	feltverdier: Record<string, string>;
+	xmlFeil: boolean;
+	sender: boolean;
+	onXmlMalChange: (xmlMal: string) => void;
+	onFeltverdiChange: (key: string, value: string) => void;
+	onNullstillFelter: () => void;
+	onTilbakestillMal: () => void;
 }
 
-export function OppdragsXmlSkjema({ nummer }: OppdragsXmlSkjemaProps) {
-	const [xmlMal, settXmlMal] = useState(oppdragsXmlTypedTemplate);
+export function OppdragsXmlSkjema({
+	nummer,
+	xmlMal,
+	feltverdier,
+	xmlFeil,
+	sender,
+	onXmlMalChange,
+	onFeltverdiChange,
+	onNullstillFelter,
+	onTilbakestillMal,
+}: OppdragsXmlSkjemaProps) {
 	const [xmlMalOpen, settXmlMalOpen] = useState(false);
-	const [xmlFeil, settXmlFeil] = useState(false);
-	const [feltverdier, settFeltverdier] = useState<Record<string, string>>({});
-	const [resultat, settResultat] = useState<string | null>(null);
-	const [respons, settRespons] = useState<string | null>(null);
-	const [sender, settSender] = useState(false);
-	const responsHeadingId = useId();
 	const felter = useMemo(() => templateFields(xmlMal), [xmlMal]);
 	const generertXml = useMemo(
 		() => fillTypedTemplate(xmlMal, felter, feltverdier),
 		[xmlMal, felter, feltverdier],
 	);
-
-	const fjernResultat = () => {
-		settResultat(null);
-		settRespons(null);
-	};
 
 	const labels: Record<string, string> = {
 		datoVedtakFom: "Fra dato",
@@ -50,48 +52,12 @@ export function OppdragsXmlSkjema({ nummer }: OppdragsXmlSkjemaProps) {
 		vedtakssats: "Vedtakssats",
 	};
 
-	const handterInnsending = async (hendelse: SubmitEvent<HTMLFormElement>) => {
-		hendelse.preventDefault();
-		if (sender) return;
-
-		settResultat(null);
-		settRespons(null);
-		if (!generertXml.trim()) {
-			settXmlFeil(true);
-			settResultat("Skriv inn et XML-oppdrag.");
-			return;
-		}
-		settXmlFeil(false);
-		settSender(true);
-
-		try {
-			settRespons(await postTolkOppdrag(generertXml));
-			settResultat("XML-en er behandlet.");
-		} catch (error) {
-			if (isAxiosError<string>(error) && error.response) {
-				settRespons(error.response.data);
-			}
-			settResultat(
-				error instanceof HttpStatusCodeError ||
-					(isAxiosError(error) && error.response)
-					? "Kunne ikke behandle XML-en. Kontroller innholdet og prøv igjen."
-					: "Kunne ikke behandle XML-en. Prøv igjen.",
-			);
-		} finally {
-			settSender(false);
-		}
-	};
-
 	return (
 		<div className={styles.skjema}>
 			<Heading level="2" size="small">
 				XML {nummer}
 			</Heading>
-			<form
-				className={styles.skjema__form}
-				onSubmit={handterInnsending}
-				aria-busy={sender}
-			>
+			<div className={styles.skjema__form}>
 				<Accordion>
 					<Accordion.Item
 						open={xmlMalOpen || xmlFeil}
@@ -108,19 +74,7 @@ export function OppdragsXmlSkjema({ nummer }: OppdragsXmlSkjemaProps) {
 								readOnly={sender}
 								value={xmlMal}
 								onChange={(hendelse) => {
-									const nyMal = hendelse.target.value;
-									fjernResultat();
-									settXmlFeil(false);
-									settXmlMal(nyMal);
-									const nyeFelter = templateFields(nyMal);
-									settFeltverdier((forrige) =>
-										Object.fromEntries(
-											nyeFelter.map((felt) => [
-												felt.key,
-												forrige[felt.key] ?? felt.value,
-											]),
-										),
-									);
+									onXmlMalChange(hendelse.target.value);
 								}}
 							/>
 						</Accordion.Content>
@@ -170,12 +124,7 @@ export function OppdragsXmlSkjema({ nummer }: OppdragsXmlSkjemaProps) {
 												const label = labels[felt.name] ?? felt.name;
 												const value = feltverdier[felt.key] ?? felt.value;
 												const onChange = (nyVerdi: string) => {
-													fjernResultat();
-													settXmlFeil(false);
-													settFeltverdier((forrige) => ({
-														...forrige,
-														[felt.key]: nyVerdi,
-													}));
+													onFeltverdiChange(felt.key, nyVerdi);
 												};
 
 												if (felt.kind === "dato") {
@@ -214,18 +163,11 @@ export function OppdragsXmlSkjema({ nummer }: OppdragsXmlSkjemaProps) {
 					))}
 				</HGrid>
 				<HStack className={styles.skjema__handlinger} gap="space-8" wrap>
-					<Button type="submit" loading={sender} disabled={sender}>
-						Behandle XML {nummer}
-					</Button>
 					<Button
 						type="button"
 						variant="secondary"
 						disabled={sender}
-						onClick={() => {
-							fjernResultat();
-							settXmlFeil(false);
-							settFeltverdier({});
-						}}
+						onClick={onNullstillFelter}
 					>
 						Nullstill felter
 					</Button>
@@ -233,28 +175,12 @@ export function OppdragsXmlSkjema({ nummer }: OppdragsXmlSkjemaProps) {
 						type="button"
 						variant="secondary"
 						disabled={sender}
-						onClick={() => {
-							fjernResultat();
-							settXmlFeil(false);
-							settXmlMal(oppdragsXmlTypedTemplate);
-							settFeltverdier({});
-						}}
+						onClick={onTilbakestillMal}
 					>
 						Tilbakestill standardmal
 					</Button>
 				</HStack>
-				{resultat && (
-					<p className={styles.skjema__status} role="status">
-						{resultat}
-					</p>
-				)}
-			</form>
-			{respons !== null && (
-				<section aria-labelledby={responsHeadingId}>
-					<h2 id={responsHeadingId}>Respons for XML {nummer}</h2>
-					<pre className={styles.skjema__respons}>{respons}</pre>
-				</section>
-			)}
+			</div>
 		</div>
 	);
 }

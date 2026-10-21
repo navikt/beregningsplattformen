@@ -45,6 +45,10 @@
   margin-block-start: var(--ax-space-16);
 }
 
+.laboratorium__resultat {
+  margin: 0;
+}
+
 .laboratorium__tidslinje {
   display: grid;
   gap: var(--ax-space-16);

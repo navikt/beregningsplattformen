@@ -13,15 +13,33 @@ import {
 	Timeline,
 	ToggleGroup,
 } from "@navikt/ds-react";
-import { useRef, useState } from "react";
-import tidslinjeData from "../../mock/tidslinje.json";
+import { isAxiosError } from "axios";
+import { type SubmitEvent, useRef, useState } from "react";
+import { postTolkOppdrag } from "../api/apiService";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
+import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
+import { HttpStatusCodeError } from "../types/Error";
+import type { OppdragstidslinjeDTO } from "../types/schema/OppdragstidslinjeDTO";
+import { fillTypedTemplate, templateFields } from "../util/template";
 import styles from "./SendInnOppdragsXML.module.css";
 
+interface XmlUtkast {
+	id: number;
+	xmlMal: string;
+	feltverdier: Record<string, string>;
+}
+
 export default function SendInnOppdragsXML() {
-	const [xmlUtkast, settXmlUtkast] = useState([1]);
+	const [xmlUtkast, settXmlUtkast] = useState<XmlUtkast[]>([
+		{ id: 1, xmlMal: oppdragsXmlTypedTemplate, feltverdier: {} },
+	]);
 	const [valgtXmlId, settValgtXmlId] = useState(1);
 	const nesteXmlId = useRef(2);
+	const senderRef = useRef(false);
+	const [sender, settSender] = useState(false);
+	const [resultat, settResultat] = useState<string | null>(null);
+	const [respons, settRespons] = useState<OppdragstidslinjeDTO | null>(null);
+	const [xmlFeilId, settXmlFeilId] = useState<number | null>(null);
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
 		() => new Set(),
 	);
@@ -36,18 +54,11 @@ export default function SendInnOppdragsXML() {
 		historisk: boolean;
 	} | null>(null);
 	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(4);
-	const allePerioder = tidslinjeData.kjeder.flatMap((kjede) =>
+	const kjeder = respons?.kjeder ?? [];
+	const allePerioder = kjeder.flatMap((kjede) =>
 		kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 	);
-	const [tidslinjeStart, settTidslinjeStart] = useState<Date | null>(() => {
-		if (allePerioder.length === 0) return null;
-		const tidligsteDato = new Date(
-			Math.min(
-				...allePerioder.map((periode) => new Date(periode.fraDato).getTime()),
-			),
-		);
-		return new Date(tidligsteDato.getFullYear(), tidligsteDato.getMonth(), 1);
-	});
+	const [tidslinjeStart, settTidslinjeStart] = useState<Date | null>(null);
 	const tidslinjeSlutt = tidslinjeStart
 		? new Date(
 				tidslinjeStart.getFullYear(),
@@ -61,6 +72,120 @@ export default function SendInnOppdragsXML() {
 				? new Date(start.getFullYear(), start.getMonth() + antallMåneder, 1)
 				: start,
 		);
+	};
+	const fjernResultat = () => {
+		settResultat(null);
+		settRespons(null);
+		settValgtPeriode(null);
+		settUtvidedeKjeder(new Set());
+		settTidslinjeStart(null);
+		settXmlFeilId(null);
+	};
+	const endreMal = (id: number, xmlMal: string) => {
+		fjernResultat();
+		const felter = templateFields(xmlMal);
+		settXmlUtkast((utkast) =>
+			utkast.map((draft) =>
+				draft.id === id
+					? {
+							...draft,
+							xmlMal,
+							feltverdier: Object.fromEntries(
+								felter.map((felt) => [
+									felt.key,
+									draft.feltverdier[felt.key] ?? felt.value,
+								]),
+							),
+						}
+					: draft,
+			),
+		);
+	};
+	const endreFeltverdi = (id: number, key: string, value: string) => {
+		fjernResultat();
+		settXmlUtkast((utkast) =>
+			utkast.map((draft) =>
+				draft.id === id
+					? { ...draft, feltverdier: { ...draft.feltverdier, [key]: value } }
+					: draft,
+			),
+		);
+	};
+	const nullstillFelter = (id: number) => {
+		fjernResultat();
+		settXmlUtkast((utkast) =>
+			utkast.map((draft) =>
+				draft.id === id ? { ...draft, feltverdier: {} } : draft,
+			),
+		);
+	};
+	const tilbakestillMal = (id: number) => {
+		fjernResultat();
+		settXmlUtkast((utkast) =>
+			utkast.map((draft) =>
+				draft.id === id
+					? {
+							...draft,
+							xmlMal: oppdragsXmlTypedTemplate,
+							feltverdier: {},
+						}
+					: draft,
+			),
+		);
+	};
+	const handterInnsending = async (hendelse: SubmitEvent<HTMLFormElement>) => {
+		hendelse.preventDefault();
+		if (senderRef.current) return;
+
+		fjernResultat();
+		const xmlPerUtkast = xmlUtkast.map((draft) =>
+			fillTypedTemplate(
+				draft.xmlMal,
+				templateFields(draft.xmlMal),
+				draft.feltverdier,
+			),
+		);
+		const tomtUtkastIndeks = xmlPerUtkast.findIndex((xml) => !xml.trim());
+		if (tomtUtkastIndeks !== -1) {
+			const tomtUtkastId = xmlUtkast[tomtUtkastIndeks].id;
+			settValgtXmlId(tomtUtkastId);
+			settXmlFeilId(tomtUtkastId);
+			settResultat(`XML-utkast ${tomtUtkastId} mangler XML-innhold.`);
+			return;
+		}
+
+		senderRef.current = true;
+		settSender(true);
+		try {
+			const response = await postTolkOppdrag({ xml: xmlPerUtkast });
+			settRespons(response);
+			const perioder = response.kjeder.flatMap((kjede) =>
+				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
+			);
+			if (perioder.length === 0) {
+				settTidslinjeStart(null);
+			} else {
+				const tidligsteDato = new Date(
+					Math.min(
+						...perioder.map((periode) => new Date(periode.fraDato).getTime()),
+					),
+				);
+				settTidslinjeStart(
+					new Date(tidligsteDato.getFullYear(), tidligsteDato.getMonth(), 1),
+				);
+			}
+			settResultat("XML-ene er behandlet.");
+		} catch (error) {
+			settResultat(
+				error instanceof HttpStatusCodeError ||
+					(isAxiosError(error) && error.response)
+					? "Kunne ikke behandle XML-ene. Kontroller innholdet og prøv igjen."
+					: "Kunne ikke behandle XML-ene. Prøv igjen.",
+			);
+		} finally {
+			senderRef.current = false;
+			settSender(false);
+		}
 	};
 
 	return (
@@ -81,40 +206,77 @@ export default function SendInnOppdragsXML() {
 						Ikke lim inn personopplysninger eller reelle ID-er.
 					</LocalAlert.Content>
 				</LocalAlert>
-				<fieldset className={styles.laboratorium__xmlvalg}>
-					<legend className="aksel-sr-only">Velg XML-utkast</legend>
-					{xmlUtkast.map((xmlId) => (
-						<Button
-							key={xmlId}
-							type="button"
-							variant={valgtXmlId === xmlId ? "primary" : "secondary"}
-							aria-pressed={valgtXmlId === xmlId}
-							onClick={() => settValgtXmlId(xmlId)}
-						>
-							XML {xmlId}
-						</Button>
+				<form onSubmit={handterInnsending} aria-busy={sender}>
+					<fieldset className={styles.laboratorium__xmlvalg}>
+						<legend className="aksel-sr-only">Velg XML-utkast</legend>
+						{xmlUtkast.map(({ id }) => (
+							<Button
+								key={id}
+								type="button"
+								variant={valgtXmlId === id ? "primary" : "secondary"}
+								aria-pressed={valgtXmlId === id}
+								onClick={() => settValgtXmlId(id)}
+							>
+								XML {id}
+							</Button>
+						))}
+					</fieldset>
+					{xmlUtkast.map((draft) => (
+						<div key={draft.id} hidden={valgtXmlId !== draft.id}>
+							<OppdragsXmlSkjema
+								nummer={draft.id}
+								xmlMal={draft.xmlMal}
+								feltverdier={draft.feltverdier}
+								xmlFeil={xmlFeilId === draft.id}
+								sender={sender}
+								onXmlMalChange={(xmlMal) => endreMal(draft.id, xmlMal)}
+								onFeltverdiChange={(key, value) =>
+									endreFeltverdi(draft.id, key, value)
+								}
+								onNullstillFelter={() => nullstillFelter(draft.id)}
+								onTilbakestillMal={() => tilbakestillMal(draft.id)}
+							/>
+						</div>
 					))}
-				</fieldset>
-				{xmlUtkast.map((xmlId) => (
-					<div key={xmlId} hidden={valgtXmlId !== xmlId}>
-						<OppdragsXmlSkjema nummer={xmlId} />
+					<div className={styles.laboratorium__leggtil}>
+						<Button
+							type="button"
+							variant="secondary"
+							icon={<PlusIcon aria-hidden />}
+							disabled={sender}
+							onClick={() => {
+								fjernResultat();
+								const nyttXmlId = nesteXmlId.current;
+								nesteXmlId.current += 1;
+								settXmlUtkast((utkast) => [
+									...utkast,
+									{
+										id: nyttXmlId,
+										xmlMal: oppdragsXmlTypedTemplate,
+										feltverdier: {},
+									},
+								]);
+								settValgtXmlId(nyttXmlId);
+							}}
+						>
+							Legg til XML
+						</Button>
 					</div>
-				))}
-				<div className={styles.laboratorium__leggtil}>
-					<Button
-						type="button"
-						variant="secondary"
-						icon={<PlusIcon aria-hidden />}
-						onClick={() => {
-							const nyttXmlId = nesteXmlId.current;
-							nesteXmlId.current += 1;
-							settXmlUtkast((utkast) => [...utkast, nyttXmlId]);
-							settValgtXmlId(nyttXmlId);
-						}}
-					>
-						Legg til XML
-					</Button>
-				</div>
+					<div className={styles.laboratorium__leggtil}>
+						<Button type="submit" loading={sender} disabled={sender}>
+							Behandle alle XML
+						</Button>
+					</div>
+					{resultat && (
+						<p
+							className={styles.laboratorium__resultat}
+							role="status"
+							aria-live="polite"
+						>
+							{resultat}
+						</p>
+					)}
+				</form>
 			</section>
 			<section
 				className={`${styles.laboratorium__panel} ${styles.laboratorium__tidslinje}`}
@@ -169,7 +331,7 @@ export default function SendInnOppdragsXML() {
 								</div>
 							</div>
 							<Timeline startDate={tidslinjeStart} endDate={tidslinjeSlutt}>
-								{tidslinjeData.kjeder.flatMap((kjede, kjedeindeks) => {
+								{kjeder.flatMap((kjede, kjedeindeks) => {
 									const aktivVersjon = kjede.kjedeVersjoner[0];
 									if (!aktivVersjon) return [];
 

@@ -23,12 +23,11 @@ fun Route.labApi() {
             when (val oppdrag = Oppdrag.fraXml(*requestBody.xml.toTypedArray())) {
                 is Oppdrag.UgyldigOppdrag, is Oppdrag.UgyldigKombinasjon -> {
                     val status = HttpStatusCode.BadRequest
-                    val message =
-                        if (oppdrag is Oppdrag.UgyldigOppdrag) {
-                            "Ugyldig oppdrag."
-                        } else {
-                            "Ugyldig kombinasjon av oppdrag."
-                        }
+                    val message = if (oppdrag is Oppdrag.UgyldigOppdrag) {
+                        "Ugyldig oppdrag."
+                    } else {
+                        "Ugyldig kombinasjon av oppdrag."
+                    }
                     call.respond(
                         status,
                         ApiError(
@@ -41,15 +40,13 @@ fun Route.labApi() {
                     )
                 }
 
-                is Oppdrag.Simulering ->
-                    call.respond {
-                        oppdrag.oppdragstidslinje.toDTO()
-                    }
+                is Oppdrag.Simulering -> call.respond(
+                    oppdrag.oppdragstidslinje.toDTO()
+                )
 
-                is Oppdrag.Utbetaling ->
-                    call.respond(
-                        oppdrag.oppdragstidslinje.toDTO(),
-                    )
+                is Oppdrag.Utbetaling -> call.respond(
+                    oppdrag.oppdragstidslinje.toDTO(),
+                )
             }
         }
     }
