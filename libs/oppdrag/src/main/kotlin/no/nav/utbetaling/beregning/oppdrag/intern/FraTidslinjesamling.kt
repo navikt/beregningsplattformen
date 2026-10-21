@@ -33,7 +33,7 @@ internal object FraTidslinjesamling {
 
         val oppdragsverdier =
             tidslinjerPerKjede.entries
-                .groupBy({ (kjede, _) -> kjede.internOppdragId }, { (_, tidslinje) -> tidslinje.first().second })
+                .groupBy({ (kjede, _) -> kjede.oppdragId }, { (_, tidslinje) -> tidslinje.first().second })
                 .mapValues { (_, førsteDager) ->
                     val oppdragsdag = førsteDager.first()
                     Oppdragsverdier(

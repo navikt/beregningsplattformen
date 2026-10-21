@@ -163,7 +163,7 @@ internal data class Kjedeendringer(
     val kjedestatus: Tidslinje<Statusendring>,
 )
 
-internal data class InternOppdragId(
+internal data class OppdragId(
     val fagområde: Fagområde,
     val fagsystemId: FagsystemId,
 )

@@ -21,7 +21,7 @@ internal data class Kjede(
             delytelseIder = delytelseIder + other.delytelseIder,
         )
 
-    val internOppdragId get() = InternOppdragId(fagområde, fagsystemId)
+    val oppdragId get() = OppdragId(fagområde, fagsystemId)
 
     companion object {
         @OptIn(ExperimentalUuidApi::class)

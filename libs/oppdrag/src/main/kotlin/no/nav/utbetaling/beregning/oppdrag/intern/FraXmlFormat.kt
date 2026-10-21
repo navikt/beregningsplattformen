@@ -31,8 +31,8 @@ import no.nav.utbetaling.beregning.tid.Tidslinje
 internal object FraXmlFormat {
     fun opprett(oppdrag110: Oppdrag110): Oppdragstidslinje {
         UbrukteFelter.valider(oppdrag110)
-        val internOppdragId =
-            InternOppdragId(
+        val oppdragId =
+            OppdragId(
                 fagområde = oppdrag110.kodeFagomraade.mapVerdi { Fagområde(it) } ?: error("Mangler kodeFagomraade på oppdragsnivå"),
                 fagsystemId = oppdrag110.fagsystemId.mapVerdi { FagsystemId(it) } ?: error("Mangler fagsystemId på oppdragsnivå"),
             )
@@ -88,9 +88,9 @@ internal object FraXmlFormat {
                 }
 
         return Oppdragstidslinje(
-            oppdragsverdier = mapOf(internOppdragId to oppdragsverdierFra(oppdrag110)),
+            oppdragsverdier = mapOf(oppdragId to oppdragsverdierFra(oppdrag110)),
             kjeder = kjeder,
-            oppdragsendringer = mapOf(internOppdragId to oppdragsendringerFra(oppdrag110)),
+            oppdragsendringer = mapOf(oppdragId to oppdragsendringerFra(oppdrag110)),
             kjedeendringer = kjedeendringer,
         )
     }

@@ -6,10 +6,10 @@ import java.util.UUID
 import kotlin.uuid.Uuid
 import kotlin.uuid.toJavaUuid
 
-import no.nav.utbetaling.beregning.oppdrag.intern.InternOppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjede.Companion.grupperPåKjede
 import no.nav.utbetaling.beregning.oppdrag.intern.Kjedeendringer
+import no.nav.utbetaling.beregning.oppdrag.intern.OppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
@@ -23,20 +23,20 @@ import no.nav.utbetaling.beregning.tid.til
 
 class Oppdragstidslinje private constructor(
     // Verdier som er lik for hele oppdraget på tvers av alle kjeder
-    private val oppdragsverdier: Map<InternOppdragId, Oppdragsverdier>,
+    private val oppdragsverdier: Map<OppdragId, Oppdragsverdier>,
     // Tidslinjene for hver enkelt kjede
     private val kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>>,
     // Endringer fra dagens oppdrag110 som påvirker hele oppdraget, ikke bare for den enkelte innsendingen
-    private val oppdragsendringer: Map<InternOppdragId, Oppdragsendringer>,
+    private val oppdragsendringer: Map<OppdragId, Oppdragsendringer>,
     // Endringer fra dagens oppdrag110 som påvirker hele kjeden, ikke bare den kjededelen i den enkelte innsendingen
     private val kjedeendringer: Map<Kjede, Kjedeendringer>,
     // Det eksponerte 'API'-et til Oppdragstidslinje som alle utenom dette biblioteket forholder seg til
     tidslinjer: Map<UUID, Tidslinje<Opplysninger>>,
 ) : Tidslinjesamling<UUID, Opplysninger> by DefaultTidslinjesamling(tidslinjer) {
     internal constructor(
-        oppdragsverdier: Map<InternOppdragId, Oppdragsverdier> = emptyMap(),
+        oppdragsverdier: Map<OppdragId, Oppdragsverdier> = emptyMap(),
         kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>> = emptyMap(),
-        oppdragsendringer: Map<InternOppdragId, Oppdragsendringer> = emptyMap(),
+        oppdragsendringer: Map<OppdragId, Oppdragsendringer> = emptyMap(),
         kjedeendringer: Map<Kjede, Kjedeendringer> = emptyMap(),
     ) : this(
         oppdragsverdier = oppdragsverdier,
@@ -47,7 +47,7 @@ class Oppdragstidslinje private constructor(
                     tidslinje.mapVerdier { opplysningerIntern ->
                         kombinerTilOpplysninger(
                             kjede = kjede,
-                            oppdragsverdier = oppdragsverdier.getValue(kjede.internOppdragId),
+                            oppdragsverdier = oppdragsverdier.getValue(kjede.oppdragId),
                             opplysningerIntern = opplysningerIntern,
                         )
                     }
@@ -97,7 +97,7 @@ class Oppdragstidslinje private constructor(
 
         return kombinerMed(endretOppdragstidslinje) { kjede, eksisterendeTidslinje, endretTidslinje ->
             val oppdragstatus =
-                endretOppdragstidslinje.oppdragsendringer[kjede.internOppdragId]?.oppdragstatus
+                endretOppdragstidslinje.oppdragsendringer[kjede.oppdragId]?.oppdragstatus
                     ?: Tidslinje.Builder<Statusendring>().build()
             val (kjedeSluttdato, kjedestatus) = endretOppdragstidslinje.kjedeendringerFor(kjede)
             val endretPeriode = endretTidslinje.periode()
@@ -144,10 +144,10 @@ class Oppdragstidslinje private constructor(
     }
 
     companion object {
-        private fun Map<InternOppdragId, Oppdragsverdier>.medNyeVerdierFra(ny: Map<InternOppdragId, Oppdragsverdier>): Map<InternOppdragId, Oppdragsverdier> =
-            (keys + ny.keys).associateWith { internOppdragId ->
-                val eksisterende = this[internOppdragId]
-                val nyVerdi = ny[internOppdragId]
+        private fun Map<OppdragId, Oppdragsverdier>.medNyeVerdierFra(ny: Map<OppdragId, Oppdragsverdier>): Map<OppdragId, Oppdragsverdier> =
+            (keys + ny.keys).associateWith { oppdragId ->
+                val eksisterende = this[oppdragId]
+                val nyVerdi = ny[oppdragId]
                 when {
                     eksisterende != null && nyVerdi != null -> eksisterende.medNyeVerdierFra(nyVerdi)
                     else -> eksisterende ?: nyVerdi!!
