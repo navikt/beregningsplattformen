@@ -355,16 +355,20 @@ export default function SendInnOppdragsXML() {
 												aria-controls="periodedetaljer"
 												isActive={valgtPeriode?.id === periodeId}
 												onSelectPeriod={() =>
-													settValgtPeriode({
-														id: periodeId,
-														kjedeId: kjede.id,
-														versjonsindeks,
-														periodeindeks,
-														fraDato: periode.fraDato,
-														tilDato: periode.tilDato,
-														utbetalesTil: periode.utbetalesTil,
-														historisk,
-													})
+													settValgtPeriode((previous) =>
+														previous?.id === periodeId
+															? null
+															: {
+																	id: periodeId,
+																	kjedeId: kjede.id,
+																	versjonsindeks,
+																	periodeindeks,
+																	fraDato: periode.fraDato,
+																	tilDato: periode.tilDato,
+																	utbetalesTil: periode.utbetalesTil,
+																	historisk,
+																},
+													)
 												}
 												start={new Date(periode.fraDato)}
 												end={
@@ -480,15 +484,32 @@ export default function SendInnOppdragsXML() {
 					aria-live="polite"
 				>
 					{valgtPeriode && (
-						<Box background="neutral-soft" padding="space-16">
-							<Heading level="3" size="small">
+						<section
+							className={styles.laboratorium__periodedetaljer}
+							aria-labelledby="periodedetaljer-heading"
+						>
+							<Heading id="periodedetaljer-heading" level="3" size="small">
 								Detaljer for valgt periode
 							</Heading>
-							<p>Kjede-ID: {valgtPeriode.kjedeId}</p>
-							<p>Fra dato: {valgtPeriode.fraDato}</p>
-							<p>Til dato: {valgtPeriode.tilDato ?? "Ingen sluttdato"}</p>
-							<p>Utbetales til: {valgtPeriode.utbetalesTil}</p>
-						</Box>
+							<dl className={styles["laboratorium__periodedetaljer-liste"]}>
+								<div>
+									<dt>Fra dato</dt>
+									<dd>{valgtPeriode.fraDato}</dd>
+								</div>
+								<div>
+									<dt>Til dato</dt>
+									<dd>{valgtPeriode.tilDato ?? "Ingen sluttdato"}</dd>
+								</div>
+								<div>
+									<dt>Utbetales til</dt>
+									<dd>{valgtPeriode.utbetalesTil}</dd>
+								</div>
+								<div>
+									<dt>Kjede-ID</dt>
+									<dd>{valgtPeriode.kjedeId}</dd>
+								</div>
+							</dl>
+						</section>
 					)}
 				</Box>
 			</section>

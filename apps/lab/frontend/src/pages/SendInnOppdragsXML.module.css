@@ -82,3 +82,31 @@
   align-items: center;
   gap: var(--ax-space-8);
 }
+
+.laboratorium__periodedetaljer {
+  padding: var(--ax-space-24);
+  border: 2px solid var(--ax-border-meta-purple);
+  border-radius: var(--ax-radius-12);
+  background: var(--ax-bg-meta-purple-soft);
+}
+
+.laboratorium__tidslinje [data-timeline-popover] {
+  border-color: var(--ax-border-meta-purple);
+  background-color: var(--ax-bg-meta-purple-soft);
+}
+
+.laboratorium__periodedetaljer-liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--ax-space-16) var(--ax-space-24);
+  margin: var(--ax-space-16) 0 0;
+}
+
+.laboratorium__periodedetaljer-liste dt {
+  font-weight: 600;
+}
+
+.laboratorium__periodedetaljer-liste dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
