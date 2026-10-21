@@ -20,21 +20,32 @@ fun Route.labApi() {
     route(API_V1) {
         post("tolk-oppdrag") {
             val requestBody = call.receive<BeregningRequest>()
-            when (val oppdrag = Oppdrag.fraXml(*requestBody.xml.toTypedArray())) {
-                is Oppdrag.UgyldigOppdrag, is Oppdrag.UgyldigKombinasjon -> {
+            when (
+                val oppdrag = Oppdrag.fraXml(*requestBody.xml.toTypedArray())
+            ) {
+                is Oppdrag.UgyldigOppdrag -> {
                     val status = HttpStatusCode.BadRequest
-                    val message = if (oppdrag is Oppdrag.UgyldigOppdrag) {
-                        "Ugyldig oppdrag."
-                    } else {
-                        "Ugyldig kombinasjon av oppdrag."
-                    }
                     call.respond(
                         status,
                         ApiError(
                             timestamp = Clock.System.now(),
                             status = status.value,
                             error = status.description,
-                            message = message,
+                            message = oppdrag.feil.message,
+                            path = call.request.path(),
+                        ),
+                    )
+                }
+
+                is Oppdrag.UgyldigKombinasjon -> {
+                    val status = HttpStatusCode.Conflict
+                    call.respond(
+                        status,
+                        ApiError(
+                            timestamp = Clock.System.now(),
+                            status = status.value,
+                            error = status.description,
+                            message = oppdrag.feil.message,
                             path = call.request.path(),
                         ),
                     )
