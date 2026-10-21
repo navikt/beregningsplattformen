@@ -11,14 +11,14 @@ internal object Metrikker {
         oppdrag.flatMap { node ->
             fra(
                 node =
-                    when (node.erFraJson()) {
-                        true -> node.spesialhåndterJson()
-                        false -> node
+                    when (node.erFraXml()) {
+                        true -> node
+                        false -> node.spesialhåndterJson()
                     },
             )
         }
 
-    private fun JsonNode.erFraJson() = hasNonNull("oppdragsLinje150")
+    private fun JsonNode.erFraXml() = hasNonNull("oppdrag-110")
 
     private fun JsonNode.spesialhåndterJson(): JsonNode {
         val oppdrag110 = FraXmlFormat.oppdrag110FraJson(this.toString()).values.single()

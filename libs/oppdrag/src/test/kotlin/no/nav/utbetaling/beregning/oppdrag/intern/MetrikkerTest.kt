@@ -2,12 +2,9 @@ package no.nav.utbetaling.beregning.oppdrag.intern
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import tools.jackson.databind.node.ArrayNode
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.Filhjelper
-import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat.jsonMapper
-import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat.xmlMapper
 
 class MetrikkerTest :
     FunSpec({
@@ -16,10 +13,10 @@ class MetrikkerTest :
             val xml = Filhjelper.lesFil("xml/NyttOppdragMedSkyldner.xml")
             val json = Filhjelper.lesFil("json/oppdrag_med_komplisert_kjeding.json")
 
-            val fraJson = (jsonMapper.readTree(json) as ArrayNode).plusElement(xmlMapper.readTree(xml))
-            fraJson.size shouldBe 2
+            val jsonMetrikker = Metrikker.fra(FraXmlFormat.oppdrag110FraJson(json).keys)
+            val xmlMetrikker = Metrikker.fra(FraXmlFormat.oppdrag110FraXml(xml).keys)
 
-            val metrikker = Metrikker.fra(fraJson)
+            val metrikker = jsonMetrikker + xmlMetrikker
 
             val forventet =
                 listOf(

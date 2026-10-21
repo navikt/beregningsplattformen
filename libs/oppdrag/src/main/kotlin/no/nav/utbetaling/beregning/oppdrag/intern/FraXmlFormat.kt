@@ -181,7 +181,6 @@ internal object FraXmlFormat {
             "ENG" to Utbetalingsfrekvens.Engangsutbetaling,
         )
 
-    // TODO: Disse mapperne bør kunne være private igjen når metrikkene er koblet helt inn.
     internal val xmlMapper: ObjectMapper =
         XmlMapper
             .builder()
@@ -191,7 +190,7 @@ internal object FraXmlFormat {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
             .build()
 
-    internal val jsonMapper: ObjectMapper =
+    private val jsonMapper: ObjectMapper =
         JsonMapper
             .builder()
             .addModule(kotlinModule())
