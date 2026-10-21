@@ -19,7 +19,7 @@ const val API_V1 = "/api/v1"
 fun Route.labApi() {
     route(API_V1) {
         post("tolk-oppdrag") {
-            val requestBody = call.receive<Test>()
+            val requestBody = call.receive<BeregningRequest>()
             when (val oppdrag = Oppdrag.fraXml(*requestBody.xml.toTypedArray())) {
                 is Oppdrag.UgyldigOppdrag, is Oppdrag.UgyldigKombinasjon -> {
                     val status = HttpStatusCode.BadRequest
