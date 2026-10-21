@@ -19,7 +19,7 @@ import { postTolkOppdrag } from "../api/apiService";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
 import { HttpStatusCodeError } from "../types/Error";
-import type { OppdragstidslinjeDTO } from "../types/schema/OppdragstidslinjeDTO";
+import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
 import { fillTypedTemplate, templateFields } from "../util/template";
 import styles from "./SendInnOppdragsXML.module.css";
 

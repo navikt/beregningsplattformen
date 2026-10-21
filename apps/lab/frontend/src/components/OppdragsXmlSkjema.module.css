@@ -17,15 +17,16 @@
   gap: var(--ax-space-24);
 }
 
-.skjema__handlinger {
-  align-items: center;
+.skjema__oppdragslinje {
+  display: grid;
+  gap: var(--ax-space-16);
+  border: 2px solid var(--ax-border-neutral);
+  border-radius: var(--ax-radius-8);
+  padding: var(--ax-space-16);
 }
 
-.skjema__xmlforhandsvisning {
-  max-width: 100%;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.skjema__handlinger {
+  align-items: center;
 }
 
 .skjema__status {

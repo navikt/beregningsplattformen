@@ -1,8 +1,8 @@
-import type { BeregningRequest } from "../types/schema/BeregningRequest";
+import type { BeregningRequest } from "../types/BeregningRequest";
 import {
 	type OppdragstidslinjeDTO,
 	oppdragstidslinjeSchema,
-} from "../types/schema/OppdragstidslinjeDTO";
+} from "../types/OppdragstidslinjeDTO";
 import { axiosPostFetcher } from "./config/apiConfig";
 
 const BASE_URI = {
