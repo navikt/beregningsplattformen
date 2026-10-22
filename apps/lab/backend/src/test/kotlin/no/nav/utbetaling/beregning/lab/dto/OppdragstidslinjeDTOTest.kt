@@ -91,6 +91,7 @@ private fun kjedeVersjon(status: String) =
                     kidnummer = null,
                     bostedsenhet = null,
                     behandlendeEnhet = null,
+                    vedtakId = null
                 ),
             ),
     )
