@@ -23,6 +23,7 @@ import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
+import no.nav.utbetaling.beregning.oppdrag.VedtakId
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.Periode
@@ -53,6 +54,7 @@ internal object FraXmlFormat {
                         // Verdier som entydig kan utledes fra verdier i linjen
                         .mapVerdier { oppdragsLinje150 ->
                             OpplysningerIntern.Builder(
+                                vedtakId = oppdragsLinje150.vedtakId.mapVerdi { VedtakId(it) },
                                 delytelseId = oppdragsLinje150.delytelseId.mapVerdi { DelytelseId(it) } ?: error("Mangler delytelseId på linjenivå"),
                                 oppdragSaksbehandlerId = oppdrag110.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på oppdragsnivå"),
                                 linjeSaksbehandlerId = oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på linjenivå"),

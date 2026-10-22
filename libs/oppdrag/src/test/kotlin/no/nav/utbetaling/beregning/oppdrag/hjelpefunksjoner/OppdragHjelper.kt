@@ -3,6 +3,7 @@ package no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
+import no.nav.utbetaling.beregning.oppdrag.VedtakId
 
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.xml.Avvent118
@@ -115,6 +116,7 @@ internal fun linje(
     enheter: List<LinjeEnhet160> = emptyList(),
     utbetalesTilId: String? = null,
     datoUtbetalesTilIdFom: LocalDate? = null,
+    vedtakId: String? = null,
 ) = OppdragsLinje150(
     kodeEndringLinje = "NY",
     delytelseId = delytelseId,
@@ -134,6 +136,7 @@ internal fun linje(
     linjeEnhet160 = enheter,
     utbetalesTilId = utbetalesTilId,
     datoUtbetalesTilIdFom = datoUtbetalesTilIdFom,
+    vedtakId = vedtakId,
 )
 
 internal fun avventing(

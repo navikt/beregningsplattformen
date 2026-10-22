@@ -58,6 +58,11 @@ value class DelytelseId(
     val id: String,
 )
 
+@JvmInline
+value class VedtakId(
+    val id: String
+)
+
 data class Opplysning<T>(
     val saksbehandlerId: SaksbehandlerId,
     val opplysning: T,
@@ -66,6 +71,7 @@ data class Opplysning<T>(
 data class Bostedsenhet(
     val enhet: String,
 )
+
 
 data class BehandlendeEnhet(
     val enhet: String,
@@ -128,6 +134,7 @@ data class Opplysninger(
     val status: Opplysning<Status>,
     val bostedsenhet: Opplysning<Bostedsenhet>?,
     val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
+    val vedtakId: Opplysning<VedtakId>?,
     /** TODO: Eksempelvis gjelderId, utbetalesTil, bostedsenhet må ikke være satt alle innsendinger,
      *  men når man har kombinert alle innsendinger til en tidslinje, da må disse verdiene være satt.
      *  Burde man introdusert noe som en SammenslåtteOpplysninger el.lig. som håndterer dette?

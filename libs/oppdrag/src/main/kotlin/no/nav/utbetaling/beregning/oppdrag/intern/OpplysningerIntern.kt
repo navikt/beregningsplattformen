@@ -19,6 +19,7 @@ import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
+import no.nav.utbetaling.beregning.oppdrag.VedtakId
 import no.nav.utbetaling.beregning.oppdrag.intern.FeilregistrerbarOpplysning.Companion.gjeldende
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
@@ -33,6 +34,7 @@ internal data class OpplysningerIntern(
     val bostedsenhet: Opplysning<Bostedsenhet>?,
     val gjelderId: Opplysning<Personidentifikator>?,
     val utbetalesTil: Opplysning<UtbetalesTil>?,
+    val vedtakId: Opplysning<VedtakId>?,
     private val behandlendeEnhetEndring: FeilregistrerbarOpplysning<BehandlendeEnhet>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
 ) {
@@ -52,6 +54,7 @@ internal data class OpplysningerIntern(
             behandlendeEnhetEndring = FeilregistrerbarOpplysning.velg(this.behandlendeEnhetEndring, ny.behandlendeEnhetEndring),
             gjelderId = velgNullableOpplysning(ny.gjelderId, this.gjelderId),
             utbetalesTil = velgNullableOpplysning(ny.utbetalesTil, this.utbetalesTil),
+            vedtakId = velgNullableOpplysning(ny.vedtakId, this.vedtakId)
         )
 
     data class Builder(
@@ -68,6 +71,7 @@ internal data class OpplysningerIntern(
         private val utbetalesTil: UtbetalesTil? = null,
         private val behandlendeEnhet: FeilregistrerbarOpplysning<BehandlendeEnhet>? = null,
         private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
+        private val vedtakId: VedtakId? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             when {
@@ -89,6 +93,7 @@ internal data class OpplysningerIntern(
                 behandlendeEnhetEndring = behandlendeEnhet,
                 gjelderId = gjelderId?.let { Opplysning(oppdragSaksbehandlerId, it) },
                 utbetalesTil = utbetalesTil?.let { Opplysning(linjeSaksbehandlerId, it) },
+                vedtakId = vedtakId?.let { Opplysning(linjeSaksbehandlerId, it) },
             )
     }
 
