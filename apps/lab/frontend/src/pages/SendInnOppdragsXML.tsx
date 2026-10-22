@@ -1,8 +1,13 @@
 import {
+	CheckmarkCircleFillIcon,
 	ChevronDownIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	PadlockLockedFillIcon,
+	PauseFillIcon,
 	PlusIcon,
+	ClockDashedIcon,
+	XMarkOctagonFillIcon,
 } from "@navikt/aksel-icons";
 import {
 	BodyShort,
@@ -38,9 +43,22 @@ function formaterFeltnavn(feltnavn: string) {
 	return feltnavn.replace(/([A-Z])/g, " $1");
 }
 
+function formaterNorskDato(dato: string) {
+	const [år, måned, dag] = dato.split("-");
+	return `${dag}.${måned}.${år}`;
+}
+
+function formaterPeriodeTekst(periode: KjedePeriodeDTO) {
+	const fra = formaterNorskDato(periode.fraDato);
+	if (periode.tilDato === null) return `${fra} - ∞`;
+	return `${fra} - ${formaterNorskDato(periode.tilDato)}`;
+}
+
 function formaterFeltverdi(feltnavn: string, verdi: string | null) {
-	if (verdi !== null) return verdi;
-	if (feltnavn === "tilDato") return "Ingen sluttdato";
+	if (feltnavn === "fraDato" || feltnavn === "tilDato") return null;
+	if (verdi !== null) {
+		return verdi;
+	}
 	return "Ingen verdi";
 }
 
@@ -48,6 +66,45 @@ function formaterKortFagsystemId(fagsystemId: string) {
 	return fagsystemId.length > 16
 		? `${fagsystemId.slice(0, 8)}…${fagsystemId.slice(-4)}`
 		: fagsystemId;
+}
+
+function visualiseringForStatus(status: string): {
+	status: "success" | "warning" | "danger" | "info" | "neutral";
+	icon: React.ReactNode;
+	statusLabel: string;
+} {
+	switch (status.trim().toLowerCase()) {
+		case "aktiv":
+			return {
+				status: "success",
+				icon: <CheckmarkCircleFillIcon aria-hidden />,
+				statusLabel: "Aktiv",
+			};
+		case "opphørt":
+			return {
+				status: "danger",
+				icon: <XMarkOctagonFillIcon aria-hidden />,
+				statusLabel: "Opphørt",
+			};
+		case "hvilende":
+			return {
+				status: "neutral",
+				icon: <PauseFillIcon aria-hidden />,
+				statusLabel: "Hvilende",
+			};
+		case "sperret":
+			return {
+				status: "neutral",
+				icon: <PadlockLockedFillIcon aria-hidden />,
+				statusLabel: "Sperret",
+			};
+		default:
+			return {
+				status: "info",
+				icon: <PauseFillIcon aria-hidden />,
+				statusLabel: status,
+			};
+	}
 }
 
 export default function SendInnOppdragsXML() {
@@ -313,10 +370,6 @@ export default function SendInnOppdragsXML() {
 					tidslinjeSlutt && (
 						<>
 							<div className={styles.laboratorium__tidslinjenavigasjon}>
-								<BodyShort aria-live="polite">
-									Viser {tidslinjeStart.toLocaleDateString("nb-NO")}–
-									{tidslinjeSlutt.toLocaleDateString("nb-NO")}
-								</BodyShort>
 								<div className={styles.laboratorium__tidslinjekontroller}>
 									<ToggleGroup
 										aria-label="Antall måneder i perioden"
@@ -368,6 +421,13 @@ export default function SendInnOppdragsXML() {
 										historisk: boolean,
 									) => {
 										const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
+										const periodeStatus = visualiseringForStatus(periode.status);
+										const periodeIkon = historisk ? (
+											<ClockDashedIcon aria-hidden />
+										) : (
+											periodeStatus.icon
+										);
+										const periodeTekst = formaterPeriodeTekst(periode);
 
 										return (
 											<Timeline.Period
@@ -393,14 +453,16 @@ export default function SendInnOppdragsXML() {
 												}
 												start={new Date(periode.fraDato)}
 												end={periode.tilDato ? new Date(periode.tilDato) : new Date()}
-												status={historisk ? "warning" : "success"}
+												status={periodeStatus.status}
+												icon={periodeIkon}
+												statusLabel={periodeStatus.statusLabel}
+												title={periodeTekst}
+												className={
+													historisk ? styles.laboratorium__historikkperiode : undefined
+												}
 											>
-												{(["fraDato", "tilDato", "status"] as const).map((feltnavn) => (
-													<p key={feltnavn}>
-														{formaterFeltnavn(feltnavn)}:{" "}
-														{formaterFeltverdi(feltnavn, periode[feltnavn])}
-													</p>
-												))}
+												<p>{periodeTekst}</p>
+												<p>Status: {periode.status}</p>
 											</Timeline.Period>
 										);
 									};
@@ -541,8 +603,13 @@ export default function SendInnOppdragsXML() {
 									<dt>Fagsystem-ID</dt>
 									<dd>{valgtPeriode.fagsystemId}</dd>
 								</div>
+								<div>
+									<dt>Periode</dt>
+									<dd>{formaterPeriodeTekst(valgtPeriode.periode)}</dd>
+								</div>
 								{Object.entries(valgtPeriode.periode).map(
 									([feltnavn, verdi]) => (
+										formaterFeltverdi(feltnavn, verdi) === null ? null :
 										<div key={feltnavn}>
 											<dt>{formaterFeltnavn(feltnavn)}</dt>
 											<dd>{formaterFeltverdi(feltnavn, verdi)}</dd>

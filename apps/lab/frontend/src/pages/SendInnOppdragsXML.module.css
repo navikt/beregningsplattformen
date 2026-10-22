@@ -116,6 +116,10 @@
   font-size: var(--ax-font-size-small);
 }
 
+.laboratorium__historikkperiode {
+  filter: saturate(62%) brightness(110%);
+}
+
 .laboratorium__periodedetaljer {
   padding: var(--ax-space-24);
   border: 2px solid var(--ax-border-meta-purple);
