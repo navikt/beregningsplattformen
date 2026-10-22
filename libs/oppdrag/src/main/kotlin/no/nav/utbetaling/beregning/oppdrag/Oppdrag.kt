@@ -35,17 +35,17 @@ sealed interface Oppdrag {
     )
 
     companion object {
-        fun fraXml(vararg xml: String) =
-            lagOppdrag {
+        fun fraXml(vararg xml: String, utgangspunkt: Oppdragstidslinje = Oppdragstidslinje()) =
+            lagOppdrag(utgangspunkt) {
                 FraXmlFormat.oppdrag110FraXml(*xml)
             }
 
-        fun fraJson(vararg json: String) =
-            lagOppdrag {
+        fun fraJson(vararg json: String, utgangspunkt: Oppdragstidslinje = Oppdragstidslinje()) =
+            lagOppdrag(utgangspunkt) {
                 FraXmlFormat.oppdrag110FraJson(*json)
             }
 
-        private fun lagOppdrag(oppdrag110: () -> Map<JsonNode, Oppdrag110>): Oppdrag {
+        private fun lagOppdrag(utgangspunkt: Oppdragstidslinje, oppdrag110: () -> Map<JsonNode, Oppdrag110>): Oppdrag {
             val oppdrag110 =
                 runCatching { oppdrag110() }.getOrElse { feil ->
                     return UgyldigOppdrag(feil, emptyList())
@@ -60,7 +60,7 @@ sealed interface Oppdrag {
             }
 
             val oppdragstidslinje =
-                runCatching { FraXmlFormat.fraOppdrag110(oppdrag110.values) }.getOrElse { feil ->
+                runCatching { FraXmlFormat.fraOppdrag110(oppdrag110.values, utgangspunkt) }.getOrElse { feil ->
                     return UgyldigOppdrag(feil, metrikker)
                 }
 

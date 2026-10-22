@@ -138,8 +138,8 @@ internal object FraXmlFormat {
                 }
             }.toMap()
 
-    fun fraOppdrag110(oppdrag110: Iterable<Oppdrag110>) =
-        oppdrag110.foldIndexed(Oppdragstidslinje()) { index, sammenslått, etOppdrag110 ->
+    fun fraOppdrag110(oppdrag110: Iterable<Oppdrag110>, utgangspunt: Oppdragstidslinje = Oppdragstidslinje()) =
+        oppdrag110.foldIndexed(utgangspunt) { index, sammenslått, etOppdrag110 ->
             runCatching { sammenslått + FraXmlFormat.opprett(etOppdrag110) }.getOrElse { feil ->
                 throw IllegalArgumentException("Feil på oppdrag nummer ${index + 1}", feil)
             }

@@ -34,8 +34,8 @@ class Oppdragstidslinje private constructor(
     tidslinjer: Map<UUID, Tidslinje<Opplysninger>>,
 ) : Tidslinjesamling<UUID, Opplysninger> by DefaultTidslinjesamling(tidslinjer) {
     internal constructor(
-        oppdragsverdier: Map<OppdragId, Oppdragsverdier> = emptyMap(),
-        kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>> = emptyMap(),
+        oppdragsverdier: Map<OppdragId, Oppdragsverdier>,
+        kjeder: Map<Kjede, Tidslinje<OpplysningerIntern>>,
         oppdragsendringer: Map<OppdragId, Oppdragsendringer> = emptyMap(),
         kjedeendringer: Map<Kjede, Kjedeendringer> = emptyMap(),
     ) : this(
@@ -54,6 +54,13 @@ class Oppdragstidslinje private constructor(
             },
         oppdragsendringer = oppdragsendringer,
         kjedeendringer = kjedeendringer,
+    )
+
+    constructor(): this(
+        oppdragsverdier = emptyMap(),
+        kjeder = emptyMap(),
+        oppdragsendringer = emptyMap(),
+        kjedeendringer = emptyMap(),
     )
 
     private fun kombinerMed(
