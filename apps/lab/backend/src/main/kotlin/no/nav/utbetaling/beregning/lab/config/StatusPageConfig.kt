@@ -60,7 +60,7 @@ private suspend fun ApplicationCall.logOgResponder(
     respond(status, apiError)
 }
 
-private fun createApiError(
+internal fun createApiError(
     status: HttpStatusCode,
     message: String?,
     call: ApplicationCall,

@@ -12,12 +12,6 @@ import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.tid.Periode
 
-
-class Oppdragstidslinjer(
-    val oppdragstidslinjeDTO: OppdragstidslinjeDTO = OppdragstidslinjeDTO(kjeder = emptyList()),
-    val oppdragstidslinje: Oppdragstidslinje = Oppdragstidslinje(),
-)
-
 @Serializable
 data class OppdragstidslinjeDTO(
     val kjeder: List<KjedeDTO>,
