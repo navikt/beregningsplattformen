@@ -5,6 +5,7 @@ import {
 	ChevronRightIcon,
 	PadlockLockedFillIcon,
 	PauseFillIcon,
+	PersonIcon,
 	PlusIcon,
 	ClockDashedIcon,
 	XMarkOctagonFillIcon,
@@ -40,7 +41,11 @@ type KjedePeriodeDTO =
 	OppdragstidslinjeDTO["kjeder"][number]["kjedeVersjoner"][number]["kjedePerioder"][number];
 
 function formaterFeltnavn(feltnavn: string) {
-	return feltnavn.replace(/([A-Z])/g, " $1");
+	const medMellomrom = feltnavn
+		.replace(/([A-Z])/g, " $1")
+		.toLowerCase()
+		.trim();
+	return medMellomrom.charAt(0).toUpperCase() + medMellomrom.slice(1);
 }
 
 function formaterNorskDato(dato: string) {
@@ -54,12 +59,15 @@ function formaterPeriodeTekst(periode: KjedePeriodeDTO) {
 	return `${fra} - ${formaterNorskDato(periode.tilDato)}`;
 }
 
-function formaterFeltverdi(feltnavn: string, verdi: string | null) {
-	if (feltnavn === "fraDato" || feltnavn === "tilDato") return null;
-	if (verdi !== null) {
-		return verdi;
-	}
-	return "Ingen verdi";
+function erOpplysning(
+	verdi: unknown,
+): verdi is { saksbehandlerId: string; opplysning: string } {
+	if (typeof verdi !== "object" || verdi === null) return false;
+	const kandidat = verdi as Record<string, unknown>;
+	return (
+		typeof kandidat.opplysning === "string" &&
+		typeof kandidat.saksbehandlerId === "string"
+	);
 }
 
 function formaterKortFagsystemId(fagsystemId: string) {
@@ -105,6 +113,50 @@ function visualiseringForStatus(status: string): {
 				statusLabel: status,
 			};
 	}
+}
+
+function statusFraPeriode(periode: KjedePeriodeDTO) {
+	if (erOpplysning(periode.status)) return periode.status.opplysning;
+	return "";
+}
+
+function Detaljkort({
+	label,
+	verdi,
+	saksbehandlerId,
+}: {
+	label: string;
+	verdi: string;
+	saksbehandlerId?: string;
+}) {
+	return (
+		<div className={styles.laboratorium__detaljkort}>
+			<dt>{label}</dt>
+			{saksbehandlerId && (
+				<Tooltip content={`Saksbehandler: ${saksbehandlerId}`}>
+					<span
+						className={styles.laboratorium__saksbehandlerikon}
+						// biome-ignore lint/a11y/noNoninteractiveTabindex: Gjør saksbehandler-tooltipet tilgjengelig for tastatur.
+						tabIndex={0}
+						role="note"
+						aria-label={`Saksbehandler: ${saksbehandlerId}`}
+					>
+						<PersonIcon aria-hidden />
+					</span>
+				</Tooltip>
+			)}
+			<dd>
+				<span className={styles.laboratorium__detaljverdi}>
+					<span className={styles.laboratorium__detaljverditekst}>{verdi}</span>
+					<CopyButton
+						size="xsmall"
+						copyText={verdi}
+						aria-label={`Kopier ${label}`}
+					/>
+				</span>
+			</dd>
+		</div>
+	);
 }
 
 export default function SendInnOppdragsXML() {
@@ -421,13 +473,16 @@ export default function SendInnOppdragsXML() {
 										historisk: boolean,
 									) => {
 										const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
-										const periodeStatus = visualiseringForStatus(periode.status);
+										const periodeStatus = visualiseringForStatus(
+											statusFraPeriode(periode),
+										);
 										const periodeIkon = historisk ? (
 											<ClockDashedIcon aria-hidden />
 										) : (
 											periodeStatus.icon
 										);
 										const periodeTekst = formaterPeriodeTekst(periode);
+										const statusTekst = statusFraPeriode(periode);
 
 										return (
 											<Timeline.Period
@@ -462,7 +517,7 @@ export default function SendInnOppdragsXML() {
 												}
 											>
 												<p>{periodeTekst}</p>
-												<p>Status: {periode.status}</p>
+												{statusTekst && <p>Status: {statusTekst}</p>}
 											</Timeline.Period>
 										);
 									};
@@ -591,32 +646,46 @@ export default function SendInnOppdragsXML() {
 								Detaljer for valgt periode
 							</Heading>
 							<dl className={styles["laboratorium__periodedetaljer-liste"]}>
-								<div>
-									<dt>Kjede-ID</dt>
-									<dd>{valgtPeriode.kjedeId}</dd>
-								</div>
-								<div>
-									<dt>Fagområde</dt>
-									<dd>{valgtPeriode.fagområde}</dd>
-								</div>
-								<div>
-									<dt>Fagsystem-ID</dt>
-									<dd>{valgtPeriode.fagsystemId}</dd>
-								</div>
-								<div>
-									<dt>Periode</dt>
-									<dd>{formaterPeriodeTekst(valgtPeriode.periode)}</dd>
-								</div>
-								{Object.entries(valgtPeriode.periode).map(
-									([feltnavn, verdi]) => (
-										formaterFeltverdi(feltnavn, verdi) === null ? null :
-										<div key={feltnavn}>
-											<dt>{formaterFeltnavn(feltnavn)}</dt>
-											<dd>{formaterFeltverdi(feltnavn, verdi)}</dd>
-										</div>
-									),
-								)}
+								<Detaljkort label="Fagområde" verdi={valgtPeriode.fagområde} />
+								<Detaljkort
+									label="Fagsystem-ID"
+									verdi={valgtPeriode.fagsystemId}
+								/>
+								<Detaljkort
+									label="Periode"
+									verdi={formaterPeriodeTekst(valgtPeriode.periode)}
+								/>
+								{Object.entries(valgtPeriode.periode).map(([feltnavn, verdi]) => {
+									if (
+										feltnavn === "fraDato" ||
+										feltnavn === "tilDato" ||
+										feltnavn === "status" ||
+										verdi === null
+									) {
+										return null;
+									}
+									const erOpplysningsverdi = erOpplysning(verdi);
+									const visningsverdi = erOpplysningsverdi
+										? verdi.opplysning
+										: typeof verdi === "string"
+											? verdi
+											: null;
+									if (visningsverdi === null) return null;
+									return (
+										<Detaljkort
+											key={feltnavn}
+											label={formaterFeltnavn(feltnavn)}
+											verdi={visningsverdi}
+											saksbehandlerId={
+												erOpplysningsverdi ? verdi.saksbehandlerId : undefined
+											}
+										/>
+									);
+								})}
 							</dl>
+							<p className={styles.laboratorium__kjedeid}>
+								Kjede-ID: {valgtPeriode.kjedeId}
+							</p>
 						</section>
 					)}
 				</Box>

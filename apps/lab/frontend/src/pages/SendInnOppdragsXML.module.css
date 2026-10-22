@@ -135,15 +135,60 @@
 .laboratorium__periodedetaljer-liste {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: var(--ax-space-16) var(--ax-space-24);
-  margin: var(--ax-space-16) 0 0;
+  gap: var(--ax-space-12);
+  margin: var(--ax-space-20) 0 0;
+}
+
+.laboratorium__periodedetaljer-liste > div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-4);
+  padding: var(--ax-space-12) var(--ax-space-16);
+  border: 1px solid var(--ax-border-subtle);
+  border-radius: var(--ax-radius-8);
+  background: var(--ax-bg-default);
 }
 
 .laboratorium__periodedetaljer-liste dt {
+  color: var(--ax-text-subtle);
+  font-size: var(--ax-font-size-small);
   font-weight: 600;
+  letter-spacing: 0.02em;
+  padding-right: var(--ax-space-28);
+  text-transform: uppercase;
 }
 
 .laboratorium__periodedetaljer-liste dd {
   margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.laboratorium__detaljverdi {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-space-8);
+}
+
+.laboratorium__detaljverditekst {
+  overflow-wrap: anywhere;
+}
+
+.laboratorium__saksbehandlerikon {
+  position: absolute;
+  top: var(--ax-space-12);
+  right: var(--ax-space-12);
+  display: inline-flex;
+  align-items: center;
+  color: var(--ax-text-subtle);
+  cursor: help;
+}
+
+.laboratorium__kjedeid {
+  margin: var(--ax-space-16) 0 0;
+  color: var(--ax-text-subtle);
+  font-size: var(--ax-font-size-small);
+  text-align: right;
   overflow-wrap: anywhere;
 }

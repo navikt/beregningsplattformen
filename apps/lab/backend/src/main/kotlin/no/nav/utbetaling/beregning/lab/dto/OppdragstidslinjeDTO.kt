@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.lab.dto
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 import kotlinx.serialization.Contextual
@@ -51,26 +52,37 @@ data class KjedeVersjonDTO(
 )
 
 @Serializable
+data class OpplysningDTO(
+    val saksbehandlerId: String,
+    val opplysning: String
+)
+
+@Serializable
 data class KjedePerioderDTO(
     @Contextual val fraDato: LocalDate,
     @Contextual val tilDato: LocalDate?,
     val delytelseId: String,
-    val status: String,
-    val sats: String,
-    val avventingsårsak: String?,
-    val forfall: String?,
-    val utbetalesTil: String?,
-    val gjelderId: String?,
-    val henvisning: String?,
-    val stønadId: String?,
-    val utbetalingsfrekvens: String?,
-    val bilagstype: String?,
-    val kidnummer: String?,
-    val bostedsenhet: String?,
-    val behandlendeEnhet: String?,
+    val status: OpplysningDTO,
+    val sats: OpplysningDTO,
+    val avventingsårsak: OpplysningDTO?,
+    val forfall: OpplysningDTO?,
+    val utbetalesTil: OpplysningDTO?,
+    val gjelderId: OpplysningDTO?,
+    val henvisning: OpplysningDTO?,
+    val stønadId: OpplysningDTO?,
+    val utbetalingsfrekvens: OpplysningDTO?,
+    val bilagstype: OpplysningDTO?,
+    val kidnummer: OpplysningDTO?,
+    val bostedsenhet: OpplysningDTO?,
+    val behandlendeEnhet: OpplysningDTO?,
 )
 
-private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) = "${stringverdi(this.opplysning)} (Fra saksbehandler ${this.saksbehandlerId.id})"
+private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) = OpplysningDTO(
+    saksbehandlerId = saksbehandlerId.id,
+    opplysning = stringverdi(opplysning),
+)
+
+private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
 fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
     val kjeder =
@@ -96,7 +108,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                     KjedePerioderDTO(
                                         fraDato = periode.fom,
                                         tilDato = (periode as? Periode.LukketPeriode)?.tom,
-                                        status = opplysning.status.opplysning.name, // Brukes til å fargelegger pølser så dropper saksbehandler-info
+                                        status = opplysning.status.toDto { opplysning.status.opplysning.name },
                                         utbetalesTil =
                                             opplysning.utbetalesTil?.toDto {
                                                 when (it) {
@@ -105,15 +117,15 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                                     is UtbetalesTil.Samhandler -> "Samhandler ${it.samhandlerId.tssId}"
                                                 }
                                             },
-                                        forfall = opplysning.forfall?.toDto { "$it" },
+                                        forfall = opplysning.forfall?.toDto { it.format(FORMATTER) },
                                         avventingsårsak =
                                             opplysning.avventingsårsak?.toDto {
                                                 when (it) {
-                                                    is Avventingsårsak.Avregning -> "Avregning - avventer til ${it.til}"
+                                                    is Avventingsårsak.Avregning -> "Avregning - avventer til ${it.til.format(FORMATTER)}"
                                                     is Avventingsårsak.Refusjonskrav ->
-                                                        when (it.til) {
+                                                        when (val til = it.til) {
                                                             null -> "Refusjonskrav uten sluttdato"
-                                                            else -> "Refusjonskrav avventer til ${it.til}"
+                                                            else -> "Refusjonskrav avventer til ${til.format(FORMATTER)}"
                                                         }
                                                 }
                                             },

@@ -1,10 +1,18 @@
 import { z } from "zod";
 
-export const kjedePerioderSchema = z.object({
-	fraDato: z.iso.date(),
-	tilDato: z.iso.date().nullable(),
-    status: z.string(),
-}).catchall(z.string().nullable());
+export const opplysningSchema = z.object({
+	saksbehandlerId: z.string(),
+	opplysning: z.string(),
+});
+
+export const kjedePerioderSchema = z
+	.object({
+		fraDato: z.iso.date(),
+		tilDato: z.iso.date().nullable(),
+		delytelseId: z.string(),
+		status: opplysningSchema,
+	})
+	.catchall(z.union([opplysningSchema, z.string()]).nullable());
 
 export const kjedeVersjonSchema = z.object({
 	innsending: z.number().int(),
@@ -13,8 +21,8 @@ export const kjedeVersjonSchema = z.object({
 
 export const kjedeSchema = z.object({
 	id: z.uuid(),
-    fagområde: z.string(),
-    fagsystemId: z.string(),
+	fagområde: z.string(),
+	fagsystemId: z.string(),
 	kjedeVersjoner: z.array(kjedeVersjonSchema),
 });
 
