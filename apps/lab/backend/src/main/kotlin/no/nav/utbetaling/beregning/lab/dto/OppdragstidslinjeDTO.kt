@@ -52,6 +52,7 @@ data class KjedeDTO(
 
 @Serializable
 data class KjedeVersjonDTO(
+    val innsending: Int,
     val kjedePerioder: List<KjedePerioderDTO>,
 )
 
@@ -77,7 +78,7 @@ data class KjedePerioderDTO(
 
 private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) = "${stringverdi(this.opplysning)} (Fra saksbehandler ${this.saksbehandlerId.id})"
 
-fun Oppdragstidslinje.toDTO(): OppdragstidslinjeDTO {
+fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
     val kjeder =
         tidslinjer.map { (kjedeId, tidslinje) ->
             val fagområde =
@@ -95,6 +96,7 @@ fun Oppdragstidslinje.toDTO(): OppdragstidslinjeDTO {
                 kjedeVersjoner =
                     listOf(
                         KjedeVersjonDTO(
+                            innsending = innsending,
                             kjedePerioder =
                                 tidslinje.map { (periode, opplysning) ->
                                     KjedePerioderDTO(

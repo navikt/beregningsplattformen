@@ -22,9 +22,9 @@ fun Route.labApi() {
     route(API_V1) {
         post("tolk-oppdrag") {
             val requestBody = call.receive<BeregningRequest>()
-            val oppdrag2 = requestBody.xml.fold(Oppdragstidslinjer()) { sammenslåttOppdragstidslinjer, xml ->
+            val oppdrag2 = requestBody.xml.foldIndexed(Oppdragstidslinjer()) { innsending, sammenslåttOppdragstidslinjer, xml ->
                 val oppdaterOppdragtidslinje = (Oppdrag.fraXml(xml, utgangspunkt = sammenslåttOppdragstidslinjer.oppdragstidslinje) as Oppdrag.Utbetaling).oppdragstidslinje
-                val oppdatertDto = sammenslåttOppdragstidslinjer.oppdragstidslinjeDTO + oppdaterOppdragtidslinje.toDTO()
+                val oppdatertDto = sammenslåttOppdragstidslinjer.oppdragstidslinjeDTO + oppdaterOppdragtidslinje.toDTO(innsending + 1)
                 Oppdragstidslinjer(
                     oppdragstidslinjeDTO = oppdatertDto,
                     oppdragstidslinje = oppdaterOppdragtidslinje,
@@ -71,5 +71,9 @@ fun Route.labApi() {
                 )
             }*/
         }
+    }
+
+    fun ja() {
+        println("ja")
     }
 }

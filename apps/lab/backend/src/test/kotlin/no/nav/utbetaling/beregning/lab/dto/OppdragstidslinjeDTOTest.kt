@@ -71,6 +71,7 @@ private fun kjede(
 
 private fun kjedeVersjon(status: String) =
     KjedeVersjonDTO(
+        innsending = 1,
         kjedePerioder =
             listOf(
                 KjedePerioderDTO(
