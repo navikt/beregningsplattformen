@@ -391,12 +391,14 @@ export default function SendInnOppdragsXML() {
 												}
 												status={historisk ? "warning" : "success"}
 											>
-												{Object.entries(periode).map(([feltnavn, verdi]) => (
-													<p key={feltnavn}>
-														{formaterFeltnavn(feltnavn)}:{" "}
-														{formaterFeltverdi(feltnavn, verdi)}
-													</p>
-												))}
+												{(["fraDato", "tilDato", "status"] as const).map(
+													(feltnavn) => (
+														<p key={feltnavn}>
+															{formaterFeltnavn(feltnavn)}:{" "}
+															{formaterFeltverdi(feltnavn, periode[feltnavn])}
+														</p>
+													),
+												)}
 											</Timeline.Period>
 										);
 									};
@@ -520,12 +522,14 @@ export default function SendInnOppdragsXML() {
 									<dt>Fagsystem-ID</dt>
 									<dd>{valgtPeriode.fagsystemId}</dd>
 								</div>
-								{Object.entries(valgtPeriode.periode).map(([feltnavn, verdi]) => (
-									<div key={feltnavn}>
-										<dt>{formaterFeltnavn(feltnavn)}</dt>
-										<dd>{formaterFeltverdi(feltnavn, verdi)}</dd>
-									</div>
-								))}
+								{Object.entries(valgtPeriode.periode).map(
+									([feltnavn, verdi]) => (
+										<div key={feltnavn}>
+											<dt>{formaterFeltnavn(feltnavn)}</dt>
+											<dd>{formaterFeltverdi(feltnavn, verdi)}</dd>
+										</div>
+									),
+								)}
 							</dl>
 						</section>
 					)}

@@ -1,5 +1,5 @@
 import { HttpResponse, http } from "msw";
-import tidslinjeData from "./tidslinje.json";
+import { tidslinjeData } from "./tidslinje";
 
 const API_V1 = "/api/v1";
 
