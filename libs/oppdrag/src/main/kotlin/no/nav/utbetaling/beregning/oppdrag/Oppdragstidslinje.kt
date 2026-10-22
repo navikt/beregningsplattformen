@@ -56,7 +56,7 @@ class Oppdragstidslinje private constructor(
         kjedeendringer = kjedeendringer,
     )
 
-    constructor(): this(
+    constructor() : this(
         oppdragsverdier = emptyMap(),
         kjeder = emptyMap(),
         oppdragsendringer = emptyMap(),
