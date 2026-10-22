@@ -15,7 +15,26 @@ import no.nav.utbetaling.beregning.tid.Periode
 @Serializable
 data class OppdragstidslinjeDTO(
     val kjeder: List<KjedeDTO>,
-)
+) {
+    operator fun plus(other: OppdragstidslinjeDTO): OppdragstidslinjeDTO {
+        val eksisterendePerKjedeId = kjeder.associateBy { it.id }
+        val nyePerKjedeId = other.kjeder.associateBy { it.id }
+        val oppdaterteKjeder =
+            (kjeder.map { it.id } + other.kjeder.map { it.id }).distinct().map { kjedeId ->
+                val eksisterendeKjede = eksisterendePerKjedeId[kjedeId]
+                val nyKjede = nyePerKjedeId[kjedeId]
+                when {
+                    eksisterendeKjede != null && nyKjede != null ->
+                        eksisterendeKjede.copy(
+                            kjedeVersjoner = nyKjede.kjedeVersjoner + eksisterendeKjede.kjedeVersjoner,
+                        )
+                    eksisterendeKjede != null -> eksisterendeKjede
+                    else -> checkNotNull(nyKjede)
+                }
+            }
+        return OppdragstidslinjeDTO(kjeder = oppdaterteKjeder)
+    }
+}
 
 @Serializable
 data class KjedeDTO(
@@ -84,7 +103,7 @@ fun Oppdragstidslinje.toDTO(): OppdragstidslinjeDTO {
                                                     is UtbetalesTil.Samhandler -> "Samhandler ${it.samhandlerId.tssId}"
                                                 }
                                             },
-                                        forfall = opplysning.forfall?.toDto { "$it"},
+                                        forfall = opplysning.forfall?.toDto { "$it" },
                                         avventingsårsak =
                                             opplysning.avventingsårsak?.toDto {
                                                 when (it) {
