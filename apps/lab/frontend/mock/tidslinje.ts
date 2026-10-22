@@ -8,6 +8,7 @@ export const tidslinjeData: OppdragstidslinjeDTO = {
 			"fagsystemId": "TEST-FAGSYSTEM-001",
 			"kjedeVersjoner": [
 				{
+					"innsending": 1,
 					"kjedePerioder": [
 						{
 							"fraDato": "2024-01-01",
@@ -24,6 +25,7 @@ export const tidslinjeData: OppdragstidslinjeDTO = {
 			"fagsystemId": "TEST-FAGSYSTEM-002",
 			"kjedeVersjoner": [
 				{
+					"innsending": 2,
 					"kjedePerioder": [
 						{
 							"fraDato": "2024-01-01",
@@ -38,6 +40,7 @@ export const tidslinjeData: OppdragstidslinjeDTO = {
 					]
 				},
 				{
+					"innsending": 1,
 					"kjedePerioder": [
 						{
 							"fraDato": "2023-12-01",

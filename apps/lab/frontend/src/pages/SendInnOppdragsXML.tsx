@@ -417,8 +417,8 @@ export default function SendInnOppdragsXML() {
 														key={`rad-kjede-${kjedeId}-${versjonsindeks}`}
 														id={`rad-kjede-${kjedeId}-${versjonsindeks}`}
 														label={
-															<span className="aksel-sr-only">
-																Historikk {versjonsindeks}
+															<span className={styles.laboratorium__historikketikett}>
+																Etter innsending {versjon.innsending}
 															</span>
 														}
 													>

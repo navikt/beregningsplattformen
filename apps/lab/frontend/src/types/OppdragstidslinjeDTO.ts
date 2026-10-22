@@ -7,6 +7,7 @@ export const kjedePerioderSchema = z.object({
 }).catchall(z.string().nullable());
 
 export const kjedeVersjonSchema = z.object({
+	innsending: z.number().int(),
 	kjedePerioder: z.array(kjedePerioderSchema),
 });
 

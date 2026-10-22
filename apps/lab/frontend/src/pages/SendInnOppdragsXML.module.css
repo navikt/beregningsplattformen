@@ -109,6 +109,13 @@
   gap: var(--ax-space-4);
 }
 
+.laboratorium__historikketikett {
+  display: inline-block;
+  margin-inline-start: var(--ax-space-24);
+  color: var(--ax-text-subtle);
+  font-size: var(--ax-font-size-small);
+}
+
 .laboratorium__periodedetaljer {
   padding: var(--ax-space-24);
   border: 2px solid var(--ax-border-meta-purple);
