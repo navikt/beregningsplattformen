@@ -75,6 +75,7 @@ data class KjedePerioderDTO(
     val kidnummer: OpplysningDTO?,
     val bostedsenhet: OpplysningDTO?,
     val behandlendeEnhet: OpplysningDTO?,
+    val vedtakId: OpplysningDTO?,
 )
 
 private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) = OpplysningDTO(
@@ -139,6 +140,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                         kidnummer = opplysning.kidnummer?.toDto { it.nummer },
                                         bostedsenhet = opplysning.bostedsenhet?.toDto { it.enhet },
                                         behandlendeEnhet = opplysning.behandlendeEnhet?.toDto { it.enhet },
+                                        vedtakId = opplysning.vedtakId?.toDto { it.id },
                                     )
                                 },
                         ),
