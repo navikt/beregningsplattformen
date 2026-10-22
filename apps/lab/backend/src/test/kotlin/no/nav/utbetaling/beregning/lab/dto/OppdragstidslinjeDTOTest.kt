@@ -37,7 +37,7 @@ class OppdragstidslinjeDTOTest :
             resultat.kjeder
                 .single()
                 .kjedeVersjoner
-                .map { it.kjedePerioder.single().status }
+                .map { it.kjedePerioder.single().status.opplysning }
                 .shouldContainExactly("ny", "gammel")
         }
 
