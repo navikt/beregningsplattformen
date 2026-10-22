@@ -11,8 +11,10 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
 import no.nav.utbetaling.beregning.lab.config.ApiError
+import no.nav.utbetaling.beregning.lab.dto.Oppdragstidslinjer
 import no.nav.utbetaling.beregning.lab.dto.toDTO
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
+import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 
 const val API_V1 = "/api/v1"
 
@@ -20,7 +22,16 @@ fun Route.labApi() {
     route(API_V1) {
         post("tolk-oppdrag") {
             val requestBody = call.receive<BeregningRequest>()
-            when (
+            val oppdrag2 = requestBody.xml.fold(Oppdragstidslinjer()) { sammenslåttOppdragstidslinjer, xml ->
+                val oppdaterOppdragtidslinje = (Oppdrag.fraXml(xml, utgangspunkt = sammenslåttOppdragstidslinjer.oppdragstidslinje) as Oppdrag.Utbetaling).oppdragstidslinje
+                val oppdatertDto = sammenslåttOppdragstidslinjer.oppdragstidslinjeDTO + oppdaterOppdragtidslinje.toDTO()
+                Oppdragstidslinjer(
+                    oppdragstidslinjeDTO = oppdatertDto,
+                    oppdragstidslinje = oppdaterOppdragtidslinje,
+                )
+            }
+            call.respond(oppdrag2.oppdragstidslinjeDTO)
+ /*           when (
                 val oppdrag = Oppdrag.fraXml(*requestBody.xml.toTypedArray())
             ) {
                 is Oppdrag.UgyldigOppdrag -> {
@@ -58,7 +69,7 @@ fun Route.labApi() {
                 is Oppdrag.Utbetaling -> call.respond(
                     oppdrag.oppdragstidslinje.toDTO(),
                 )
-            }
+            }*/
         }
     }
 }

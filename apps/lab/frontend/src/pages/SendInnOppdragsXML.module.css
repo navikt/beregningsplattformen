@@ -55,6 +55,14 @@
   min-width: 0;
 }
 
+.laboratorium__kjede {
+  min-width: 0;
+  padding: var(--ax-space-16);
+  border: 2px solid var(--ax-border-neutral);
+  border-radius: var(--ax-radius-12);
+  background: var(--ax-bg-meta-purple-soft);
+}
+
 .laboratorium__tidslinjenavigasjon {
   display: flex;
   align-items: center;
@@ -81,6 +89,24 @@
   display: flex;
   align-items: center;
   gap: var(--ax-space-8);
+}
+
+.laboratorium__tidslinjeetikettinnhold {
+  display: grid;
+  min-width: 0;
+}
+
+.laboratorium__tidslinjemetadata {
+  max-width: 12rem;
+  color: var(--ax-text-subtle);
+  font-size: var(--ax-font-size-small);
+  overflow-wrap: anywhere;
+}
+
+.laboratorium__fagsystemid {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-space-4);
 }
 
 .laboratorium__periodedetaljer {

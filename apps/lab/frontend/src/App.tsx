@@ -100,16 +100,24 @@ function LabMenu() {
 }
 
 const startMsw = async () => {
-	if (import.meta.env.MODE !== "mock") return;
+	if (import.meta.env.MODE === "mock") {
+		try {
+			const { worker } = await import("../mock/browser");
 
-	try {
-		const { worker } = await import("../mock/browser");
-		await worker.start({
-			onUnhandledFrame: "bypass",
-		});
-	} catch (error) {
-		// biome-ignore lint/suspicious/noConsole: <in case of error>
-		console.error("Failed to start MSW", error);
+			// Unngår konflikt hvis man kjører flere lokale apper med msw samtidig
+			const port = window.location.port || "5173";
+			const serviceWorkerUrl = `/mockServiceWorker-${port}.js`;
+
+			await worker.start({
+				serviceWorker: {
+					url: serviceWorkerUrl,
+				},
+				quiet: false,
+			});
+		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: debug code
+			console.error("Failed to start MSW", error);
+		}
 	}
 };
 

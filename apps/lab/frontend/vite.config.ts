@@ -43,7 +43,8 @@ function precompressAssets(): Plugin {
   };
 }
 
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
+  const serverPort = process.env.PORT || 5173;
   const isProductionBuild = command === "build";
 
   return {
@@ -80,12 +81,15 @@ export default defineConfig(({ command }) => {
     },
 
     server: {
-      proxy: {
-          "/api/v1": {
-            target: "http://localhost:8080",
-            changeOrigin: true,
-          },
-        }
+      port: Number(serverPort),
+      proxy: mode === "backend"
+        ? {
+            "/api/v1": {
+              target: "http://localhost:8080",
+              changeOrigin: true,
+            },
+          }
+        : undefined,
     },
   };
 });

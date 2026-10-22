@@ -8,10 +8,12 @@ import {
 	BodyShort,
 	Box,
 	Button,
+	CopyButton,
 	Heading,
 	LocalAlert,
 	Timeline,
 	ToggleGroup,
+	Tooltip,
 } from "@navikt/ds-react";
 import { isAxiosError } from "axios";
 import { type SubmitEvent, useRef, useState } from "react";
@@ -40,6 +42,12 @@ function formaterFeltverdi(feltnavn: string, verdi: string | null) {
 	if (verdi !== null) return verdi;
 	if (feltnavn === "tilDato") return "Ingen sluttdato";
 	return "Ingen verdi";
+}
+
+function formaterKortFagsystemId(fagsystemId: string) {
+	return fagsystemId.length > 16
+		? `${fagsystemId.slice(0, 8)}…${fagsystemId.slice(-4)}`
+		: fagsystemId;
 }
 
 export default function SendInnOppdragsXML() {
@@ -343,156 +351,198 @@ export default function SendInnOppdragsXML() {
 									</div>
 								</div>
 							</div>
-							<Timeline startDate={tidslinjeStart} endDate={tidslinjeSlutt}>
-								{kjeder.flatMap((kjede, kjedeindeks) => {
-									const aktivVersjon = kjede.kjedeVersjoner[0];
-									if (!aktivVersjon) return [];
+							{kjeder.map((kjede) => {
+								const aktivVersjon = kjede.kjedeVersjoner[0];
+								if (!aktivVersjon) return null;
 
-									const harHistorikk = kjede.kjedeVersjoner.length > 1;
-									const erUtvidet = utvidedeKjeder.has(kjede.id);
-									const kjedeId = encodeURIComponent(kjede.id);
-									const kjedeLabel = `Kjede ${kjedeindeks + 1}`;
+								const harHistorikk = kjede.kjedeVersjoner.length > 1;
+								const erUtvidet = utvidedeKjeder.has(kjede.id);
+								const kjedeId = encodeURIComponent(kjede.id);
 
-									const lagPeriode = (
-										periode: (typeof aktivVersjon.kjedePerioder)[number],
-										versjonsindeks: number,
-										periodeindeks: number,
-										historisk: boolean,
-									) => {
-										const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
+								const lagPeriode = (
+									periode: (typeof aktivVersjon.kjedePerioder)[number],
+									versjonsindeks: number,
+									periodeindeks: number,
+									historisk: boolean,
+								) => {
+									const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
 
-										return (
-											<Timeline.Period
-												key={periodeId}
-												id={periodeId}
-												aria-controls="periodedetaljer"
-												isActive={valgtPeriode?.id === periodeId}
-												onSelectPeriod={() =>
-													settValgtPeriode((previous) =>
-														previous?.id === periodeId
-															? null
-															: {
-																	id: periodeId,
-																	kjedeId: kjede.id,
+									return (
+										<Timeline.Period
+											key={periodeId}
+											id={periodeId}
+											aria-controls="periodedetaljer"
+											isActive={valgtPeriode?.id === periodeId}
+											onSelectPeriod={() =>
+												settValgtPeriode((previous) =>
+													previous?.id === periodeId
+														? null
+														: {
+																id: periodeId,
+																kjedeId: kjede.id,
+																versjonsindeks,
+																periodeindeks,
+																fagområde: kjede.fagområde,
+																fagsystemId: kjede.fagsystemId,
+																periode,
+																historisk,
+															},
+												)
+											}
+											start={new Date(periode.fraDato)}
+											end={
+												periode.tilDato ? new Date(periode.tilDato) : new Date()
+											}
+											status={historisk ? "warning" : "success"}
+										>
+											{(["fraDato", "tilDato", "status"] as const).map(
+												(feltnavn) => (
+													<p key={feltnavn}>
+														{formaterFeltnavn(feltnavn)}:{" "}
+														{formaterFeltverdi(feltnavn, periode[feltnavn])}
+													</p>
+												),
+											)}
+										</Timeline.Period>
+									);
+								};
+
+								const historikkRader =
+									harHistorikk && erUtvidet
+										? kjede.kjedeVersjoner.slice(1).map((versjon, indeks) => {
+												const versjonsindeks = indeks + 1;
+
+												return (
+													<Timeline.Row
+														key={`rad-kjede-${kjedeId}-${versjonsindeks}`}
+														id={`rad-kjede-${kjedeId}-${versjonsindeks}`}
+														label={
+															<span className="aksel-sr-only">
+																Historikk {versjonsindeks}
+															</span>
+														}
+													>
+														{versjon.kjedePerioder.map(
+															(periode, periodeindeks) =>
+																lagPeriode(
+																	periode,
 																	versjonsindeks,
 																	periodeindeks,
-																	fagområde: kjede.fagområde,
-																	fagsystemId: kjede.fagsystemId,
-																	periode,
-																	historisk,
-																},
-													)
-												}
-												start={new Date(periode.fraDato)}
-												end={
-													periode.tilDato
-														? new Date(periode.tilDato)
-														: new Date()
-												}
-												status={historisk ? "warning" : "success"}
-											>
-												{(["fraDato", "tilDato", "status"] as const).map(
-													(feltnavn) => (
-														<p key={feltnavn}>
-															{formaterFeltnavn(feltnavn)}:{" "}
-															{formaterFeltverdi(feltnavn, periode[feltnavn])}
-														</p>
-													),
-												)}
-											</Timeline.Period>
-										);
-									};
+																	true,
+																),
+														)}
+													</Timeline.Row>
+												);
+											})
+										: [];
 
-									const historikkRader =
-										harHistorikk && erUtvidet
-											? kjede.kjedeVersjoner.slice(1).map((versjon, indeks) => {
-													const versjonsindeks = indeks + 1;
-
-													return (
-														<Timeline.Row
-															key={`rad-kjede-${kjedeId}-${versjonsindeks}`}
-															id={`rad-kjede-${kjedeId}-${versjonsindeks}`}
-															label={
-																<div
-																	className={
-																		styles.laboratorium__tidslinjeetikett
-																	}
-																>
-																	<BodyShort as="h3" size="small">
-																		Historikk
-																	</BodyShort>
-																</div>
+								return (
+									<section
+										key={kjede.id}
+										className={styles.laboratorium__kjede}
+										aria-label={`${kjede.fagområde}, fagsystem-ID ${kjede.fagsystemId}`}
+									>
+										<Timeline
+											startDate={tidslinjeStart}
+											endDate={tidslinjeSlutt}
+										>
+											<Timeline.Row
+												key={`rad-kjede-${kjedeId}-0`}
+												id={`rad-kjede-${kjedeId}-0`}
+												label={
+													<div
+														className={styles.laboratorium__tidslinjeetikett}
+													>
+														<div
+															className={
+																styles.laboratorium__tidslinjeetikettinnhold
 															}
 														>
-															{versjon.kjedePerioder.map(
-																(periode, periodeindeks) =>
-																	lagPeriode(
-																		periode,
-																		versjonsindeks,
-																		periodeindeks,
-																		true,
-																	),
-															)}
-														</Timeline.Row>
-													);
-												})
-											: [];
-
-									return [
-										<Timeline.Row
-											key={`rad-kjede-${kjedeId}-0`}
-											id={`rad-kjede-${kjedeId}-0`}
-											label={
-												<div className={styles.laboratorium__tidslinjeetikett}>
-													<BodyShort as="h3" size="small" weight="semibold">
-														{kjedeLabel}
-													</BodyShort>
-													{harHistorikk && (
-														<Button
-															type="button"
-															size="xsmall"
-															variant="tertiary"
-															icon={
-																erUtvidet ? (
-																	<ChevronDownIcon aria-hidden />
-																) : (
-																	<ChevronRightIcon aria-hidden />
-																)
-															}
-															aria-label={`${erUtvidet ? "Skjul" : "Vis"} historikk for ${kjedeLabel}`}
-															aria-expanded={erUtvidet}
-															onClick={() => {
-																if (
-																	erUtvidet &&
-																	valgtPeriode?.kjedeId === kjede.id &&
-																	valgtPeriode.historisk
-																) {
-																	settValgtPeriode(null);
+															<div
+																className={
+																	styles.laboratorium__tidslinjemetadata
 																}
-																settUtvidedeKjeder((utvidede) => {
-																	const nyeUtvidede = new Set(utvidede);
-																	if (nyeUtvidede.has(kjede.id)) {
-																		nyeUtvidede.delete(kjede.id);
-																	} else {
-																		nyeUtvidede.add(kjede.id);
-																	}
-																	return nyeUtvidede;
-																});
-															}}
-														/>
-													)}
-												</div>
-											}
-										>
-											{aktivVersjon.kjedePerioder.map(
-												(periode, periodeindeks) =>
-													lagPeriode(periode, 0, periodeindeks, false),
-											)}
-										</Timeline.Row>,
-										...historikkRader,
-									];
-								})}
-							</Timeline>
+															>
+																<BodyShort
+																	as="h3"
+																	size="small"
+																	weight="semibold"
+																>
+																	{kjede.fagområde}
+																</BodyShort>
+																<div
+																	className={styles.laboratorium__fagsystemid}
+																>
+																	<Tooltip
+																		content={`Fagsystem-ID: ${kjede.fagsystemId}`}
+																		maxChar={Number.MAX_SAFE_INTEGER}
+																	>
+																		<span
+																			role="note"
+																			// biome-ignore lint/a11y/noNoninteractiveTabindex: Keeps the full-ID tooltip available to keyboard users.
+																			tabIndex={0}
+																			aria-label={`Fagsystem-ID: ${kjede.fagsystemId}`}
+																		>
+																			{formaterKortFagsystemId(
+																				kjede.fagsystemId,
+																			)}
+																		</span>
+																	</Tooltip>
+																	<CopyButton
+																		size="small"
+																		copyText={kjede.fagsystemId}
+																		aria-label="Kopier full fagsystem-ID"
+																	/>
+																	{harHistorikk && (
+																		<Button
+																			type="button"
+																			size="xsmall"
+																			variant="tertiary"
+																			icon={
+																				erUtvidet ? (
+																					<ChevronDownIcon aria-hidden />
+																				) : (
+																					<ChevronRightIcon aria-hidden />
+																				)
+																			}
+																			aria-label={`${erUtvidet ? "Skjul" : "Vis"} historikk for ${kjede.fagområde}`}
+																			aria-expanded={erUtvidet}
+																			onClick={() => {
+																				if (
+																					erUtvidet &&
+																					valgtPeriode?.kjedeId === kjede.id &&
+																					valgtPeriode.historisk
+																				) {
+																					settValgtPeriode(null);
+																				}
+																				settUtvidedeKjeder((utvidede) => {
+																					const nyeUtvidede = new Set(utvidede);
+																					if (nyeUtvidede.has(kjede.id)) {
+																						nyeUtvidede.delete(kjede.id);
+																					} else {
+																						nyeUtvidede.add(kjede.id);
+																					}
+																					return nyeUtvidede;
+																				});
+																			}}
+																		/>
+																	)}
+																</div>
+															</div>
+														</div>
+													</div>
+												}
+											>
+												{aktivVersjon.kjedePerioder.map(
+													(periode, periodeindeks) =>
+														lagPeriode(periode, 0, periodeindeks, false),
+												)}
+											</Timeline.Row>
+											{historikkRader}
+										</Timeline>
+									</section>
+								);
+							})}
 						</>
 					)
 				)}
