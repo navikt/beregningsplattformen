@@ -54,7 +54,7 @@ data class KjedeVersjonDTO(
 @Serializable
 data class OpplysningDTO(
     val saksbehandlerId: String,
-    val opplysning: String
+    val opplysning: String,
 )
 
 @Serializable
@@ -76,12 +76,14 @@ data class KjedePerioderDTO(
     val bostedsenhet: OpplysningDTO?,
     val behandlendeEnhet: OpplysningDTO?,
     val vedtakId: OpplysningDTO?,
+    val brukKjøreplan: OpplysningDTO,
 )
 
-private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) = OpplysningDTO(
-    saksbehandlerId = saksbehandlerId.id,
-    opplysning = stringverdi(opplysning),
-)
+private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
+    OpplysningDTO(
+        saksbehandlerId = saksbehandlerId.id,
+        opplysning = stringverdi(opplysning),
+    )
 
 private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
@@ -141,6 +143,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                         bostedsenhet = opplysning.bostedsenhet?.toDto { it.enhet },
                                         behandlendeEnhet = opplysning.behandlendeEnhet?.toDto { it.enhet },
                                         vedtakId = opplysning.vedtakId?.toDto { it.id },
+                                        brukKjøreplan = opplysning.brukKjøreplan.toDto { it.name },
                                     )
                                 },
                         ),

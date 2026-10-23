@@ -1,5 +1,8 @@
 package no.nav.utbetaling.beregning.lab.api
 
+import java.util.Collections
+import java.util.IdentityHashMap
+
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
@@ -7,9 +10,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-
-import java.util.Collections
-import java.util.IdentityHashMap
 
 import no.nav.utbetaling.beregning.lab.config.createApiError
 import no.nav.utbetaling.beregning.lab.dto.OppdragstidslinjeDTO

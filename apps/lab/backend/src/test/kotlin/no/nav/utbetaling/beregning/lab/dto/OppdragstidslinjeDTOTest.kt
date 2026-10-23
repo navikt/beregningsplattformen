@@ -37,8 +37,11 @@ class OppdragstidslinjeDTOTest :
             resultat.kjeder
                 .single()
                 .kjedeVersjoner
-                .map { it.kjedePerioder.single().status.opplysning }
-                .shouldContainExactly("ny", "gammel")
+                .map {
+                    it.kjedePerioder
+                        .single()
+                        .status.opplysning
+                }.shouldContainExactly("ny", "gammel")
         }
 
         test("Plus beholder kjeder som bare finnes i den ene siden") {
@@ -91,7 +94,8 @@ private fun kjedeVersjon(status: String) =
                     kidnummer = null,
                     bostedsenhet = null,
                     behandlendeEnhet = null,
-                    vedtakId = null
+                    vedtakId = null,
+                    brukKjøreplan = OpplysningDTO("Z123456", "Ja"),
                 ),
             ),
     )
