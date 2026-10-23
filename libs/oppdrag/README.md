@@ -25,7 +25,7 @@
 | `oppdrag-110.avstemming-115.kodeKomponent`    |   ☑️   | Angir hvilket system som leverer data.                                                                                   |
 | `oppdrag-110.avstemming-115.nokkelAvstemming` |   ☑️   | Brukes ifm avstemming til å bestemme hvilke data som skal avstemmes.                                                     |
 | `oppdrag-110.avstemming-115.tidspktMelding`   |   ☑️   | Når meldingen ble sendt.                                                                                                 |
-| `oppdrag-110.ompostering-116.*`               |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
+| `oppdrag-110.ompostering-116.*`               |   ☑️   | Brukes av enkelte fagområder, bla.a. foreldrepenger.                                                                     |
 | `oppdrag-110.avvent-118.datoAvventFom`        |   ✅   | Brukes i avventingsperiode (påkrevd ved behandling).                                                                     |
 | `oppdrag-110.avvent-118.datoAvventTom`        |   ✅   | Brukes i avventingsperiode (påkrevd ved behandling).                                                                     |
 | `oppdrag-110.avvent-118.kodeArsak`            |   ✅   | Mappes til avventingsårsak (feiler om det skulle være andre verdier enn `AVAV`/`AVRK`).                                  |
@@ -49,7 +49,7 @@
 | `oppdrag-110.oppdrags-linje-150.kodeEndringLinje`               |   🙈   | Ignoreres. Oppdragstidslinjen vurderer endringer via kjeder/perioder.                                                    |
 | `oppdrag-110.oppdrags-linje-150.kodeStatusLinje`                |   ✅   | Brukes om vediene er `REAK`, `OPPH`, `HVIL` eller `SPER`. Andre verdier avvises som verdier som genereres på stormaskin. |
 | `oppdrag-110.oppdrags-linje-150.datoStatusFom`                  |   ✅   | Brukes som fom for linjestatus (`EPOCH` dersom mangler).                                                                 |
-| `oppdrag-110.oppdrags-linje-150.vedtakId`                       |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.vedtakId`                       |   ✅   | Mappes som `vedtakId`                                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.delytelseId`                    |   ✅   | Mappes som `delytelseId` og brukes til kjeding.                                                                          |
 | `oppdrag-110.oppdrags-linje-150.linjeId`                        |   ❌   | Avvises som stormaskin-generert felt.                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.kodeKlassifik`                  |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
