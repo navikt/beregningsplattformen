@@ -1,5 +1,6 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
+import java.time.LocalDate
 import java.util.UUID
 
 import io.kotest.assertions.throwables.shouldThrow
@@ -10,11 +11,11 @@ import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
-import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.avventing
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
+import no.nav.utbetaling.beregning.oppdrag.xml.Avvent118
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.mars
 import no.nav.utbetaling.beregning.tid.til
@@ -105,6 +106,14 @@ class AvventingTest :
             exception.message shouldBe "Kan ikke feilregistrere en endring som ikke finnes."
         }
     })
+
+private fun avventing(
+    fom: LocalDate,
+    tom: LocalDate,
+    feilreg: String? = null,
+    kodeArsak: String? = "AVAV",
+    datoOverføres: LocalDate = 1.mars,
+) = Avvent118(datoAvventFom = fom, datoAvventTom = tom, kodeArsak = kodeArsak, datoOverfores = datoOverføres, feilreg = feilreg)
 
 private fun Oppdragstidslinje.avventinger() = perPeriode { it.avventingsårsak }
 

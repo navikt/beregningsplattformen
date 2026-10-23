@@ -48,8 +48,10 @@ internal fun assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(
     oppdragstidslinjeFraOppdeltInnsending.assertGjenskaptfraTidslinjer()
     assertionBlock(oppdragstidslinjeFraOppdeltInnsending)
 
-    oppdragstidslinjeFraEnInnsending shouldBeEqual oppdragstidslinjeFraOppdeltInnsending.medKjedeIderFra(oppdragstidslinjeFraEnInnsending)
+    oppdragstidslinjeFraEnInnsending erLik oppdragstidslinjeFraOppdeltInnsending
 }
+
+internal infix fun Oppdragstidslinje.erLik(other: Oppdragstidslinje) = this shouldBeEqual other.medKjedeIderFra(this)
 
 /**
  * Ettersom kjedeIder genereres runtime vil det genereres unike ider når vi tester med oppdelt innsending.

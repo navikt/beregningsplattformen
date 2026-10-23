@@ -15,7 +15,6 @@ import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
 import no.nav.utbetaling.beregning.oppdrag.xml.TfradragTillegg
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatus
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatusLinje
-import no.nav.utbetaling.beregning.tid.mars
 
 internal val defaultBostedsenhet = listOf(OppdragsEnhet120(typeEnhet = "BOS", enhet = "9999", datoEnhetFom = LocalDate.EPOCH))
 
@@ -139,19 +138,3 @@ internal fun linje(
     vedtakId = vedtakId,
     brukKjoreplan = brukKjøreplan,
 )
-
-internal fun avventing(
-    fom: LocalDate,
-    tom: LocalDate,
-    feilreg: String? = null,
-    kodeArsak: String? = "AVAV",
-    datoOverføres: LocalDate = 1.mars,
-) = Avvent118(datoAvventFom = fom, datoAvventTom = tom, kodeArsak = kodeArsak, datoOverfores = datoOverføres, feilreg = feilreg)
-
-internal fun ompostering(
-    fom: LocalDate? = null,
-    kode: String = "J", // TODO: sjekk om dette er riktig
-    feilreg: String? = null,
-    registrert: String = "2024-01-15-12.34.56.123456",
-    saksbehandlerId: String = "Z999999",
-) = Ompostering116(omPostering = kode, datoOmposterFom = fom, feilreg = feilreg, tidspktReg = registrert, saksbehId = saksbehandlerId)

@@ -4,43 +4,47 @@
 
 ### Oppdrag-felter (`oppdrag-110.*`)
 
-| Felt                                          | Status | Beskrivelse                                                                                                              |
-|-----------------------------------------------|:------:|--------------------------------------------------------------------------------------------------------------------------|
-| `oppdrag-110.kodeAksjon`                      |   ✅   | Brukes til å avgjøre oppdragstype (simulering/utbetaling).                                                               |
-| `oppdrag-110.kodeEndring`                     |   🙈   | Ignoreres. Oppdragstidslinjen vurderer endringer via kjeder/perioder.                                                    |
-| `oppdrag-110.kodeStatus`                      |   ✅   | Brukes om vediene er `OPNY`, `OPPH`, `HVIL` eller `SPER`. Andre verdier avvises som verdier som genereres på stormaskin. |
-| `oppdrag-110.datoStatusFom`                   |   ✅   | Brukes som fom for oppdragstatus (`EPOCH` brukes dersom den mangler og `kodeStatus` er satt).                            |
-| `oppdrag-110.kodeFagomraade`                  |   ✅   | Mappes til `fagområde` og brukes i `OppdragId` & kjeding.                                                                |
-| `oppdrag-110.fagsystemId`                     |   ✅   | Mappes til `fagsystemId` og brukes i `OppdragId` & kjeding.                                                              |
-| `oppdrag-110.oppdragsId`                      |   ❌   | Avvises som stormaskin-generert felt.                                                                                    |
-| `oppdrag-110.utbetFrekvens`                   |   ✅   | Mappes til `utbetalingsfrekvens`.                                                                                        |
-| `oppdrag-110.datoForfall`                     |   ✅   | Mappes til `forfall`.                                                                                                    |
-| `oppdrag-110.stonadId`                        |   ✅   | Mappes til `stønadId`.                                                                                                   |
-| `oppdrag-110.oppdragGjelderId`                |   ✅   | Brukes til `gjelderId`.                                                                                                  |
-| `oppdrag-110.datoOppdragGjelderFom`           |   ✅   | Hensyntas for å kun bruke `gjelderId` fra og med denne datoen.                                                           |
-| `oppdrag-110.saksbehId`                       |   ✅   | Brukes for alle opplysninger som ligger på oppdragsnivå.                                                                 |
-| `oppdrag-110.oppdrags-status-111.*`           |   ❌   | Avvises som output-felt.                                                                                                 |
-| `oppdrag-110.oppdrag-gjelder-112.*`           |   ❌   | Avvises som output-felt.                                                                                                 |
-| `oppdrag-110.bilagstype-113.bilagsType`       |   ✅   | Mappes til `bilagstype`.                                                                                                 |
-| `oppdrag-110.avstemming-115.kodeKomponent`    |   ☑️   | Angir hvilket system som leverer data.                                                                                   |
-| `oppdrag-110.avstemming-115.nokkelAvstemming` |   ☑️   | Brukes ifm avstemming til å bestemme hvilke data som skal avstemmes.                                                     |
-| `oppdrag-110.avstemming-115.tidspktMelding`   |   ☑️   | Når meldingen ble sendt.                                                                                                 |
-| `oppdrag-110.ompostering-116.*`               |   ☑️   | Brukes av enkelte fagområder, bla.a. foreldrepenger.                                                                     |
-| `oppdrag-110.avvent-118.datoAvventFom`        |   ✅   | Brukes i avventingsperiode (påkrevd ved behandling).                                                                     |
-| `oppdrag-110.avvent-118.datoAvventTom`        |   ✅   | Brukes i avventingsperiode (påkrevd ved behandling).                                                                     |
-| `oppdrag-110.avvent-118.kodeArsak`            |   ✅   | Mappes til avventingsårsak (feiler om det skulle være andre verdier enn `AVAV`/`AVRK`).                                  |
-| `oppdrag-110.avvent-118.datoOverfores`        |   ✅   | Hensyntas når det settes avventingsårsak. Må være satt for `AVAV`, optional for `AVRK`                                   |
-| `oppdrag-110.avvent-118.feilreg`              |   ✅   | Hensyntas ved å fjerne eksisterende avventing om den er satt til `j`                                                     |
-| `oppdrag-110.oppdrags-enhet-120.typeEnhet`    |   ✅   | Håndterer verdiene `BOS` og `BEH` - andre verdier vil feile.                                                             |
-| `oppdrag-110.oppdrags-enhet-120.enhet`        |   ✅   | Brukes for å hente ut enhetsnummer.                                                                                      |
-| `oppdrag-110.oppdrags-enhet-120.datoEnhetFom` |   ✅   | Hensyntas for å kun bruke enheten fra og med denne datoen.                                                               |
-| `oppdrag-110.belops-grense-130.*`             |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
-| `oppdrag-110.tekst-140.tekstLnr`              |   ☑️   | Rekkefølge ved flere tekstlinjer         .                                                                               |
-| `oppdrag-110.tekst-140.kodeTekst`             |   ☑️   | Kode som UR benytter til å legge på ferdig definerte tekster.                                                            |
-| `oppdrag-110.tekst-140.tekst`                 |   ☑️   | Utbetalingstekst på betalingsmelding.                                                                                    |
-| `oppdrag-110.tekst-140.datoTekstFom`          |   ☑️   | Start på når teksten gjelder (utbetalingsdato).                                                                          |
-| `oppdrag-110.tekst-140.datoTekstTom`          |   ☑️   | Slutt på når teksten gjelder (utbetalingsdato).                                                                          |
-| `oppdrag-110.tekst-140.feilreg`               |   ☑️   | Settes ved feilregistrering av tekstregistreringen.                                                                      |
+| Felt                                          | Status | Beskrivelse                                                                                                                                 |
+|-----------------------------------------------|:------:|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `oppdrag-110.kodeAksjon`                      |   ✅   | Brukes til å avgjøre oppdragstype (simulering/utbetaling).                                                                                  |
+| `oppdrag-110.kodeEndring`                     |   🙈   | Ignoreres. Oppdragstidslinjen vurderer endringer via kjeder/perioder.                                                                       |
+| `oppdrag-110.kodeStatus`                      |   ✅   | Brukes om vediene er `OPNY`, `OPPH`, `HVIL` eller `SPER`. Andre verdier avvises som verdier som genereres på stormaskin.                    |
+| `oppdrag-110.datoStatusFom`                   |   ✅   | Brukes som fom for oppdragstatus (`EPOCH` brukes dersom den mangler og `kodeStatus` er satt).                                               |
+| `oppdrag-110.kodeFagomraade`                  |   ✅   | Mappes til `fagområde` og brukes i `OppdragId` & kjeding.                                                                                   |
+| `oppdrag-110.fagsystemId`                     |   ✅   | Mappes til `fagsystemId` og brukes i `OppdragId` & kjeding.                                                                                 |
+| `oppdrag-110.oppdragsId`                      |   ❌   | Avvises som stormaskin-generert felt.                                                                                                       |
+| `oppdrag-110.utbetFrekvens`                   |   ✅   | Mappes til `utbetalingsfrekvens`.                                                                                                           |
+| `oppdrag-110.datoForfall`                     |   ✅   | Mappes til `forfall`.                                                                                                                       |
+| `oppdrag-110.stonadId`                        |   ✅   | Mappes til `stønadId`.                                                                                                                      |
+| `oppdrag-110.oppdragGjelderId`                |   ✅   | Brukes til `gjelderId`.                                                                                                                     |
+| `oppdrag-110.datoOppdragGjelderFom`           |   ✅   | Hensyntas for å kun bruke `gjelderId` fra og med denne datoen.                                                                              |
+| `oppdrag-110.saksbehId`                       |   ✅   | Brukes for alle opplysninger som ligger på oppdragsnivå.                                                                                    |
+| `oppdrag-110.oppdrags-status-111.*`           |   ❌   | Avvises som output-felt.                                                                                                                    |
+| `oppdrag-110.oppdrag-gjelder-112.*`           |   ❌   | Avvises som output-felt.                                                                                                                    |
+| `oppdrag-110.bilagstype-113.bilagsType`       |   ✅   | Mappes til `bilagstype`.                                                                                                                    |
+| `oppdrag-110.avstemming-115.kodeKomponent`    |   ☑️   | Angir hvilket system som leverer data.                                                                                                      |
+| `oppdrag-110.avstemming-115.nokkelAvstemming` |   ☑️   | Brukes ifm avstemming til å bestemme hvilke data som skal avstemmes.                                                                        |
+| `oppdrag-110.avstemming-115.tidspktMelding`   |   ☑️   | Når meldingen ble sendt.                                                                                                                    |
+| `oppdrag-110.ompostering-116.omPostering`     |   ✅   | Mappes til `ompostering` om verdien er satt til `J`. Om den er satt til `N` håndteres det som om ingenting er satt. Andre verdier gir feil. |
+| `oppdrag-110.ompostering-116.datoOmposterFom` |   ✅   | Hensyntas om `omPostering` er `J` slik at omposteringen kun gjelder fra og med denne datoen                                                 |
+| `oppdrag-110.ompostering-116.feilreg`         |   ✅   | Hensyntas for å fjerne tidligere innmeldt ompostering.                                                                                      |
+| `oppdrag-110.ompostering-116.tidspktReg`      |   ✅   | Lagres som en del av omposteringen om `omPostering` er `J`.                                                                                 |
+| `oppdrag-110.ompostering-116.saksbehId`       |   ✅   | Brukes som saksbehandlerkilde til omposteringen om `omPostering` er `J`.                                                                    |
+| `oppdrag-110.avvent-118.datoAvventFom`        |   ✅   | Brukes i avventingsperiode (påkrevd ved behandling).                                                                                        |
+| `oppdrag-110.avvent-118.datoAvventTom`        |   ✅   | Brukes i avventingsperiode (påkrevd ved behandling).                                                                                        |
+| `oppdrag-110.avvent-118.kodeArsak`            |   ✅   | Mappes til avventingsårsak (feiler om det skulle være andre verdier enn `AVAV`/`AVRK`).                                                     |
+| `oppdrag-110.avvent-118.datoOverfores`        |   ✅   | Hensyntas når det settes avventingsårsak. Må være satt for `AVAV`, optional for `AVRK`                                                      |
+| `oppdrag-110.avvent-118.feilreg`              |   ✅   | Hensyntas ved å fjerne eksisterende avventing om den er satt til `j`                                                                        |
+| `oppdrag-110.oppdrags-enhet-120.typeEnhet`    |   ✅   | Håndterer verdiene `BOS` og `BEH` - andre verdier vil feile.                                                                                |
+| `oppdrag-110.oppdrags-enhet-120.enhet`        |   ✅   | Brukes for å hente ut enhetsnummer.                                                                                                         |
+| `oppdrag-110.oppdrags-enhet-120.datoEnhetFom` |   ✅   | Hensyntas for å kun bruke enheten fra og med denne datoen.                                                                                  |
+| `oppdrag-110.belops-grense-130.*`             |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                                              |
+| `oppdrag-110.tekst-140.tekstLnr`              |   ☑️   | Rekkefølge ved flere tekstlinjer         .                                                                                                  |
+| `oppdrag-110.tekst-140.kodeTekst`             |   ☑️   | Kode som UR benytter til å legge på ferdig definerte tekster.                                                                               |
+| `oppdrag-110.tekst-140.tekst`                 |   ☑️   | Utbetalingstekst på betalingsmelding.                                                                                                       |
+| `oppdrag-110.tekst-140.datoTekstFom`          |   ☑️   | Start på når teksten gjelder (utbetalingsdato).                                                                                             |
+| `oppdrag-110.tekst-140.datoTekstTom`          |   ☑️   | Slutt på når teksten gjelder (utbetalingsdato).                                                                                             |
+| `oppdrag-110.tekst-140.feilreg`               |   ☑️   | Settes ved feilregistrering av tekstregistreringen.                                                                                         |
 
 ### Linjefelter (`oppdrag-110.oppdrags-linje-150.*`)
 

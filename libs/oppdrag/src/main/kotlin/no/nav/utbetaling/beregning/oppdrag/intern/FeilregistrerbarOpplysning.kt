@@ -1,7 +1,6 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
-import no.nav.utbetaling.beregning.tid.Tidslinje
 
 /**
  *  Alle opplysningene i XML-formatet hvor man har mulighet til å sette "feilreg" for å fjerne en opplysning vi har fått tidligere.
@@ -21,8 +20,6 @@ internal sealed interface FeilregistrerbarOpplysning<out T> {
         private fun String?.erFeilregistrert() = mapVerdi { it.lowercase() in FEILREGISTRERT_VERDIER } == true
 
         fun <T> FeilregistrerbarOpplysning<T>?.gjeldende() = (this as? Registrert)?.opplysning
-
-        fun <T> ingenEndringer() = Tidslinje.Builder<FeilregistrerbarOpplysning<T>>().build()
 
         fun <T> velg(
             eksisterende: FeilregistrerbarOpplysning<T>?,

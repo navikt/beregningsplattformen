@@ -45,6 +45,7 @@ internal object FraXmlFormat {
         val bostedsenheter by lazy { Enheter.bostedsenheterFra(oppdrag110) }
         val behandlendeEnheter by lazy { Enheter.behandlendeEnheterFra(oppdrag110) }
         val gjelderIder by lazy { GjelderIder.fra(oppdrag110) }
+        val omposeringer by lazy { Omposteringer.fra(oppdrag110) }
 
         val kjeder =
             linjerPerKjede
@@ -84,6 +85,8 @@ internal object FraXmlFormat {
                             builder?.copy(behandlendeEnhet = behandlendeEnhet)
                         }.kombinerMed(gjelderIder) { _, builder, gjelderId ->
                             builder?.copy(gjelderId = gjelderId)
+                        }.kombinerMed(omposeringer) { _, builder, ompostering ->
+                            builder?.copy(omposteringEndring = ompostering)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier

@@ -15,7 +15,6 @@ import no.nav.utbetaling.beregning.oppdrag.xml.Kid154
 import no.nav.utbetaling.beregning.oppdrag.xml.Klassifikasjon152
 import no.nav.utbetaling.beregning.oppdrag.xml.LinjeEnhet160
 import no.nav.utbetaling.beregning.oppdrag.xml.LinjeStatus151
-import no.nav.utbetaling.beregning.oppdrag.xml.Ompostering116
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragGjelder112
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
@@ -127,12 +126,6 @@ class UbrukteFelterTest :
                     // Ugyldige verdier på oppdragsnivå
                     kodeStatus = TkodeStatus.LOPE,
                     oppdragsId = 1234,
-                    ompostering116 =
-                        Ompostering116(
-                            omPostering = "J",
-                            tidspktReg = "${LocalDateTime.now()}",
-                            saksbehId = "Z999999",
-                        ),
                     oppdragsStatus111 =
                         listOf(
                             OppdragsStatus111(
@@ -186,7 +179,6 @@ class UbrukteFelterTest :
                 oppdrags-linje-150 med delytelseId 1 har satt datoKravhaverFom, dette feltet skal ikke være i bruk!
                 oppdrags-linje-150 med delytelseId 1 har satt kodeArbeidsgiver til P, dette feltet skal ikke være i bruk!
                 oppdrags-linje-150 med delytelseId 1 har satt valuta-190, dette feltet skal ikke være i bruk!
-                oppdrag-110 har satt ompostering-116, dette feltet skal ikke brukes av fagsystemene!
                 oppdrags-linje-150 med delytelseId 1 har satt refFagsystemId til en annen verdi enn fagsystemId i oppdrag-110!
                 """.trimIndent()
 

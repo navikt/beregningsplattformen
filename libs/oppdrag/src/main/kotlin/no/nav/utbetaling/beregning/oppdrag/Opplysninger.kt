@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.oppdrag
 
 import java.math.BigDecimal
+import java.time.Instant
 import java.time.LocalDate
 
 @JvmInline
@@ -122,6 +123,10 @@ sealed interface Avventingsårsak {
     ) : Avventingsårsak
 }
 
+data class Ompostering(
+    val registrert: Instant,
+)
+
 data class Opplysninger(
     val fagområde: Fagområde,
     val fagsystemId: FagsystemId,
@@ -142,6 +147,7 @@ data class Opplysninger(
     val behandlendeEnhet: Opplysning<BehandlendeEnhet>?,
     val vedtakId: Opplysning<VedtakId>?,
     val brukKjøreplan: Opplysning<BrukKjøreplan>,
+    val ompostering: Opplysning<Ompostering>?,
     /** TODO: Eksempelvis gjelderId, utbetalesTil, bostedsenhet må ikke være satt alle innsendinger,
      *  men når man har kombinert alle innsendinger til en tidslinje, da må disse verdiene være satt.
      *  Burde man introdusert noe som en SammenslåtteOpplysninger el.lig. som håndterer dette?

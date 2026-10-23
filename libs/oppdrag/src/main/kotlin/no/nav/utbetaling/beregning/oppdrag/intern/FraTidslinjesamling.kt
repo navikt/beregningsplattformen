@@ -61,6 +61,7 @@ internal object FraTidslinjesamling {
                         behandlendeEnhetEndring = oppdragsdag.behandlendeEnhet?.let { FeilregistrerbarOpplysning.Registrert(it) },
                         utbetalesTil = oppdragsdag.utbetalesTil,
                         vedtakId = oppdragsdag.vedtakId,
+                        omposteringEndring = oppdragsdag.ompostering?.let { FeilregistrerbarOpplysning.Registrert(it) },
                     )
                 }
             }
