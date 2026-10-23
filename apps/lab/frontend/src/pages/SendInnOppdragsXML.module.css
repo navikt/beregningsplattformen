@@ -127,6 +127,11 @@
   background: var(--ax-bg-meta-purple-soft);
 }
 
+.laboratorium__feilmelding {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .laboratorium__tidslinje [data-timeline-popover] {
   border-color: var(--ax-border-meta-purple);
   background-color: var(--ax-bg-meta-purple-soft);

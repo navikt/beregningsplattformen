@@ -23,14 +23,23 @@ function createApi(baseUri: string): AxiosInstance {
 		(response) => response,
 		(error) => {
 			const status: number | undefined = error.response?.status;
-			if (status === 400) {
-				throw new HttpStatusCodeError(status);
+			const data: unknown = error.response?.data;
+			const apiMessage =
+				typeof data === "object" &&
+				data !== null &&
+				"message" in data &&
+				typeof (data as { message: unknown }).message === "string"
+					? (data as { message: string }).message
+					: undefined;
+			if (status === 400 || status === 409) {
+				throw new HttpStatusCodeError(status, apiMessage);
 			}
 			if (status === 401 || status === 403) {
 				return Promise.reject(error);
 			}
 			throw new ApiError(
-				`Issues with connection to backend${status ? ` (HTTP ${status})` : ""}`,
+				apiMessage ??
+					`Issues with connection to backend${status ? ` (HTTP ${status})` : ""}`,
 			);
 		},
 	);

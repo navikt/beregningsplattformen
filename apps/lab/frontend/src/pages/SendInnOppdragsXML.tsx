@@ -168,6 +168,7 @@ export default function SendInnOppdragsXML() {
 	const senderRef = useRef(false);
 	const [sender, settSender] = useState(false);
 	const [resultat, settResultat] = useState<string | null>(null);
+	const [feilmelding, settFeilmelding] = useState<string | null>(null);
 	const [respons, settRespons] = useState<OppdragstidslinjeDTO | null>(null);
 	const [xmlFeilId, settXmlFeilId] = useState<number | null>(null);
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
@@ -205,6 +206,7 @@ export default function SendInnOppdragsXML() {
 	};
 	const fjernResultat = () => {
 		settResultat(null);
+		settFeilmelding(null);
 		settRespons(null);
 		settValgtPeriode(null);
 		settUtvidedeKjeder(new Set());
@@ -306,6 +308,9 @@ export default function SendInnOppdragsXML() {
 			}
 			settResultat("XML-ene er behandlet.");
 		} catch (error) {
+			if (error instanceof HttpStatusCodeError && error.apiMessage) {
+				settFeilmelding(error.apiMessage);
+			}
 			settResultat(
 				error instanceof HttpStatusCodeError ||
 					(isAxiosError(error) && error.response)
@@ -415,7 +420,16 @@ export default function SendInnOppdragsXML() {
 				<Heading id="tidslinje-heading" level="2" size="medium">
 					Tidslinjer
 				</Heading>
-				{allePerioder.length === 0 ? (
+				{feilmelding ? (
+					<LocalAlert status="error">
+						<LocalAlert.Header>
+							<LocalAlert.Title>Kunne ikke behandle innsendingen</LocalAlert.Title>
+						</LocalAlert.Header>
+						<LocalAlert.Content className={styles.laboratorium__feilmelding}>
+							{feilmelding}
+						</LocalAlert.Content>
+					</LocalAlert>
+				) : allePerioder.length === 0 ? (
 					<BodyShort>Ingen tidslinjer å vise.</BodyShort>
 				) : (
 					tidslinjeStart &&

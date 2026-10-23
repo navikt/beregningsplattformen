@@ -8,6 +8,9 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
+import java.util.Collections
+import java.util.IdentityHashMap
+
 import no.nav.utbetaling.beregning.lab.config.createApiError
 import no.nav.utbetaling.beregning.lab.dto.OppdragstidslinjeDTO
 import no.nav.utbetaling.beregning.lab.dto.toDTO
@@ -23,6 +26,23 @@ fun Route.labApi() {
             val oppdragstidslinje: Oppdragstidslinje = Oppdragstidslinje(),
         )
 
+        fun Throwable.feilmelding(): String {
+            val linjer = mutableListOf<String>()
+            val sette = Collections.newSetFromMap(IdentityHashMap<Throwable, Boolean>())
+
+            var gjeldende: Throwable? = this
+            var nivå = 0
+            while (gjeldende != null && sette.add(gjeldende)) {
+                gjeldende.message?.takeIf { it.isNotBlank() }?.let { melding ->
+                    linjer.add("\t".repeat(nivå) + melding)
+                    nivå++
+                }
+                gjeldende = gjeldende.cause
+            }
+
+            return linjer.joinToString("\n")
+        }
+
         suspend fun ApplicationCall.feilResponse(
             throwable: Throwable,
             status: HttpStatusCode,
@@ -32,7 +52,7 @@ fun Route.labApi() {
             message =
                 createApiError(
                     status = status,
-                    message = "Feil på innsending $innsending: ${throwable.message}",
+                    message = "Feil på innsending $innsending: ${throwable.feilmelding()}",
                     call = this,
                 ),
         )
