@@ -54,7 +54,7 @@ internal data class OpplysningerIntern(
             behandlendeEnhetEndring = FeilregistrerbarOpplysning.velg(this.behandlendeEnhetEndring, ny.behandlendeEnhetEndring),
             gjelderId = velgNullableOpplysning(ny.gjelderId, this.gjelderId),
             utbetalesTil = velgNullableOpplysning(ny.utbetalesTil, this.utbetalesTil),
-            vedtakId = velgNullableOpplysning(ny.vedtakId, this.vedtakId)
+            vedtakId = velgNullableOpplysning(ny.vedtakId, this.vedtakId),
         )
 
     data class Builder(
@@ -64,7 +64,7 @@ internal data class OpplysningerIntern(
         private val refDelytelseId: DelytelseId?,
         private val henvisning: Henvisning?,
         private val sats: BigDecimal,
-        private val kidnummer: Kidnummer?,
+        private val kidnummer: Kidnummer? = null,
         private val status: Status? = null,
         private val bostedsenhet: Bostedsenhet? = null,
         private val gjelderId: Personidentifikator? = null,

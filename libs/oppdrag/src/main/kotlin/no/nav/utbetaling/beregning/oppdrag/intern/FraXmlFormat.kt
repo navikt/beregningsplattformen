@@ -17,7 +17,6 @@ import no.nav.utbetaling.beregning.oppdrag.DelytelseId
 import no.nav.utbetaling.beregning.oppdrag.Fagområde
 import no.nav.utbetaling.beregning.oppdrag.FagsystemId
 import no.nav.utbetaling.beregning.oppdrag.Henvisning
-import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
@@ -61,7 +60,6 @@ internal object FraXmlFormat {
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                 sats = oppdragsLinje150.sats,
-                                kidnummer = oppdragsLinje150.kid.mapVerdi { Kidnummer(it) },
                             )
                         }
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
@@ -69,6 +67,8 @@ internal object FraXmlFormat {
                             builder?.medStatus(statusendring)
                         }.kombinerMed(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
                             builder?.copy(utbetalesTil = utbetalesTil)
+                        }.kombinerMed(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
+                            builder?.copy(kidnummer = kidnummer)
                         }
                 }
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene

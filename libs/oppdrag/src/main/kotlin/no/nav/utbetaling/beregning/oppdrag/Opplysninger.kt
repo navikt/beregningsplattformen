@@ -60,21 +60,22 @@ value class DelytelseId(
 
 @JvmInline
 value class VedtakId(
-    val id: String
+    val id: String,
+)
+
+@JvmInline
+value class Bostedsenhet(
+    val enhet: String,
+)
+
+@JvmInline
+value class BehandlendeEnhet(
+    val enhet: String,
 )
 
 data class Opplysning<T>(
     val saksbehandlerId: SaksbehandlerId,
     val opplysning: T,
-)
-
-data class Bostedsenhet(
-    val enhet: String,
-)
-
-
-data class BehandlendeEnhet(
-    val enhet: String,
 )
 
 sealed interface UtbetalesTil {

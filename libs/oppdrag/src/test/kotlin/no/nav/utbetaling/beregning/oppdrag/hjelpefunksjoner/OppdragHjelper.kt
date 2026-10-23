@@ -3,7 +3,6 @@ package no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
-import no.nav.utbetaling.beregning.oppdrag.VedtakId
 
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.xml.Avvent118
