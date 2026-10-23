@@ -190,6 +190,7 @@ class Oppdragstidslinje private constructor(
             behandlendeEnhet = opplysningerIntern.behandlendeEnhet,
             utbetalesTil = opplysningerIntern.utbetalesTil,
             vedtakId = opplysningerIntern.vedtakId,
+            brukKjøreplan = opplysningerIntern.brukKjøreplan,
         )
     }
 }

@@ -116,6 +116,7 @@ internal fun linje(
     utbetalesTilId: String? = null,
     datoUtbetalesTilIdFom: LocalDate? = null,
     vedtakId: String? = null,
+    brukKjøreplan: String? = null,
 ) = OppdragsLinje150(
     kodeEndringLinje = "NY",
     delytelseId = delytelseId,
@@ -136,6 +137,7 @@ internal fun linje(
     utbetalesTilId = utbetalesTilId,
     datoUtbetalesTilIdFom = datoUtbetalesTilIdFom,
     vedtakId = vedtakId,
+    brukKjoreplan = brukKjøreplan,
 )
 
 internal fun avventing(

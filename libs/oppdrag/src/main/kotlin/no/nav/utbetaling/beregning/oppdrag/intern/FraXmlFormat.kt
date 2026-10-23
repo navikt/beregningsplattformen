@@ -13,6 +13,7 @@ import tools.jackson.dataformat.xml.XmlMapper
 import tools.jackson.module.kotlin.kotlinModule
 
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
+import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.DelytelseId
 import no.nav.utbetaling.beregning.oppdrag.Fagområde
 import no.nav.utbetaling.beregning.oppdrag.FagsystemId
@@ -60,6 +61,7 @@ internal object FraXmlFormat {
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                 sats = oppdragsLinje150.sats,
+                                brukKjøreplan = oppdragsLinje150.brukKjoreplan?.takeIf { it == "N" }?.let { BrukKjøreplan.Nei },
                             )
                         }
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv

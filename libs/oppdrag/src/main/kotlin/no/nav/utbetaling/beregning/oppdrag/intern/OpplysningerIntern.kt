@@ -7,6 +7,7 @@ import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.BehandlendeEnhet
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
 import no.nav.utbetaling.beregning.oppdrag.Bostedsenhet
+import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.DelytelseId
 import no.nav.utbetaling.beregning.oppdrag.Fagområde
 import no.nav.utbetaling.beregning.oppdrag.FagsystemId
@@ -35,6 +36,7 @@ internal data class OpplysningerIntern(
     val gjelderId: Opplysning<Personidentifikator>?,
     val utbetalesTil: Opplysning<UtbetalesTil>?,
     val vedtakId: Opplysning<VedtakId>?,
+    val brukKjøreplan: Opplysning<BrukKjøreplan>,
     private val behandlendeEnhetEndring: FeilregistrerbarOpplysning<BehandlendeEnhet>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
 ) {
@@ -55,6 +57,7 @@ internal data class OpplysningerIntern(
             gjelderId = velgNullableOpplysning(ny.gjelderId, this.gjelderId),
             utbetalesTil = velgNullableOpplysning(ny.utbetalesTil, this.utbetalesTil),
             vedtakId = velgNullableOpplysning(ny.vedtakId, this.vedtakId),
+            brukKjøreplan = velgOpplysning(ny.brukKjøreplan, this.brukKjøreplan),
         )
 
     data class Builder(
@@ -72,6 +75,7 @@ internal data class OpplysningerIntern(
         private val behandlendeEnhet: FeilregistrerbarOpplysning<BehandlendeEnhet>? = null,
         private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
         private val vedtakId: VedtakId? = null,
+        private val brukKjøreplan: BrukKjøreplan? = null,
     ) {
         fun medStatus(statusendring: Statusendring?): Builder =
             when {
@@ -84,6 +88,7 @@ internal data class OpplysningerIntern(
             OpplysningerIntern(
                 delytelseId = delytelseId,
                 refDelytelseId = refDelytelseId,
+                brukKjøreplan = Opplysning(linjeSaksbehandlerId, brukKjøreplan ?: BrukKjøreplan.Ja),
                 sats = Opplysning(linjeSaksbehandlerId, sats),
                 henvisning = henvisning?.let { Opplysning(linjeSaksbehandlerId, it) },
                 kidnummer = kidnummer?.let { Opplysning(linjeSaksbehandlerId, it) },

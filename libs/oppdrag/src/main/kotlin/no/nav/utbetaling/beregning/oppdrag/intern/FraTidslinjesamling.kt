@@ -50,6 +50,7 @@ internal object FraTidslinjesamling {
                     OpplysningerIntern(
                         delytelseId = oppdragsdag.delytelseId,
                         refDelytelseId = oppdragsdag.refDelytelseId,
+                        brukKjøreplan = oppdragsdag.brukKjøreplan,
                         gjelderId = oppdragsdag.gjelderId,
                         sats = oppdragsdag.sats,
                         henvisning = oppdragsdag.henvisning,

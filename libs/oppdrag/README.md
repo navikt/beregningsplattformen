@@ -65,7 +65,7 @@
 | `oppdrag-110.oppdrags-linje-150.datoKravhaverFom`               |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.kid`                            |   ✅   | Mappes til `kidnummer` i opplysninger.                                                                                   |
 | `oppdrag-110.oppdrags-linje-150.datoKidFom`                     |   ✅   | Hensyntas slik at `kidnummer` brukes fra og med denne datoen.                                                            |
-| `oppdrag-110.oppdrags-linje-150.brukKjoreplan`                  |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.brukKjoreplan`                  |   ✅   | Mappes til `brukKjøreplan`                                                                                               |
 | `oppdrag-110.oppdrags-linje-150.saksbehId`                      |   ✅   | Brukes for alle opplysninger som ligger på linjenivå.                                                                    |
 | `oppdrag-110.oppdrags-linje-150.utbetalesTilId`                 |   ✅   | Mappes til `utbetalesTil`, enten  person, organisasjon eller samhandler.                                                 |
 | `oppdrag-110.oppdrags-linje-150.datoUtbetalesTilIdFom`          |   ✅   | Hensyntas for å kun bruke `utbetalesTil` fra og med denne datoen. Om den ikke er satt brukes `datoVedtakFom`.            |
