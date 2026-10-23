@@ -24,6 +24,7 @@ spec:
     max: 2
   ingresses:
     - "https://beregningsplattformen-lab.intern.dev.nav.no"
+    - "https://beregningsplattformen-lab.ansatt.dev.nav.no"
   resources:
     limits:
       memory: 512Mi
