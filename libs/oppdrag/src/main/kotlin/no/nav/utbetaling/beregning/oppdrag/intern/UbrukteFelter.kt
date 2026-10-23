@@ -15,7 +15,8 @@ internal object UbrukteFelter {
                 validerIngenKravhaver(oppdrag110) +
                 validerIngenKodeArbeidsgiver(oppdrag110) +
                 validerIngenValutaGrense(oppdrag110) +
-                validerIngenOmpostering(oppdrag110)
+                validerIngenOmpostering(oppdrag110) +
+                validerFagsystemIdRef(oppdrag110)
 
         valider(feil.isEmpty()) {
             feil.joinToString("\n")
@@ -110,4 +111,19 @@ internal object UbrukteFelter {
         oppdrag110.ompostering116
             ?.let { setOf("oppdrag-110 har satt ompostering-116, dette feltet skal ikke brukes av fagsystemene!") }
             ?: emptySet()
+
+    private fun validerFagsystemIdRef(oppdrag110: Oppdrag110): Set<String> {
+        val linjerMedRef = oppdrag110.oppdragsLinje150.filter { it.refFagsystemId != null }
+        if (linjerMedRef.isEmpty()) return emptySet()
+
+        val fagsystemId =
+            oppdrag110.fagsystemId
+                ?: return setOf("oppdrag-110 har ikke satt fagsystemId!")
+
+        return linjerMedRef
+            .filter { it.refFagsystemId != fagsystemId }
+            .map { linje ->
+                "oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt refFagsystemId til en annen verdi enn fagsystemId i oppdrag-110!"
+            }.toSet()
+    }
 }

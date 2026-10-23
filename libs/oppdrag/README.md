@@ -72,7 +72,7 @@
 | `oppdrag-110.oppdrags-linje-150.kodeArbeidsgiver`               |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.henvisning`                     |   ✅   | Mappes til `henvisning`                                                                                                  |
 | `oppdrag-110.oppdrags-linje-150.typeSoknad`                     |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.refFagsystemId`                 |   ☑️   | Brukes ikke til noe, men bør kanskje valderes til å være lik det som står på oppdragsnivå?                               |
+| `oppdrag-110.oppdrags-linje-150.refFagsystemId`                 |   🤏🏼   | Brukes ikke til noe, men om den er satt så valideres det at det må være samme verdi som på oppdragsnivå.                 |
 | `oppdrag-110.oppdrags-linje-150.refOppdragsId`                  |   ❌   | Avvises som stormaskin-generert felt.                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.refDelytelseId`                 |   ✅   | Brukes i forbindelse med kjeding.                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.refLinjeId`                     |   ❌   | Avvises som stormaskin-generert felt.                                                                                    |

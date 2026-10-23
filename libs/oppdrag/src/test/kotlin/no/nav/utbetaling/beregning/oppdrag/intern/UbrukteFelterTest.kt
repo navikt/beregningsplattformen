@@ -35,6 +35,7 @@ class UbrukteFelterTest :
         test("Får feil om det er satt felter som ikke skal brukes, eller verdier som ikke skal brukes") {
             val oppdrag110 =
                 Oppdrag110(
+                    fagsystemId = "fagsystemId",
                     kodeAksjon = "1",
                     kodeEndring = "NY",
                     kodeFagomraade = "FOO",
@@ -120,6 +121,7 @@ class UbrukteFelterTest :
                                             saksbehId = "Z999999",
                                         ),
                                     ),
+                                refFagsystemId = "en-helt-annen-verdi",
                             ),
                         ),
                     // Ugyldige verdier på oppdragsnivå
@@ -185,6 +187,7 @@ class UbrukteFelterTest :
                 oppdrags-linje-150 med delytelseId 1 har satt kodeArbeidsgiver til P, dette feltet skal ikke være i bruk!
                 oppdrags-linje-150 med delytelseId 1 har satt valuta-190, dette feltet skal ikke være i bruk!
                 oppdrag-110 har satt ompostering-116, dette feltet skal ikke brukes av fagsystemene!
+                oppdrags-linje-150 med delytelseId 1 har satt refFagsystemId til en annen verdi enn fagsystemId i oppdrag-110!
                 """.trimIndent()
 
             ugyldigOppdragException.message shouldBe forventetFeilmelding
