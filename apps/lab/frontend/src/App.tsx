@@ -104,13 +104,9 @@ const startMsw = async () => {
 		try {
 			const { worker } = await import("../mock/browser");
 
-			// Unngår konflikt hvis man kjører flere lokale apper med msw samtidig
-			const port = window.location.port || "5173";
-			const serviceWorkerUrl = `/mockServiceWorker-${port}.js`;
-
 			await worker.start({
 				serviceWorker: {
-					url: serviceWorkerUrl,
+					url: "/mockServiceWorker.js",
 				},
 				quiet: false,
 			});
