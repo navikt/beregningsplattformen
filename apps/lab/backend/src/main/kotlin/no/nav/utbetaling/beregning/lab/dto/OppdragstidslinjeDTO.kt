@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.lab.dto
 
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -77,6 +78,7 @@ data class KjedePerioderDTO(
     val behandlendeEnhet: OpplysningDTO?,
     val vedtakId: OpplysningDTO?,
     val brukKjøreplan: OpplysningDTO,
+    val ompostering: OpplysningDTO?,
 )
 
 private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
@@ -85,7 +87,10 @@ private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
         opplysning = stringverdi(opplysning),
     )
 
-private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+private val DATO_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+private val TIDSPUNKT_FORMAT: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Oslo"))
 
 fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
     val kjeder =
@@ -120,15 +125,15 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                                     is UtbetalesTil.Samhandler -> "Samhandler ${it.samhandlerId.tssId}"
                                                 }
                                             },
-                                        forfall = opplysning.forfall?.toDto { it.format(FORMATTER) },
+                                        forfall = opplysning.forfall?.toDto { it.format(DATO_FORMAT) },
                                         avventingsårsak =
                                             opplysning.avventingsårsak?.toDto {
                                                 when (it) {
-                                                    is Avventingsårsak.Avregning -> "Avregning - avventer til ${it.til.format(FORMATTER)}"
+                                                    is Avventingsårsak.Avregning -> "Avregning - avventer til ${it.til.format(DATO_FORMAT)}"
                                                     is Avventingsårsak.Refusjonskrav ->
                                                         when (val til = it.til) {
                                                             null -> "Refusjonskrav uten sluttdato"
-                                                            else -> "Refusjonskrav avventer til ${til.format(FORMATTER)}"
+                                                            else -> "Refusjonskrav avventer til ${til.format(DATO_FORMAT)}"
                                                         }
                                                 }
                                             },
@@ -144,6 +149,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                         behandlendeEnhet = opplysning.behandlendeEnhet?.toDto { it.enhet },
                                         vedtakId = opplysning.vedtakId?.toDto { it.id },
                                         brukKjøreplan = opplysning.brukKjøreplan.toDto { it.name },
+                                        ompostering = opplysning.ompostering?.toDto { "Registrert ${TIDSPUNKT_FORMAT.format(it.registrert)}" },
                                     )
                                 },
                         ),
