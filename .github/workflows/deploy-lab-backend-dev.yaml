@@ -25,7 +25,7 @@ jobs:
   build-backend:
     permissions:
       contents: read
-    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@d9f047707da888caa7b9ba04a7716eb2f3564f27 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.0
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@4b5f646b98c40ca503e95c98af57b2ed4b602805 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.2
     with:
       project-directory: apps/lab/backend
       gradle-task: ../../../gradlew -p ../../.. :apps:lab:backend:build :apps:lab:backend:installDist --configuration-cache
@@ -37,7 +37,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@d9f047707da888caa7b9ba04a7716eb2f3564f27 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@v1.1.0
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@4b5f646b98c40ca503e95c98af57b2ed4b602805 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@v1.1.2
     with:
       docker-context: apps/lab/backend
       dockerfile: apps/lab/backend/.nais/Dockerfile
@@ -52,7 +52,7 @@ jobs:
       id-token: write
       pull-requests: write
       deployments: write
-    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@d9f047707da888caa7b9ba04a7716eb2f3564f27 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@v1.1.0
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@4b5f646b98c40ca503e95c98af57b2ed4b602805 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@v1.1.2
     with:
       cluster: dev-gcp
       resource: apps/lab/backend/.nais/naiserator-dev.yaml
