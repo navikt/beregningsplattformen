@@ -25,6 +25,7 @@ jobs:
       project-directory: apps/lab/frontend
       docker-context: apps/lab/frontend
       dockerfile: apps/lab/frontend/.nais/Dockerfile
+      server-prune-dev-deps: pnpm run prune:production
       image-tag: ${{ github.sha }}
       image-suffix: lab-frontend
     secrets: inherit
