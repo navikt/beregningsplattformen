@@ -11,7 +11,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0" apply false
 }
 
-val kotestVersion = "6.2.5"
+val kotestVersion = "6.2.6"
 
 subprojects {
     plugins.withId("org.jlleitschuh.gradle.ktlint") {
