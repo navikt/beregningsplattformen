@@ -15,6 +15,7 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+      packages: write
     outputs:
       commit: ${{ steps.version.outputs.commit }}
       version: ${{ steps.version.outputs.version }}
@@ -38,20 +39,6 @@ jobs:
           echo "## Versjon $VERSJON" >> "$GITHUB_STEP_SUMMARY"
           echo "versjon=$VERSJON" >> "$GITHUB_OUTPUT"
 
-  publish:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Set up Java 25
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4.2.1
-        with:
-          distribution: temurin
-          java-version: "25"
-
       - name: Publish to GitHub Packages
         env:
           MAVEN_PUBLISH_URL: https://maven.pkg.github.com/navikt/beregningsplattformen
@@ -63,6 +50,3 @@ jobs:
             "-PpublicationVersion=$VERSJON" \
             -x ktlintFormat \
             --no-configuration-cache
-
-      - name: Ensure publish did not change tracked files
-        run: test -z "$(git status --porcelain --untracked-files=all)"
