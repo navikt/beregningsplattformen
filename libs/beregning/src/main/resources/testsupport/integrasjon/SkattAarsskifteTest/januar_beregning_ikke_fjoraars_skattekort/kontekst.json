@@ -1,0 +1,12 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2026-01-05",
+    "tom": "2026-01-23"
+  },
+  "beregnet": "2026-01-24T11:00:00",
+  "overfoeringsdato": "2026-01-24",
+  "ledigFrikortBeloep": null,
+  "testCreator": "geir.harris.hedemark@nav.no"
+}

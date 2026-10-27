@@ -1,0 +1,601 @@
+[
+  {
+    "kode": "AAPAAPFAF",
+    "beskrivelse": "Arb.avkl.penger ferdig attført",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPAAPTFTK",
+    "beskrivelse": "Arb.avkl.penger tilbakeføring til trygdekontor",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPAAPUA",
+    "beskrivelse": "Arb.avkl.penger under attføring",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA",
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "AAPAAPUGFTILT",
+    "beskrivelse": "Arb.avkl.penger gjennomføring av tiltak",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPAU",
+    "beskrivelse": "AAP arbeidsutprøving",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPAU-IOP",
+    "beskrivelse": "AAP arbeidsutprøving",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 56,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "AAPFAA",
+    "beskrivelse": "AAP ferdig arbeidsavklart",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPOR",
+    "beskrivelse": "Arbeidsavklaringspenger AAP",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAP"
+    ]
+  },
+  {
+    "kode": "AAPRNT-OP",
+    "beskrivelse": "Arbeidsavklaringspenger renter ved etterbetaling",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 4,
+      "beskrivelse": "Trekk- og oppgavepliktig",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "AAPSE",
+    "beskrivelse": "AAP sykepengeerstatning",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPUAA",
+    "beskrivelse": "AAP under arbeidsavklaring",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAP",
+      "AAPARENA",
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "AAPUAA-IOP",
+    "beskrivelse": "AAP under arbeidsavklaring",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 56,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "AAPUVFU",
+    "beskrivelse": "AAP under vurdering for uførepensjon",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 51,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "AAPARENA"
+    ]
+  },
+  {
+    "kode": "AAPUVFU-IOP",
+    "beskrivelse": "AAP under vurdering for uførepensjon",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 56,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig m/ompost",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "ARBINNBMEM",
+    "beskrivelse": "Arbeidskonto innbet. Ompostering mellom mottakere",
+    "typeKlassekode": "ARBK",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "AVAAINTE",
+    "beskrivelse": "Avregning arbeidsavklaringspenger",
+    "typeKlassekode": "TREK",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "DIVNINTE",
+    "beskrivelse": "Trekk Diverse trekk",
+    "typeKlassekode": "TREK",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "MAN_KODE_JUST_ARBYT",
+    "beskrivelse": "Justering arbeidsytelser",
+    "typeKlassekode": "FEIL",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "MOTKUHEVUTB",
+    "beskrivelse": "Motkonto Uhevet Utbetaling",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "MTBMOTFB",
+    "beskrivelse": "Feilutbetaling motkonto tilbakekreving",
+    "typeKlassekode": "FEIL",
+    "art": {
+      "artId": 6,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "NODU",
+    "beskrivelse": "Utbetaling Akonto",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "PENAPBTF",
+    "beskrivelse": "Alderspensjon Barnetillegg felles barn",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPBTS",
+    "beskrivelse": "Alderspensjon Barnetillegg særkullsbarn",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPET",
+    "beskrivelse": "Alderspensjon Ektefelletillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPET-OPTP",
+    "beskrivelse": "AP skattefritt ektefelletillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 4,
+      "beskrivelse": "Trekk- og oppgavepliktig",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPFAI",
+    "beskrivelse": "Alderspensjon Familietillegg inst.opph.",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPFUI",
+    "beskrivelse": "Alderspensjon Faste utgifter inst.opph.",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPGA",
+    "beskrivelse": "Alderspensjon Garantipensjon",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPGJT",
+    "beskrivelse": "Alderspensjon Gjenlevendetillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPGJT19",
+    "beskrivelse": "Alderspensjon Gjenlevendetillegg kap19",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPGP",
+    "beskrivelse": "Alderspensjon Grunnpensjon",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPIP",
+    "beskrivelse": "Alderspensjon Inntektspensjon",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPMTI",
+    "beskrivelse": "Alderspensjon Minstenivåtillegg indiv.",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPMTP",
+    "beskrivelse": "Alderspensjon Minstenivåtillegg p.par",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPPT",
+    "beskrivelse": "Alderspensjon Pensjonstillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPSKJERMT",
+    "beskrivelse": "Alderspensjon Skjermingstillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP"
+    ]
+  },
+  {
+    "kode": "PENAPST",
+    "beskrivelse": "Alderspensjon Særtillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPTP",
+    "beskrivelse": "Alderspensjon Tilleggspensjon",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "MPENAP",
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "PENAPVT",
+    "beskrivelse": "Alderspensjon Ventetillegg",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 1,
+      "beskrivelse": "Skatte-, trekk- og oppgavepliktig",
+      "grunnlagSkatt": true,
+      "grunnlagTrekk": true
+    },
+    "fagomraader": [
+      "PENAP"
+    ]
+  },
+  {
+    "kode": "UHEVUTB",
+    "beskrivelse": "Uhevet Utbetaling",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "UHEVUTB3AAR",
+    "beskrivelse": "Uhevet utbet utpost 3 år",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  },
+  {
+    "kode": "UTBETALING",
+    "beskrivelse": "Utbetaling Akonto",
+    "typeKlassekode": "YTEL",
+    "art": {
+      "artId": 26,
+      "beskrivelse": "Ikke skatte-, trekk- og oppgavepliktig -engang",
+      "grunnlagSkatt": false,
+      "grunnlagTrekk": false
+    },
+    "fagomraader": [
+      "MAAPAREN"
+    ]
+  }
+]

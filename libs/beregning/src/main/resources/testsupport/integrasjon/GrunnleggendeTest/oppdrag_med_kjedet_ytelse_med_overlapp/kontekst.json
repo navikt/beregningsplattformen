@@ -1,0 +1,11 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2026-02-01",
+    "tom": "2026-02-28"
+  },
+  "beregnet": "2025-02-28T11:00:00",
+  "overfoeringsdato": "2026-02-28",
+  "testCreator": "bjorn.vaggen.konestabo@nav.no"
+}

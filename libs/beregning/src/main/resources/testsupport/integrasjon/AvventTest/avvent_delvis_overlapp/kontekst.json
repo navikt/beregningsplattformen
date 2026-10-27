@@ -1,0 +1,11 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2026-02-01",
+    "tom": "2026-02-28"
+  },
+  "beregnet": "2026-02-15T11:00:00",
+  "overfoeringsdato": "2026-02-15",
+  "testCreator": "geir.harris.hedemark@nav.no"
+}

@@ -1,0 +1,155 @@
+{
+    "periode": {
+        "fom": "2025-03-31",
+        "tom": "2025-04-11"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2025-03-31",
+                "tom": "2025-04-11"
+            },
+            "status": "BEREGNET",
+            "overfoeres": "2025-12-12",
+            "fagomraade": "AAP",
+            "gjelder": 23519035766,
+            "beregnet": "2025-12-12T00:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-03-31",
+                        "2025-04-01",
+                        "2025-04-02",
+                        "2025-04-03",
+                        "2025-04-04",
+                        "2025-04-05",
+                        "2025-04-06",
+                        "2025-04-07",
+                        "2025-04-08",
+                        "2025-04-09",
+                        "2025-04-10",
+                        "2025-04-11"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 0,
+                            "satstype": "DAG",
+                            "sats": 974
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_TREKK_PROSENT",
+                                    "verdier": {
+                                        "inntektsAar": {
+                                            "verdi": "2025",
+                                            "skjult": false
+                                        },
+                                        "grunnlag": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        },
+                                        "utstedtDato": {
+                                            "verdi": "2025-01-01",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "49",
+                                            "skjult": false
+                                        },
+                                        "skattekortIdentifikator": {
+                                            "verdi": "1",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 0,
+                            "satstype": "PROSENT",
+                            "sats": 49
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-03-31",
+                        "tom": "2025-04-11"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        ],
+                        "rowValue": 0,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        0,
+                        0
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 0
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}

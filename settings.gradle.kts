@@ -9,5 +9,6 @@ include(
     "libs:kotlinx",
     "libs:log",
     "libs:oppdrag",
+    "libs:beregning",
     "libs:tid",
 )

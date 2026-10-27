@@ -1,0 +1,18 @@
+-------------------------------
+
+
+Utregning:
+       |       | 2025-03-31 | 2025-04-01 | 2025-04-02 | 2025-04-03 | 2025-04-04 | 2025-04-05 | 2025-04-06 | 2025-04-07 | 2025-04-08 | 2025-04-09 | 2025-04-10 | 2025-04-11
+-------|-------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|-----------
+Ytelse |       |        974 |        974 |        974 |        974 |        974 |          0 |          0 |        974 |        974 |        974 |        974 |        974
+  FAGP |       |       -100 |       -100 |       -100 |       -100 |       -100 |          0 |          0 |          0 |          0 |          0 |          0 |          0
+ Skatt | -1238 |            |            |            |            |            |            |            |            |            |            |            |
+  RKSE | -1000 |            |            |            |            |            |            |            |            |            |            |            |
+  TRK1 |       |       -150 |       -150 |       -150 |       -150 |       -150 |          0 |          0 |       -150 |       -150 |       -150 |       -150 |       -150
+   Sum | -2238 |        724 |        724 |        724 |        724 |        724 |          0 |          0 |        824 |        824 |        824 |        824 |        824
+
+Ekstra info:
+FAGP  | [trekk: FAGP KRED Løpende trekk dagsats, Fra: 2025-03-31, Til: 2025-04-05, Pensjonsavgift sats: 100.00, skattered: ja, beskrivelse: Pensjonsavgift]
+Skatt | [grunnlag: 9240.00, skatteDager: 14, skatteInfo: type: TabellSkatteTrekk, inntektsår: 2025, utstedt-dato: 2025-01-01, trekkTabell: 8010, skattekort-identifikator: 123456, utsettes: false, periode: PERIODE_14_DAGER(c)]
+RKSE  | [trekk: RKSE KRED Løpende trekk månedssats, Fra: 2025-03-31, Til: 2025-04-05, Refkrav fra eksterne i kontantstøtte sats: 1000.00, skattered: nei, beskrivelse: Refkrav fra eksterne i kontantstøtte]
+TRK1  | [trekk: TRK1 KRED Løpende trekk dagsats, Fra: 2025-03-31, Til: 2025-04-11, Utleggstrekk, ett trekk sats: 150.00, skattered: nei, beskrivelse: Utleggstrekk, ett trekk]

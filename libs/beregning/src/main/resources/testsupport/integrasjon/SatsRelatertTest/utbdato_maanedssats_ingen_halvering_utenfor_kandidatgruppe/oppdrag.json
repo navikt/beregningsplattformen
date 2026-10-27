@@ -1,0 +1,50 @@
+[
+  {
+    "kodeAksjon": "1",
+    "kodeEndring": "ENDR",
+    "kodeFagomraade": "MPENAP",
+    "fagsystemId": "testUtenforKandidatgruppe",
+    "utbetFrekvens": "MND",
+    "oppdragGjelderId": "12345678901",
+    "datoOppdragGjelderFom": "2000-01-01",
+    "saksbehId": "Test",
+    "avstemming115": {
+      "kodeKomponent": "MPENAP",
+      "nokkelAvstemming": "testavstPensjon",
+      "tidspktMelding": "2026-04-01-00.00.00.000000"
+    },
+    "oppdragsEnhet120": [
+      {
+        "typeEnhet": "BOS",
+        "enhet": "8020",
+        "datoEnhetFom": "1970-01-01"
+      }
+    ],
+    "oppdragsLinje150": [
+      {
+        "kodeEndringLinje": "NY",
+        "vedtakId": "2026-04-01",
+        "delytelseId": "pensjonTest",
+        "kodeKlassifik": "PENAPGA",
+        "datoVedtakFom": "2026-04-06",
+        "datoVedtakTom": "2026-04-10",
+        "sats": 600,
+        "fradragTillegg": "T",
+        "typeSats": "DAG",
+        "brukKjoreplan": "N",
+        "saksbehId": "Test",
+        "utbetalesTilId": "12345678901",
+        "henvisning": "pensjonRef",
+        "refFagsystemId": "testUtenforKandidatgruppe",
+        "vedtakssats157": {
+          "vedtakssats": 600
+        },
+        "attestant180": [
+          {
+            "attestantId": "Test"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,102 @@
+{
+  "periode": {"fom": "2026-04-06", "tom": "2026-04-10"},
+  "beregninger": [
+    {
+      "periode": {"fom": "2026-04-06", "tom": "2026-04-10"},
+      "status": "BEREGNET",
+      "statusflagg": ["MANGLER_SKATTEKORT"],
+      "overfoeres": "2026-04-10",
+      "fagomraade": "MPENAP",
+      "gjelder": 1,
+      "beregnet": "2026-04-10T11:00",
+      "delberegninger": [
+        {
+          "oppdragId": 0,
+          "columns": ["2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10"],
+          "rows": [
+            {
+              "type": "YTELSE",
+              "rowName": "Ytelse YtelseKlasseKodeRef(kode=PENAPGA)",
+              "columnValues": [600, 600, 600, 600, 600],
+              "rowValue": 0,
+              "ekstra": [],
+              "capacity": {"dayCapacity": [600, 600, 600, 600, 600], "lumpCapacity": 0},
+              "satstype": "DAG",
+              "sats": 600,
+              "kodeKlasse": "PENAPGA"
+            },
+            {
+              "type": "SKATT",
+              "rowName": "Skatt FSKTSKAT",
+              "kodeKlasse": "FSKTSKAT",
+              "reskontro_konto": "0510000",
+              "columnValues": [],
+              "rowValue": -900,
+              "ekstra": [
+                {
+                  "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                  "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                  "verdier": {
+                    "grunnlag": {"verdi": "3000", "skjult": false},
+                    "prosentSats": {"verdi": "30", "skjult": false}
+                  }
+                }
+              ],
+              "capacity": {"dayCapacity": [600, 600, 600, 600, 600], "lumpCapacity": 0},
+              "satstype": "PROSENT",
+              "sats": 30
+            },
+            {
+              "type": "TREKK",
+              "rowName": "Trekk",
+              "columnValues": [],
+              "rowValue": -1000,
+              "ekstra": [
+                {
+                  "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                  "grunn": "TREKK",
+                  "verdier": {
+                    "kode": {"verdi": "TRK1", "skjult": false},
+                    "sats": {"verdi": "1000", "skjult": false},
+                    "saldo": {"verdi": "null", "skjult": false},
+                    "redusererSkattegrunnlag": {"verdi": "false", "skjult": false},
+                    "alternativ": {"verdi": "LOP", "skjult": false},
+                    "datoFom": {"verdi": "2026-04-01", "skjult": false},
+                    "datoTom": {"verdi": "2026-04-30", "skjult": false},
+                    "trekkgrunnlag": {"verdi": "3000", "skjult": false},
+                    "kapasitet": {"verdi": "2100", "skjult": false}
+                  },
+                  "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                }
+              ],
+              "capacity": {"dayCapacity": [420, 420, 420, 420, 420], "lumpCapacity": 0},
+              "satstype": "LOP",
+              "sats": 1000,
+              "trekkVedtakId": 700
+            }
+          ],
+          "datoIntervall": {"fom": "2026-04-06", "tom": "2026-04-10"},
+          "ekstraInfo": [],
+          "sums": {
+            "type": "SUM",
+            "rowName": "Sum",
+            "columnValues": [600, 600, 600, 600, 600],
+            "rowValue": -1900,
+            "ekstra": []
+          },
+          "sumColumn": [3000, -900, -1000]
+        }
+      ],
+      "beloepTilUtbetaling": 1100,
+      "ekstraInfo": []
+    }
+  ],
+  "saldoBoetter": [],
+  "satsBoetter": [
+    {"trekkperiodeId": 800, "boette": "2026-04", "opprinneligSats": 1000, "restSats": 0}
+  ],
+  "initielleSaldoBoetter": [],
+  "initielleSatsBoetter": [
+    {"trekkperiodeId": 800, "boette": "2026-04", "opprinneligSats": 1000, "restSats": 1000}
+  ]
+}

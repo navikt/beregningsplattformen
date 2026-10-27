@@ -1,0 +1,1102 @@
+{
+    "periode": {
+        "fom": "2026-03-02",
+        "tom": "2026-03-27"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2026-03-02",
+                "tom": "2026-03-27"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [],
+            "overfoeres": "2026-03-28",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-03-28T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-02",
+                        "2026-03-03",
+                        "2026-03-04",
+                        "2026-03-05",
+                        "2026-03-06"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                500,
+                                500,
+                                500,
+                                500,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 500,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TIDLIGERE_UTBETALT",
+                            "rowName": "Tidligere_utbetalt",
+                            "columnValues": [],
+                            "rowValue": -2500,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TIDLIGERE_UTBETALT",
+                                    "verdier": {
+                                        "beregningId": {
+                                            "verdi": "901",
+                                            "skjult": false
+                                        },
+                                        "overfoertDato": {
+                                            "verdi": "2026-03-01",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Tidligere utbetalt i beregning {beregningId}, overført {overfoertDato:dato}"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [
+                                100,
+                                100,
+                                100,
+                                100,
+                                100
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "200",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2026-03-02",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2026-03-27",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "2500",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                },
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "FEIL_I_BEREGNING",
+                                    "template": "For dette trekket finnes det negative satsbøtter. Dette er ikke støttet. Denne beregningen er feil"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 200,
+                            "trekkVedtakId": 100
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_ETTERBETALING",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "30.0",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skatt prosentberegnes fra grunnlag {grunnlag:beloep} med sats {prosentSats:prosent} prosent fordi det er etterbetaling av en tidligere utbetalt ytelse"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 30.0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-02",
+                        "tom": "2026-03-06"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "5000",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "10",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "14",
+                                    "skjult": false
+                                }
+                            },
+                            "template": "Verdiberegnet tabellkortdager-partisjon: brutto ytelse {bruttoYtelse:beloep}, vedtakssats {vedtakssats:beloep}, arbeidsdager {arbeidsdager:heltall}, skattedager {skattedager:heltall}"
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            600,
+                            600,
+                            600,
+                            600,
+                            600
+                        ],
+                        "rowValue": -2500,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        2500,
+                        -2500,
+                        500,
+                        0
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-07",
+                        "2026-03-08"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 500,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "200",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2026-03-02",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2026-03-27",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 200,
+                            "trekkVedtakId": 100
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-07",
+                        "tom": "2026-03-08"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "5000",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "10",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "14",
+                                    "skjult": false
+                                }
+                            },
+                            "template": "Verdiberegnet tabellkortdager-partisjon: brutto ytelse {bruttoYtelse:beloep}, vedtakssats {vedtakssats:beloep}, arbeidsdager {arbeidsdager:heltall}, skattedager {skattedager:heltall}"
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            0,
+                            0
+                        ],
+                        "rowValue": 0,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-09",
+                        "2026-03-10",
+                        "2026-03-11",
+                        "2026-03-12",
+                        "2026-03-13"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                500,
+                                500,
+                                500,
+                                500,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 500,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TIDLIGERE_UTBETALT",
+                            "rowName": "Tidligere_utbetalt",
+                            "columnValues": [],
+                            "rowValue": -2500,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TIDLIGERE_UTBETALT",
+                                    "verdier": {
+                                        "beregningId": {
+                                            "verdi": "902",
+                                            "skjult": false
+                                        },
+                                        "overfoertDato": {
+                                            "verdi": "2026-03-08",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Tidligere utbetalt i beregning {beregningId}, overført {overfoertDato:dato}"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "200",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2026-03-02",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2026-03-27",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "2500",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 200,
+                            "trekkVedtakId": 100
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_ETTERBETALING",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "30.0",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skatt prosentberegnes fra grunnlag {grunnlag:beloep} med sats {prosentSats:prosent} prosent fordi det er etterbetaling av en tidligere utbetalt ytelse"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 30.0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-09",
+                        "tom": "2026-03-13"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "5000",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "10",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "14",
+                                    "skjult": false
+                                }
+                            },
+                            "template": "Verdiberegnet tabellkortdager-partisjon: brutto ytelse {bruttoYtelse:beloep}, vedtakssats {vedtakssats:beloep}, arbeidsdager {arbeidsdager:heltall}, skattedager {skattedager:heltall}"
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            500,
+                            500,
+                            500,
+                            500,
+                            500
+                        ],
+                        "rowValue": -2500,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        2500,
+                        -2500,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-14",
+                        "2026-03-15",
+                        "2026-03-16",
+                        "2026-03-17",
+                        "2026-03-18",
+                        "2026-03-19",
+                        "2026-03-20",
+                        "2026-03-21",
+                        "2026-03-22",
+                        "2026-03-23",
+                        "2026-03-24",
+                        "2026-03-25",
+                        "2026-03-26",
+                        "2026-03-27"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                0,
+                                0,
+                                500,
+                                500,
+                                500,
+                                500,
+                                500,
+                                0,
+                                0,
+                                500,
+                                500,
+                                500,
+                                500,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    0,
+                                    0,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 500,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [
+                                0,
+                                0,
+                                -200,
+                                -200,
+                                -200,
+                                -200,
+                                -200,
+                                0,
+                                0,
+                                -200,
+                                -200,
+                                -200,
+                                -200,
+                                -200
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "200",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2026-03-02",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2026-03-27",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "5000",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "5000",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    0,
+                                    0,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 200,
+                            "trekkVedtakId": 100
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_TABELL_HOVEDARBEIDSGIVER",
+                                    "verdier": {
+                                        "trekktabell": {
+                                            "verdi": "8010",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "3000",
+                                            "skjult": false
+                                        },
+                                        "dager": {
+                                            "verdi": "14",
+                                            "skjult": false
+                                        },
+                                        "totalSkatt": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        },
+                                        "skattegrunnlag": {
+                                            "verdi": "3000",
+                                            "skjult": false
+                                        },
+                                        "lokalSkatt": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skatt trukket etter tabell {trekktabell}, grunnlag {trekkgrunnlag:beloep}, arbeidsdager {dager:heltall}, total beregnet skatt {totalSkatt:beloep}, lokalt skattegrunnlag {skattegrunnlag:beloep}, lokal skatteandel {lokalSkatt:beloep}"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    0,
+                                    300,
+                                    300,
+                                    300,
+                                    300,
+                                    300,
+                                    0,
+                                    0,
+                                    300,
+                                    300,
+                                    300,
+                                    300,
+                                    300
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "TABELL",
+                            "sats": 0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-14",
+                        "tom": "2026-03-27"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "5000",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "10",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "14",
+                                    "skjult": false
+                                }
+                            },
+                            "template": "Verdiberegnet tabellkortdager-partisjon: brutto ytelse {bruttoYtelse:beloep}, vedtakssats {vedtakssats:beloep}, arbeidsdager {arbeidsdager:heltall}, skattedager {skattedager:heltall}"
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            0,
+                            0,
+                            300,
+                            300,
+                            300,
+                            300,
+                            300,
+                            0,
+                            0,
+                            300,
+                            300,
+                            300,
+                            300,
+                            300
+                        ],
+                        "rowValue": 0,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        5000,
+                        -2000,
+                        0
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 3500,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-02",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-03",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-04",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-05",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-06",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-09",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-10",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-11",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-12",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-13",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-16",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-17",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-18",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-19",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-20",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-23",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-24",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-25",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-26",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-27",
+            "opprinneligSats": 200,
+            "restSats": 0
+        }
+    ],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": [
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-02",
+            "opprinneligSats": 200,
+            "restSats": -100
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-03",
+            "opprinneligSats": 200,
+            "restSats": -100
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-04",
+            "opprinneligSats": 200,
+            "restSats": -100
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-05",
+            "opprinneligSats": 200,
+            "restSats": -100
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-06",
+            "opprinneligSats": 200,
+            "restSats": -100
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-09",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-10",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-11",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-12",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-13",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-16",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-17",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-18",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-19",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-20",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-23",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-24",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-25",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-26",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03-27",
+            "opprinneligSats": 200,
+            "restSats": 200
+        }
+    ]
+}
