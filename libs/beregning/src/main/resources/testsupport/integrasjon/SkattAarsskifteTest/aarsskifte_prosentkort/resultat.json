@@ -1,0 +1,293 @@
+{
+    "periode": {
+        "fom": "2025-12-22",
+        "tom": "2026-01-09"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2025-12-22",
+                "tom": "2026-01-09"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [],
+            "overfoeres": "2026-01-10",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-01-10T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-12-22",
+                        "2025-12-23",
+                        "2025-12-24",
+                        "2025-12-25",
+                        "2025-12-26",
+                        "2025-12-27",
+                        "2025-12-28",
+                        "2025-12-29",
+                        "2025-12-30",
+                        "2025-12-31"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                974,
+                                974,
+                                974,
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "oppdragslinjekjedeId": -1,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -2610,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_TREKK_PROSENT",
+                                    "verdier": {
+                                        "inntektsAar": {
+                                            "verdi": "2026",
+                                            "skjult": false
+                                        },
+                                        "grunnlag": {
+                                            "verdi": "7792",
+                                            "skjult": false
+                                        },
+                                        "utstedtDato": {
+                                            "verdi": "2026-01-01",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "33.5",
+                                            "skjult": false
+                                        },
+                                        "skattekortIdentifikator": {
+                                            "verdi": "1",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "type: ProsentSkatteTrekk, inntektsår: {inntektsAar:heltall}, grunnlag: {grunnlag:beloep}, utstedt-dato: {utstedtDato:dato}, prosentSats: {prosentSats:prosent}, skattekort-identifikator: {skattekortIdentifikator}"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 33.5
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-12-22",
+                        "tom": "2025-12-31"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974,
+                            974,
+                            974,
+                            974,
+                            0,
+                            0,
+                            974,
+                            974,
+                            974
+                        ],
+                        "rowValue": -2610,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        7792,
+                        -2610
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-01-01",
+                        "2026-01-02",
+                        "2026-01-03",
+                        "2026-01-04",
+                        "2026-01-05",
+                        "2026-01-06",
+                        "2026-01-07",
+                        "2026-01-08",
+                        "2026-01-09"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "oppdragslinjekjedeId": -1,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -2284,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_TREKK_PROSENT",
+                                    "verdier": {
+                                        "inntektsAar": {
+                                            "verdi": "2026",
+                                            "skjult": false
+                                        },
+                                        "grunnlag": {
+                                            "verdi": "6818",
+                                            "skjult": false
+                                        },
+                                        "utstedtDato": {
+                                            "verdi": "2026-01-01",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "33.5",
+                                            "skjult": false
+                                        },
+                                        "skattekortIdentifikator": {
+                                            "verdi": "1",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "type: ProsentSkatteTrekk, inntektsår: {inntektsAar:heltall}, grunnlag: {grunnlag:beloep}, utstedt-dato: {utstedtDato:dato}, prosentSats: {prosentSats:prosent}, skattekort-identifikator: {skattekortIdentifikator}"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 33.5
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-01-01",
+                        "tom": "2026-01-09"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974,
+                            0,
+                            0,
+                            974,
+                            974,
+                            974,
+                            974,
+                            974
+                        ],
+                        "rowValue": -2284,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        6818,
+                        -2284
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 9716,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}

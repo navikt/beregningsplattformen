@@ -1,0 +1,13 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2025-12-15",
+    "tom": "2026-02-15"
+  },
+  "beregnet": "2026-02-16T11:00:00",
+  "overfoeringsdato": "2026-02-16",
+  "ledigFrikortBeloep": null,
+  "testCreator": "geir.harris.hedemark@nav.no",
+  "kommentar": "Denne testen har beregnet dato etter januar. Derfor bruker den ikke forrige års skattekort"
+}

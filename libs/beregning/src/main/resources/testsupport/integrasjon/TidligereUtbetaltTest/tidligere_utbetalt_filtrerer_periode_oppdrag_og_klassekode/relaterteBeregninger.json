@@ -1,0 +1,207 @@
+[
+  {
+    "id": 990,
+    "periode": {
+      "fom": "2025-03-31",
+      "tom": "2025-04-11"
+    },
+    "konto": "konto1",
+    "overfoeres": "2025-04-12",
+    "fagomraade": "AAP",
+    "gjelder": 1,
+    "beregnet": "2025-04-11T10:00:00",
+    "delberegning": [
+      {
+        "oppdragId": 0,
+        "columns": [
+          "2025-04-01",
+          "2025-04-02"
+        ],
+        "linjer": [
+          {
+            "type": "YTELSE",
+            "dagsbeloep": [
+              {
+                "dato": "2025-04-01",
+                "beloep": 50
+              },
+              {
+                "dato": "2025-04-02",
+                "beloep": 50
+              }
+            ],
+            "beloep": 0,
+            "kodeKlasse": {
+              "kode": "PENAPET",
+              "beskrivelse": "Alderspensjon Ektefelletillegg",
+              "grunnlagSkatt": true,
+              "grunnlagTrekk": true,
+              "fagomraader": [
+                "MPENAP",
+                "PENAP"
+              ]
+            }
+          }
+        ],
+        "datoIntervall": {
+          "fom": "2025-04-01",
+          "tom": "2025-04-02"
+        }
+      },
+      {
+        "oppdragId": 0,
+        "columns": [
+          "2025-04-14",
+          "2025-04-15"
+        ],
+        "linjer": [
+          {
+            "type": "YTELSE",
+            "dagsbeloep": [
+              {
+                "dato": "2025-04-14",
+                "beloep": 70
+              },
+              {
+                "dato": "2025-04-15",
+                "beloep": 70
+              }
+            ],
+            "beloep": 0,
+            "kodeKlasse": {
+              "kode": "PENAPET",
+              "beskrivelse": "Alderspensjon Ektefelletillegg",
+              "grunnlagSkatt": true,
+              "grunnlagTrekk": true,
+              "fagomraader": [
+                "MPENAP",
+                "PENAP"
+              ]
+            }
+          }
+        ],
+        "datoIntervall": {
+          "fom": "2025-04-14",
+          "tom": "2025-04-15"
+        }
+      },
+      {
+        "oppdragId": 0,
+        "columns": [
+          "2025-04-01",
+          "2025-04-02"
+        ],
+        "linjer": [
+          {
+            "type": "YTELSE",
+            "dagsbeloep": [
+              {
+                "dato": "2025-04-01",
+                "beloep": 60
+              },
+              {
+                "dato": "2025-04-02",
+                "beloep": 60
+              }
+            ],
+            "beloep": 0,
+            "kodeKlasse": {
+              "kode": "AAPUAA",
+              "beskrivelse": "AAP under arbeidsavklaring",
+              "grunnlagSkatt": true,
+              "grunnlagTrekk": true,
+              "fagomraader": [
+                "AAP",
+                "AAPARENA",
+                "MAAPAREN"
+              ]
+            }
+          }
+        ],
+        "datoIntervall": {
+          "fom": "2025-04-01",
+          "tom": "2025-04-02"
+        }
+      },
+      {
+        "oppdragId": 0,
+        "columns": [
+          "2025-04-07",
+          "2025-04-08"
+        ],
+        "linjer": [
+          {
+            "type": "YTELSE",
+            "dagsbeloep": [
+              {
+                "dato": "2025-04-07",
+                "beloep": 40
+              },
+              {
+                "dato": "2025-04-08",
+                "beloep": 40
+              }
+            ],
+            "beloep": 0,
+            "kodeKlasse": {
+              "kode": "AAPUAA",
+              "beskrivelse": "AAP under arbeidsavklaring",
+              "grunnlagSkatt": true,
+              "grunnlagTrekk": true,
+              "fagomraader": [
+                "AAP",
+                "AAPARENA",
+                "MAAPAREN"
+              ]
+            }
+          }
+        ],
+        "datoIntervall": {
+          "fom": "2025-04-07",
+          "tom": "2025-04-08"
+        }
+      },
+      {
+        "oppdragId": 99,
+        "columns": [
+          "2025-04-07",
+          "2025-04-08"
+        ],
+        "linjer": [
+          {
+            "type": "YTELSE",
+            "dagsbeloep": [
+              {
+                "dato": "2025-04-07",
+                "beloep": 90
+              },
+              {
+                "dato": "2025-04-08",
+                "beloep": 90
+              }
+            ],
+            "beloep": 0,
+            "kodeKlasse": {
+              "kode": "AAPUAA",
+              "beskrivelse": "AAP under arbeidsavklaring",
+              "grunnlagSkatt": true,
+              "grunnlagTrekk": true,
+              "fagomraader": [
+                "AAP",
+                "AAPARENA",
+                "MAAPAREN"
+              ]
+            }
+          }
+        ],
+        "datoIntervall": {
+          "fom": "2025-04-07",
+          "tom": "2025-04-08"
+        }
+      }
+    ],
+    "status": "BEREGNET",
+    "gyldig": true,
+    "kilde": "POC"
+  }
+]

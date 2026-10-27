@@ -1,0 +1,138 @@
+{
+    "periode": {
+        "fom": "2026-03-02",
+        "tom": "2026-03-06"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2026-03-02",
+                "tom": "2026-03-06"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [],
+            "overfoeres": "2026-10-19",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-10-19T00:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-02",
+                        "2026-03-03",
+                        "2026-03-04",
+                        "2026-03-05",
+                        "2026-03-06"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                1000,
+                                1000,
+                                1000,
+                                1000,
+                                1000
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1000,
+                                    1000,
+                                    1000,
+                                    1000,
+                                    1000
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 1000,
+                            "oppdragslinjekjedeId": -1,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt KSKTSKAT",
+                            "columnValues": [],
+                            "rowValue": -1500,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_TREKK_PROSENT",
+                                    "verdier": {
+                                        "inntektsAar": {
+                                            "verdi": "2026",
+                                            "skjult": false
+                                        },
+                                        "grunnlag": {
+                                            "verdi": "5000",
+                                            "skjult": false
+                                        },
+                                        "utstedtDato": {
+                                            "verdi": "2026-01-01",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "30",
+                                            "skjult": false
+                                        },
+                                        "skattekortIdentifikator": {
+                                            "verdi": "1",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "type: ProsentSkatteTrekk, inntektsår: {inntektsAar:heltall}, grunnlag: {grunnlag:beloep}, utstedt-dato: {utstedtDato:dato}, prosentSats: {prosentSats:prosent}, skattekort-identifikator: {skattekortIdentifikator}"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1000,
+                                    1000,
+                                    1000,
+                                    1000,
+                                    1000
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 30,
+                            "kodeKlasse": "KSKTSKAT",
+                            "reskontro_konto": "0512435"
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-02",
+                        "tom": "2026-03-06"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            1000,
+                            1000,
+                            1000,
+                            1000,
+                            1000
+                        ],
+                        "rowValue": -1500,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        5000,
+                        -1500
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 3500,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}

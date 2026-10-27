@@ -1,0 +1,83 @@
+{
+  "_dokumentasjon": [
+    "Denne filen sporer manuelle godkjenninger av integrasjonstester.",
+    "",
+    "godkjennere: Liste over personer som kan godkjenne tester.",
+    "godkjenninger: Map av testnavn → person → godkjenningsdato (YYYY-MM-DD).",
+    "",
+    "Testnavn er på formen 'TestKlasse/testnavn', f.eks. 'SatsRelatertTest/utbdato_dagssats_med_satsboette'.",
+    "Godkjenningsdato skal IKKE fjernes selv om den er utgått (eldre enn 6 måneder).",
+    "Utgåtte godkjenninger vises med gul markering i rapporten og må fornyes ved å oppdatere datoen.",
+    "",
+    "Eksempel:",
+    "  \"godkjenninger\": {",
+    "    \"SatsRelatertTest/utbdato_dagssats_med_satsboette\": {",
+    "      \"Steinar Hansen\": \"2026-05-03\",",
+    "      \"Trine Johansen\": \"2026-04-15\"",
+    "    }",
+    "  }",
+    "",
+    "For å fornye en utgått godkjenning: oppdater datoen til dagens dato.",
+    "Generer rapport med: ./gradlew generateTestReport"
+  ],
+  "godkjennere": ["Steinar Hansen", "Trine Johansen", "Marita R. Karlsen"],
+  "godkjenninger": {
+    "GrunnleggendeTest/oppdrag_uten_noe_annet": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SkattFrikortTest/frikort_belopsgrense_uttoemmes": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "GrunnleggendeTest/oppdrag_med_et_saldotrekk_som_utfoeres_fullstendig": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/ytelper_dagssats_med_relatert_beloep_prorateres": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/ytelper_dagssats_med_relatert_som_dekker_en_dag": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/ytelper_dagssats_med_relatert_som_spenner_flere_dager": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/ytelper_dagssats_uten_relaterte": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/ytelper_maanedssats_med_relatert_som_reduserer": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/ytelper_prosenttrekk_ikke_begrenset_av_satsboette": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "GrunnleggendeTest/oppdrag_med_et_saldotrekk_som_ikke_utfoeres_fullstendig": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/utbdato_dagssats_med_relatert_samme_overfoeringsdato": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/utbdato_dagssats_med_satsboette": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/utbdato_maanedssats_med_relatert_samme_overfoeringsdato": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SatsRelatertTest/utbdato_prosenttrekk_ikke_begrenset_av_satsboette": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SkattFrikortTest/frikort_uten_beloepsgrense_trekker_ikke_skatt": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "SkattProsentkortTest/prosentkort_med_skattereduserende_trekk": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "TidligereUtbetaltTest/enkel_tidligere_utbetalt": {
+      "Steinar Hansen": "2026-05-08"
+    },
+    "TidligereUtbetaltTest/tidligere_utbetalt_med_proratering": {
+      "Steinar Hansen": "2026-05-08"
+    }
+  }
+}

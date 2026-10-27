@@ -1,0 +1,18 @@
+{
+  "skattekort": {
+    "aktoerId": 1,
+    "inntektsaar": 2026,
+    "kilde": "test",
+    "identifikator": 1,
+    "utstedtDato": "2026-01-01",
+    "tilleggsopplysning": ["KILDESKATT_PAA_LOENN"],
+    "forskuddsTrekk": [
+      {
+        "typeForskuddsTrekk": "PROSENTKORT",
+        "trekkKode": "LOENN_FRA_NAV",
+        "prosentsats": 30
+      }
+    ]
+  },
+  "allokeringer": {}
+}

@@ -1,0 +1,599 @@
+{
+    "periode": {
+        "fom": "2025-03-31",
+        "tom": "2025-04-11"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2025-03-31",
+                "tom": "2025-04-11"
+            },
+            "status": "BEREGNET",
+            "statusflagg": ["MANGLER_SKATTEKORT"],
+            "overfoeres": "2025-04-12",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2025-04-12T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-03-31",
+                        "2025-04-01"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=PENAPET)",
+                            "columnValues": [
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "kodeKlasse": "PENAPET"
+                        },
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                567,
+                                567
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1541,
+                                    1541
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 567,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [],
+                            "rowValue": -771,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "25",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2025-03-31",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2025-04-11",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "3082",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "3082",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1541,
+                                    1541
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 25,
+                            "trekkVedtakId": 100
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -1156,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "2311",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1155,
+                                    1156
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-03-31",
+                        "tom": "2025-04-01"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            1541,
+                            1541
+                        ],
+                        "rowValue": -1927,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        1948,
+                        1134,
+                        -771,
+                        -1156
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-04-02",
+                        "2025-04-03",
+                        "2025-04-04",
+                        "2025-04-05",
+                        "2025-04-06",
+                        "2025-04-07",
+                        "2025-04-08",
+                        "2025-04-09",
+                        "2025-04-10",
+                        "2025-04-11"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=PENAPET)",
+                            "columnValues": [
+                                974,
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "kodeKlasse": "PENAPET"
+                        },
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                567,
+                                567,
+                                567,
+                                0,
+                                0,
+                                567,
+                                567,
+                                567,
+                                567,
+                                567
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1541,
+                                    1541,
+                                    1541,
+                                    0,
+                                    0,
+                                    1541,
+                                    1541,
+                                    1541,
+                                    1541,
+                                    1541
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 567,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [],
+                            "rowValue": -3082,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "25",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2025-03-31",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2025-04-11",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "12328",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "12328",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1541,
+                                    1541,
+                                    1541,
+                                    0,
+                                    0,
+                                    1541,
+                                    1541,
+                                    1541,
+                                    1541,
+                                    1541
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 25,
+                            "trekkVedtakId": 100
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [
+                                -200,
+                                -200,
+                                -200,
+                                0,
+                                0,
+                                -200,
+                                -200,
+                                -200,
+                                -200,
+                                -200
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "AVAA",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "200",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "true",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2025-04-02",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2025-04-11",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "12328",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "9246",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    1155,
+                                    1155,
+                                    1156,
+                                    0,
+                                    0,
+                                    1156,
+                                    1156,
+                                    1156,
+                                    1156,
+                                    1156
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 200,
+                            "trekkVedtakId": 101
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -3823,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "7646",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    955,
+                                    955,
+                                    956,
+                                    0,
+                                    0,
+                                    956,
+                                    956,
+                                    956,
+                                    956,
+                                    956
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-04-02",
+                        "tom": "2025-04-11"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            1341,
+                            1341,
+                            1341,
+                            0,
+                            0,
+                            1341,
+                            1341,
+                            1341,
+                            1341,
+                            1341
+                        ],
+                        "rowValue": -6905,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        7792,
+                        4536,
+                        -3082,
+                        -1600,
+                        -3823
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 4978,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-02",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-03",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-04",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-07",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-08",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-09",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-10",
+            "opprinneligSats": 200,
+            "restSats": 0
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-11",
+            "opprinneligSats": 200,
+            "restSats": 0
+        }
+    ],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": [
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-02",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-03",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-04",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-07",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-08",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-09",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-10",
+            "opprinneligSats": 200,
+            "restSats": 200
+        },
+        {
+            "trekkperiodeId": 201,
+            "boette": "2025-04-11",
+            "opprinneligSats": 200,
+            "restSats": 200
+        }
+    ]
+}

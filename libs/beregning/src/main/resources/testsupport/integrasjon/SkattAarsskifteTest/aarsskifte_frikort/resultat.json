@@ -1,0 +1,296 @@
+{
+    "periode": {
+        "fom": "2025-12-22",
+        "tom": "2026-01-09"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2025-12-22",
+                "tom": "2026-01-09"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [],
+            "overfoeres": "2026-01-10",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-01-10T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-12-22",
+                        "2025-12-23",
+                        "2025-12-24",
+                        "2025-12-25",
+                        "2025-12-26",
+                        "2025-12-27",
+                        "2025-12-28",
+                        "2025-12-29",
+                        "2025-12-30",
+                        "2025-12-31"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                974,
+                                974,
+                                974,
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "oppdragslinjekjedeId": -1,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -3646,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "FRIKORT_MED_BELOEPSGRENSE_BRUKT_RESTSKATT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "7792",
+                                            "skjult": false
+                                        },
+                                        "dekketAvFrikort": {
+                                            "verdi": "500",
+                                            "skjult": false
+                                        },
+                                        "overskudd": {
+                                            "verdi": "7292",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Frikortbeløp brukt. Grunnlag={grunnlag:beloep}, dekket av frikort={dekketAvFrikort:beloep}, beskattet overskudd={overskudd:beloep}, sats={prosentSats:prosent}%"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        },
+                        {
+                            "type": "FRIKORT_BRUK",
+                            "rowName": "Frikort_bruk",
+                            "columnValues": [],
+                            "rowValue": 500,
+                            "ekstra": [],
+                            "satstype": "PROSENT",
+                            "sats": 0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-12-22",
+                        "tom": "2025-12-31"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974,
+                            974,
+                            974,
+                            974,
+                            0,
+                            0,
+                            974,
+                            974,
+                            974
+                        ],
+                        "rowValue": -3646,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        7792,
+                        -3646,
+                        0
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-01-01",
+                        "2026-01-02",
+                        "2026-01-03",
+                        "2026-01-04",
+                        "2026-01-05",
+                        "2026-01-06",
+                        "2026-01-07",
+                        "2026-01-08",
+                        "2026-01-09"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "oppdragslinjekjedeId": -1,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -3409,
+                            "ekstra": [
+                                {
+                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "grunn": "FRIKORT_MED_BELOEPSGRENSE_BRUKT_RESTSKATT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "6818",
+                                            "skjult": false
+                                        },
+                                        "dekketAvFrikort": {
+                                            "verdi": "0",
+                                            "skjult": false
+                                        },
+                                        "overskudd": {
+                                            "verdi": "6818",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Frikortbeløp brukt. Grunnlag={grunnlag:beloep}, dekket av frikort={dekketAvFrikort:beloep}, beskattet overskudd={overskudd:beloep}, sats={prosentSats:prosent}%"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-01-01",
+                        "tom": "2026-01-09"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974,
+                            0,
+                            0,
+                            974,
+                            974,
+                            974,
+                            974,
+                            974
+                        ],
+                        "rowValue": -3409,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        6818,
+                        -3409
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 7555,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": [],
+    "restFrikortBeloep": 0
+}
