@@ -3,7 +3,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
 }
 
-val jacksonVersion = "3.2.3"
+val jacksonVersion = "3.2.4"
 
 dependencies {
     // TODO: Bør vi bruke java-library og api her, siden Oppdragstidslinje eksponerer Tidslinjesamling, Tidslinje og Periode fra tid?
