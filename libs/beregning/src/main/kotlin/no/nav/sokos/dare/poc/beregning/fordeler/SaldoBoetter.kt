@@ -7,7 +7,7 @@ import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
 data class SaldoBoetter(
     val innkommendeSaldoer: Map<TrekkvedtakId, BigDecimal>,
 ) {
-    internal val saldoer: MutableMap<TrekkvedtakId, BigDecimal> = innkommendeSaldoer.toMutableMap()
+    val saldoer: MutableMap<TrekkvedtakId, BigDecimal> = innkommendeSaldoer.toMutableMap()
 
     fun finnRestSaldo(id: TrekkvedtakId): BigDecimal? = saldoer[id]
 

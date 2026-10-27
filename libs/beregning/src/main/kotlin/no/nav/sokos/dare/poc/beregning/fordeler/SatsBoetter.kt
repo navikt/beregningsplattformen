@@ -25,7 +25,7 @@ import java.math.BigDecimal
 data class SatsBoetter(
     val innkommendeSatser: Map<SatsBoetteId, BigDecimal>,
 ) {
-    internal val satser: MutableMap<SatsBoetteId, BigDecimal> = innkommendeSatser.toMutableMap()
+    val satser: MutableMap<SatsBoetteId, BigDecimal> = innkommendeSatser.toMutableMap()
 
     fun restSats(id: SatsBoetteId): BigDecimal? = satser[id]
 
