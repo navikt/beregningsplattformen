@@ -30,3 +30,4 @@ node_modules/
 
 # Local gradle user home (sandbox)
 .gradle-home/
+/docs/

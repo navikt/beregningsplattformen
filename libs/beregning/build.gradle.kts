@@ -1,3 +1,4 @@
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -5,13 +6,37 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `java-library`
     `java-test-fixtures`
+    `maven-publish`
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     id("org.jlleitschuh.gradle.ktlint")
     alias(libs.plugins.kover)
 }
 
-group = "no.nav.sokos"
+group = "no.nav.utbetaling.beregningsplattformen"
+version = providers.gradleProperty("publicationVersion").getOrElse("0.0.0-SNAPSHOT")
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifactId = "beregning"
+        }
+    }
+
+    repositories {
+        providers.environmentVariable("MAVEN_PUBLISH_URL").orNull?.let { repositoryUrl ->
+            maven {
+                name = "GitHubPackages"
+                url = uri(repositoryUrl)
+                credentials {
+                    username = providers.environmentVariable("MAVEN_PUBLISH_USER").get()
+                    password = providers.environmentVariable("MAVEN_PUBLISH_TOKEN").get()
+                }
+            }
+        }
+    }
+}
 
 dependencies {
     api(libs.kotlinx.serialization.json)
