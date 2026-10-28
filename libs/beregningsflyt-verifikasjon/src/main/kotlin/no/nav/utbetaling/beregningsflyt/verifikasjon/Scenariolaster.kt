@@ -1,11 +1,12 @@
 package no.nav.utbetaling.beregningsflyt.verifikasjon
 
-import kotlinx.serialization.builtins.ListSerializer
 import java.net.JarURLConnection
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
+
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 /**
@@ -50,7 +51,12 @@ internal object Scenariolaster {
                     else -> emptySet()
                 }
         }
-        val duplikater = funnet.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+        val duplikater =
+            funnet
+                .groupingBy { it }
+                .eachCount()
+                .filterValues { it > 1 }
+                .keys
         require(duplikater.isEmpty()) {
             "Scenario-navn er definert både i lib-en og i prosjektet: " +
                 "${duplikater.sorted().joinToString()}. Gi dine egne scenarioer unike navn under $ROT/."
@@ -89,8 +95,7 @@ internal object Scenariolaster {
         }
     }
 
-    private fun classLoader(): ClassLoader =
-        Thread.currentThread().contextClassLoader ?: Scenariolaster::class.java.classLoader
+    private fun classLoader(): ClassLoader = Thread.currentThread().contextClassLoader ?: Scenariolaster::class.java.classLoader
 
     private const val ROT = "scenario"
     private val scenarioJson: Json =

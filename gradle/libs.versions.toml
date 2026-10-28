@@ -2,6 +2,12 @@
 # Kotlin
 kotlin = "2.4.21"
 
+# Ktor
+ktorVersion = "3.6.0"
+
+# Micrometer
+micrometerVersion = "1.11.0"
+
 # Trekktabeller
 trekkrutine2025 = "1.0_20250507160209_6be0e94"
 trekkrutine2026 = "1.0_20260113090201_5cbf08a"
@@ -21,6 +27,14 @@ kotest = "6.2.6"
 kover-plugin = "0.9.11"
 
 [libraries]
+# Ktor
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktorVersion" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktorVersion" }
+ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer-jvm", version.ref = "ktorVersion" }
+
+# Micrometer
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometerVersion" }
+
 # Trekktabeller
 trekkrutine2025 = { module = "no.nav.sokos.trekkrutine:trekkrutine-2025", version.ref = "trekkrutine2025" }
 trekkrutine2026 = { module = "no.nav.sokos.trekkrutine:trekkrutine-2026", version.ref = "trekkrutine2026" }
