@@ -97,6 +97,7 @@ private fun kjedeVersjon(status: String) =
                     vedtakId = null,
                     brukKjøreplan = OpplysningDTO("Z123456", "Ja"),
                     ompostering = null,
+                    ytelseKlassekode = OpplysningDTO("Z123456", "SPREF"),
                 ),
             ),
     )
