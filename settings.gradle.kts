@@ -11,5 +11,6 @@ include(
     "libs:mq",
     "libs:oppdrag",
     "libs:beregning",
+    "libs:beregningsflyt-verifikasjon",
     "libs:tid",
 )

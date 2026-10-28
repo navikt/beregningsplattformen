@@ -1,0 +1,51 @@
+[
+  {
+    "id": 900,
+    "trekktypeKode": "TRK1",
+    "trekkalt": "LOP",
+    "ansvarligEnhet": "1234",
+    "debitorId": 1,
+    "trekkstatus": "LOPE",
+    "trekkperioder": [
+      {
+        "id": 1000,
+        "trekkvedtakId": 900,
+        "datoFom": "2026-04-01",
+        "datoTom": "2026-04-30",
+        "sats": 1000,
+        "satstype": "M",
+        "feilReg": false,
+        "bruker": "test",
+        "tidspktReg": "2026-04-01T00:00:00",
+        "periode": {
+          "fom": "2026-04-01",
+          "tom": "2026-04-30"
+        }
+      }
+    ],
+    "fagomraader": [
+      {
+        "trekkvedtakId": 900,
+        "fagomraadeKode": "AAP",
+        "aktiv": true,
+        "tidspktReg": "2026-04-01T00:00:00"
+      }
+    ],
+    "trekktype": {
+      "kodeTrekktype": "TRK1",
+      "beskrivelse": "Utleggstrekk, ett trekk",
+      "prioritet": "8",
+      "kodeKlasseTrekk": "TRK1",
+      "kodeTrekkategori": "KRED",
+      "reduserSkattegr": false,
+      "kodeOppgjoerstype": "TRK1",
+      "kodeKlasseOppgj": "TRK1OPPG",
+      "belopsgrense": 0,
+      "bruker": "TOB-4521",
+      "tidspktEndret": "2025-12-05T11:30:42",
+      "trekkberegningstype": "UTBDATO"
+    },
+    "bruker": "test",
+    "tidspktReg": "2026-04-01T00:00:00"
+  }
+]

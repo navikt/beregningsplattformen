@@ -1,0 +1,10 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2026-01-01",
+    "tom": "2026-01-31"
+  },
+  "beregnet": "2026-01-15T11:00:00",
+  "overfoeringsdato": "2026-01-15"
+}
