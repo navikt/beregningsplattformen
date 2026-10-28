@@ -9,7 +9,6 @@ group = "no.nav.utbetaling.beregning"
 
 dependencies {
     implementation(project(":libs:oppdrag"))
-    implementation(project(":libs:tid")) // TODO: Hvorfor trenger jeg denne? Bør oppdrag ha en avhengighet på tid?
     implementation(project(":libs:http"))
     implementation(project(":libs:kotlinx"))
     implementation(project(":libs:log"))

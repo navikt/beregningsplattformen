@@ -7,7 +7,11 @@ on:
     branches: [main]
     paths:
       - "apps/lab/backend/**"
-      - "libs/**" # Lab bruker alle dagens biblioteker, inkludert tid via oppdrag. Snevr inn filteret hvis nye biblioteker ikke brukes av lab.
+      - "libs/oppdrag/**"
+      - "libs/tid/**"
+      - "libs/http/**"
+      - "libs/kotlinx/**"
+      - "libs/log/**"
       - "build.gradle.kts"
       - "settings.gradle.kts"
       - "gradle.properties"
