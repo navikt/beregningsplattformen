@@ -24,6 +24,7 @@ import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
+import no.nav.utbetaling.beregning.oppdrag.YtelseKlassekode
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.Periode
@@ -63,6 +64,7 @@ internal object FraXmlFormat {
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                 sats = oppdragsLinje150.sats,
                                 brukKjøreplan = oppdragsLinje150.brukKjoreplan?.takeIf { it == "N" }?.let { BrukKjøreplan.Nei },
+                                ytelseKlassekode = YtelseKlassekode(oppdragsLinje150.kodeKlassifik),
                             )
                         }
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv

@@ -22,6 +22,7 @@ import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
+import no.nav.utbetaling.beregning.oppdrag.YtelseKlassekode
 import no.nav.utbetaling.beregning.oppdrag.intern.FeilregistrerbarOpplysning.Companion.gjeldende
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
@@ -38,6 +39,7 @@ internal data class OpplysningerIntern(
     val utbetalesTil: Opplysning<UtbetalesTil>?,
     val vedtakId: Opplysning<VedtakId>?,
     val brukKjøreplan: Opplysning<BrukKjøreplan>,
+    val ytelseKlasse: Opplysning<YtelseKlassekode>,
     private val behandlendeEnhetEndring: FeilregistrerbarOpplysning<BehandlendeEnhet>?,
     private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>?,
     private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>?,
@@ -62,6 +64,7 @@ internal data class OpplysningerIntern(
             vedtakId = velgNullableOpplysning(ny.vedtakId, this.vedtakId),
             brukKjøreplan = velgOpplysning(ny.brukKjøreplan, this.brukKjøreplan),
             omposteringEndring = FeilregistrerbarOpplysning.velg(this.omposteringEndring, ny.omposteringEndring),
+            ytelseKlasse = velgOpplysning(ny.ytelseKlasse, this.ytelseKlasse),
         )
 
     data class Builder(
@@ -78,6 +81,7 @@ internal data class OpplysningerIntern(
         private val utbetalesTil: UtbetalesTil? = null,
         private val vedtakId: VedtakId? = null,
         private val brukKjøreplan: BrukKjøreplan? = null,
+        private val ytelseKlassekode: YtelseKlassekode,
         private val behandlendeEnhet: FeilregistrerbarOpplysning<BehandlendeEnhet>? = null,
         private val avventingsårsakEndring: FeilregistrerbarOpplysning<Avventingsårsak>? = null,
         private val omposteringEndring: FeilregistrerbarOpplysning<Ompostering>? = null,
@@ -105,6 +109,7 @@ internal data class OpplysningerIntern(
                 utbetalesTil = utbetalesTil?.let { Opplysning(linjeSaksbehandlerId, it) },
                 vedtakId = vedtakId?.let { Opplysning(linjeSaksbehandlerId, it) },
                 omposteringEndring = omposteringEndring,
+                ytelseKlasse = Opplysning(linjeSaksbehandlerId, ytelseKlassekode),
             )
     }
 

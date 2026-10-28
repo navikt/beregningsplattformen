@@ -56,8 +56,8 @@
 | `oppdrag-110.oppdrags-linje-150.vedtakId`                       |   ✅   | Mappes som `vedtakId`                                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.delytelseId`                    |   ✅   | Mappes som `delytelseId` og brukes til kjeding.                                                                          |
 | `oppdrag-110.oppdrags-linje-150.linjeId`                        |   ❌   | Avvises som stormaskin-generert felt.                                                                                    |
-| `oppdrag-110.oppdrags-linje-150.kodeKlassifik`                  |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.datoKlassifikFom`               |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.kodeKlassifik`                  |   ✅   | Mappes til `ytelseKlassekode`                                                                                            |
+| `oppdrag-110.oppdrags-linje-150.datoKlassifikFom`               |   ❌   | Om klassekode skal endres må fagsystemet sende nye linjer som er splittet der klassekoden endres. Brukes sjelden.        |
 | `oppdrag-110.oppdrags-linje-150.datoVedtakFom`                  |   ✅   | Brukes som fra og med-verdi for perioden.                                                                                |
 | `oppdrag-110.oppdrags-linje-150.datoVedtakTom`                  |   ✅   | Brukes som til og med-verdi for perioden.                                                                                |
 | `oppdrag-110.oppdrags-linje-150.sats`                           |   ✅   | Mappes inn som `sats`                                                                                                    |

@@ -74,6 +74,11 @@ value class BehandlendeEnhet(
     val enhet: String,
 )
 
+@JvmInline
+value class YtelseKlassekode(
+    val kode: String,
+)
+
 data class Opplysning<T>(
     val saksbehandlerId: SaksbehandlerId,
     val opplysning: T,
@@ -148,6 +153,7 @@ data class Opplysninger(
     val vedtakId: Opplysning<VedtakId>?,
     val brukKjøreplan: Opplysning<BrukKjøreplan>,
     val ompostering: Opplysning<Ompostering>?,
+    val ytelseKlassekode: Opplysning<YtelseKlassekode>,
     /** TODO: Eksempelvis gjelderId, utbetalesTil, bostedsenhet må ikke være satt alle innsendinger,
      *  men når man har kombinert alle innsendinger til en tidslinje, da må disse verdiene være satt.
      *  Burde man introdusert noe som en SammenslåtteOpplysninger el.lig. som håndterer dette?

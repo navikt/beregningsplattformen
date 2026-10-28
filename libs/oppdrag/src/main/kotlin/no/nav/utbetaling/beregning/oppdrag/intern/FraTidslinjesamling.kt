@@ -62,6 +62,7 @@ internal object FraTidslinjesamling {
                         utbetalesTil = oppdragsdag.utbetalesTil,
                         vedtakId = oppdragsdag.vedtakId,
                         omposteringEndring = oppdragsdag.ompostering?.let { FeilregistrerbarOpplysning.Registrert(it) },
+                        ytelseKlasse = oppdragsdag.ytelseKlassekode,
                     )
                 }
             }
