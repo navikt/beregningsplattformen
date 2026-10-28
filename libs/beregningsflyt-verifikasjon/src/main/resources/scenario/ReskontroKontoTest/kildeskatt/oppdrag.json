@@ -1,0 +1,24 @@
+[
+  {
+    "kodeAksjon": "1",
+    "kodeEndring": "ENDR",
+    "kodeFagomraade": "AAP",
+    "fagsystemId": "RESKONTO-KILDESKATT",
+    "oppdragGjelderId": "synthetic-actor",
+    "datoOppdragGjelderFom": "2026-03-02",
+    "saksbehId": "test",
+    "oppdragsLinje150": [
+      {
+        "kodeEndringLinje": "NY",
+        "delytelseId": "synthetic-benefit",
+        "kodeKlassifik": "AAPUAA",
+        "datoVedtakFom": "2026-03-02",
+        "datoVedtakTom": "2026-03-06",
+        "sats": 1000,
+        "fradragTillegg": "T",
+        "typeSats": "DAG",
+        "saksbehId": "test"
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "skattekort" : {
+    "aktoerId" : 1,
+    "inntektsaar" : 2026,
+    "kilde" : "skatteetaten",
+    "identifikator" : 1,
+    "utstedtDato" : "2026-01-15",
+    "tilleggsopplysning" : [ ],
+    "forskuddsTrekk" : [ {
+      "typeForskuddsTrekk" : "TABELLKORT",
+      "trekkKode" : "LOENN_FRA_NAV",
+      "trekktabell" : "8010",
+      "prosentsats" : 30.0,
+      "tidspktReg" : "2026-01-15T10:00:00"
+    } ]
+  },
+  "allokeringer" : {
+    "LOENN_FRA_NAV" : "ARBYT"
+  }
+}

@@ -10,5 +10,6 @@ include(
     "libs:log",
     "libs:oppdrag",
     "libs:beregning",
+    "libs:beregningsflyt-verifikasjon",
     "libs:tid",
 )

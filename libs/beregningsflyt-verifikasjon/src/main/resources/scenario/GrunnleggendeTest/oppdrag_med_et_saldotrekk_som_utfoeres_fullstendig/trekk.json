@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "eksternTrekkId": null,
+    "trekktypeKode": "BSKT",
+    "kreditorIdTss": null,
+    "kreditorTrekkId": null,
+    "kreditorRef": null,
+    "trekkalt": "SAL",
+    "belopSaldo": 200,
+    "belopSaldoTrukket": null,
+    "kreditorKid": null,
+    "gyldigTom": null,
+    "ansvarligEnhet": "1234",
+    "debitorId": 1,
+    "datoPriFom": null,
+    "kilde": null,
+    "trekkstatus": "LOPE",
+    "trekkperioder": [
+      {
+        "id": 1,
+        "trekkvedtakId": 1,
+        "datoFom": "2025-03-31",
+        "datoTom": "2025-04-11",
+        "sats": 100,
+        "satstype": "P",
+        "feilReg": false,
+        "bruker": "test",
+        "tidspktReg": "2025-04-01T00:00:00",
+        "periode": {
+          "fom": "2025-03-31",
+          "tom": "2025-04-11"
+        }
+      }
+    ],
+    "fagomraader": [
+      {
+        "id": null,
+        "trekkvedtakId": 1,
+        "fagomraadeKode": "AAP",
+        "aktiv": true,
+        "tidspktReg": "2025-04-01T00:00:00"
+      }
+    ],
+    "trekktype": {
+      "kodeTrekktype": "BSKT",
+      "beskrivelse": "Forvaltningstrekk",
+      "prioritet": "14",
+      "kodeKlasseTrekk": "BSKTKRED",
+      "kodeTrekkategori": "KRED",
+      "reduserSkattegr": false,
+      "kodeOppgjoerstype": "DISP",
+      "kodeKlasseOppgj": "BSKTKREDOPPGJ",
+      "belopsgrense": 0,
+      "bruker": "POPPSETT",
+      "tidspktEndret": "2008-01-03T14:17:54",
+      "trekkberegningstype": "YTELPER"
+    },
+    "bruker": "test",
+    "tidspktReg": "2025-04-01T00:00:00"
+  }
+]

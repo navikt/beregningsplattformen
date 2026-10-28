@@ -1,0 +1,131 @@
+{
+    "periode": {
+        "fom": "2026-03-02",
+        "tom": "2026-03-06"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2026-03-02",
+                "tom": "2026-03-06"
+            },
+            "status": "BEREGNET",
+            "overfoeres": "2026-03-07",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-03-07T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-02",
+                        "2026-03-03",
+                        "2026-03-04",
+                        "2026-03-05",
+                        "2026-03-06"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse",
+                            "columnValues": [
+                                500,
+                                500,
+                                500,
+                                500,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 2500,
+                            "satstype": "DAG",
+                            "sats": 500
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -750,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_BIARBEIDSGIVER",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "2500",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "30.0",
+                                            "skjult": false
+                                        },
+                                        "oppdragFaggruppe": {
+                                            "verdi": "ARBYT",
+                                            "skjult": false
+                                        },
+                                        "allokertFaggruppe": {
+                                            "verdi": "KORTTID",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 2500,
+                            "satstype": "PROSENT",
+                            "sats": 30.0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-02",
+                        "tom": "2026-03-06"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            500,
+                            500,
+                            500,
+                            500,
+                            500
+                        ],
+                        "rowValue": -750,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        2500,
+                        -750
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 1750
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}
