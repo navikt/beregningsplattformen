@@ -32,7 +32,8 @@ class VedtakIdTest :
             resultat.satserMedVedtakId() shouldBe
                 mapOf(
                     1.januar til 9.januar to setOf(100 to "111"),
-                    10.januar til 31.januar to setOf(200 to "111"), // TODO sjekk om dette er riktig, eller om det skal være null. Det er ikke mulig å sende inn en linje uten vedtakId, så det er ikke sikkert at dette er et relevant scenario.
+                    // TODO sjekk om dette er riktig, eller om det skal være null. Det er ikke mulig å sende inn en linje uten vedtakId, så det er ikke sikkert at dette er et relevant scenario.
+                    10.januar til 31.januar to setOf(200 to "111"),
                 )
         }
     })
