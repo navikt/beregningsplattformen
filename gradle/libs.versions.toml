@@ -2,61 +2,22 @@
 # Kotlin
 kotlin = "2.4.21"
 
-# Ktor
-ktor = "3.6.0"
-
 # Trekktabeller
 trekkrutine2025 = "1.0_20250507160209_6be0e94"
 trekkrutine2026 = "1.0_20260113090201_5cbf08a"
 
-# Database
-flyway = "13.10.3"
-hikaricp = "7.1.0"
-kotliquery = "2.1.2"
-postgresql = "42.7.14"
-dbscheduler = "16.12.0"
-
 # Serialization
 jackson = "2.22.4"
-kotlinx-datetime = "0.8.0-0.6.x-compat"
 kotlinx-serialization = "1.12.0"
 
-# Monitoring
-micrometer = "1.17.1"
-
-# MQ
-artemis = "2.57.0"
-ibm-mq = "10.0.1.0"
-kafka-clients = "4.3.2"
-kafka-avro-serializer = "8.1.1"
-
 # Logging
-janino = "3.1.12"
 kotlin-logging = "3.0.5"
 logback = "1.6.5"
-logstash = "9.0"
-
-# GraphQL
-graphql-kotlin = "10.2.2"
 
 # Test
-junit = "6.1.3"
-kformat = "0.14"
 kotest = "6.2.6"
-kotest-testcontainers = "2.0.2"
-mock-oauth2-server = "6.1.2"
-mockk = "1.14.11"
-playwright = "1.63.0"
-axe-core-playwright = "4.14.0"
-swagger-request-validator = "3.0.0"
-testcontainers = "1.21.4"
-wiremock = "3.13.2"
 
 # Plugins
-# TODO: This is a dev-snapshot from navikt/ktlint-gradle (no tagged nav-v* release exists yet).
-# Swap to a tagged "nav-v*" release once the fork publishes one - see
-# https://github.com/navikt/ktlint-gradle and upstream PR https://github.com/JLLeitschuh/ktlint-gradle/pull/1112.
-# ktlint-plugin = "0.1.0-dev.1252+ec71da4"
 kover-plugin = "0.9.11"
 
 [libraries]
@@ -64,49 +25,12 @@ kover-plugin = "0.9.11"
 trekkrutine2025 = { module = "no.nav.sokos.trekkrutine:trekkrutine-2025", version.ref = "trekkrutine2025" }
 trekkrutine2026 = { module = "no.nav.sokos.trekkrutine:trekkrutine-2026", version.ref = "trekkrutine2026" }
 
-# Ktor server
-ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging-jvm", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
-ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref = "ktor" }
-ktor-server-swagger = { module = "io.ktor:ktor-server-swagger", version.ref = "ktor" }
-ktor-server-di = { module = "io.ktor:ktor-server-di", version.ref = "ktor" }
-ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
-ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
-ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
-ktor-server-test-host = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
-
-# Ktor client
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-client-apache5 = { module = "io.ktor:ktor-client-apache5-jvm", version.ref = "ktor" }
-ktor-client-mock = { module = "io.ktor:ktor-client-mock-jvm", version.ref = "ktor" }
-
-# Database
-hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
-kotliquery = { module = "no.nav:kotliquery", version.ref = "kotliquery" }
-flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
-flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
-dbscheduler = { module = "com.github.kagkarlsson:db-scheduler", version.ref = "dbscheduler" }
-
 # Serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "kotlinx-serialization" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-
-# Monitoring
-micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
-
-# MQ
-ibm-mq = { module = "com.ibm.mq:com.ibm.mq.jakarta.client", version.ref = "ibm-mq" }
-artemis-jakarta-server = { module = "org.apache.activemq:artemis-jakarta-server", version.ref = "artemis" }
-kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka-clients" }
-kafka-avro-serializer = { module = "io.confluent:kafka-avro-serializer", version.ref = "kafka-avro-serializer" }
 
 # Logging
 kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-janino = { module = "org.codehaus.janino:janino", version.ref = "janino" }
-logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash" }
 
 # Jackson (XML-deserialisering)
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
@@ -114,42 +38,11 @@ jackson-module-jakarta-xmlbind = { module = "com.fasterxml.jackson.module:jackso
 jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
-# GraphQL
-graphql-kotlin-ktor-client = { module = "com.expediagroup:graphql-kotlin-ktor-client", version.ref = "graphql-kotlin" }
-
 # Test
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
-kotest-extensions-now = { module = "io.kotest:kotest-extensions-now", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
-kotest-extensions-testcontainers = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version.ref = "kotest-testcontainers" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-wiremock = { module = "org.wiremock:wiremock", version.ref = "wiremock" }
-mock-oauth2-server = { module = "no.nav.security:mock-oauth2-server", version.ref = "mock-oauth2-server" }
-testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
-testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
-swagger-request-validator = { module = "com.atlassian.oai:swagger-request-validator-restassured", version.ref = "swagger-request-validator" }
-kformat = { module = "de.m3y.kformat:kformat", version.ref = "kformat" }
-playwright = { module = "com.microsoft.playwright:playwright", version.ref = "playwright" }
-axe-core-playwright = { module = "com.deque.html.axe-core:playwright", version.ref = "axe-core-playwright" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 
 [bundles]
-ktor-server = [
-    "ktor-server-call-logging",
-    "ktor-server-netty",
-    "ktor-server-content-negotiation",
-    "ktor-server-swagger",
-    "ktor-server-di",
-    "ktor-server-status-pages",
-    "ktor-server-auth-jwt",
-    "ktor-server-metrics-micrometer",
-    "ktor-serialization-kotlinx-json",
-]
-ktor-client = [
-    "ktor-client-content-negotiation",
-    "ktor-client-apache5",
-]
 jackson = [
     "jackson-module-kotlin",
     "jackson-module-jakarta-xmlbind",
@@ -158,18 +51,10 @@ jackson = [
 ]
 kotest = [
     "kotest-assertions-core",
-    "kotest-extensions-now",
     "kotest-runner-junit5",
-]
-logging-runtime = [
-    "logback-classic",
-    "janino",
-    "logstash-logback-encoder",
 ]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-# ktlint = { id = "no.nav.ktlintgradle.ktlint", version.ref = "ktlint-plugin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover-plugin" }
-graphql-kotlin = { id = "com.expediagroup.graphql", version.ref = "graphql-kotlin" }

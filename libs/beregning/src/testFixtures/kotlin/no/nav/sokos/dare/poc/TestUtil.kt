@@ -1,21 +1,11 @@
 package no.nav.sokos.dare.poc
 
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.TreeMap
-
-import kotlin.system.measureTimeMillis
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.kotest.assertions.nondeterministic.eventuallyConfig
-import io.kotest.matchers.Matcher
-import io.kotest.matchers.MatcherResult
 
 import no.nav.sokos.dare.poc.aktoer.AktoerId
-import no.nav.sokos.dare.poc.beregning.Dagbeloep
 import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatus
 import no.nav.sokos.dare.poc.beregning.fordeler.FordelingInput
@@ -58,72 +48,6 @@ object TestUtil {
             this::class.java.classLoader.getResourceAsStream(fileName)
                 ?: throw IllegalStateException("File '$fileName' could not be read")
         return stream.bufferedReader().use { it.readText() }
-    }
-
-    /**
-     * Konfigurasjon for 'eventually' i kotest, som brukes for å vente på asynkrone hendelser i tester.
-     */
-    val eventuallyConfiguration =
-        eventuallyConfig {
-            initialDelay = Duration.ZERO
-            interval = 100.milliseconds
-            retries = 3
-        }
-
-    fun listOfDagbeloep(
-        dato: LocalDate,
-        vararg vals: Long,
-    ) = vals.mapIndexed { i, l -> Dagbeloep(dato = dato.plusDays(i.toLong()), beloep = BigDecimal.valueOf(l)) }
-
-    fun mapOfDateValue(
-        dato: LocalDate,
-        vararg vals: Long,
-    ) = vals.mapIndexed { i, l -> dato.plusDays(i.toLong()) to BigDecimal.valueOf(l) }.toMap(TreeMap())
-
-    fun listOfBD(vararg vals: Long) = vals.map { BigDecimal.valueOf(it) }
-
-    fun beSameValue(expected: BigDecimal) =
-        Matcher<BigDecimal> { actual ->
-            MatcherResult(
-                actual.compareTo(expected) == 0,
-                { "Expected $actual to be equal to $expected" },
-                { "Expected $actual to be not equal to $expected" },
-            )
-        }
-
-    fun beSameValues(expected: List<BigDecimal>) =
-        Matcher<List<BigDecimal>> { actual ->
-            val same = (actual.size == expected.size) && actual.zip(expected).all { (a, b) -> a.compareTo(b) == 0 }
-            MatcherResult(
-                same,
-                { "Expected $actual to be the equal to $expected" },
-                { "Expected $actual to be not equal to $expected" },
-            )
-        }
-
-    fun <K, V> beSameMap(expected: Map<K, V>) =
-        Matcher<Map<K, V>> { actual ->
-            MatcherResult(
-                actual == expected,
-                { "Expected $actual to be equal to $expected" },
-                { "Expected $actual to be not equal to $expected" },
-            )
-        }
-
-    inline fun <T> timeLimit(
-        limitMs: Long,
-        thunk: () -> T,
-    ): T {
-        var result: T? = null
-        val elapsedMs =
-            measureTimeMillis {
-                result = thunk()
-            }
-
-        check(elapsedMs <= limitMs) {
-            "Expected execution within ${limitMs}ms, but took ${elapsedMs}ms"
-        }
-        return result!!
     }
 }
 

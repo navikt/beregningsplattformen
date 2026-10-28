@@ -16,9 +16,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    outputs:
-      commit: ${{ steps.version.outputs.commit }}
-      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Check out release commit
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
