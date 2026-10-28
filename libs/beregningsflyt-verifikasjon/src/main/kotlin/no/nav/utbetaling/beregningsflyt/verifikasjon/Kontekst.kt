@@ -11,5 +11,5 @@ data class Kontekst(
     val beregnet: String,
     val overfoeringsdato: String,
     val ledigFrikortBeloep: Int? = null,
-    val resten: JsonObject = JsonObject(emptyMap())
+    val resten: JsonObject = JsonObject(emptyMap()),
 )
