@@ -17,13 +17,11 @@ import jakarta.jms.JMSConsumer
 import jakarta.jms.JMSContext
 import jakarta.jms.JMSException
 import jakarta.jms.JMSProducer
+import jakarta.jms.Message
 import jakarta.jms.MessageListener
 import jakarta.jms.TextMessage
 
 import no.nav.utbetaling.beregning.log.Log
-import no.nav.utbetaling.beregning.log.logger
-
-val mqLog = logger("mq")
 
 interface MQProducer {
     fun produce(
@@ -44,24 +42,24 @@ class DefaultMQProducer(
         return mq.transaction { ctx ->
             ctx.clientID = UUID.randomUUID().toString()
             val producer = ctx.createProducer().apply(config)
-            val message = ctx.createTextMessage(message)
-
-            fun spanBuilder(builder: SpanBuilder): SpanBuilder =
-                builder
-                    .setAttribute("messaging.system", "ibmmq")
-                    .setAttribute("messaging.destination", queue.baseQueueName)
-                    .setAttribute("messaging.operation", "send")
+            val textMessage = ctx.createTextMessage(message)
 
             Tracing.startSpan(
                 "mq.produce",
-                ::spanBuilder,
-            ) {
-                producer.send(queue, message)
-                message.jmsCorrelationID = message.jmsMessageID
-                Tracing.storeContext(message.jmsMessageID)
-                it.setAttribute("messaging.message_id", message.jmsMessageID)
+                { builder ->
+                    builder
+                        .setAttribute("messaging.system", "ibmmq")
+                        .setAttribute("messaging.destination", queue.baseQueueName)
+                        .setAttribute("messaging.operation", "send")
+                },
+            ) { span ->
+                producer.send(queue, textMessage)
+                textMessage.jmsCorrelationID = textMessage.jmsMessageID
+                Tracing.storeContext(textMessage.jmsMessageID)
+                span.setAttribute("messaging.message_id", textMessage.jmsMessageID)
             }
-            message.jmsMessageID
+
+            textMessage.jmsMessageID
         }
     }
 }
@@ -69,7 +67,6 @@ class DefaultMQProducer(
 interface MQConsumer :
     AutoCloseable,
     ExceptionListener {
-    // fun onMessage(message: TextMessage)
     fun start()
 }
 
@@ -89,38 +86,43 @@ open class DefaultMQConsumer(
 
     private fun createConsumer(): JMSConsumer =
         context.createConsumer(queue).apply {
-            messageListener =
-                MessageListener {
-                    val message = it as TextMessage
-                    Log.info("Consuming message on ${queue.baseQueueName}")
-                    mq.transacted(context) {
-                        val context = Tracing.restoreContext(it.jmsCorrelationID)
-
-                        fun spanBuilder(builder: SpanBuilder): SpanBuilder =
-                            builder
-                                .setAttribute("messaging.system", "ibmmq")
-                                .setAttribute("messaging.destination", queue.baseQueueName)
-                                .setAttribute("messaging.destination_kind", "queue")
-                                .setAttribute("messaging.message_id", message.jmsMessageID)
-                                .setAttribute("messaging.operation", "receive")
-                                .setParent(context)
-                        Tracing.startSpan(
-                            queue.baseQueueName,
-                            ::spanBuilder,
-                        ) { span ->
-                            try {
-                                span.addEvent("message received")
-                                onMessage(message)
-                                span.addEvent("message processed")
-                            } catch (e: Exception) {
-                                span.recordException(e)
-                                span.setStatus(StatusCode.ERROR)
-                                throw e
-                            }
-                        }
-                    }
-                }
+            messageListener = MessageListener(::consume)
         }
+
+    private fun consume(message: Message) {
+        Log.info("Consuming message on ${queue.baseQueueName}")
+        mq.transacted(context) {
+            require(message is TextMessage) {
+                "Expected TextMessage on ${queue.baseQueueName}, received ${message.javaClass.name}"
+            }
+            Tracing.startSpan(
+                queue.baseQueueName,
+                { builder -> receiveSpan(builder, message) },
+            ) { span ->
+                try {
+                    span.addEvent("message received")
+                    onMessage(message)
+                    span.addEvent("message processed")
+                } catch (e: Exception) {
+                    span.recordException(e)
+                    span.setStatus(StatusCode.ERROR)
+                    throw e
+                }
+            }
+        }
+    }
+
+    private fun receiveSpan(
+        builder: SpanBuilder,
+        message: TextMessage,
+    ): SpanBuilder =
+        builder
+            .setAttribute("messaging.system", "ibmmq")
+            .setAttribute("messaging.destination", queue.baseQueueName)
+            .setAttribute("messaging.destination_kind", "queue")
+            .setAttribute("messaging.message_id", message.jmsMessageID)
+            .setAttribute("messaging.operation", "receive")
+            .setParent(Tracing.restoreContext(message.jmsCorrelationID))
 
     override fun onException(exception: JMSException) {
         Log.error("MQ ${queue.baseQueueName} failed, reconnecting...", exception)
@@ -133,15 +135,17 @@ open class DefaultMQConsumer(
         val maxBackoff = 5.minutes
         while (true) {
             attempt++
-            val backoff = minOf((10 * attempt).seconds, maxBackoff)
+            val backoff = minOf(10.seconds * attempt, maxBackoff)
             Log.info("Reconnect attempt $attempt for ${queue.baseQueueName}, backoff $backoff")
             Thread.sleep(backoff.inWholeMilliseconds)
             try {
-                runCatching { close() }
+                runCatching { close() }.onFailure {
+                    Log.error("Failed to close MQ ${queue.baseQueueName} before reconnecting", it)
+                }
                 context = createContext()
                 consumer = createConsumer()
                 start()
-                Log.info("Sucessfully reconnected MQ ${queue.baseQueueName} after $attempt attempts")
+                Log.info("Successfully reconnected MQ ${queue.baseQueueName} after $attempt attempts")
                 return
             } catch (e: Exception) {
                 Log.error("MQ reconnect ${queue.baseQueueName} failed, reconnecting...", e)
@@ -154,8 +158,9 @@ open class DefaultMQConsumer(
     }
 
     override fun close() {
-        consumer.close()
-        context.close()
+        context.use {
+            consumer.close()
+        }
     }
 }
 
@@ -211,18 +216,22 @@ class DefaultMQ(
     ): T {
         Log.debug("MQ transaction created", "$ctx")
 
-        val result =
-            runCatching {
-                block()
-            }.onSuccess {
-                ctx.commit()
-                Log.debug("MQ transaction committed", "$ctx")
-            }.onFailure {
-                ctx.rollback()
-                Log.error("MQ transaction rolled back, please check secureLogs or backout queue", "$ctx", it)
-            }
+        return try {
+            val result = block()
 
-        return result.getOrThrow()
+            ctx.commit()
+            Log.debug("MQ transaction committed", "$ctx")
+            result
+        } catch (failure: Throwable) {
+            try {
+                ctx.rollback()
+            } catch (rollbackFailure: Throwable) {
+                if (rollbackFailure !== failure) failure.addSuppressed(rollbackFailure)
+                Log.error("MQ transaction rollback failed", "$ctx", rollbackFailure)
+            }
+            Log.error("MQ transaction failed, please check secureLogs or backout queue", "$ctx", failure)
+            throw failure
+        }
     }
 
     override fun <T : Any> transaction(block: (JMSContext) -> T): T =
