@@ -1,0 +1,221 @@
+{
+    "periode": {
+        "fom": "2026-03-02",
+        "tom": "2026-03-06"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2026-03-02",
+                "tom": "2026-03-06"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [
+                "MANGLER_SKATTEKORT"
+            ],
+            "overfoeres": "2026-03-07",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-03-07T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-02",
+                        "2026-03-03",
+                        "2026-03-04",
+                        "2026-03-05",
+                        "2026-03-06"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                500,
+                                500,
+                                500,
+                                500,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 500,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -1250,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "2500",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skattekort mangler, grunnlag {grunnlag:beloep}, bruker fast skattesats {prosentSats:prosent} prosent"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [],
+                            "rowValue": -500,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "TRK1",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "1000",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "null",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "false",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "LOP",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2026-03-02",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2026-03-07",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "2500",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "1250",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                },
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "TREKK_MAANED_HALVERING",
+                                    "verdier": {
+                                        "opprinneligSats": {
+                                            "verdi": "1000",
+                                            "skjult": false
+                                        },
+                                        "halvertSats": {
+                                            "verdi": "500",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Månedssats halvert fra {opprinneligSats:beloep} til {halvertSats:beloep} fordi dette er oppdragets første utbetaling i overføringsmåneden"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    250,
+                                    250,
+                                    250,
+                                    250,
+                                    250
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "LOP",
+                            "sats": 1000,
+                            "trekkVedtakId": 100
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-02",
+                        "tom": "2026-03-06"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            500,
+                            500,
+                            500,
+                            500,
+                            500
+                        ],
+                        "rowValue": -1750,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        2500,
+                        -1250,
+                        -500
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 750,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03",
+            "opprinneligSats": 1000,
+            "restSats": 100
+        }
+    ],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": [
+        {
+            "trekkperiodeId": 200,
+            "boette": "2026-03",
+            "opprinneligSats": 1000,
+            "restSats": 600
+        }
+    ]
+}
