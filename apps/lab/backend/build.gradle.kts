@@ -7,9 +7,6 @@ plugins {
 
 group = "no.nav.utbetaling.beregning"
 
-val ktorVersion = "3.6.0"
-val micrometerVersion = "1.17.1"
-
 dependencies {
     implementation(project(":libs:oppdrag"))
     implementation(project(":libs:tid")) // TODO: Hvorfor trenger jeg denne? Bør oppdrag ha en avhengighet på tid?
@@ -17,16 +14,17 @@ dependencies {
     implementation(project(":libs:kotlinx"))
     implementation(project(":libs:log"))
 
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-status-pages-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-request-validation-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-metrics-micrometer-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
+    implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.ktor.server.status.pages)
+    implementation(libs.ktor.server.request.validation)
+    implementation(libs.ktor.server.auth.jwt)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.server.metrics.micrometer)
 
-    implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
+    // Micrometer
+    implementation(libs.micrometer.registry.prometheus)
 }
 
 application {

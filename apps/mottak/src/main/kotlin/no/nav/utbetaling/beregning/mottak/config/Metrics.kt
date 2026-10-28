@@ -1,7 +1,7 @@
 package no.nav.utbetaling.beregning.mottak.config
 
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
 object Metrics {
     val prometheusMeterRegistry =
