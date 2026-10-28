@@ -7,7 +7,6 @@ import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
-import io.micrometer.prometheus.PrometheusConfig
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.mottak.config.ApplicationState
