@@ -34,24 +34,17 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 
 # Jackson (XML-deserialisering)
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
-jackson-module-jakarta-xmlbind = { module = "com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations", version.ref = "jackson" }
 jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 # Test
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
-kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 
 [bundles]
 jackson = [
     "jackson-module-kotlin",
-    "jackson-module-jakarta-xmlbind",
     "jackson-dataformat-xml",
     "jackson-datatype-jsr310",
-]
-kotest = [
-    "kotest-assertions-core",
-    "kotest-runner-junit5",
 ]
 
 [plugins]

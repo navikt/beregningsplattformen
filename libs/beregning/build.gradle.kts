@@ -44,7 +44,7 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(kotlin("reflect"))
 
-    testFixturesApi(libs.bundles.kotest)
+    testFixturesApi(libs.kotest.assertions.core)
     testFixturesImplementation(libs.bundles.jackson)
     testRuntimeOnly(libs.logback.classic)
 }
