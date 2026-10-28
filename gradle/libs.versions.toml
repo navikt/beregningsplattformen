@@ -13,6 +13,7 @@ trekkrutine2026 = "1.0_20260113090201_5cbf08a"
 flyway = "13.10.3"
 hikaricp = "7.1.0"
 kotliquery = "2.1.2"
+jdbi = "3.49.0"
 postgresql = "42.7.14"
 dbscheduler = "16.12.0"
 
@@ -23,6 +24,7 @@ kotlinx-serialization = "1.12.0"
 
 # Monitoring
 micrometer = "1.17.1"
+opentelemetry = "1.54.0"
 
 # MQ
 artemis = "2.57.0"
@@ -85,6 +87,8 @@ ktor-client-mock = { module = "io.ktor:ktor-client-mock-jvm", version.ref = "kto
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 kotliquery = { module = "no.nav:kotliquery", version.ref = "kotliquery" }
+jdbi-core = { module = "org.jdbi:jdbi3-core", version.ref = "jdbi" }
+jdbi-kotlin = { module = "org.jdbi:jdbi3-kotlin", version.ref = "jdbi" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 dbscheduler = { module = "com.github.kagkarlsson:db-scheduler", version.ref = "dbscheduler" }
@@ -95,6 +99,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 
 # Monitoring
 micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version.ref = "opentelemetry" }
 
 # MQ
 ibm-mq = { module = "com.ibm.mq:com.ibm.mq.jakarta.client", version.ref = "ibm-mq" }

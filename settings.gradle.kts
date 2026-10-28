@@ -11,4 +11,6 @@ include(
     "libs:oppdrag",
     "libs:beregning",
     "libs:tid",
+    "libs:task",
+    "libs:task-v2",
 )
