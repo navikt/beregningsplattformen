@@ -1,6 +1,4 @@
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -46,20 +44,14 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(kotlin("reflect"))
 
-    testFixturesApi(libs.bundles.kotest)
+    testFixturesApi(libs.kotest.assertions.core)
     testFixturesImplementation(libs.bundles.jackson)
-    testImplementation(libs.bundles.kotest)
-    testImplementation(libs.mockk)
     testRuntimeOnly(libs.logback.classic)
 }
 
 kotlin {
-    jvmToolchain(25)
     compilerOptions {
-        freeCompilerArgs.addAll(
-            "-opt-in=kotlin.time.ExperimentalTime",
-            "-Xannotation-default-target=param-property",
-        )
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 
@@ -74,23 +66,19 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 tasks.withType<Test>().configureEach {
+    // The integration runner needs filesystem directories, not resource URLs from the main JAR.
     classpath = files(
         sourceSets.main
             .get()
             .output.resourcesDir,
     ) + classpath
-    useJUnitPlatform()
     listOf("kotest.filter.tests", "kotest.tags", "kotest.tags.include", "kotest.tags.exclude").forEach { key ->
         System.getProperty(key)?.takeIf { it.isNotBlank() }?.let { value ->
             systemProperty(key, value)
         }
     }
     testLogging {
-        showExceptions = true
-        showStackTraces = true
-        exceptionFormat = FULL
         showStandardStreams = true
-        events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     }
     val profileMode =
         providers

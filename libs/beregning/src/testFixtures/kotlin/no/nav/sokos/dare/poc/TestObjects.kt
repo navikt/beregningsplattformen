@@ -150,22 +150,6 @@ object TestObjects {
                 tidspktEndret = LocalDateTime.now(),
                 trekkberegningstype = UTBDATO,
             )
-
-        val UTBETALINGSDATO_SKATTEREDUSERENDE =
-            Trekktype(
-                kodeTrekktype = "TESTUDSR",
-                beskrivelse = "Test Utbetalingsdato Skattereduserende",
-                prioritet = "10",
-                kodeKlasseTrekk = "TBD",
-                kodeTrekkategori = "TBD",
-                reduserSkattegr = true,
-                kodeOppgjoerstype = "TDB",
-                kodeKlasseOppgj = "TDB",
-                belopsgrense = 10000000L,
-                bruker = "",
-                tidspktEndret = LocalDateTime.now(),
-                trekkberegningstype = UTBDATO,
-            )
     }
 }
 
