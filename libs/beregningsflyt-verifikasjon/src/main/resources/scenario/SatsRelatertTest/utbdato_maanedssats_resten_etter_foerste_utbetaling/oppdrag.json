@@ -1,0 +1,50 @@
+[
+  {
+    "kodeAksjon": "1",
+    "kodeEndring": "ENDR",
+    "kodeFagomraade": "AAP",
+    "fagsystemId": "testRestEtterFoersteUtbetaling",
+    "utbetFrekvens": "MND",
+    "oppdragGjelderId": "12345678901",
+    "datoOppdragGjelderFom": "2000-01-01",
+    "saksbehId": "Test",
+    "avstemming115": {
+      "kodeKomponent": "AAP",
+      "nokkelAvstemming": "testavstRest",
+      "tidspktMelding": "2026-04-01-00.00.00.000000"
+    },
+    "oppdragsEnhet120": [
+      {
+        "typeEnhet": "BOS",
+        "enhet": "8020",
+        "datoEnhetFom": "1970-01-01"
+      }
+    ],
+    "oppdragsLinje150": [
+      {
+        "kodeEndringLinje": "NY",
+        "vedtakId": "2026-04-01",
+        "delytelseId": "restTest",
+        "kodeKlassifik": "AAPUAA",
+        "datoVedtakFom": "2026-04-13",
+        "datoVedtakTom": "2026-04-17",
+        "sats": 600,
+        "fradragTillegg": "T",
+        "typeSats": "DAG",
+        "brukKjoreplan": "N",
+        "saksbehId": "Test",
+        "utbetalesTilId": "12345678901",
+        "henvisning": "restRef",
+        "refFagsystemId": "testRestEtterFoersteUtbetaling",
+        "vedtakssats157": {
+          "vedtakssats": 600
+        },
+        "attestant180": [
+          {
+            "attestantId": "Test"
+          }
+        ]
+      }
+    ]
+  }
+]

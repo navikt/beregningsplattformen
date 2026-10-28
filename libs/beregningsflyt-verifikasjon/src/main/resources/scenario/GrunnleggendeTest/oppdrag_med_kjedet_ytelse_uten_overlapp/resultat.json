@@ -1,0 +1,297 @@
+{
+    "periode": {
+        "fom": "2026-02-01",
+        "tom": "2026-02-28"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2026-02-01",
+                "tom": "2026-02-28"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [
+                "MANGLER_SKATTEKORT"
+            ],
+            "overfoeres": "2026-02-28",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2025-02-28T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-02-01",
+                        "2026-02-02",
+                        "2026-02-03",
+                        "2026-02-04",
+                        "2026-02-05",
+                        "2026-02-06",
+                        "2026-02-07",
+                        "2026-02-08",
+                        "2026-02-09",
+                        "2026-02-10",
+                        "2026-02-11"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                0,
+                                974,
+                                974,
+                                974,
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -3896,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "7792",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-02-01",
+                        "tom": "2026-02-11"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            0,
+                            974,
+                            974,
+                            974,
+                            974,
+                            974,
+                            0,
+                            0,
+                            974,
+                            974,
+                            974
+                        ],
+                        "rowValue": -3896,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        7792,
+                        -3896
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-02-15",
+                        "2026-02-16",
+                        "2026-02-17",
+                        "2026-02-18",
+                        "2026-02-19",
+                        "2026-02-20",
+                        "2026-02-21",
+                        "2026-02-22",
+                        "2026-02-23",
+                        "2026-02-24",
+                        "2026-02-25",
+                        "2026-02-26",
+                        "2026-02-27",
+                        "2026-02-28"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                0,
+                                994,
+                                994,
+                                994,
+                                994,
+                                994,
+                                0,
+                                0,
+                                994,
+                                994,
+                                994,
+                                994,
+                                994,
+                                0
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    0,
+                                    0,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 994,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -4970,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "9940",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    0,
+                                    0,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    994,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-02-15",
+                        "tom": "2026-02-28"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            0,
+                            994,
+                            994,
+                            994,
+                            994,
+                            994,
+                            0,
+                            0,
+                            994,
+                            994,
+                            994,
+                            994,
+                            994,
+                            0
+                        ],
+                        "rowValue": -4970,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        9940,
+                        -4970
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 8866,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}

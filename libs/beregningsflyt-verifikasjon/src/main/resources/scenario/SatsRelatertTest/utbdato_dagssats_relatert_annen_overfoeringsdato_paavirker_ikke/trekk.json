@@ -1,0 +1,62 @@
+[
+  {
+    "id": 100,
+    "eksternTrekkId": null,
+    "trekktypeKode": "TRK1",
+    "kreditorIdTss": null,
+    "kreditorTrekkId": null,
+    "kreditorRef": null,
+    "trekkalt": "LOP",
+    "belopSaldo": null,
+    "belopSaldoTrukket": null,
+    "kreditorKid": null,
+    "gyldigTom": null,
+    "ansvarligEnhet": "1234",
+    "debitorId": 1,
+    "datoPriFom": null,
+    "kilde": null,
+    "trekkstatus": "LOPE",
+    "trekkperioder": [
+      {
+        "id": 200,
+        "trekkvedtakId": 100,
+        "datoFom": "2026-02-01",
+        "datoTom": "2026-03-07",
+        "sats": 200,
+        "satstype": "D",
+        "feilReg": false,
+        "bruker": "test",
+        "tidspktReg": "2026-03-01T00:00:00",
+        "periode": {
+          "fom": "2026-03-02",
+          "tom": "2026-03-06"
+        }
+      }
+    ],
+    "fagomraader": [
+      {
+        "id": null,
+        "trekkvedtakId": 100,
+        "fagomraadeKode": "AAP",
+        "aktiv": true,
+        "tidspktReg": "2026-03-01T00:00:00"
+      }
+    ],
+    "trekktype": {
+      "kodeTrekktype": "TRK1",
+      "beskrivelse": "Utleggstrekk, ett trekk",
+      "prioritet": "8",
+      "kodeKlasseTrekk": "TRK1",
+      "kodeTrekkategori": "KRED",
+      "reduserSkattegr": false,
+      "kodeOppgjoerstype": "TRK1",
+      "kodeKlasseOppgj": "TRK1OPPG",
+      "belopsgrense": 0,
+      "bruker": "TOB-4521",
+      "tidspktEndret": "2025-12-05T11:30:42",
+      "trekkberegningstype": "UTBDATO"
+    },
+    "bruker": "test",
+    "tidspktReg": "2026-03-01T00:00:00"
+  }
+]
