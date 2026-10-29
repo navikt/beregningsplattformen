@@ -132,6 +132,12 @@ data class Ompostering(
     val registrert: Instant,
 )
 
+data class Sats(
+    val verdi: BigDecimal,
+    val satsType: String, //TODO gjør om til enum se TypeSats
+)
+
+
 data class Opplysninger(
     val fagområde: Fagområde,
     val fagsystemId: FagsystemId,
@@ -139,7 +145,8 @@ data class Opplysninger(
     val refDelytelseId: DelytelseId?,
     val gjelderId: Opplysning<Personidentifikator>?,
     val utbetalesTil: Opplysning<UtbetalesTil>?,
-    val sats: Opplysning<BigDecimal>,
+    val sats: Opplysning<Sats>,
+    val vedtaksSats: Opplysning<Sats>?,
     val henvisning: Opplysning<Henvisning>?,
     val stønadId: Opplysning<StønadId>?,
     val forfall: Opplysning<LocalDate>?,

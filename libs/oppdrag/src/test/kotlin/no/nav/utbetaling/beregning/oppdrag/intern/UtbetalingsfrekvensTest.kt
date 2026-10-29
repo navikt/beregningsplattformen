@@ -76,4 +76,4 @@ class UtbetalingsfrekvensTest :
         }
     })
 
-private fun Oppdragstidslinje.satserMedUtbetalingsfrekvens() = perPeriode { it.sats.opplysning.toInt() to it.utbetalingsfrekvens?.opplysning }
+private fun Oppdragstidslinje.satserMedUtbetalingsfrekvens() = perPeriode { it.sats.opplysning.verdi.toInt() to it.utbetalingsfrekvens?.opplysning }

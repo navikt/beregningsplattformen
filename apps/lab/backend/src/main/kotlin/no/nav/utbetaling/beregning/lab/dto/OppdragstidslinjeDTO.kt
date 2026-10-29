@@ -140,7 +140,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                             },
                                         gjelderId = opplysning.gjelderId?.toDto { it.identifikator },
                                         delytelseId = opplysning.delytelseId.id,
-                                        sats = opplysning.sats.toDto { it.toPlainString() },
+                                        sats = opplysning.sats.toDto { it.verdi.toPlainString() },
                                         henvisning = opplysning.henvisning?.toDto { it.henvisning },
                                         stønadId = opplysning.stønadId?.toDto { it.id },
                                         utbetalingsfrekvens = opplysning.utbetalingsfrekvens?.toDto { it.name },

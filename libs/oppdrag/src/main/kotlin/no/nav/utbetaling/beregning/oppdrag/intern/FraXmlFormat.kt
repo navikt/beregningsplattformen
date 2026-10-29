@@ -21,6 +21,7 @@ import no.nav.utbetaling.beregning.oppdrag.Henvisning
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
+import no.nav.utbetaling.beregning.oppdrag.Sats
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
@@ -62,7 +63,8 @@ internal object FraXmlFormat {
                                 linjeSaksbehandlerId = oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på linjenivå"),
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
-                                sats = oppdragsLinje150.sats,
+                                sats = Sats(verdi = oppdragsLinje150.sats,  satsType = oppdragsLinje150.typeSats),
+                                vedtaksSats = oppdragsLinje150.vedtakssats157?.vedtakssats?.let { Sats(verdi = it, satsType = "") },
                                 brukKjøreplan = oppdragsLinje150.brukKjoreplan?.takeIf { it == "N" }?.let { BrukKjøreplan.Nei },
                                 ytelseKlassekode = YtelseKlassekode(oppdragsLinje150.kodeKlassifik),
                             )

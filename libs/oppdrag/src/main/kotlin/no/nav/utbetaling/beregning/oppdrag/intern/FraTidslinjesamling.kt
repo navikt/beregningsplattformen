@@ -53,6 +53,7 @@ internal object FraTidslinjesamling {
                         brukKjøreplan = oppdragsdag.brukKjøreplan,
                         gjelderId = oppdragsdag.gjelderId,
                         sats = oppdragsdag.sats,
+                        vedtaksSats = oppdragsdag.vedtaksSats,
                         henvisning = oppdragsdag.henvisning,
                         avventingsårsakEndring = oppdragsdag.avventingsårsak?.let { FeilregistrerbarOpplysning.Registrert(it) },
                         kidnummer = oppdragsdag.kidnummer,

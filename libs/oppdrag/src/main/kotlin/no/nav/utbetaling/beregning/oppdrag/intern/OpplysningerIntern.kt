@@ -17,6 +17,7 @@ import no.nav.utbetaling.beregning.oppdrag.Ompostering
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
+import no.nav.utbetaling.beregning.oppdrag.Sats
 import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
@@ -30,7 +31,8 @@ import no.nav.utbetaling.beregning.tid.Tidslinje
 internal data class OpplysningerIntern(
     val delytelseId: DelytelseId,
     val refDelytelseId: DelytelseId?,
-    val sats: Opplysning<BigDecimal>,
+    val sats: Opplysning<Sats>,
+    val vedtaksSats: Opplysning<Sats>?,
     val henvisning: Opplysning<Henvisning>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
@@ -53,6 +55,8 @@ internal data class OpplysningerIntern(
             delytelseId = ny.delytelseId,
             refDelytelseId = ny.refDelytelseId,
             sats = velgOpplysning(ny.sats, sats),
+            // TODO: Avklar om en tidligere vedtakssats skal videreføres når en ny linje mangler feltet.
+            vedtaksSats = ny.vedtaksSats,
             henvisning = velgNullableOpplysning(ny.henvisning, henvisning),
             kidnummer = velgNullableOpplysning(ny.kidnummer, kidnummer),
             avventingsårsakEndring = FeilregistrerbarOpplysning.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
@@ -73,7 +77,8 @@ internal data class OpplysningerIntern(
         private val oppdragSaksbehandlerId: SaksbehandlerId,
         private val refDelytelseId: DelytelseId?,
         private val henvisning: Henvisning?,
-        private val sats: BigDecimal,
+        private val sats: Sats,
+        private val vedtaksSats: Sats? = null,
         private val kidnummer: Kidnummer? = null,
         private val status: Status? = null,
         private val bostedsenhet: Bostedsenhet? = null,
@@ -99,6 +104,7 @@ internal data class OpplysningerIntern(
                 refDelytelseId = refDelytelseId,
                 brukKjøreplan = Opplysning(linjeSaksbehandlerId, brukKjøreplan ?: BrukKjøreplan.Ja),
                 sats = Opplysning(linjeSaksbehandlerId, sats),
+                vedtaksSats = vedtaksSats?.let { Opplysning(linjeSaksbehandlerId, it) },
                 henvisning = henvisning?.let { Opplysning(linjeSaksbehandlerId, it) },
                 kidnummer = kidnummer?.let { Opplysning(linjeSaksbehandlerId, it) },
                 avventingsårsakEndring = avventingsårsakEndring,

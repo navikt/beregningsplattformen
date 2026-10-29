@@ -45,4 +45,4 @@ class BilagstypeTest :
         }
     })
 
-private fun Oppdragstidslinje.satserMedBilagstype() = perPeriode { it.sats.opplysning.toInt() to it.bilagstype?.opplysning }
+private fun Oppdragstidslinje.satserMedBilagstype() = perPeriode { it.sats.opplysning.verdi.toInt() to it.bilagstype?.opplysning }

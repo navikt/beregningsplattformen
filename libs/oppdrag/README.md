@@ -62,7 +62,7 @@
 | `oppdrag-110.oppdrags-linje-150.datoVedtakTom`                  |   ✅   | Brukes som til og med-verdi for perioden.                                                                                |
 | `oppdrag-110.oppdrags-linje-150.sats`                           |   ✅   | Mappes inn som `sats`                                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.fradragTillegg`                 |   ☑️   | Angir om det er fradrag eller utbetaling, behøves ikke.                                                                  |
-| `oppdrag-110.oppdrags-linje-150.typeSats`                       |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.typeSats`                       |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.skyldnerId`                     |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.datoSkyldnerFom`                |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.kravhaverId`                    |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
@@ -88,7 +88,7 @@
 | `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.maksDato`     |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.refunderesId` |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.datoFom`      |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.vedtakssats-157.vedtakssats`    |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.vedtakssats-157.vedtakssats`    |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekstLnr`       |   ☑️   | Rekkefølge ved flere tekstlinjer.                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekstKode`      |   ☑️   | Kode som UR benytter til å legge på ferdig definerte tekster.                                                            |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekst`          |   ☑️   | Fritekst knyttet til oppdragslinjen.                                                                                     |
