@@ -35,7 +35,7 @@ class UbrukteFelterTest :
             val oppdrag110 =
                 Oppdrag110(
                     fagsystemId = "fagsystemId",
-                    kodeAksjon = "1",
+                    kodeAksjon = "2",
                     kodeEndring = "NY",
                     kodeFagomraade = "FOO",
                     oppdragGjelderId = "11111111111",
@@ -182,6 +182,7 @@ class UbrukteFelterTest :
                 oppdrags-linje-150 med delytelseId 1 har satt valuta-190, dette feltet skal ikke være i bruk!
                 oppdrags-linje-150 med delytelseId 1 har satt refFagsystemId til en annen verdi enn fagsystemId i oppdrag-110!
                 oppdrags-linje-150 med delytelseId 1 har satt datoKlassifikFom, dette feltet skal ikke være i bruk!
+                oppdrag-110 har satt kodeAksjon til 2, denne verdien skal ikke være i bruk!
                 """.trimIndent()
 
             ugyldigOppdragException.message shouldBe forventetFeilmelding
