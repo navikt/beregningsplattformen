@@ -8,18 +8,16 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 
-import no.nav.utbetaling.beregning.log.logger
-import no.nav.utbetaling.beregning.log.secureLog
-
-private val httpLog = logger("http")
+import io.ktor.client.plugins.logging.Logger as KtorLogger
+import org.slf4j.Logger as Slf4jLogger
 
 object HttpClientFactory {
     fun new(
         json: Json,
+        logger: Slf4jLogger,
         logLevel: LogLevel = LogLevel.INFO,
         retries: Int? = 3,
         requestTimeoutMs: Long? = 60_000,
@@ -31,7 +29,7 @@ object HttpClientFactory {
 
         return HttpClient(CIO) {
             install(Logging) {
-                logger = ClientLogger(logLevel)
+                this.logger = ClientLogger(logger)
                 level = logLevel
             }
 
@@ -58,23 +56,9 @@ object HttpClientFactory {
 }
 
 class ClientLogger(
-    level: LogLevel,
-) : Logger {
+    private val delegate: Slf4jLogger,
+) : KtorLogger {
     override fun log(message: String) {
-        log.info(message)
+        delegate.info(message)
     }
-
-    private val log =
-        when (level) {
-
-            /**
-             * HTTP code, method and url is logged
-             */
-            LogLevel.INFO, LogLevel.NONE -> httpLog
-
-            /**
-             *  HTTP code, method, url, headers request body and response body is logged
-             */
-            else -> secureLog
-        }
 }
