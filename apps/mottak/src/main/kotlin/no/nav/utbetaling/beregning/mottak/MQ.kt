@@ -4,6 +4,7 @@ import com.ibm.mq.jakarta.jms.MQQueue
 import jakarta.jms.TextMessage
 
 import no.nav.utbetaling.beregning.log.secureLog
+import no.nav.utbetaling.beregning.mottak.config.Metrics
 import no.nav.utbetaling.beregning.mq.DefaultMQConsumer
 import no.nav.utbetaling.beregning.mq.MQ
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
@@ -25,6 +26,7 @@ class OppdragXMLConsumer(
     private fun onMessage(message: TextMessage) {
         val oppdrag = Oppdrag.fraXml(message.text)
         // TODO: Lagre i database
+        Metrics.registrerOppdrag(oppdrag)
         secureLog.info("Received MQ message: {}", oppdrag.toString())
     }
 }
