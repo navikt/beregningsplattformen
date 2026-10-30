@@ -63,8 +63,8 @@
 | `oppdrag-110.oppdrags-linje-150.sats`                           |   ✅   | Mappes inn som `sats`                                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.fradragTillegg`                 |   ☑️   | Angir om det er fradrag eller utbetaling, behøves ikke.                                                                  |
 | `oppdrag-110.oppdrags-linje-150.typeSats`                       |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.skyldnerId`                     |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.datoSkyldnerFom`                |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.skyldnerId`                     |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.datoSkyldnerFom`                |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.kravhaverId`                    |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.datoKravhaverFom`               |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.kid`                            |   ✅   | Mappes til `kidnummer` i opplysninger.                                                                                   |
@@ -75,7 +75,7 @@
 | `oppdrag-110.oppdrags-linje-150.datoUtbetalesTilIdFom`          |   ✅   | Hensyntas for å kun bruke `utbetalesTil` fra og med denne datoen. Om den ikke er satt brukes `datoVedtakFom`.            |
 | `oppdrag-110.oppdrags-linje-150.kodeArbeidsgiver`               |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.henvisning`                     |   ✅   | Mappes til `henvisning`                                                                                                  |
-| `oppdrag-110.oppdrags-linje-150.typeSoknad`                     |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.typeSoknad`                     |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.refFagsystemId`                 |   🤏🏼   | Brukes ikke til noe, men om den er satt så valideres det at det må være samme verdi som på oppdragsnivå.                 |
 | `oppdrag-110.oppdrags-linje-150.refOppdragsId`                  |   ❌   | Avvises som stormaskin-generert felt.                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.refDelytelseId`                 |   ✅   | Brukes i forbindelse med kjeding.                                                                                        |
@@ -85,9 +85,9 @@
 | `oppdrag-110.oppdrags-linje-150.skyldner-153.*`                 |   ❌   | Avvises som output-felt.                                                                                                 |
 | `oppdrag-110.oppdrags-linje-150.kid-154.*`                      |   ❌   | Avvises som output-felt.                                                                                                 |
 | `oppdrag-110.oppdrags-linje-150.utbetales-til-155.*`            |   ❌   | Avvises som output-felt.                                                                                                 |
-| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.maksDato`     |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.refunderesId` |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.datoFom`      |   ☑️   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.maksDato`     |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.refunderesId` |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.datoFom`      |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.vedtakssats-157.vedtakssats`    |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekstLnr`       |   ☑️   | Rekkefølge ved flere tekstlinjer.                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekstKode`      |   ☑️   | Kode som UR benytter til å legge på ferdig definerte tekster.                                                            |

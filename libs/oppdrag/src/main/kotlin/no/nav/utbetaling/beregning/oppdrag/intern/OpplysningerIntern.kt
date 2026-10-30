@@ -15,11 +15,14 @@ import no.nav.utbetaling.beregning.oppdrag.Henvisning
 import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Ompostering
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
+import no.nav.utbetaling.beregning.oppdrag.Part
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
+import no.nav.utbetaling.beregning.oppdrag.Refusjonsinfo
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Sats
 import no.nav.utbetaling.beregning.oppdrag.Status
 import no.nav.utbetaling.beregning.oppdrag.StønadId
+import no.nav.utbetaling.beregning.oppdrag.TypeSøknad
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
@@ -33,6 +36,9 @@ internal data class OpplysningerIntern(
     val refDelytelseId: DelytelseId?,
     val sats: Opplysning<Sats>,
     val vedtaksSats: Opplysning<Sats>?,
+    val skyldner: Opplysning<Part>?,
+    val refusjonsinfo: Opplysning<Refusjonsinfo>?,
+    val typeSøknad: Opplysning<TypeSøknad>?,
     val henvisning: Opplysning<Henvisning>?,
     val kidnummer: Opplysning<Kidnummer>?,
     val status: Opplysning<Status>,
@@ -57,6 +63,9 @@ internal data class OpplysningerIntern(
             sats = velgOpplysning(ny.sats, sats),
             // TODO: Avklar om en tidligere vedtakssats skal videreføres når en ny linje mangler feltet.
             vedtaksSats = ny.vedtaksSats,
+            skyldner = velgNullableOpplysning(ny.skyldner, this.skyldner),
+            refusjonsinfo = velgNullableOpplysning(ny.refusjonsinfo, this.refusjonsinfo),
+            typeSøknad = velgNullableOpplysning(ny.typeSøknad, this.typeSøknad),
             henvisning = velgNullableOpplysning(ny.henvisning, henvisning),
             kidnummer = velgNullableOpplysning(ny.kidnummer, kidnummer),
             avventingsårsakEndring = FeilregistrerbarOpplysning.velg(this.avventingsårsakEndring, ny.avventingsårsakEndring),
@@ -79,6 +88,9 @@ internal data class OpplysningerIntern(
         private val henvisning: Henvisning?,
         private val sats: Sats,
         private val vedtaksSats: Sats? = null,
+        private val skyldner: Part? = null,
+        private val refusjonsinfo: Refusjonsinfo? = null,
+        private val typeSøknad: TypeSøknad? = null,
         private val kidnummer: Kidnummer? = null,
         private val status: Status? = null,
         private val bostedsenhet: Bostedsenhet? = null,
@@ -105,6 +117,9 @@ internal data class OpplysningerIntern(
                 brukKjøreplan = Opplysning(linjeSaksbehandlerId, brukKjøreplan ?: BrukKjøreplan.Ja),
                 sats = Opplysning(linjeSaksbehandlerId, sats),
                 vedtaksSats = vedtaksSats?.let { Opplysning(linjeSaksbehandlerId, it) },
+                skyldner = skyldner?.let { Opplysning(linjeSaksbehandlerId, it) },
+                refusjonsinfo = refusjonsinfo?.let { Opplysning(linjeSaksbehandlerId, it) },
+                typeSøknad = typeSøknad?.let { Opplysning(linjeSaksbehandlerId, it) },
                 henvisning = henvisning?.let { Opplysning(linjeSaksbehandlerId, it) },
                 kidnummer = kidnummer?.let { Opplysning(linjeSaksbehandlerId, it) },
                 avventingsårsakEndring = avventingsårsakEndring,
@@ -169,6 +184,28 @@ internal data class OpplysningerIntern(
             oppdragsdag.utbetalesTil != null -> oppdragsdag
             // Om det mangler så viderefører vi utbetalesTIl
             else -> oppdragsdag.copy(utbetalesTil = utbetalesTil)
+        }
+
+        fun videreførSkyldner(
+            oppdragsdag: OpplysningerIntern?,
+            skyldner: Opplysning<Part>?,
+        ) = when {
+            oppdragsdag == null || skyldner == null -> oppdragsdag
+            // Om det er satt en skyldner eksplisitt brukes den
+            oppdragsdag.skyldner != null -> oppdragsdag
+            // Om det mangler så viderefører vi skyldner
+            else -> oppdragsdag.copy(skyldner = skyldner)
+        }
+
+        fun videreførRefusjonsinfo(
+            oppdragsdag: OpplysningerIntern?,
+            refusjonsinfo: Opplysning<Refusjonsinfo>?,
+        ) = when {
+            oppdragsdag == null || refusjonsinfo == null -> oppdragsdag
+            // Om det er satt en refusjonsinfo eksplisitt brukes den
+            oppdragsdag.refusjonsinfo != null -> oppdragsdag
+            // Om det mangler så viderefører vi refusjonsinfo
+            else -> oppdragsdag.copy(refusjonsinfo = refusjonsinfo)
         }
 
         fun <T> Tidslinje<OpplysningerIntern>.viderefør(selector: (OpplysningerIntern) -> Opplysning<T>?): Tidslinje<Opplysning<T>> {

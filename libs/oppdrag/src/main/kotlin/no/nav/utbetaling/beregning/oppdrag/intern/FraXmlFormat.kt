@@ -23,6 +23,7 @@ import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Sats
 import no.nav.utbetaling.beregning.oppdrag.StønadId
+import no.nav.utbetaling.beregning.oppdrag.TypeSøknad
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
 import no.nav.utbetaling.beregning.oppdrag.YtelseKlassekode
@@ -65,6 +66,7 @@ internal object FraXmlFormat {
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                 sats = Sats(verdi = oppdragsLinje150.sats,  satsType = oppdragsLinje150.typeSats),
                                 vedtaksSats = oppdragsLinje150.vedtakssats157?.vedtakssats?.let { Sats(verdi = it, satsType = "") },
+                                typeSøknad = oppdragsLinje150.typeSoknad.mapVerdi { TypeSøknad(it) },
                                 brukKjøreplan = oppdragsLinje150.brukKjoreplan?.takeIf { it == "N" }?.let { BrukKjøreplan.Nei },
                                 ytelseKlassekode = YtelseKlassekode(oppdragsLinje150.kodeKlassifik),
                             )
@@ -74,6 +76,10 @@ internal object FraXmlFormat {
                             builder?.medStatus(statusendring)
                         }.kombinerMed(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
                             builder?.copy(utbetalesTil = utbetalesTil)
+                        }.kombinerMed(SkyldnerIder.fra(linjer)) { _, builder, skyldner ->
+                            builder?.copy(skyldner = skyldner)
+                        }.kombinerMed(Refusjonsinfoer.fra(linjer)) { _, builder, refusjonsinfo ->
+                            builder?.copy(refusjonsinfo = refusjonsinfo)
                         }.kombinerMed(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
                             builder?.copy(kidnummer = kidnummer)
                         }

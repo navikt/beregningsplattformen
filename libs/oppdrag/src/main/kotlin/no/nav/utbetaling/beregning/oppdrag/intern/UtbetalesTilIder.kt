@@ -1,8 +1,6 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
-import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
-import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
+import no.nav.utbetaling.beregning.oppdrag.Part
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
@@ -16,11 +14,10 @@ internal object UtbetalesTilIder {
             val utbetalesTilFom = linje.datoUtbetalesTilIdFom ?: linje.datoVedtakFom
 
             val utbetalesTil =
-                when {
-                    utbetalesTilId.matches(samhandlerRegex) -> UtbetalesTil.Samhandler(SamhandlerId(tssId = utbetalesTilId))
-                    utbetalesTilId.matches(personidentifikatorRegex) -> UtbetalesTil.Person(Personidentifikator(identifikator = utbetalesTilId))
-                    utbetalesTilId.matches(organisasjonsnummerRegex) -> UtbetalesTil.Organisasjon(Organisasjonsnummer(nummer = utbetalesTilId))
-                    else -> error("Uventet utbetalesTilId på linje ${linje.delytelseId}")
+                when (val part = Partklassifisering.fra(utbetalesTilId)) {
+                    is Part.Samhandler -> UtbetalesTil.Samhandler(part.samhandlerId)
+                    is Part.Person -> UtbetalesTil.Person(part.personidentifikator)
+                    is Part.Organisasjon -> UtbetalesTil.Organisasjon(part.organisasjonsnummer)
                 }
 
             builder.periode(
@@ -30,8 +27,4 @@ internal object UtbetalesTilIder {
         }
         return builder.build()
     }
-
-    private val samhandlerRegex = Regex("8\\d{10}")
-    private val personidentifikatorRegex = Regex("\\d{11}")
-    private val organisasjonsnummerRegex = Regex("\\d{9}")
 }

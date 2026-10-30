@@ -98,6 +98,26 @@ sealed interface UtbetalesTil {
     ) : UtbetalesTil
 }
 
+/** En part identifisert av person, organisasjon eller samhandler. Brukes for skyldner og refunderes. */
+sealed interface Part {
+    data class Person(
+        val personidentifikator: Personidentifikator,
+    ) : Part
+
+    data class Organisasjon(
+        val organisasjonsnummer: Organisasjonsnummer,
+    ) : Part
+
+    data class Samhandler(
+        val samhandlerId: SamhandlerId,
+    ) : Part
+}
+
+@JvmInline
+value class TypeSøknad(
+    val type: String,
+)
+
 enum class Utbetalingsfrekvens {
     Daglig,
     Ukentlig,
@@ -137,6 +157,12 @@ data class Sats(
     val satsType: String, //TODO gjør om til enum se TypeSats
 )
 
+data class Refusjonsinfo(
+    val maksDato: LocalDate?,
+    val refunderes: Part?,
+    val datoFom: LocalDate,
+)
+
 
 data class Opplysninger(
     val fagområde: Fagområde,
@@ -147,6 +173,9 @@ data class Opplysninger(
     val utbetalesTil: Opplysning<UtbetalesTil>?,
     val sats: Opplysning<Sats>,
     val vedtaksSats: Opplysning<Sats>?,
+    val skyldner: Opplysning<Part>?,
+    val refusjonsinfo: Opplysning<Refusjonsinfo>?,
+    val typeSøknad: Opplysning<TypeSøknad>?,
     val henvisning: Opplysning<Henvisning>?,
     val stønadId: Opplysning<StønadId>?,
     val forfall: Opplysning<LocalDate>?,

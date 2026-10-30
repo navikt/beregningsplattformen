@@ -11,6 +11,8 @@ import kotlinx.serialization.Serializable
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
+import no.nav.utbetaling.beregning.oppdrag.Part
+import no.nav.utbetaling.beregning.oppdrag.Refusjonsinfo
 import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.tid.Periode
 
@@ -68,6 +70,9 @@ data class KjedePerioderDTO(
     val avventingsårsak: OpplysningDTO?,
     val forfall: OpplysningDTO?,
     val utbetalesTil: OpplysningDTO?,
+    val skyldner: OpplysningDTO?,
+    val refusjonsinfo: OpplysningDTO?,
+    val typeSøknad: OpplysningDTO?,
     val gjelderId: OpplysningDTO?,
     val henvisning: OpplysningDTO?,
     val stønadId: OpplysningDTO?,
@@ -87,6 +92,13 @@ private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
         saksbehandlerId = saksbehandlerId.id,
         opplysning = stringverdi(opplysning),
     )
+
+private fun Part.format(): String =
+    when (this) {
+        is Part.Organisasjon -> "Organisasjon ${organisasjonsnummer.nummer}"
+        is Part.Person -> "Person ${personidentifikator.identifikator}"
+        is Part.Samhandler -> "Samhandler ${samhandlerId.tssId}"
+    }
 
 private val DATO_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
@@ -126,6 +138,14 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                                     is UtbetalesTil.Samhandler -> "Samhandler ${it.samhandlerId.tssId}"
                                                 }
                                             },
+                                        skyldner = opplysning.skyldner?.toDto { it.format() },
+                                        refusjonsinfo =
+                                            opplysning.refusjonsinfo?.toDto {
+                                                val refunderes = it.refunderes?.format() ?: "ukjent"
+                                                val maksDato = it.maksDato?.format(DATO_FORMAT) ?: "ingen"
+                                                "Refunderes $refunderes, maksdato $maksDato, fra ${it.datoFom.format(DATO_FORMAT)}"
+                                            },
+                                        typeSøknad = opplysning.typeSøknad?.toDto { it.type },
                                         forfall = opplysning.forfall?.toDto { it.format(DATO_FORMAT) },
                                         avventingsårsak =
                                             opplysning.avventingsårsak?.toDto {
