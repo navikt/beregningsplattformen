@@ -13,14 +13,14 @@ import no.nav.sokos.dare.poc.beregning.EkstraInfoDsl.verdi
 import no.nav.sokos.dare.poc.beregning.Kapasitet
 import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.Satstype
-import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
+import no.nav.sokos.dare.poc.beregning.fordeler.Delperiodegrunnlag
 import no.nav.sokos.dare.poc.beregning.fordeler.TrekkvedtakForBeregning
 import no.nav.sokos.dare.poc.trekk.TrekkAlt
 
 class TrekkDelberegningslinjeProducer {
     fun make(
         trekkvedtak: TrekkvedtakForBeregning,
-        delperiode: OppdragDelperiode,
+        delperiode: Delperiodegrunnlag,
         trekkgrunnlag: BigDecimal,
         satsBegrensetTrekk: BeregningsBeloep,
         kapasitet: Kapasitet,

@@ -1,7 +1,5 @@
 package no.nav.sokos.dare.poc.beregning.integrasjon
 
-import java.io.File
-
 import io.kotest.core.spec.style.FunSpec
 
 import no.nav.sokos.dare.poc.KlassekodeTestdata
@@ -21,25 +19,13 @@ import no.nav.sokos.dare.poc.KlassekodeTestdata
  */
 class IntegrasjonsTest :
     FunSpec({
-        val baseDir =
-            File(
-                IntegrasjonsTest::class.java.classLoader
-                    .getResource("testsupport/integrasjon")!!
-                    .toURI(),
-            )
-
-        baseDir
-            .listFiles { f -> f.isDirectory }
-            ?.sorted()
-            ?.forEach { kategoriDir ->
-                kategoriDir
-                    .listFiles { f -> f.isDirectory && File(f, "kontekst.json").exists() }
-                    ?.sorted()
-                    ?.forEach { testDir ->
-                        val testName = "${kategoriDir.name}/${testDir.name}"
-                        test(testName) {
-                            IntegrasjonsTestHjelper.kjoerBeregning(kategoriDir.name, testDir.name, KlassekodeTestdata.klassekodeLookup.values.toList())
-                        }
-                    }
+        IntegrasjonsScenario.alle().forEach { scenario ->
+            test(scenario.navn) {
+                IntegrasjonsTestHjelper.kjoerBeregning(
+                    scenario.mappe.parentFile.name,
+                    scenario.mappe.name,
+                    KlassekodeTestdata.klassekodeLookup.values.toList(),
+                )
             }
+        }
     })

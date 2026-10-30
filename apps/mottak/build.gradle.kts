@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("org.jlleitschuh.gradle.ktlint")
+    id("no.nav.ktlintgradle.ktlint")
     application
 }
 

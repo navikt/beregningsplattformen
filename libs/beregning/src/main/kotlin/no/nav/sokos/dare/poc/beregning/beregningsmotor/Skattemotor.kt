@@ -19,9 +19,10 @@ import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatusflagg
 import no.nav.sokos.dare.poc.beregning.dataklasser.Satstype
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsScratchpad
-import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsSegment
+import no.nav.sokos.dare.poc.beregning.fordeler.Beregningsgrunnlag
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsmotorKontekst
-import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
+import no.nav.sokos.dare.poc.beregning.fordeler.Delperiodegrunnlag
+import no.nav.sokos.dare.poc.beregning.fordeler.Segmentgrunnlag
 import no.nav.sokos.dare.poc.skattekort.domain.Forskuddstrekk
 import no.nav.sokos.dare.poc.skattekort.domain.ForskuddstrekkKode
 import no.nav.sokos.dare.poc.skattekort.domain.ForskuddstrekkType
@@ -32,7 +33,9 @@ import no.nav.sokos.dare.poc.skattetrekk.SkatteTabell
 
 // TODO: Legg til ekstrainfo-informasjon ved skatteberegning (grunnlag, sats, type frikort, etc.)
 class Skattemotor {
-    fun beregnSkatteTrekk(kontekst: BeregningsmotorKontekst): BeregningsmotorKontekst {
+    fun beregnSkatteTrekk(kontekst: BeregningsmotorKontekst): BeregningsmotorKontekst = beregnSkatteTrekkFelles(kontekst)
+
+    fun <K : Beregningsgrunnlag> beregnSkatteTrekkFelles(kontekst: K): K {
         val skattekort = kontekst.skatteKontekst.skattekort
         if (skattekort == null) {
             return beregnMedDefaultSkatt(kontekst)
@@ -40,45 +43,43 @@ class Skattemotor {
         return beregnMedSkattekort(kontekst, skattekort)
     }
 
-    private fun beregnMedSkattekort(
-        kontekst: BeregningsmotorKontekst,
+    private fun <K : Beregningsgrunnlag> beregnMedSkattekort(
+        kontekst: K,
         skattekort: Skattekort,
-    ): BeregningsmotorKontekst {
-        kontekst.segmenter.forEach { segment ->
-            segment.delperioder.forEach { delperiode ->
-                val trekkKode =
-                    delperiode.oppdrag.fagomraade
-                        .faggruppe
-                        .forskuddsTrekkKode
-                // TODO: if-setningen under fanger at vi faar lov til aa bruke aarets skattekort i desember aaret foer, men ikke i november. Bør bli mer lesbart.
-                val delperiodeErIForegåendeÅr = delperiode.periode.fom.year < kontekst.beregnet.year
-                if (delperiodeErIForegåendeÅr && (kontekst.beregnet.month > JANUARY || delperiode.periode.fom.month < DECEMBER)) {
-                    beregnForrigeAarsSkatt(kontekst, delperiode, segment, trekkKode)
-                    return@forEach
+    ): K {
+        kontekst.beregningsrekkefolge().forEach { (segment, delperiode) ->
+            val trekkKode =
+                delperiode.fagomraade
+                    .faggruppe
+                    .forskuddsTrekkKode
+            // TODO: if-setningen under fanger at vi faar lov til aa bruke aarets skattekort i desember aaret foer, men ikke i november. Bør bli mer lesbart.
+            val delperiodeErIForegåendeÅr = delperiode.periode.fom.year < kontekst.beregnet.year
+            if (delperiodeErIForegåendeÅr && (kontekst.beregnet.month > JANUARY || delperiode.periode.fom.month < DECEMBER)) {
+                beregnForrigeAarsSkatt(kontekst, delperiode, segment, trekkKode)
+                return@forEach
+            }
+
+            val forskuddstrekk: Forskuddstrekk? = skattekort.erGyldigForBeregningsDato(kontekst.beregnet)?.forskuddsTrekk?.find { it.trekkKode == trekkKode }
+            if (forskuddstrekk == null) {
+                beregnDelperiodeMedDefaultskatt(segment, delperiode, skattekort)
+                return@forEach
+            }
+
+            when (forskuddstrekk.typeForskuddsTrekk) {
+                ForskuddstrekkType.FRIKORT -> {
+                    if (forskuddstrekk.frikortBelop == null) {
+                        beregnFrikortUtenBeloepsgrense(kontekst, delperiode, segment)
+                    } else {
+                        beregnFrikortMedBeloepsgrense(kontekst, delperiode, segment)
+                    }
                 }
 
-                val forskuddstrekk: Forskuddstrekk? = skattekort.erGyldigForBeregningsDato(kontekst.beregnet)?.forskuddsTrekk?.find { it.trekkKode == trekkKode }
-                if (forskuddstrekk == null) {
-                    beregnDelperiodeMedDefaultskatt(segment, delperiode, skattekort)
-                    return@forEach
+                ForskuddstrekkType.PROSENTKORT -> {
+                    beregnProsenttrekk(delperiode, segment, forskuddstrekk, skattekort)
                 }
 
-                when (forskuddstrekk.typeForskuddsTrekk) {
-                    ForskuddstrekkType.FRIKORT -> {
-                        if (forskuddstrekk.frikortBelop == null) {
-                            beregnFrikortUtenBeloepsgrense(kontekst, delperiode, segment)
-                        } else {
-                            beregnFrikortMedBeloepsgrense(kontekst, delperiode, segment)
-                        }
-                    }
-
-                    ForskuddstrekkType.PROSENTKORT -> {
-                        beregnProsenttrekk(delperiode, segment, forskuddstrekk, skattekort)
-                    }
-
-                    ForskuddstrekkType.TABELLKORT -> {
-                        // Handled in second pass below
-                    }
+                ForskuddstrekkType.TABELLKORT -> {
+                    // Handled in second pass below
                 }
             }
         }
@@ -89,9 +90,9 @@ class Skattemotor {
     }
 
     private fun beregnFrikortUtenBeloepsgrense(
-        kontekst: BeregningsmotorKontekst,
-        delperiode: OppdragDelperiode,
-        segment: BeregningsSegment,
+        kontekst: Beregningsgrunnlag,
+        delperiode: Delperiodegrunnlag,
+        segment: Segmentgrunnlag,
     ) {
         val scratchpad = scratchpadFor(segment, delperiode)
         val skatteGrunnlag =
@@ -129,9 +130,9 @@ class Skattemotor {
     }
 
     private fun beregnFrikortMedBeloepsgrense(
-        kontekst: BeregningsmotorKontekst,
-        delperiode: OppdragDelperiode,
-        segment: BeregningsSegment,
+        kontekst: Beregningsgrunnlag,
+        delperiode: Delperiodegrunnlag,
+        segment: Segmentgrunnlag,
     ) {
         val restFrikort = requireNotNull(kontekst.restFrikortBeloep) { "Rest frikortbeløp mangler" }
         val scratchpad = scratchpadFor(segment, delperiode)
@@ -174,7 +175,7 @@ class Skattemotor {
             return
         }
 
-        val skattesats = delperiode.oppdrag.fagomraade.faggruppe.standardSkatteprosent
+        val skattesats = delperiode.fagomraade.faggruppe.standardSkatteprosent
         val skattBeloep = beregnProsentBeloep(overskudd, skattesats)
 
         leggTilSkattLinje(
@@ -207,13 +208,13 @@ class Skattemotor {
     }
 
     private fun beregnForrigeAarsSkatt(
-        kontekst: BeregningsmotorKontekst,
-        delperiode: OppdragDelperiode,
-        segment: BeregningsSegment,
+        kontekst: Beregningsgrunnlag,
+        delperiode: Delperiodegrunnlag,
+        segment: Segmentgrunnlag,
         trekkKode: ForskuddstrekkKode,
     ) {
         val scratchpad = scratchpadFor(segment, delperiode)
-        val overskuddSkatt = utledSkattesatsForOverskudd(kontekst, trekkKode, delperiode.oppdrag.fagomraade.faggruppe.standardSkatteprosent)
+        val overskuddSkatt = utledSkattesatsForOverskudd(kontekst, trekkKode, delperiode.fagomraade.faggruppe.standardSkatteprosent)
         val skattesats = overskuddSkatt.sats
         val skatteGrunnlag = delperiode.periode.hverdager.sumOf { scratchpad.kapasitetStyring.current()[it] ?: ZERO }
         val skattBeloep = beregnProsentBeloep(skatteGrunnlag, skattesats)
@@ -242,8 +243,8 @@ class Skattemotor {
     }
 
     private fun beregnProsenttrekk(
-        delperiode: OppdragDelperiode,
-        segment: BeregningsSegment,
+        delperiode: Delperiodegrunnlag,
+        segment: Segmentgrunnlag,
         forskuddstrekk: Forskuddstrekk,
         skattekort: Skattekort,
     ) {
@@ -278,7 +279,7 @@ class Skattemotor {
     }
 
     private fun beregnTabellkort(
-        kontekst: BeregningsmotorKontekst,
+        kontekst: Beregningsgrunnlag,
         skattekort: Skattekort,
     ) {
         val tabellkortPerioder = klassifiserTabellkortPerioder(kontekst, skattekort)
@@ -287,7 +288,7 @@ class Skattemotor {
     }
 
     private fun klassifiserTabellkortPerioder(
-        kontekst: BeregningsmotorKontekst,
+        kontekst: Beregningsgrunnlag,
         skattekort: Skattekort,
     ): List<TabellkortPeriode> {
         val tabellkortPerioder = mutableListOf<TabellkortPeriode>()
@@ -323,12 +324,12 @@ class Skattemotor {
 
                 // Biarbeidsgiver → prosent-skatt
                 val trekkKode =
-                    delperiode.oppdrag.fagomraade
+                    delperiode.fagomraade
                         .faggruppe
                         .forskuddsTrekkKode
                 val allokertFaggruppe = kontekst.skatteKontekst.allokeringer[trekkKode]
                 val oppdragFaggruppe =
-                    delperiode.oppdrag.fagomraade
+                    delperiode.fagomraade
                         .faggruppe
                 if (allokertFaggruppe != oppdragFaggruppe) {
                     val prosentsats = requireNotNull(forskuddstrekk.prosentsats) { "Tabellkort mangler prosentsats for biarbeidsgiver" }
@@ -411,7 +412,7 @@ class Skattemotor {
 
     private fun beregnProsentSkattForTabellkort(
         scratchpad: BeregningsScratchpad,
-        delperiode: OppdragDelperiode,
+        delperiode: Delperiodegrunnlag,
         skatteGrunnlag: BigDecimal,
         prosentsats: BigDecimal,
         grunn: EkstraInfo.Reasons,
@@ -438,7 +439,7 @@ class Skattemotor {
     }
 
     private fun utledSkattesatsForOverskudd(
-        kontekst: BeregningsmotorKontekst,
+        kontekst: Beregningsgrunnlag,
         trekkKode: ForskuddstrekkKode,
         standardSkatteprosent: BigDecimal,
     ): ProsentsatsMedGrunn {
@@ -533,23 +534,21 @@ class Skattemotor {
         return ProsentsatsMedGrunn(sats, ekstraInfo)
     }
 
-    private fun beregnMedDefaultSkatt(kontekst: BeregningsmotorKontekst): BeregningsmotorKontekst {
-        kontekst.segmenter.forEach { segment ->
-            segment.delperioder.forEach { delperiode ->
-                beregnDelperiodeMedDefaultskatt(segment, delperiode, kontekst.skatteKontekst.skattekort)
-            }
+    private fun <K : Beregningsgrunnlag> beregnMedDefaultSkatt(kontekst: K): K {
+        kontekst.beregningsrekkefolge().forEach { (segment, delperiode) ->
+            beregnDelperiodeMedDefaultskatt(segment, delperiode, kontekst.skatteKontekst.skattekort)
         }
         return kontekst
     }
 
     private fun beregnDelperiodeMedDefaultskatt(
-        segment: BeregningsSegment,
-        delperiode: OppdragDelperiode,
+        segment: Segmentgrunnlag,
+        delperiode: Delperiodegrunnlag,
         skattekort: Skattekort?,
     ) {
         val scratchpad = scratchpadFor(segment, delperiode)
         val skatteGrunnlag = delperiode.periode.hverdager.sumOf { scratchpad.kapasitetStyring.current()[it] ?: ZERO }
-        val skattesats = delperiode.oppdrag.fagomraade.faggruppe.standardSkatteprosent
+        val skattesats = delperiode.fagomraade.faggruppe.standardSkatteprosent
         val skattBeloep = beregnProsentBeloep(skatteGrunnlag, skattesats)
 
         segment.beregningsStatusflagg.add(BeregningsStatusflagg.MANGLER_SKATTEKORT)
@@ -579,20 +578,20 @@ class Skattemotor {
 
     private fun finnForskuddstrekk(
         skattekort: Skattekort,
-        delperiode: OppdragDelperiode,
+        delperiode: Delperiodegrunnlag,
     ): Forskuddstrekk? {
         val trekkKode =
-            delperiode.oppdrag.fagomraade
+            delperiode.fagomraade
                 .faggruppe
                 .forskuddsTrekkKode
         return skattekort.forskuddsTrekk.find { it.trekkKode == trekkKode }
     }
 
     private fun scratchpadFor(
-        segment: BeregningsSegment,
-        delperiode: OppdragDelperiode,
+        segment: Segmentgrunnlag,
+        delperiode: Delperiodegrunnlag,
     ): BeregningsScratchpad {
-        val oppdragId = requireNotNull(delperiode.oppdrag.id) { "Oppdrag mangler id" }
+        val oppdragId = delperiode.oppdragId
         return segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
     }
 

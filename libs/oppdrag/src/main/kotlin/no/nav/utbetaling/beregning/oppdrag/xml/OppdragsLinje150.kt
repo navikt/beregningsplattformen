@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
 
+import tools.jackson.databind.JsonNode
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 internal data class OppdragsLinje150(
@@ -34,6 +35,11 @@ internal data class OppdragsLinje150(
     val henvisning: String? = null,
     val typeSoknad: String? = null,
     val refFagsystemId: String? = null,
+    // Legacy metadata is accepted only as null; populated values are rejected by UbrukteFelter.
+    val datoRefFagsystemIdFom: JsonNode? = null,
+    val utbetalingsgrad150: JsonNode? = null,
+    val valuta160: JsonNode? = null,
+    val tekst160: JsonNode? = null,
     val refOppdragsId: Long? = null,
     val refDelytelseId: String? = null,
     val refLinjeId: BigInteger? = null,

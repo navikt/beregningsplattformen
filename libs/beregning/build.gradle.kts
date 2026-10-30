@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
-    id("org.jlleitschuh.gradle.ktlint")
+    id("no.nav.ktlintgradle.ktlint")
     alias(libs.plugins.kover)
 }
 

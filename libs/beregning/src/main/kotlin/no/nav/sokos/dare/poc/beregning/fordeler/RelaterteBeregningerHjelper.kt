@@ -8,20 +8,24 @@ import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DatoIntervall
 import no.nav.sokos.dare.poc.beregning.DelberegningType
 import no.nav.sokos.dare.poc.oppdrag.Oppdrag
+import no.nav.sokos.dare.poc.oppdrag.OppdragId
 import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
 import no.nav.sokos.dare.poc.util.BigDecimalUtils
 
 internal fun relaterteBoundaries(
     relaterteBeregninger: List<Beregning>,
     oppdrag: List<Oppdrag>,
-): List<DatoIntervall> {
-    val oppdragIds = oppdrag.mapNotNull { it.id }.toSet()
-    return relaterteBeregninger
+): List<DatoIntervall> = relaterteBoundaries(relaterteBeregninger, oppdrag.mapNotNull { it.id }.toSet())
+
+fun relaterteBoundaries(
+    relaterteBeregninger: List<Beregning>,
+    oppdragIds: Set<OppdragId>,
+): List<DatoIntervall> =
+    relaterteBeregninger
         .flatMap { it.delberegning }
         .filter { it.oppdragId in oppdragIds }
         .filter { delberegning -> delberegning.linjer.any { it.type == DelberegningType.YTELSE } }
         .map { it.datoIntervall }
-}
 
 internal fun filterRelaterteTilOppdrag(
     relaterteBeregninger: List<Beregning>,
@@ -29,7 +33,15 @@ internal fun filterRelaterteTilOppdrag(
     periode: DatoIntervall,
 ): List<Beregning> {
     val oppdragId = oppdrag.id ?: return emptyList()
-    return relaterteBeregninger.mapNotNull { beregning ->
+    return filterRelaterteTilOppdrag(relaterteBeregninger, oppdragId, periode)
+}
+
+fun filterRelaterteTilOppdrag(
+    relaterteBeregninger: List<Beregning>,
+    oppdragId: OppdragId,
+    periode: DatoIntervall,
+): List<Beregning> =
+    relaterteBeregninger.mapNotNull { beregning ->
         val relevantDelberegninger =
             beregning.delberegning.filter { delberegning ->
                 delberegning.oppdragId == oppdragId &&
@@ -42,7 +54,6 @@ internal fun filterRelaterteTilOppdrag(
             beregning.copy(delberegning = relevantDelberegninger)
         }
     }
-}
 
 internal fun beregnTrukketSaldoFraRelaterteBeregninger(
     trekkvedtakId: TrekkvedtakId,

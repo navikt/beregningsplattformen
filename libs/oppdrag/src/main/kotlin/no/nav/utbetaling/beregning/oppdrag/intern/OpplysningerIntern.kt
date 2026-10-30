@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import java.math.BigDecimal
 import java.time.LocalDate
 
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
@@ -61,8 +60,7 @@ internal data class OpplysningerIntern(
             delytelseId = ny.delytelseId,
             refDelytelseId = ny.refDelytelseId,
             sats = velgOpplysning(ny.sats, sats),
-            // TODO: Avklar om en tidligere vedtakssats skal videreføres når en ny linje mangler feltet.
-            vedtaksSats = ny.vedtaksSats,
+            vedtaksSats = velgNullableOpplysning(ny.vedtaksSats, vedtaksSats),
             skyldner = velgNullableOpplysning(ny.skyldner, this.skyldner),
             refusjonsinfo = velgNullableOpplysning(ny.refusjonsinfo, this.refusjonsinfo),
             typeSøknad = velgNullableOpplysning(ny.typeSøknad, this.typeSøknad),

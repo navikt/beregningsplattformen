@@ -1,5 +1,7 @@
 package no.nav.utbetaling.beregning.oppdrag
 
+import java.math.BigDecimal
+
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
@@ -29,6 +31,14 @@ class OppdragstidslinjeFraXMLTest :
             uten.tidslinjer.values.single().first().second.vedtaksSats shouldBe null
 
             (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true
+            val offentligResultat = (Oppdrag.fraXml(xml) as Oppdrag.Utbetaling).oppdragstidslinje
+            val opplysninger =
+                offentligResultat.tidslinjer.values
+                    .single()
+                    .single()
+                    .second
+            opplysninger.sats shouldBe Opplysning(SaksbehandlerId("Kelvin"), Sats(BigDecimal("974"), YtelseSatstype.DAG.kode))
+            opplysninger.vedtaksSats shouldBe Opplysning(SaksbehandlerId("Kelvin"), Sats(BigDecimal("974"), ""))
 
             assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(oppdrag.single()) { resultat ->
                 resultat.satser() shouldBe mapOf(31.mars(2025) til 11.april(2025) to setOf(974))

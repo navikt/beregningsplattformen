@@ -2,6 +2,7 @@ package no.nav.utbetaling.beregning.oppdrag.xml
 
 import java.time.LocalDate
 
+import tools.jackson.databind.JsonNode
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 internal data class Oppdrag110(
@@ -18,6 +19,7 @@ internal data class Oppdrag110(
     val oppdragGjelderId: String,
     val datoOppdragGjelderFom: LocalDate,
     val saksbehId: String,
+    val tilknyttetMikrofrontend: JsonNode? = null,
     @JacksonXmlProperty(localName = "oppdrags-status-111") val oppdragsStatus111: List<OppdragsStatus111> = emptyList(),
     @JacksonXmlProperty(localName = "oppdrag-gjelder-112") val oppdragGjelder112: List<OppdragGjelder112> = emptyList(),
     @JacksonXmlProperty(localName = "bilagstype-113") val bilagstype113: Bilagstype113? = null,

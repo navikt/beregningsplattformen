@@ -16,13 +16,7 @@ internal object Avventinger {
             val tom = checkNotNull(avvent118.datoAvventTom) { "datoAvventTom må være satt på avventing" }
             val årsak =
                 when (avvent118.kodeArsak?.uppercase()) {
-                    "AVAV" ->
-                        Avventingsårsak.Avregning(
-                            til =
-                                checkNotNull(avvent118.datoOverfores) {
-                                    "datoOverfores må være satt for avventing pga. avregning"
-                                },
-                        )
+                    "AVAV" -> Avventingsårsak.Avregning(avvent118.datoOverfores)
                     "AVRK" -> Avventingsårsak.Refusjonskrav(avvent118.datoOverfores)
                     else -> error("Kjenner ikke til avventingsårsak ${avvent118.kodeArsak}")
                 }

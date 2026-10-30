@@ -9,7 +9,7 @@ import no.nav.sokos.dare.poc.beregning.BeloepPerDag
 import no.nav.sokos.dare.poc.beregning.BeregningsBeloep
 import no.nav.sokos.dare.poc.beregning.Delberegningslinje
 import no.nav.sokos.dare.poc.beregning.Enkeltbeloep
-import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
+import no.nav.sokos.dare.poc.beregning.fordeler.Delperiodegrunnlag
 import no.nav.sokos.dare.poc.beregning.fordeler.SatsBoetter
 import no.nav.sokos.dare.poc.beregning.fordeler.TrekkvedtakForBeregning
 import no.nav.sokos.dare.poc.trekk.SatsType
@@ -20,7 +20,7 @@ class SatsBoetteLimiter {
         justertTrekk: BeregningsBeloep,
         trekkvedtak: TrekkvedtakForBeregning,
         satsBoetter: SatsBoetter,
-        delperiode: OppdragDelperiode,
+        delperiode: Delperiodegrunnlag,
     ): BeregningsBeloep {
         val boetteIds = trekkvedtak.trekkperiode.satsBoetteIds()
         if (boetteIds.isEmpty()) return justertTrekk

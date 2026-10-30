@@ -150,7 +150,11 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                         avventingsårsak =
                                             opplysning.avventingsårsak?.toDto {
                                                 when (it) {
-                                                    is Avventingsårsak.Avregning -> "Avregning - avventer til ${it.til.format(DATO_FORMAT)}"
+                                                    is Avventingsårsak.Avregning ->
+                                                        when (val til = it.til) {
+                                                            null -> "Avregning uten sluttdato"
+                                                            else -> "Avregning - avventer til ${til.format(DATO_FORMAT)}"
+                                                        }
                                                     is Avventingsårsak.Refusjonskrav ->
                                                         when (val til = it.til) {
                                                             null -> "Refusjonskrav uten sluttdato"
