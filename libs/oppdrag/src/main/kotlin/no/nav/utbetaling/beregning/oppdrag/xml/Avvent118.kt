@@ -16,6 +16,6 @@ internal data class Avvent118(
        hvis man får to avvent118 med overlappende periode vil også oppdraget avvises
        det er lov å få to avvent118 med ikke-overlappende perioder
      */
-    val datoOverfores: LocalDate? = null, // ikke valgfritt hvis AVRK, trenger ikke oppgis hvis AVAV, men det logger vi som en feil.
+    val datoOverfores: LocalDate? = null, // ikke valgfritt hvis AVRK, valgfritt ved AVAV som uansett må reaktiveres manuelt.
     val feilreg: String? = null, // "nei", "j". perioden må være helt lik selv om bare datofom er nøkkel. avvis oppdraget dersom vi får en feilreg="j" som ikke matcher en avvent118 vi allerede har
 )

@@ -25,6 +25,7 @@ kotest = "6.2.6"
 
 # Plugins
 kover-plugin = "0.9.11"
+ktlint-plugin = "0.1.0-dev.1252+ec71da4"
 
 [libraries]
 # Ktor
@@ -70,3 +71,4 @@ jackson = [
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover-plugin" }
+ktlint = { id = "no.nav.ktlintgradle.ktlint", version.ref = "ktlint-plugin" }

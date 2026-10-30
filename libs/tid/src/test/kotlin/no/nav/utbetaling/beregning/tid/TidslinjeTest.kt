@@ -360,6 +360,79 @@ class TidslinjeTest :
             }
         }
 
+        context("begrensetTil periode") {
+            test("skal klippe begge grensene og beholde verdiene") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(februar, verdi2)
+                        .build()
+
+                tidslinje.begrensetTil(15.januar til 15.februar).toList() shouldContainExactly
+                    listOf((15.januar til 31.januar) to verdi1, (1.februar til 15.februar) to verdi2)
+            }
+
+            test("skal lukke en åpen kilde ved periodens slutt") {
+                val tidslinje = Tidslinje.Builder<MinVerdi>().periode(ÅpenPeriode(1.januar), verdi1).build()
+
+                tidslinje.begrensetTil(15.januar til 15.februar).toList() shouldContainExactly
+                    listOf((15.januar til 15.februar) to verdi1)
+            }
+
+            test("skal beholde kildens slutt når den forespurte perioden er åpen") {
+                val tidslinje = Tidslinje.Builder<MinVerdi>().periode(januar, verdi1).build()
+
+                tidslinje.begrensetTil(ÅpenPeriode(15.januar)).toList() shouldContainExactly
+                    listOf((15.januar til 31.januar) to verdi1)
+            }
+
+            test("skal beholde åpen slutt når både kilden og den forespurte perioden er åpne") {
+                val tidslinje = Tidslinje.Builder<MinVerdi>().periode(ÅpenPeriode(1.januar), verdi1).build()
+
+                tidslinje.begrensetTil(ÅpenPeriode(15.januar)).toList() shouldContainExactly
+                    listOf(ÅpenPeriode(15.januar) to verdi1)
+            }
+
+            test("skal gi en tom tidslinje når perioden ikke overlapper") {
+                val tidslinje = Tidslinje.Builder<MinVerdi>().periode(februar, verdi1).build()
+
+                tidslinje.begrensetTil(januar).isEmpty() shouldBe true
+                tidslinje.begrensetTil(mars).isEmpty() shouldBe true
+            }
+
+            test("skal bevare opphold inne i perioden også når verdien er lik på begge sider") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(mars, verdi1)
+                        .build()
+
+                val begrenset = tidslinje.begrensetTil(15.januar til 15.mars)
+
+                begrenset.toList() shouldContainExactly
+                    listOf((15.januar til 31.januar) to verdi1, (1.mars til 15.mars) to verdi1)
+                begrenset[15.februar].shouldBeNull()
+            }
+
+            test("skal ikke endre kilden") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(ÅpenPeriode(1.mars), verdi2)
+                        .build()
+                val opprinneligePerioder = tidslinje.toList()
+
+                tidslinje.begrensetTil(15.januar til 15.mars)
+
+                tidslinje.toList() shouldContainExactly opprinneligePerioder
+                tidslinje[1.januar] shouldBe verdi1
+                tidslinje[1.april] shouldBe verdi2
+            }
+        }
+
         context("mapVerdier") {
             test("skal transformere verdiene og beholde den åpne perioden") {
                 val tidslinje =

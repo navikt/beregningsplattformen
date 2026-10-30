@@ -24,6 +24,14 @@ class Tidslinje<T> private constructor(
         return Tidslinje(nye.komprimert())
     }
 
+    fun begrensetTil(periode: Periode): Tidslinje<T> {
+        val builder = Builder<T>()
+        forEach { (eksisterende, verdi) ->
+            eksisterende.overlappendePeriode(periode)?.let { builder.periode(it, verdi) }
+        }
+        return builder.build()
+    }
+
     fun <R> mapVerdier(transform: (T) -> R?): Tidslinje<R> {
         val nye = TreeMap<LocalDate, R?>()
         knekkpunkter.forEach { (dato, verdi) -> nye[dato] = verdi?.let(transform) }

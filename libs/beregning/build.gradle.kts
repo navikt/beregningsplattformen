@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
-    id("org.jlleitschuh.gradle.ktlint")
+    id("no.nav.ktlintgradle.ktlint")
     alias(libs.plugins.kover)
 }
 
@@ -37,6 +37,7 @@ publishing {
 }
 
 dependencies {
+    implementation(project(":libs:oppdrag"))
     api(libs.kotlinx.serialization.json)
     implementation(libs.trekkrutine2025)
     api(libs.trekkrutine2026)
@@ -44,6 +45,7 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(kotlin("reflect"))
 
+    testImplementation(project(":libs:beregningsflyt-verifikasjon"))
     testFixturesApi(libs.kotest.assertions.core)
     testFixturesImplementation(libs.bundles.jackson)
     testRuntimeOnly(libs.logback.classic)
@@ -66,11 +68,11 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 tasks.withType<Test>().configureEach {
-    // The integration runner needs filesystem directories, not resource URLs from the main JAR.
+    // Integration fixtures and compiled timeline guards need directories, not entries in the main JAR.
     classpath = files(
         sourceSets.main
             .get()
-            .output.resourcesDir,
+            .output,
     ) + classpath
     listOf("kotest.filter.tests", "kotest.tags", "kotest.tags.include", "kotest.tags.exclude").forEach { key ->
         System.getProperty(key)?.takeIf { it.isNotBlank() }?.let { value ->

@@ -6,8 +6,9 @@ import java.math.BigDecimal.ZERO
 import no.nav.sokos.dare.poc.beregning.EkstraInfo.Reasons.FEIL_I_BEREGNING
 import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsScratchpad
+import no.nav.sokos.dare.poc.beregning.fordeler.Beregningsgrunnlag
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsmotorKontekst
-import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
+import no.nav.sokos.dare.poc.beregning.fordeler.Delperiodegrunnlag
 import no.nav.sokos.dare.poc.beregning.fordeler.TrekkvedtakForBeregning
 import no.nav.sokos.dare.poc.trekk.SatsType
 import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
@@ -17,41 +18,43 @@ class Trekkmotor(
     private val satsBoetteLimiter: SatsBoetteLimiter = SatsBoetteLimiter(),
     private val delberegningslinjeProducer: TrekkDelberegningslinjeProducer = TrekkDelberegningslinjeProducer(),
 ) {
-    fun calculateSkattereduserendeTrekk(calculatedYtelser: BeregningsmotorKontekst): BeregningsmotorKontekst = calculate(calculatedYtelser, TrekkKategori.SKATTEREDUSERENDE)
+    fun calculateSkattereduserendeTrekk(calculatedYtelser: BeregningsmotorKontekst): BeregningsmotorKontekst = calculateSkattereduserendeTrekkFelles(calculatedYtelser)
 
-    fun calculateOevrigeTrekk(calculatedYtelserWithSkattetrekk: BeregningsmotorKontekst): BeregningsmotorKontekst = calculate(calculatedYtelserWithSkattetrekk, TrekkKategori.OEVRIGE)
+    fun calculateOevrigeTrekk(calculatedYtelserWithSkattetrekk: BeregningsmotorKontekst): BeregningsmotorKontekst = calculateOevrigeTrekkFelles(calculatedYtelserWithSkattetrekk)
 
-    private fun calculate(
-        kontekst: BeregningsmotorKontekst,
+    fun <K : Beregningsgrunnlag> calculateSkattereduserendeTrekkFelles(kontekst: K): K = calculate(kontekst, TrekkKategori.SKATTEREDUSERENDE)
+
+    fun <K : Beregningsgrunnlag> calculateOevrigeTrekkFelles(kontekst: K): K = calculate(kontekst, TrekkKategori.OEVRIGE)
+
+    private fun <K : Beregningsgrunnlag> calculate(
+        kontekst: K,
         kategori: TrekkKategori,
-    ): BeregningsmotorKontekst {
-        kontekst.segmenter.forEach { segment ->
-            segment.delperioder.forEach { delperiode ->
-                val trekk = delperiode.trekk.filtrerPåKategori(kategori).sortedWith(trekkvedtakSortering)
-                if (trekk.isEmpty()) return@forEach
+    ): K {
+        kontekst.beregningsrekkefolge().forEach { (segment, delperiode) ->
+            val trekk = delperiode.trekk.filtrerPåKategori(kategori).sortedWith(trekkvedtakSortering)
+            if (trekk.isEmpty()) return@forEach
 
-                val oppdragId = requireNotNull(delperiode.oppdrag.id) { "Oppdrag mangler id" }
-                val scratchpad = segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
-                val trekkgrunnlag = calculateTrekkgrunnlag(delperiode)
+            val oppdragId = delperiode.oppdragId
+            val scratchpad = segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
+            val trekkgrunnlag = calculateTrekkgrunnlag(delperiode)
 
-                processDelperiodeTrekk(
-                    trekk = trekk,
-                    delperiode = delperiode,
-                    trekkgrunnlag = trekkgrunnlag,
-                    scratchpad = scratchpad,
-                    kontekst = kontekst,
-                )
-            }
+            processDelperiodeTrekk(
+                trekk = trekk,
+                delperiode = delperiode,
+                trekkgrunnlag = trekkgrunnlag,
+                scratchpad = scratchpad,
+                kontekst = kontekst,
+            )
         }
         return kontekst
     }
 
     private fun processDelperiodeTrekk(
         trekk: List<TrekkvedtakForBeregning>,
-        delperiode: OppdragDelperiode,
+        delperiode: Delperiodegrunnlag,
         trekkgrunnlag: BigDecimal,
         scratchpad: BeregningsScratchpad,
-        kontekst: BeregningsmotorKontekst,
+        kontekst: Beregningsgrunnlag,
     ) {
         trekk.forEach { trekkvedtak ->
             val halverMaanedssats = skalHalvereMaanedssats(trekkvedtak, delperiode)
@@ -107,11 +110,11 @@ class Trekkmotor(
         }
     }
 
-    private fun calculateTrekkgrunnlag(delperiode: OppdragDelperiode): BigDecimal = delperiode.oppdrag.trekkgrunnlag(delperiode.periode)
+    private fun calculateTrekkgrunnlag(delperiode: Delperiodegrunnlag): BigDecimal = delperiode.trekkgrunnlag(delperiode.periode)
 
     private fun negativeSatsboetterFinnes(
         trekk: TrekkvedtakForBeregning,
-        kontekst: BeregningsmotorKontekst,
+        kontekst: Beregningsgrunnlag,
     ): Boolean =
         trekk.trekkperiode.satsBoetteIds().any {
             (kontekst.satsBoetter.restSats(it) ?: ZERO) < ZERO
@@ -127,11 +130,11 @@ class Trekkmotor(
     companion object {
         fun skalHalvereMaanedssats(
             trekkvedtak: TrekkvedtakForBeregning,
-            delperiode: OppdragDelperiode,
+            delperiode: Delperiodegrunnlag,
         ): Boolean =
             trekkvedtak.trekkperiode.satstype == SatsType.M &&
                 trekkvedtak.trekktype.trekkberegningstype == Trekkberegningstype.UTBDATO &&
-                delperiode.oppdrag.fagomraade.faggruppe.halverTrekkForFørsteUtbetalingIMåned &&
+                delperiode.fagomraade.faggruppe.halverTrekkForFørsteUtbetalingIMåned &&
                 trekkvedtak.id !in delperiode.tidligereTrukneTrekkvedtakIMaaneden
     }
 }

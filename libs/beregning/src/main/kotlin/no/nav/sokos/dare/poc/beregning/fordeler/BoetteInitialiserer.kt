@@ -7,7 +7,7 @@ import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
 import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
 
-internal fun beregnInitielleSaldoer(
+fun beregnInitielleSaldoer(
     trekk: List<Trekkvedtak>,
     relaterteBeregninger: List<Beregning>,
 ): Map<TrekkvedtakId, BigDecimal> =
@@ -22,9 +22,16 @@ internal fun beregnInitielleSatser(
     segmenter: List<BeregningsSegment>,
     relaterteBeregninger: List<Beregning>,
 ): Map<SatsBoetteId, BigDecimal> =
-    segmenter
-        .flatMap { it.delperioder }
-        .flatMap { it.trekk }
+    beregnInitielleSatserForTrekk(
+        segmenter.flatMap { it.delperioder }.flatMap { it.trekk },
+        relaterteBeregninger,
+    )
+
+fun beregnInitielleSatserForTrekk(
+    trekk: Iterable<TrekkvedtakForBeregning>,
+    relaterteBeregninger: List<Beregning>,
+): Map<SatsBoetteId, BigDecimal> =
+    trekk
         .flatMap { trekkvedtak ->
             trekkvedtak.trekkperiode.satsBoetteIds().map { id ->
                 val alreadyDeducted =

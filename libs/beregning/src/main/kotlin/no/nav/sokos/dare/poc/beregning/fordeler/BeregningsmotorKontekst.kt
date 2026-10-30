@@ -9,15 +9,15 @@ import no.nav.sokos.dare.poc.beregning.DatoIntervall
 import no.nav.sokos.dare.poc.beregning.Delberegning
 
 data class BeregningsmotorKontekst(
-    val periode: DatoIntervall,
-    val segmenter: List<BeregningsSegment>,
-    val skatteKontekst: SkatteKontekst,
-    val satsBoetter: SatsBoetter,
-    val saldoBoetter: SaldoBoetter,
-    var restFrikortBeloep: BigDecimal? = null,
+    override val periode: DatoIntervall,
+    override val segmenter: List<BeregningsSegment>,
+    override val skatteKontekst: SkatteKontekst,
+    override val satsBoetter: SatsBoetter,
+    override val saldoBoetter: SaldoBoetter,
+    override var restFrikortBeloep: BigDecimal? = null,
     val overføringsdato: LocalDate?,
-    val beregnet: LocalDateTime,
-) {
+    override val beregnet: LocalDateTime,
+) : Beregningsgrunnlag {
     fun beregninger(): List<Beregning> =
         segmenter.filter { it.delperioder.isNotEmpty() }.map { segment: BeregningsSegment ->
             require(
@@ -65,5 +65,5 @@ data class BeregningsmotorKontekst(
             )
         }
 
-    fun aktivDato(): LocalDate = overføringsdato ?: beregnet.toLocalDate()
+    override fun aktivDato(): LocalDate = overføringsdato ?: beregnet.toLocalDate()
 }

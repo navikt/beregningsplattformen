@@ -27,6 +27,7 @@ import no.nav.utbetaling.beregning.oppdrag.TypeSøknad
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
 import no.nav.utbetaling.beregning.oppdrag.YtelseKlassekode
+import no.nav.utbetaling.beregning.oppdrag.YtelseSatstype
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 import no.nav.utbetaling.beregning.tid.Periode
@@ -64,7 +65,7 @@ internal object FraXmlFormat {
                                 linjeSaksbehandlerId = oppdragsLinje150.saksbehId.mapVerdi { SaksbehandlerId(it) } ?: error("Mangler saksbehandlerId på linjenivå"),
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
-                                sats = Sats(verdi = oppdragsLinje150.sats,  satsType = oppdragsLinje150.typeSats),
+                                sats = Sats(verdi = oppdragsLinje150.sats, satsType = YtelseSatstype.fraXml(oppdragsLinje150.typeSats).kode),
                                 vedtaksSats = oppdragsLinje150.vedtakssats157?.vedtakssats?.let { Sats(verdi = it, satsType = "") },
                                 typeSøknad = oppdragsLinje150.typeSoknad.mapVerdi { TypeSøknad(it) },
                                 brukKjøreplan = oppdragsLinje150.brukKjoreplan?.takeIf { it == "N" }?.let { BrukKjøreplan.Nei },

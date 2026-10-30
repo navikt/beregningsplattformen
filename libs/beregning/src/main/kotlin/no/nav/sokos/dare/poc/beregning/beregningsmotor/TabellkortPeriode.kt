@@ -8,20 +8,19 @@ import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.EkstraInfoDsl.verdi
 import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsScratchpad
-import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
+import no.nav.sokos.dare.poc.beregning.fordeler.Delperiodegrunnlag
 import no.nav.sokos.dare.poc.beregning.skatt.SkattTabellDagerPeriode
 import no.nav.sokos.dare.poc.beregning.skatt.TabellkortPeriodetype
 import no.nav.sokos.dare.poc.skattekort.domain.Forskuddstrekk
 
 internal data class TabellkortPeriode(
-    val delperiode: OppdragDelperiode,
+    val delperiode: Delperiodegrunnlag,
     val scratchpad: BeregningsScratchpad,
     val skatteGrunnlag: BigDecimal,
     val forskuddstrekk: Forskuddstrekk,
 ) {
     fun tabellkortPeriodetype() =
-        delperiode.oppdrag
-            .fagomraade
+        delperiode.fagomraade
             .tabellkortPeriodetype
 
     fun tilSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> =
@@ -32,9 +31,9 @@ internal data class TabellkortPeriode(
 
     private fun tilVerdiberegnetSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> =
         delperiode.periode.hverdager
-            .groupBy { dag -> requireNotNull(delperiode.oppdrag.vedtakSatsForDag(dag)) { "Oppdrag mangler vedtakssats for dag $dag" }.stripTrailingZeros() }
+            .groupBy { dag -> requireNotNull(delperiode.vedtakSatsForDag(dag)) { "Oppdrag mangler vedtakssats for dag $dag" }.stripTrailingZeros() }
             .map { (vedtakssats, arbeidsdager) ->
-                val bruttoYtelse = arbeidsdager.sumOf { dag -> delperiode.oppdrag.forDag(dag) }
+                val bruttoYtelse = arbeidsdager.sumOf { dag -> delperiode.forDag(dag) }
                 SkattTabellDagerPeriode(
                     bruttoYtelse = bruttoYtelse,
                     vedtakssats = vedtakssats,
@@ -45,7 +44,7 @@ internal data class TabellkortPeriode(
 
     fun tilSkattTabellDagerPeriode(): SkattTabellDagerPeriode =
         delperiode.periode.hverdager.let { arbeidsdager ->
-            val sumArbeidsdagSatser = arbeidsdager.sumOf { dag -> delperiode.oppdrag.vedtakSatsForDag(dag) }
+            val sumArbeidsdagSatser = arbeidsdager.sumOf { dag -> delperiode.vedtakSatsForDag(dag) }
             SkattTabellDagerPeriode(
                 bruttoYtelse = skatteGrunnlag,
                 vedtakssats = if (arbeidsdager.isEmpty()) ZERO else sumArbeidsdagSatser.divide(BigDecimal(arbeidsdager.size), 10, RoundingMode.HALF_UP),

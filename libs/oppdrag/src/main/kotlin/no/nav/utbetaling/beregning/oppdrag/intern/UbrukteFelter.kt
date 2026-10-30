@@ -15,6 +15,8 @@ internal object UbrukteFelter {
                 validerIngenKravhaver(oppdrag110) +
                 validerIngenKodeArbeidsgiver(oppdrag110) +
                 validerIngenValutaGrense(oppdrag110) +
+                validerIngenDatoRefFagsystemIdFom(oppdrag110) +
+                validerTommeLegacyFelter(oppdrag110) +
                 validerFagsystemIdRef(oppdrag110) +
                 validerIngendatoKlassifikFom(oppdrag110) +
                 validerAksjonskodeverdier(oppdrag110)
@@ -122,6 +124,30 @@ internal object UbrukteFelter {
                 "oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt refFagsystemId til en annen verdi enn fagsystemId i oppdrag-110!"
             }.toSet()
     }
+
+    private fun validerIngenDatoRefFagsystemIdFom(oppdrag110: Oppdrag110): Set<String> =
+        oppdrag110.oppdragsLinje150
+            .mapNotNull { linje ->
+                "oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt datoRefFagsystemIdFom, dette feltet støttes ikke!"
+                    .takeIf { linje.datoRefFagsystemIdFom?.isNull == false }
+            }.toSet()
+
+    private fun validerTommeLegacyFelter(oppdrag110: Oppdrag110): Set<String> =
+        buildSet {
+            if (oppdrag110.tilknyttetMikrofrontend?.isNull == false) {
+                add("oppdrag-110 har satt tilknyttetMikrofrontend, dette feltet støttes kun som null!")
+            }
+            oppdrag110.oppdragsLinje150.forEach { linje ->
+                if (linje.utbetalingsgrad150?.isNull == false) {
+                    add("oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt utbetalingsgrad150, dette feltet støttes kun som null!")
+                }
+                mapOf("valuta160" to linje.valuta160, "tekst160" to linje.tekst160).forEach { (felt, verdi) ->
+                    if (verdi != null && !(verdi.isArray && verdi.isEmpty)) {
+                        add("oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt $felt, dette feltet støttes kun som en tom liste!")
+                    }
+                }
+            }
+        }
 
     private fun validerIngendatoKlassifikFom(oppdrag110: Oppdrag110): Set<String> {
         val linjerMedDatoKlassfikFom = oppdrag110.oppdragsLinje150.filter { it.datoKlassifikFom != null }

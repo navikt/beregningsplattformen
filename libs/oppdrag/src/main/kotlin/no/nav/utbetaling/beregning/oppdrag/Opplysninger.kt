@@ -139,8 +139,9 @@ enum class BrukKjøreplan {
 }
 
 sealed interface Avventingsårsak {
+    /** Må reaktiveres manuelt, uavhengig av om en overføringsdato er oppgitt. */
     data class Avregning(
-        val til: LocalDate,
+        val til: LocalDate?,
     ) : Avventingsårsak
 
     data class Refusjonskrav(
