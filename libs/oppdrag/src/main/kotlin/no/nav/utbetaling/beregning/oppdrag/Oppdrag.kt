@@ -2,6 +2,7 @@ package no.nav.utbetaling.beregning.oppdrag
 
 import tools.jackson.databind.JsonNode
 
+import no.nav.utbetaling.beregning.oppdrag.intern.Aksjonskode
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
 import no.nav.utbetaling.beregning.oppdrag.intern.Metrikker
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
@@ -59,12 +60,13 @@ sealed interface Oppdrag {
                 }
             val metrikker = Metrikker.fra(oppdrag110.keys)
 
-            val aksjonskoder = oppdrag110.values.map { it.kodeAksjon.trim() }.toSet()
-
-            when {
-                aksjonskoder.isEmpty() -> return UgyldigOppdrag(IllegalArgumentException("Det er ikke sendt inn noen oppdrag!"), metrikker)
-                aksjonskoder.size > 1 -> return UgyldigKombinasjon(IllegalArgumentException("Det er sendt inn aksjonskoder på tvers av utbetaling og simulering!"), metrikker)
-            }
+            val aksjonskoder =
+                oppdrag110.values
+                    .map { it.kodeAksjon }
+                    .map(Aksjonskode::fraXml)
+                    .toSet()
+            if (aksjonskoder.isEmpty()) return UgyldigOppdrag(IllegalArgumentException("Det er ikke sendt inn noen oppdrag!"), metrikker)
+            if (aksjonskoder.size != 1) return UgyldigKombinasjon(IllegalArgumentException("Det er sendt inn aksjonskoder på tvers av utbetaling og simulering!"), metrikker)
 
             val oppdragstidslinje =
                 runCatching { FraXmlFormat.fraOppdrag110(oppdrag110.values, utgangspunkt) }.getOrElse { feil ->
@@ -72,11 +74,9 @@ sealed interface Oppdrag {
                 }
 
             return when (aksjonskoder.single()) {
-                SIMULERING -> Simulering(oppdragstidslinje, metrikker)
-                else -> Utbetaling(oppdragstidslinje, metrikker)
+                Aksjonskode.Utbetaling -> Utbetaling(oppdragstidslinje, metrikker)
+                Aksjonskode.Simulering -> Simulering(oppdragstidslinje, metrikker)
             }
         }
-
-        private const val SIMULERING = "3"
     }
 }

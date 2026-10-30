@@ -16,7 +16,8 @@ internal object UbrukteFelter {
                 validerIngenKodeArbeidsgiver(oppdrag110) +
                 validerIngenValutaGrense(oppdrag110) +
                 validerFagsystemIdRef(oppdrag110) +
-                validerIngendatoKlassifikFom(oppdrag110)
+                validerIngendatoKlassifikFom(oppdrag110) +
+                validerAksjonskodeverdier(oppdrag110)
 
         valider(feil.isEmpty()) {
             feil.joinToString("\n")
@@ -130,5 +131,10 @@ internal object UbrukteFelter {
             .map { linje ->
                 "oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt datoKlassifikFom, dette feltet skal ikke være i bruk!"
             }.toSet()
+    }
+
+    private fun validerAksjonskodeverdier(oppdrag110: Oppdrag110): Set<String> {
+        if (Aksjonskode.fraXmlOrNull(oppdrag110.kodeAksjon) != null) return emptySet()
+        return setOf("oppdrag-110 har satt kodeAksjon til ${oppdrag110.kodeAksjon}, denne verdien skal ikke være i bruk!")
     }
 }

@@ -19,6 +19,7 @@ import io.ktor.server.auth.jwt.jwt
 import no.nav.utbetaling.beregning.http.HttpClientFactory
 import no.nav.utbetaling.beregning.kotlinx.KotlinxJson
 import no.nav.utbetaling.beregning.log.Log
+import no.nav.utbetaling.beregning.log.httpLog
 
 const val AUTHENTICATION_NAME = "azureAd"
 
@@ -69,7 +70,7 @@ data class OpenIdMetadata(
 private fun wellKnowConfig(wellKnownUrl: String): OpenIdMetadata {
     val openIdMetadata: OpenIdMetadata by lazy {
         runBlocking {
-            HttpClientFactory.new(KotlinxJson).use { client ->
+            HttpClientFactory.new(KotlinxJson, logger = httpLog).use { client ->
                 client.get(wellKnownUrl).body<OpenIdMetadata>()
             }
         }

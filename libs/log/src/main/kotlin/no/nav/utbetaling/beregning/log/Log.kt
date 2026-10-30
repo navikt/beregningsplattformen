@@ -23,6 +23,7 @@ val secureLog: Logger = logger("secureLog")
 val auditLog: Logger = logger("audit")
 val appLog: Logger = logger("appLog")
 val jdbcLog: Logger = logger("jdbc")
+val httpLog: Logger = logger("http")
 
 object Log {
     fun debug(

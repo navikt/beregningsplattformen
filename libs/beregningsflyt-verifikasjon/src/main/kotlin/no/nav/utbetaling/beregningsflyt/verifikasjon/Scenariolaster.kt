@@ -19,24 +19,25 @@ internal object Scenariolaster {
 
     fun last(navn: String): Scenario {
         val base = "$ROT/$navn"
+        val kontekstTekst = lesTekst("$base/kontekst.json")
+        val oppdragTekst = lesTekst("$base/oppdrag.json")
+        val skatteKontekstTekst = lesTekst("$base/skatteKontekst.json")
+        val trekkTekst = lesTekst("$base/trekk.json")
+        val resultatTekst = lesTekst("$base/resultat.json")
         return Scenario(
             navn = navn,
-            kontekst = scenarioJson.decodeFromString(Kontekst.serializer(), lesTekst("$base/kontekst.json")),
-            oppdrag =
-                scenarioJson.decodeFromString(
-                    ListSerializer(Oppdrag.serializer()),
-                    lesTekst("$base/oppdrag.json"),
-                ),
-            resultat = scenarioJson.decodeFromString(Resultat.serializer(), lesTekst("$base/resultat.json")),
-            skatteKontekst =
-                scenarioJson.decodeFromString(
-                    SkatteKontekst.serializer(),
-                    lesTekst("$base/skatteKontekst.json"),
-                ),
-            trekk =
-                scenarioJson.decodeFromString(
-                    ListSerializer(Trekkvedtak.serializer()),
-                    lesTekst("$base/trekk.json"),
+            kontekst = scenarioJson.decodeFromString(Kontekst.serializer(), kontekstTekst),
+            oppdrag = scenarioJson.decodeFromString(ListSerializer(Oppdrag.serializer()), oppdragTekst),
+            resultat = scenarioJson.decodeFromString(Resultat.serializer(), resultatTekst),
+            skatteKontekst = scenarioJson.decodeFromString(SkatteKontekst.serializer(), skatteKontekstTekst),
+            trekk = scenarioJson.decodeFromString(ListSerializer(Trekkvedtak.serializer()), trekkTekst),
+            raw =
+                RåttInnhold(
+                    kontekst = kontekstTekst,
+                    oppdrag = oppdragTekst,
+                    skatteKontekst = skatteKontekstTekst,
+                    trekk = trekkTekst,
+                    resultat = resultatTekst,
                 ),
         )
     }
