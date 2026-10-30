@@ -125,6 +125,10 @@ class Oppdragstidslinje private constructor(
                     OpplysningerIntern.videreførGjelderId(opplysninger, gjelderId)
                 }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
                     OpplysningerIntern.videreførUtbetalesTil(opplysninger, utbetalesTil)
+                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
+                    OpplysningerIntern.videreførSkyldner(opplysninger, skyldner)
+                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::refusjonsinfo)) { _, opplysninger, refusjonsinfo ->
+                    OpplysningerIntern.videreførRefusjonsinfo(opplysninger, refusjonsinfo)
                 }
         }
     }
@@ -178,6 +182,10 @@ class Oppdragstidslinje private constructor(
             refDelytelseId = opplysningerIntern.refDelytelseId,
             gjelderId = opplysningerIntern.gjelderId,
             sats = opplysningerIntern.sats,
+            vedtaksSats = opplysningerIntern.vedtaksSats,
+            skyldner = opplysningerIntern.skyldner,
+            refusjonsinfo = opplysningerIntern.refusjonsinfo,
+            typeSøknad = opplysningerIntern.typeSøknad,
             henvisning = opplysningerIntern.henvisning,
             stønadId = oppdragsverdier.stønadId,
             forfall = oppdragsverdier.forfall,

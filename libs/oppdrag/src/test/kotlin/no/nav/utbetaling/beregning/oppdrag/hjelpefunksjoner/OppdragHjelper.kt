@@ -12,6 +12,7 @@ import no.nav.utbetaling.beregning.oppdrag.xml.Ompostering116
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsEnhet120
 import no.nav.utbetaling.beregning.oppdrag.xml.OppdragsLinje150
+import no.nav.utbetaling.beregning.oppdrag.xml.Refusjonsinfo156
 import no.nav.utbetaling.beregning.oppdrag.xml.TfradragTillegg
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatus
 import no.nav.utbetaling.beregning.oppdrag.xml.TkodeStatusLinje
@@ -118,6 +119,12 @@ internal fun linje(
     brukKjøreplan: String? = null,
     kodeKlassifik: String = "AAPUAA",
     datoKlassifikFom: LocalDate? = null,
+    skyldnerId: String? = null,
+    datoSkyldnerFom: LocalDate? = null,
+    typeSoknad: String? = null,
+    refunderesId: String? = null,
+    refusjonMaksDato: LocalDate? = null,
+    refusjonDatoFom: LocalDate? = null,
 ) = OppdragsLinje150(
     kodeEndringLinje = "NY",
     delytelseId = delytelseId,
@@ -140,4 +147,17 @@ internal fun linje(
     datoUtbetalesTilIdFom = datoUtbetalesTilIdFom,
     vedtakId = vedtakId,
     brukKjoreplan = brukKjøreplan,
+    skyldnerId = skyldnerId,
+    datoSkyldnerFom = datoSkyldnerFom,
+    typeSoknad = typeSoknad,
+    refusjonsinfo156 =
+        if (refunderesId != null || refusjonMaksDato != null || refusjonDatoFom != null) {
+            Refusjonsinfo156(
+                maksDato = refusjonMaksDato,
+                refunderesId = refunderesId,
+                datoFom = refusjonDatoFom ?: fom,
+            )
+        } else {
+            null
+        },
 )

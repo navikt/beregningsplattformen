@@ -55,4 +55,4 @@ class HenvisningTest :
         }
     })
 
-private fun Oppdragstidslinje.satserMedHenvisning() = perPeriode { it.sats.opplysning.toInt() to it.henvisning?.opplysning }
+private fun Oppdragstidslinje.satserMedHenvisning() = perPeriode { it.sats.opplysning.verdi.toInt() to it.henvisning?.opplysning }

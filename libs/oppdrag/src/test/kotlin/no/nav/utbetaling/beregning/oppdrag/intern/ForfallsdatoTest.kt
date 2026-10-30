@@ -45,4 +45,4 @@ class ForfallsdatoTest :
         }
     })
 
-private fun Oppdragstidslinje.satserMedForfall() = perPeriode { it.sats.opplysning.toInt() to it.forfall?.opplysning }
+private fun Oppdragstidslinje.satserMedForfall() = perPeriode { it.sats.opplysning.verdi.toInt() to it.forfall?.opplysning }
