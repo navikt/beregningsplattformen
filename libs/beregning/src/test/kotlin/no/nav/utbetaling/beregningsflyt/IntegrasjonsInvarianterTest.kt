@@ -97,7 +97,7 @@ class IntegrasjonsInvarianterTest :
             }
         }
 
-        test("compiled main graph including nested classes and captured fields has no legacy aggregate types") {
+        test("compiled timeline graph including nested classes and captured fields has no legacy aggregate types") {
             val kodeRot =
                 File(
                     OppdragDelperiode::class.java.protectionDomain.codeSource.location
@@ -105,7 +105,7 @@ class IntegrasjonsInvarianterTest :
                 )
             kodeRot.isDirectory shouldBe true
             val klasser =
-                kodeRot
+                File(kodeRot, "no/nav/utbetaling/beregningsflyt")
                     .walkTopDown()
                     .filter { it.isFile && it.extension == "class" }
                     .map {
@@ -136,13 +136,13 @@ class IntegrasjonsInvarianterTest :
             }
         }
 
-        test("main sources reject legacy aggregate imports construction conversion and closures") {
+        test("timeline main sources reject legacy aggregate imports construction conversion and closures") {
             val modul =
                 generateSequence(File("").absoluteFile) { it.parentFile }
-                    .map { File(it, "libs/beregningsflyt") }
+                    .map { File(it, "libs/beregning") }
                     .first { File(it, "src/main/kotlin").isDirectory }
             val kilder =
-                File(modul, "src/main")
+                File(modul, "src/main/kotlin/no/nav/utbetaling/beregningsflyt")
                     .walkTopDown()
                     .filter { it.isFile && it.extension in setOf("kt", "java") }
                     .toList()
