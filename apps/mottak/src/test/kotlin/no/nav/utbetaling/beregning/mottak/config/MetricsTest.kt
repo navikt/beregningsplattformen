@@ -2,7 +2,7 @@ package no.nav.utbetaling.beregning.mottak.config
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldNotContain
+import io.micrometer.core.instrument.Tag
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
@@ -10,161 +10,130 @@ import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 class MetricsTest :
     FunSpec({
         beforeEach {
-            Metrics.oppdragFeltCounter.clear()
-            Metrics.oppdragFeilCounter.clear()
+            resettCounters()
         }
 
         afterEach {
-            Metrics.oppdragFeltCounter.clear()
-            Metrics.oppdragFeilCounter.clear()
+            resettCounters()
         }
 
-        listOf("utbetaling", "simulering").forEach { type ->
+        listOf("utbetaling", "simulering", "ugyldig_oppdrag", "ugyldig_kombinasjon").forEach { type ->
             test("registrerer felt og tagger for $type") {
+                val metrikk = metrikk()
                 val metrikker = listOf(metrikk())
                 val oppdrag =
                     when (type) {
                         "utbetaling" -> Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker)
-                        else -> Oppdrag.Simulering(Oppdragstidslinje(), metrikker)
+                        "simulering" -> Oppdrag.Simulering(Oppdragstidslinje(), metrikker)
+                        "ugyldig_oppdrag" -> Oppdrag.UgyldigOppdrag(IllegalArgumentException("Ugyldige testdata"), metrikker)
+                        else -> Oppdrag.UgyldigKombinasjon(IllegalArgumentException("Ugyldige testdata"), metrikker)
                     }
 
                 Metrics.registrerOppdrag(oppdrag)
 
                 antallFelt() shouldBe 1.0
-                Metrics.oppdragFeltCounter.labelValues(AKSJONSFELT, "1", "AAP", "AAPUAA").get() shouldBe 1.0
-                antallFeil() shouldBe 0.0
+                antall(metrikk, type) shouldBe 1.0
+                Metrics.prometheusMeterRegistry.meters
+                    .single()
+                    .id.tags
+                    .associate { it.key to it.value } shouldBe
+                    (metrikk.tags + ("oppdragstype" to type))
             }
         }
 
-        test("registrerer alle tillatte felt og filtrerer bort andre felt") {
-            val tillatteFelt =
+        test("registrerer vilkårlige feltnavn og tagger fra oppdraget") {
+            val metrikker =
                 listOf(
-                    AKSJONSFELT,
-                    "oppdrag_110_kodeEndring",
-                    "oppdrag_110_fagsystemId",
-                    "oppdrag_110_oppdrags_linje_150_kodeEndringLinje",
-                    "oppdrag_110_oppdrags_linje_150_delytelseId",
-                    "oppdrag_110_oppdrags_linje_150_refFagsystemId",
+                    metrikk(felt = "et_felt"),
+                    metrikk(felt = "et_annet_felt", tags = mapOf("annen_tag" to "annen_verdi")),
                 )
-            val utelattFelt = "oppdrag_110_utbetFrekvens"
-            val metrikker = (tillatteFelt + utelattFelt).map { metrikk(felt = it, verdi = "skjult") }
 
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker))
 
-            antallFelt() shouldBe 6.0
-            tillatteFelt.forEach { felt ->
-                Metrics.oppdragFeltCounter.labelValues(felt, "skjult", "AAP", "AAPUAA").get() shouldBe 1.0
+            Metrics.prometheusMeterRegistry.meters.size shouldBe 2
+            metrikker.forEach { antall(it) shouldBe 1.0 }
+            metrikker.forEach { metrikk ->
+                Metrics.prometheusMeterRegistry
+                    .get("beregningsplattform_mottak_${metrikk.felt}")
+                    .counter()
+                    .id.tags
+                    .associate { it.key to it.value } shouldBe (metrikk.tags + ("oppdragstype" to "utbetaling"))
             }
-            Metrics.prometheusMeterRegistry.scrape() shouldNotContain utelattFelt
         }
 
-        test("teller samme kombinasjon én gang per oppdrag selv med ulike ekstra tagger") {
+        test("teller hver forekomst av samme metrikk") {
             val metrikk = metrikk()
-            val metrikker = listOf(metrikk, metrikk, metrikk.copy(tags = metrikk.tags + ("ekstra" to "ignoreres")))
 
-            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker))
+            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(metrikk, metrikk)))
 
-            antallFelt() shouldBe 1.0
-            Metrics.oppdragFeltCounter.labelValues(AKSJONSFELT, "1", "AAP", "AAPUAA").get() shouldBe 1.0
+            antallFelt() shouldBe 2.0
+            antall(metrikk) shouldBe 2.0
         }
 
-        test("teller ulike kombinasjoner av felt, verdi, fagområde og klassifikasjon hver for seg") {
+        test("skiller tellere med samme felt og ulike taggverdier") {
             val metrikker =
                 listOf(
                     metrikk(),
-                    metrikk(felt = "oppdrag_110_kodeEndring"),
-                    metrikk(verdi = "2"),
-                    metrikk(fagomraade = "DAGP"),
-                    metrikk(klassifik = "AAPOR"),
+                    metrikk(tags = mapOf("testtag" to "annen_verdi")),
                 )
 
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker))
 
-            antallFelt() shouldBe 5.0
-            metrikker.forEach { metrikk ->
-                Metrics.oppdragFeltCounter
-                    .labelValues(metrikk.felt, metrikk.tags["verdi"], metrikk.tags["kodeFagomraade"], metrikk.tags["kodeKlassifik"])
-                    .get() shouldBe 1.0
-            }
+            Metrics.prometheusMeterRegistry.meters.size shouldBe 2
+            metrikker.forEach { antall(it) shouldBe 1.0 }
         }
 
         test("teller på nytt ved gjentatt behandling av samme oppdrag") {
-            val oppdrag = Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(metrikk(), metrikk()))
+            val metrikk = metrikk()
+            val oppdrag = Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(metrikk, metrikk))
 
             repeat(2) { Metrics.registrerOppdrag(oppdrag) }
 
+            antallFelt() shouldBe 4.0
+            antall(metrikk) shouldBe 4.0
+        }
+
+        test("skiller tellere etter oppdragstype") {
+            val metrikk = metrikk()
+
+            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(metrikk)))
+            Metrics.registrerOppdrag(Oppdrag.Simulering(Oppdragstidslinje(), listOf(metrikk)))
+
             antallFelt() shouldBe 2.0
-            Metrics.oppdragFeltCounter.labelValues(AKSJONSFELT, "1", "AAP", "AAPUAA").get() shouldBe 2.0
+            antall(metrikk, "utbetaling") shouldBe 1.0
+            antall(metrikk, "simulering") shouldBe 1.0
         }
 
-        listOf("verdi", "kodeFagomraade", "kodeKlassifik").forEach { tag ->
-            test("håndterer manglende og blank $tag som ukjent") {
-                val metrikk = metrikk()
-                val metrikker =
-                    listOf(
-                        metrikk.copy(tags = metrikk.tags - tag),
-                        metrikk.copy(tags = metrikk.tags + (tag to "")),
-                        metrikk.copy(tags = metrikk.tags + (tag to " \t ")),
-                    )
-
-                Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker))
-
-                antallFelt() shouldBe 1.0
-                Metrics.oppdragFeltCounter
-                    .labelValues(
-                        AKSJONSFELT,
-                        if (tag == "verdi") "ukjent" else "1",
-                        if (tag == "kodeFagomraade") "ukjent" else "AAP",
-                        if (tag == "kodeKlassifik") "ukjent" else "AAPUAA",
-                    ).get() shouldBe 1.0
-            }
-        }
-
-        test("registrerer ingen tellere for et gyldig oppdrag uten metrikker") {
+        test("registrerer ingen tellere for et oppdrag uten metrikker") {
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), emptyList()))
 
             antallFelt() shouldBe 0.0
-            antallFeil() shouldBe 0.0
-        }
-
-        listOf("ugyldig_oppdrag", "ugyldig_kombinasjon").forEach { type ->
-            test("teller $type uten å registrere felt fra det ugyldige oppdraget") {
-                val feil = IllegalArgumentException("Ugyldige testdata")
-                val metrikker = listOf(metrikk())
-                val oppdrag =
-                    when (type) {
-                        "ugyldig_oppdrag" -> Oppdrag.UgyldigOppdrag(feil, metrikker)
-                        else -> Oppdrag.UgyldigKombinasjon(feil, metrikker)
-                    }
-
-                repeat(2) { Metrics.registrerOppdrag(oppdrag) }
-
-                antallFeil() shouldBe 2.0
-                Metrics.oppdragFeilCounter.labelValues(type).get() shouldBe 2.0
-                antallFelt() shouldBe 0.0
-            }
         }
     })
 
-private const val AKSJONSFELT = "oppdrag_110_kodeAksjon"
-
 private fun metrikk(
-    felt: String = AKSJONSFELT,
-    verdi: String = "1",
-    fagomraade: String = "AAP",
-    klassifik: String = "AAPUAA",
-) = Oppdrag.Metrikk(
-    felt,
-    mapOf("verdi" to verdi, "kodeFagomraade" to fagomraade, "kodeKlassifik" to klassifik),
-)
+    felt: String = "testfelt",
+    tags: Map<String, String> = mapOf("testtag" to "testverdi"),
+) = Oppdrag.Metrikk(felt, tags)
 
-private fun antallFelt() = antall("beregningsplattform_mottak_oppdrag_felt_total")
+private fun resettCounters() {
+    Metrics.prometheusMeterRegistry.meters.forEach { Metrics.prometheusMeterRegistry.remove(it) }
+}
 
-private fun antallFeil() = antall("beregningsplattform_mottak_oppdrag_feil_total")
+private fun antallFelt() =
+    Metrics.prometheusMeterRegistry.meters.sumOf {
+        Metrics.prometheusMeterRegistry
+            .get(it.id.name)
+            .tags(it.id.tags)
+            .counter()
+            .count()
+    }
 
-private fun antall(navn: String) =
-    Metrics.prometheusMeterRegistry
-        .scrape()
-        .lineSequence()
-        .filter { it.startsWith("$navn{") }
-        .sumOf { it.substringAfterLast(' ').toDouble() }
+private fun antall(
+    metrikk: Oppdrag.Metrikk,
+    type: String = "utbetaling",
+) = Metrics.prometheusMeterRegistry
+    .get("beregningsplattform_mottak_${metrikk.felt}")
+    .tags((metrikk.tags + ("oppdragstype" to type)).map { (navn, verdi) -> Tag.of(navn, verdi) })
+    .counter()
+    .count()
