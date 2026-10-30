@@ -1,45 +1,28 @@
-name: Build and test PR
+name: Build and test PR on apps
 
 on:
   pull_request:
     paths:
-      - "apps/lab/backend/**"
       - "apps/mottak/**"
-      - "libs/oppdrag/**"
-      - "libs/tid/**"
-      - "libs/http/**"
-      - "libs/kotlinx/**"
-      - "libs/log/**"
+      - "apps/lab/backend/**"
+      - "libs/**"
       - "build.gradle.kts"
       - "settings.gradle.kts"
+      - ".github/workflows/build-pr-apps.yaml"
 
 permissions: {}
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+  test-apps:
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - apps:mottak
+          - apps:lab:backend
     permissions:
       contents: read
-    steps:
-      - name: Check out PR
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Set up Java 25
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4.2.1
-        with:
-          distribution: temurin
-          java-version: "25"
-
-      - name: Build and test lab backend
-        uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@4b5f646b98c40ca503e95c98af57b2ed4b602805 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.2
-        with:
-          project-directory: apps/lab/backend
-          gradle-task: ../../../gradlew -p ../../.. :apps:lab:backend:test --configuration-cache
-
-      - name: Build and test mottak
-        uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@4b5f646b98c40ca503e95c98af57b2ed4b602805 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.2
-        with:
-          project-directory: apps/mottak
-          gradle-task: ../../../gradlew -p ../../.. :apps:mottak:test --configuration-cache
-          upload-artifact: 'false'
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@4b5f646b98c40ca503e95c98af57b2ed4b602805 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.2
+    with:
+      gradle-task: ./gradlew :${{ matrix.module }}:test -x ktlintFormat --configuration-cache
+      upload-artifact: 'false'
