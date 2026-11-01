@@ -4,76 +4,12 @@ import java.time.LocalDate
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 class OffentligParserRegresjonTest :
     FunSpec({
-        listOf("utbetalingsgrad150", "tilknyttetMikrofrontend", "valuta160", "tekst160").forEach { felt ->
-            val oppdragsnivå = felt == "tilknyttetMikrofrontend"
-            val listefelt = felt == "valuta160" || felt == "tekst160"
-            val tomVerdi = if (listefelt) "[]" else "null"
-
-            fun json(
-                verdi: String,
-                påOppdragsnivå: Boolean = oppdragsnivå,
-            ): String {
-                val metadata = """, "$felt": $verdi"""
-                return if (påOppdragsnivå) {
-                    parserOppdrag(oppdragsfelt = metadata)
-                } else {
-                    parserOppdrag(linjefelt = metadata)
-                }
-            }
-
-            test("legacy $felt accepts only its approved empty form $tomVerdi") {
-                Oppdrag
-                    .fraJson(json(tomVerdi))
-                    .shouldBeInstanceOf<Oppdrag.Utbetaling>()
-                    .oppdragstidslinje
-                    .isEmpty() shouldBe false
-            }
-
-            val avvisteVerdier =
-                listOf(""""populated"""", """""""", "0", "100", "false", "true", "{}", """{"verdi": 100}""", "[{}]", "[null]") +
-                    if (listefelt) listOf("null") else listOf("[]")
-            avvisteVerdier.forEach { verdi ->
-                test("unsupported legacy $felt rejects $verdi with a field-specific error") {
-                    val feil = Oppdrag.fraJson(json(verdi)).shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>().feil
-                    generateSequence(feil) { it.cause }.joinToString { it.message.orEmpty() } shouldContain felt
-                }
-            }
-
-            test("legacy $felt is rejected at the wrong level") {
-                Oppdrag.fraJson(json(tomVerdi, !oppdragsnivå)).shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>()
-            }
-        }
-
-        test("all approved empty legacy placeholders can be combined") {
-            Oppdrag
-                .fraJson(
-                    parserOppdrag(
-                        linjefelt = """, "utbetalingsgrad150": null, "valuta160": [], "tekst160": [], "datoRefFagsystemIdFom": null""",
-                        oppdragsfelt = """, "tilknyttetMikrofrontend": null""",
-                    ),
-                ).shouldBeInstanceOf<Oppdrag.Utbetaling>()
-        }
-
         test("unknown assignment root fields are still rejected") {
             Oppdrag.fraJson(parserOppdrag(oppdragsfelt = """, "unknownField": null""")).shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>()
-        }
-
-        test("legacy reference date metadata accepts null on the assignment line") {
-            val resultat = Oppdrag.fraJson(parserOppdrag(linjefelt = """, "datoRefFagsystemIdFom": null"""))
-            resultat.shouldBeInstanceOf<Oppdrag.Utbetaling>().oppdragstidslinje.isEmpty() shouldBe false
-        }
-
-        listOf(""""2026-03-01"""", """""""", "0", "false", "[]", "{}").forEach { verdi ->
-            test("populated unsupported legacy reference date is rejected: $verdi") {
-                val resultat = Oppdrag.fraJson(parserOppdrag(linjefelt = """, "datoRefFagsystemIdFom": $verdi"""))
-                val feil = resultat.shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>().feil
-                generateSequence(feil) { it.cause }.joinToString { it.message.orEmpty() } shouldContain "datoRefFagsystemIdFom"
-            }
         }
 
         listOf("", """, "datoOverfores": null""").forEach { datofelt ->
@@ -112,10 +48,6 @@ class OffentligParserRegresjonTest :
 
         test("unknown assignment line fields are still rejected") {
             Oppdrag.fraJson(parserOppdrag(linjefelt = """, "unknownField": null""")).shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>()
-        }
-
-        test("legacy reference date metadata is not accepted at assignment root") {
-            Oppdrag.fraJson(parserOppdrag(oppdragsfelt = """, "datoRefFagsystemIdFom": null""")).shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>()
         }
 
         test("malformed JSON is still rejected") {

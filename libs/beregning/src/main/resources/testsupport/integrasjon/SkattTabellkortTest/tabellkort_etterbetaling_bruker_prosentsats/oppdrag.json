@@ -56,15 +56,10 @@
     "kodeArbeidsgiver" : null,
     "henvisning" : "tabellkortEtterbetalingRef1",
     "refFagsystemId" : null,
-    "datoRefFagsystemIdFom" : null,
-    "utbetalingsgrad150" : null,
     "attestant180" : [ {
       "attestantId" : "Test",
       "datoUgyldigFom" : null
     } ],
-    "grad170" : [ ],
-    "valuta160" : [ ],
-    "tekst160" : [ ]
-  } ],
-  "tilknyttetMikrofrontend" : null
+    "grad170" : [ ]
+  } ]
 } ]
