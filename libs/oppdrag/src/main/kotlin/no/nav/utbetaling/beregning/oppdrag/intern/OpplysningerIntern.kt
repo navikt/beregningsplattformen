@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregning.oppdrag.intern
 
-import java.math.BigDecimal
 import java.time.LocalDate
 
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak

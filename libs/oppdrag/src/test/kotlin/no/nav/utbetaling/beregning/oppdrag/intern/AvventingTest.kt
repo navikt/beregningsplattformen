@@ -117,4 +117,8 @@ private fun avventing(
 
 private fun Oppdragstidslinje.avventinger() = perPeriode { it.avventingsårsak }
 
-private fun Oppdragstidslinje.satserMedAvventing() = perPeriode { it.sats.opplysning.verdi.toInt() to it.avventingsårsak?.opplysning }
+private fun Oppdragstidslinje.satserMedAvventing() =
+    perPeriode {
+        it.sats.opplysning.verdi
+            .toInt() to it.avventingsårsak?.opplysning
+    }

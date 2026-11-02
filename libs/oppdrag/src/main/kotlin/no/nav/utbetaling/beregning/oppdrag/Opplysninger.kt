@@ -154,7 +154,7 @@ data class Ompostering(
 
 data class Sats(
     val verdi: BigDecimal,
-    val satsType: String, //TODO gjør om til enum se TypeSats
+    val satsType: String, // TODO gjør om til enum se TypeSats
 )
 
 data class Refusjonsinfo(
@@ -162,7 +162,6 @@ data class Refusjonsinfo(
     val refunderes: Part?,
     val datoFom: LocalDate,
 )
-
 
 data class Opplysninger(
     val fagområde: Fagområde,

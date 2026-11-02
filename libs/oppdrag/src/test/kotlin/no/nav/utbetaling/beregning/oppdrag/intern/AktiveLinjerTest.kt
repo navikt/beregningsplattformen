@@ -105,7 +105,43 @@ class AktiveLinjerTest :
                 )
         }
 
-        test("DelytelseId må være unik på tvers av linjene i en kjede") {
+        test("Siste linje med samme delytelseId erstatter den tidligere linjen") {
+            val resultat =
+                aktiveLinjer(
+                    linje(delytelseId = "1", fom = 1.januar, tom = 31.januar),
+                    linje(delytelseId = "1", fom = 1.januar, tom = 20.januar),
+                )
+
+            resultat shouldBe listOf(mapOf(1.januar til 20.januar to "1"))
+        }
+
+        test("To linjer med samme delytelseId kan ikke ha samme refDelytelseId") {
+            val feil =
+                shouldThrow<IllegalArgumentException> {
+                    aktiveLinjer(
+                        linje(delytelseId = "1", fom = 1.januar, tom = 31.januar),
+                        linje(delytelseId = "2", refDelytelseId = "1", fom = 1.februar, tom = 28.februar),
+                        linje(delytelseId = "3", refDelytelseId = "2", fom = 1.mars, tom = 31.mars),
+                        linje(delytelseId = "2", refDelytelseId = "1", fom = 10.februar, tom = 28.februar),
+                    )
+                }
+
+            feil.message shouldBe "DelytelseId 2 kan bare ha én linje med refDelytelseId"
+        }
+
+        test("To linjer med samme delytelseId kan ikke ha ulike refDelytelseId") {
+            val feil =
+                shouldThrow<IllegalArgumentException> {
+                    aktiveLinjer(
+                        linje(delytelseId = "2", refDelytelseId = "1", fom = 1.februar, tom = 28.februar),
+                        linje(delytelseId = "2", refDelytelseId = "3", fom = 10.februar, tom = 28.februar),
+                    )
+                }
+
+            feil.message shouldBe "DelytelseId 2 kan bare ha én linje med refDelytelseId"
+        }
+
+        test("En linje kan ikke peke på seg selv") {
             shouldThrow<IllegalArgumentException> {
                 aktiveLinjer(
                     linje(delytelseId = "1", fom = 1.januar, tom = 31.januar),
