@@ -1,39 +1,13 @@
-import org.gradle.api.publish.maven.MavenPublication
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
     `java-test-fixtures`
-    `maven-publish`
+    id("publiser-bibliotek")
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     id("org.jlleitschuh.gradle.ktlint")
     alias(libs.plugins.kover)
-}
-
-group = "no.nav.utbetaling.beregningsplattformen"
-version = providers.gradleProperty("publicationVersion").getOrElse("0.0.0-SNAPSHOT")
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            artifactId = "beregning"
-        }
-    }
-
-    repositories {
-        providers.environmentVariable("MAVEN_PUBLISH_URL").orNull?.let { repositoryUrl ->
-            maven {
-                name = "GitHubPackages"
-                url = uri(repositoryUrl)
-                credentials {
-                    username = providers.environmentVariable("MAVEN_PUBLISH_USER").get()
-                    password = providers.environmentVariable("MAVEN_PUBLISH_TOKEN").get()
-                }
-            }
-        }
-    }
 }
 
 dependencies {

@@ -43,12 +43,10 @@ jobs:
 
       - name: Publish to GitHub Packages
         env:
-          MAVEN_PUBLISH_URL: https://maven.pkg.github.com/navikt/beregningsplattformen
-          MAVEN_PUBLISH_USER: ${{ github.actor }}
-          MAVEN_PUBLISH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSJON: ${{ steps.versjon.outputs.versjon }}
+          BIBLIOTEK_PUBLISERING_BRUKER: ${{ github.actor }}
+          BIBLIOTEK_PUBLISERING_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew :libs:beregningsflyt-verifikasjon:publish \
-            "-PpublicationVersion=$VERSJON" \
+            "-PbibliotekVersjon=${{ steps.versjon.outputs.versjon }}" \
             -x ktlintFormat \
             --no-configuration-cache
