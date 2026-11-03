@@ -4,8 +4,16 @@ import java.io.File
 
 internal data class GitReferanse(val referanse: String) {
     companion object {
+        fun utgangspunktFraGitHubEvent(): GitReferanse? =
+            when (System.getenv("GITHUB_EVENT_NAME")) {
+                "push" -> forrigeCommitFraPushEvent()
+                // PR-er sammenlignes mot base-branchen, ikke mot forrige push til PR-en.
+                "pull_request" -> System.getenv("GITHUB_BASE_REF")?.takeIf { it.isNotEmpty() }?.let { GitReferanse("origin/$it") }
+                else -> null
+            }
+
         // https://docs.github.com/en/webhooks/webhook-events-and-payloads#push
-        fun utgangspunktFraGitHubEvent(): GitReferanse? {
+        private fun forrigeCommitFraPushEvent(): GitReferanse? {
             val referanse = System.getenv("GITHUB_EVENT_PATH")
                 ?.let { File(it) }
                 ?.takeIf { it.exists() }
