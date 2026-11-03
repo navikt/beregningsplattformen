@@ -4,23 +4,6 @@ import java.io.File
 
 internal data class GitReferanse(val referanse: String) {
     companion object {
-        fun utgangspunktFraGitHubEvent(): GitReferanse? =
-            when (System.getenv("GITHUB_EVENT_NAME")) {
-                "push" -> forrigeCommitFraPushEvent()
-                // PR-er sammenlignes mot base-branchen, ikke mot forrige push til PR-en.
-                "pull_request" -> System.getenv("GITHUB_BASE_REF")?.takeIf { it.isNotEmpty() }?.let { GitReferanse("origin/$it") }
-                else -> null
-            }
-
-        // https://docs.github.com/en/webhooks/webhook-events-and-payloads#push
-        private fun forrigeCommitFraPushEvent(): GitReferanse? {
-            val referanse = System.getenv("GITHUB_EVENT_PATH")
-                ?.let { File(it) }
-                ?.takeIf { it.exists() }
-                ?.let { Regex("\"before\"\\s*:\\s*\"([0-9a-f]{40})\"").find(it.readText())?.groupValues?.get(1) }
-                ?.takeIf { sha -> sha.any { it != '0' } }
-            return referanse?.let { GitReferanse(it) }
-        }
         val OriginMain = GitReferanse("origin/main")
         val Head = GitReferanse("HEAD")
     }
@@ -47,12 +30,16 @@ internal class PåvirkedeModuler(
 
 
     fun finn(
-        før: GitReferanse = GitReferanse.utgangspunktFraGitHubEvent() ?: GitReferanse.OriginMain,
-        nå: GitReferanse = GitReferanse.Head,
+        siden: GitReferanse,
+        til: GitReferanse = GitReferanse.Head,
     ): Set<String> {
-        val endredeFiler = finnEndredeFiler(før, nå)
+        val endredeFiler = finnEndredeFiler(siden, til)
+        if (endredeFiler == null) {
+            logger.warn("Fant ikke felles stamfar mellom '${siden.referanse}' og '${til.referanse}' (force-push eller manglende fetch?) – alle moduler er påvirket.")
+            return modulKataloger.keys.toSortedSet()
+        }
         if (endredeFiler.isEmpty()) {
-            logger.lifecycle("Ingen endrede filer funnet mot ${før.referanse}.")
+            logger.lifecycle("Ingen endrede filer funnet siden ${siden.referanse}.")
             return emptySet()
         }
 
@@ -64,12 +51,13 @@ internal class PåvirkedeModuler(
         return utvidMedAvhengige(modulerForFiler(endredeFiler))
     }
 
-    private fun finnEndredeFiler(før: GitReferanse, nå: GitReferanse): List<String> {
-        val stamfar = git("merge-base", før.referanse, nå.referanse).trim()
-        if (stamfar.isEmpty()) {
-            error("Fant ikke felles stamfar mellom '${før.referanse}' og '${nå.referanse}'. Er base-ref'en hentet (git fetch)?")
+    /** Null når det ikke finnes noen felles stamfar, for eksempel fordi `siden` ikke finnes etter en force-push. */
+    private fun finnEndredeFiler(siden: GitReferanse, til: GitReferanse): List<String>? {
+        val stamfar = gitEllerNull("merge-base", siden.referanse, til.referanse)?.trim()
+        if (stamfar.isNullOrEmpty()) {
+            return null
         }
-        return git("diff", "--name-only", stamfar, nå.referanse)
+        return git("diff", "--name-only", stamfar, til.referanse)
             .lines()
             .map { it.trim() }
             .filter { it.isNotEmpty() }
@@ -107,6 +95,11 @@ internal class PåvirkedeModuler(
         }
         return resultat.toSortedSet()
     }
+
+    private fun gitEllerNull(vararg args: String): String? =
+        runCatching { git(*args) }
+            .onFailure { logger.info(it.message) }
+            .getOrNull()
 
     private fun git(vararg args: String): String {
         val ut = ByteArrayOutputStream()

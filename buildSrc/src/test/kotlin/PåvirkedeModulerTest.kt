@@ -21,21 +21,21 @@ class PåvirkedeModulerTest :
 
         test("endring i én modul gir modulen") {
             // b5b891a6 endrer bare apps/lab/backend/src/main/.../OppdragstidslinjeDTO.kt
-            moduler.finn(før = GitReferanse("b5b891a6~1"), nå = GitReferanse("b5b891a6")) shouldBe
+            moduler.finn(siden = GitReferanse("b5b891a6~1"), til = GitReferanse("b5b891a6")) shouldBe
                 setOf(":apps:lab:backend")
         }
 
         test("endring i bibliotek gir også moduler som avhenger av det") {
             // 2d631f2f endrer libs/beregning/build.gradle.kts, men også buildSrc, som er global
-            moduler.finn(før = GitReferanse("2d631f2f~1"), nå = GitReferanse("2d631f2f")) shouldBe
+            moduler.finn(siden = GitReferanse("2d631f2f~1"), til = GitReferanse("2d631f2f")) shouldBe
                 setOf(":apps:lab:backend", ":libs:beregning")
         }
 
         test("endring bare i workflow-filer gir ingen moduler") {
-            moduler.finn(før = GitReferanse("68180f76~1"), nå = GitReferanse("68180f76")).shouldBeEmpty()
+            moduler.finn(siden = GitReferanse("68180f76~1"), til = GitReferanse("68180f76")).shouldBeEmpty()
         }
 
-        test("samme referanse for før og nå gir ingen moduler") {
-            moduler.finn(før = GitReferanse("b5b891a6"), nå = GitReferanse("b5b891a6")).shouldBeEmpty()
+        test("samme referanse for siden og til gir ingen moduler") {
+            moduler.finn(siden = GitReferanse("b5b891a6"), til = GitReferanse("b5b891a6")).shouldBeEmpty()
         }
     })

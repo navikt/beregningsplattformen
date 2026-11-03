@@ -6,6 +6,7 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 abstract class PåvirkedeModulerTask : DefaultTask() {
     @get:Input
@@ -20,6 +21,14 @@ abstract class PåvirkedeModulerTask : DefaultTask() {
     @get:Internal
     abstract val prosjektRot: DirectoryProperty
 
+    @get:Internal
+    @set:Option(option = "siden", description = "Git-referansen endringene regnes fra. Standard er origin/main.")
+    var siden: String? = null
+
+    @get:Internal
+    @set:Option(option = "alle-apper", description = "Ta med alle apper, også de som ikke er påvirket. Brukes for å redeploye alt.")
+    var alleApper: Boolean = false
+
     @TaskAction
     fun kjør() {
         val prosjektRotFil = prosjektRot.get().asFile
@@ -30,10 +39,9 @@ abstract class PåvirkedeModulerTask : DefaultTask() {
             modulKataloger = modulkataloger,
             direkteAvhengigheter = direkteAvhengigheter.get(),
             logger = logger
-        ).finn()
+        ).finn(siden = siden?.let { GitReferanse(it.trim()) } ?: GitReferanse.OriginMain)
 
-        // Om det er en scheduled run, så vil man redeploye alle apper selv om de ikke er påvirket av endringer.
-        val utgangspunktForApper = when (System.getenv("GITHUB_EVENT_NAME") == "schedule") {
+        val utgangspunktForApper = when (alleApper) {
             true -> modulkataloger.keys
             false -> allePåvirkedeModuler
         }

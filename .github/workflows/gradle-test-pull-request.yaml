@@ -10,8 +10,8 @@ on:
 permissions: {}
 
 concurrency:
-  group: build-pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: test-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true # Å avbryte kjøringer på pull requesten er trygt, siden vi ikke deployer noe.
 
 jobs:
   finn-moduler:
@@ -24,7 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Trengs for å kunne sammenligne endringer mot base branch
+          persist-credentials: false
 
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
@@ -36,7 +37,7 @@ jobs:
         id: finn
         shell: bash
         run: |
-          MODULER=$(./gradlew -q paavirkedeModuler | tail -n1 | jq -c .alle)
+          MODULER=$(./gradlew -q paavirkedeModuler "--siden=origin/$GITHUB_BASE_REF" | tail -n1 | jq -c .alle)
           echo "Påvirkede moduler: $MODULER"
           echo "moduler=$MODULER" >> "$GITHUB_OUTPUT"
 

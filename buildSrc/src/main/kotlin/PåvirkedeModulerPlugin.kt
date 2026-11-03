@@ -5,6 +5,8 @@ import org.gradle.api.artifacts.ProjectDependency
 /**
  *  Ved å kjøre `./gradlew -q paavirkedeModuler | tail -n1`
  *  Får man en JSON-struktur som viser hvilke moduler som er påvirket, grupper på hva slags typer det er.
+ *  `--siden=<ref>` velger hva endringene regnes fra (standard origin/main),
+ *  `--alle-apper` tar med alle apper selv om de ikke er påvirket av endringen.
  */
 class PåvirkedeModulerPlugin : Plugin<Project> {
     override fun apply(target: Project) {
