@@ -46,7 +46,7 @@ class OppdragstidslinjeFraXMLTest :
         }
 
         test("Tolker oppdrag med opphør av eksisterende linje") {
-            val xml = Filhjelper.lesFil("xml/NyttOppdragMedOpphørAvEksisterendeLinje.xml")
+            val xml = Filhjelper.lesFil("xml/OpphørAvEksisterendeLinje.xml")
             val oppdrag = FraXmlFormat.oppdrag110FraXml(xml).values
             oppdrag.size shouldBe 1
 
@@ -79,6 +79,83 @@ class OppdragstidslinjeFraXMLTest :
                         12.mai(2026) til 12.mai(2026) to setOf(Status.Aktiv),
                         13.mai(2026) til 15.mai(2026) to setOf(Status.Opphørt),
                     )
+                resultat.assertGjenskaptfraTidslinjer()
+            }
+        }
+
+        test("Tolker oppdrag som reaktiverer en opphørt linje") {
+            val xml = Filhjelper.lesFil("xml/ReaktiveringAvOpphørtLinje.xml")
+            val oppdrag = FraXmlFormat.oppdrag110FraXml(xml).values
+            oppdrag.size shouldBe 1
+
+            val resultat = FraXmlFormat.opprett(oppdrag.single())
+            resultat.tidslinjer.values
+                .single()
+                .first()
+                .second.vedtaksSats
+                ?.opplysning shouldBe
+                Sats(verdi = java.math.BigDecimal("1000"), satsType = "")
+            resultat.assertGjenskaptfraTidslinjer()
+
+            val utenVedtakssats = xml.replace(Regex("<vedtakssats-157>.*?</vedtakssats-157>", RegexOption.DOT_MATCHES_ALL), "")
+            val uten = FraXmlFormat.opprett(FraXmlFormat.oppdrag110FraXml(utenVedtakssats).values.single())
+            uten.tidslinjer.values
+                .single()
+                .first()
+                .second.vedtaksSats shouldBe null
+
+            (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true
+
+            assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(oppdrag.single()) { resultat ->
+                resultat.satser() shouldBe
+                    mapOf(
+                        12.mai(2026) til 12.mai(2026) to setOf(300),
+                        13.mai(2026) til 15.mai(2026) to setOf(1000),
+                    )
+                resultat.perPeriode { it.status.opplysning } shouldBe
+                    mapOf(
+                        12.mai(2026) til 12.mai(2026) to setOf(Status.Opphørt),
+                        13.mai(2026) til 15.mai(2026) to setOf(Status.Aktiv),
+                    )
+                resultat.assertGjenskaptfraTidslinjer()
+            }
+        }
+
+        test("Tolker oppdrag som endrer en linje og så opphører den") {
+            val xml = Filhjelper.lesFil("xml/EndrerOgOpphørerLinje.xml")
+            val oppdrag = FraXmlFormat.oppdrag110FraXml(xml).values
+            oppdrag.size shouldBe 1
+
+            val resultat = FraXmlFormat.opprett(oppdrag.single())
+            resultat.tidslinjer.values
+                .single()
+                .first()
+                .second.vedtaksSats
+                ?.opplysning shouldBe
+                Sats(verdi = java.math.BigDecimal("1000"), satsType = "")
+            resultat.assertGjenskaptfraTidslinjer()
+
+            val utenVedtakssats = xml.replace(Regex("<vedtakssats-157>.*?</vedtakssats-157>", RegexOption.DOT_MATCHES_ALL), "")
+            val uten = FraXmlFormat.opprett(FraXmlFormat.oppdrag110FraXml(utenVedtakssats).values.single())
+            uten.tidslinjer.values
+                .single()
+                .first()
+                .second.vedtaksSats shouldBe null
+
+            (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true
+
+            assertSammeOppførselOmHverEnkeltLinjeKommerIEgenInnsending(oppdrag.single()) { resultat ->
+                resultat.satser() shouldBe
+                    mapOf(
+                        12.mai(2026) til 14.mai(2026) to setOf(300),
+                        15.mai(2026) til 20.mai(2026) to setOf(300),
+                    )
+                resultat.perPeriode { it.status.opplysning } shouldBe
+                    mapOf(
+                        12.mai(2026) til 14.mai(2026) to setOf(Status.Aktiv),
+                        15.mai(2026) til 20.mai(2026) to setOf(Status.Opphørt),
+                    )
+
                 resultat.assertGjenskaptfraTidslinjer()
             }
         }
