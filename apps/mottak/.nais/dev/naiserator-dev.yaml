@@ -44,7 +44,6 @@ spec:
   azure:
     application:
       enabled: true
-      allowAllUsers: false
   accessPolicy:
     inbound:
       rules:
@@ -54,3 +53,5 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
+  envFrom:
+    - secret: beregningsplattformen-mottak-secrets

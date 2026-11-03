@@ -17,7 +17,11 @@ fun <T> Oppdragstidslinje.perPeriode(velg: (Opplysninger) -> T) =
             oppdragsdager.values.map(velg).toSet()
     }
 
-fun Oppdragstidslinje.satser() = perPeriode { it.sats.opplysning.verdi.toInt() }
+fun Oppdragstidslinje.satser() =
+    perPeriode {
+        it.sats.opplysning.verdi
+            .toInt()
+    }
 
 fun Oppdragstidslinje.assertGjenskaptfraTidslinjer() {
     val fraTidslinjesamling = FraTidslinjesamling.opprett(DefaultTidslinjesamling(tidslinjer))

@@ -19,7 +19,11 @@ class OppdragstidslinjeFraJSONTest :
             oppdrag.size shouldBe 1
 
             val resultat = FraXmlFormat.opprett(oppdrag.single())
-            resultat.tidslinjer.values.first().first().second.vedtaksSats?.opplysning shouldBe
+            resultat.tidslinjer.values
+                .first()
+                .first()
+                .second.vedtaksSats
+                ?.opplysning shouldBe
                 Sats(verdi = java.math.BigDecimal("974"), satsType = "")
 
             (Oppdrag.fraJson(json) is Oppdrag.Utbetaling) shouldBe true

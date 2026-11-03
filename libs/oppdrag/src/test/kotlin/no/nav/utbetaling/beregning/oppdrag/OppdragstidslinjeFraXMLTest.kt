@@ -20,13 +20,20 @@ class OppdragstidslinjeFraXMLTest :
             oppdrag.size shouldBe 1
 
             val resultat = FraXmlFormat.opprett(oppdrag.single())
-            resultat.tidslinjer.values.single().first().second.vedtaksSats?.opplysning shouldBe
+            resultat.tidslinjer.values
+                .single()
+                .first()
+                .second.vedtaksSats
+                ?.opplysning shouldBe
                 Sats(verdi = java.math.BigDecimal("974"), satsType = "")
             resultat.assertGjenskaptfraTidslinjer()
 
             val utenVedtakssats = xml.replace(Regex("<vedtakssats-157>.*?</vedtakssats-157>", RegexOption.DOT_MATCHES_ALL), "")
             val uten = FraXmlFormat.opprett(FraXmlFormat.oppdrag110FraXml(utenVedtakssats).values.single())
-            uten.tidslinjer.values.single().first().second.vedtaksSats shouldBe null
+            uten.tidslinjer.values
+                .single()
+                .first()
+                .second.vedtaksSats shouldBe null
 
             (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true
 
