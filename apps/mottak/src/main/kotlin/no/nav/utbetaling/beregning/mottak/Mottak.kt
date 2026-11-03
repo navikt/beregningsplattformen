@@ -7,6 +7,7 @@ import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
+import io.ktor.util.reflect.instanceOf
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.mottak.config.ApplicationState
@@ -46,7 +47,12 @@ private fun Application.mottak() {
             ),
         )
 
+    Log.info("Starting Mottak application with MQ queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
+
     val mottakXMLConsumer = MottakXMLConsumer(mottakXMLQueue, MQQueue(PropertiesConfig.mqProperties.mottakXmlQueue))
+
+    Log.info("Mottak application started and listening for messages on queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
+
     monitor.subscribe(ApplicationStarted) {
         mottakXMLConsumer.start()
     }
