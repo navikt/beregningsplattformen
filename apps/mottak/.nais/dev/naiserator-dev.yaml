@@ -53,5 +53,9 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
+    external:
+        - host: mqls02.preprod.local
+          ports:
+            - port: 1413
   envFrom:
     - secret: beregningsplattformen-mottak-secrets
