@@ -10,6 +10,7 @@ import no.nav.utbetaling.beregningsflyt.verifikasjon.Periode
 import no.nav.utbetaling.beregningsflyt.verifikasjon.Rad
 import no.nav.utbetaling.beregningsflyt.verifikasjon.Scenario
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -21,6 +22,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import io.kotest.assertions.fail
+import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregningsflyt.verifikasjon.EkstraInfo
 import no.nav.utbetaling.beregningsflyt.verifikasjon.Kapasitet
 
@@ -28,18 +30,23 @@ class BeregningsflytTest: FunSpec({
 
     val beregningsflyt = Beregningsflyt()
 
-    withData(nameFn = { it.navn }, Scenario.alle) {
-        when (val oppdrag = Oppdrag.fraJson(it.raw.oppdrag)) {
+    withData(nameFn = { it.navn }, Scenario.alle) { scenario ->
+        val skatteKontekst = motorJson.decodeFromString<SkatteKontekst>(scenario.raw.skatteKontekst)
+        val beregningsperiode = no.nav.utbetaling.beregning.tid.Periode.LukketPeriode(
+            fom = LocalDate.parse(scenario.kontekst.periode.fom),
+            tom = LocalDate.parse(scenario.kontekst.periode.tom),
+        )
+        when (val oppdrag = Oppdrag.fraJson(scenario.raw.oppdrag)) {
             is Oppdrag.Utbetaling -> {
-                val beregninger = beregningsflyt.beregn(oppdrag.oppdragstidslinje).map { beregning ->
+                val beregninger = beregningsflyt.beregn(beregningsperiode, oppdrag.oppdragstidslinje, skatteKontekst).map { beregning ->
                     Beregning(
                         periode = Periode(beregning.periode.fom.toString(), beregning.periode.tom?.toString()),
                         status = beregning.status.name,
                         statusflagg = beregning.statusflagg.map { it.name },
-                        overfoeres = it.kontekst.overfoeringsdato,
+                        overfoeres = scenario.kontekst.overfoeringsdato,
                         fagomraade = beregning.fagomraade.name,
-                        gjelder = it.kontekst.gjelder, // TODO: Rart
-                        beregnet = LocalDateTime.parse(it.kontekst.beregnet).toString(), // TODO: Rart
+                        gjelder = scenario.kontekst.gjelder, // TODO: Rart
+                        beregnet = LocalDateTime.parse(scenario.kontekst.beregnet).toString(), // TODO: Rart
                         beloepTilUtbetaling = beregning.delberegning.sumOf { it.sum }.heltall(),
                         ekstraInfo = ekstraInfo(motorJson.encodeToJsonElement(beregning.ekstraInfo)),
                         delberegninger = beregning.delberegning.map { delberegning ->
@@ -78,7 +85,7 @@ class BeregningsflytTest: FunSpec({
                         },
                     )
                 }
-                beregninger shouldBe it.resultat.beregninger
+                beregninger shouldBe scenario.resultat.beregninger
             }
             is Oppdrag.Simulering -> fail("Simleringer støttes ikke i beregningsflyten enda")
             is Oppdrag.UgyldigOppdrag -> fail("Feil: ${oppdrag.feil.stackTraceToString()}")

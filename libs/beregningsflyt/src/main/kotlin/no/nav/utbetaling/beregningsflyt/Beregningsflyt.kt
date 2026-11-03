@@ -42,9 +42,10 @@ class Beregningsflyt {
         val kid: String?
     )
 
-    fun beregn(oppdragstidslinje: Oppdragstidslinje): List<Beregning> {
-        val fom = oppdragstidslinje.first().first.fom
-        val tom = (oppdragstidslinje.last().first as? Periode.LukketPeriode)?.tom
+    fun beregn(beregningsperiode: Periode.LukketPeriode, oppdragstidslinje: Oppdragstidslinje, skatteKontekst: SkatteKontekst): List<Beregning> {
+        val fom = beregningsperiode.fom
+        val tom = beregningsperiode.tom
+        //todo finne splittpunkter basert på skattekontekst se beregningsfordeler.
 
         val delperioder = oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
             tidslinje.map { (periode, opplysninger ) ->
@@ -162,10 +163,7 @@ class Beregningsflyt {
         val beregningsmotorKontekst = BeregningsmotorKontekst(
             periode = DatoIntervall(fom, tom),
             segmenter = beregningssegment,
-            skatteKontekst = SkatteKontekst(
-                skattekort = null,
-                allokeringer = emptyMap()
-            ),
+            skatteKontekst = skatteKontekst,
             satsBoetter = SatsBoetter(
                 innkommendeSatser = emptyMap()
             ),
