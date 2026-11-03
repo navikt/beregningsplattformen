@@ -47,6 +47,7 @@ private fun Application.mottak() {
             ),
         )
 
+    Log.info("Får jeg hentet ut servicename: ${PropertiesConfig.mqProperties.username}")
     Log.info("Starting Mottak application with MQ queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
 
     val mottakXMLConsumer = MottakXMLConsumer(mottakXMLQueue, MQQueue(PropertiesConfig.mqProperties.mottakXmlQueue))
