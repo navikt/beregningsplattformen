@@ -37,6 +37,7 @@ class Tidslinje<T> private constructor(
 
     fun <R> mapVerdier(transform: (T) -> R?): Tidslinje<R> {
         val nye = TreeMap<LocalDate, R?>()
+        println("troll")
         knekkpunkter.forEach { (dato, verdi) -> nye[dato] = verdi?.let(transform) }
         return Tidslinje(nye.komprimert())
     }
