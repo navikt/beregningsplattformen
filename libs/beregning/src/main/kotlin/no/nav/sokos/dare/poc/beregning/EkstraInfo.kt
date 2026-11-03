@@ -6,6 +6,7 @@ import kotlin.reflect.KClass
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -115,6 +116,7 @@ class EkstraInfoValueSerializer(
 
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
+@SerialName("TekstEkstraInfo")
 data class TekstEkstraInfo private constructor(
     val grunn: EkstraInfo.Reasons,
     @EncodeDefault(EncodeDefault.Mode.NEVER)

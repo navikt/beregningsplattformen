@@ -22,6 +22,13 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import io.kotest.assertions.fail
+import io.kotest.assertions.throwables.shouldThrow
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.modules.SerializersModule
+import no.nav.sokos.dare.poc.beregning.EkstraInfo as MotorEkstraInfo
+import no.nav.sokos.dare.poc.aktoer.AktoerId
+import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
+import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregningsflyt.verifikasjon.EkstraInfo
 import no.nav.utbetaling.beregningsflyt.verifikasjon.Kapasitet
@@ -38,54 +45,15 @@ class BeregningsflytTest: FunSpec({
         )
         when (val oppdrag = Oppdrag.fraJson(scenario.raw.oppdrag)) {
             is Oppdrag.Utbetaling -> {
-                val beregninger = beregningsflyt.beregn(beregningsperiode, oppdrag.oppdragstidslinje, skatteKontekst).map { beregning ->
-                    Beregning(
-                        periode = Periode(beregning.periode.fom.toString(), beregning.periode.tom?.toString()),
-                        status = beregning.status.name,
-                        statusflagg = beregning.statusflagg.map { it.name },
-                        overfoeres = scenario.kontekst.overfoeringsdato,
-                        fagomraade = beregning.fagomraade.name,
-                        gjelder = scenario.kontekst.gjelder, // TODO: Rart
-                        beregnet = LocalDateTime.parse(scenario.kontekst.beregnet).toString(), // TODO: Rart
-                        beloepTilUtbetaling = beregning.delberegning.sumOf { it.sum }.heltall(),
-                        ekstraInfo = ekstraInfo(motorJson.encodeToJsonElement(beregning.ekstraInfo)),
-                        delberegninger = beregning.delberegning.map { delberegning ->
-                            // sums er samme type som linjene, så de mappes sammen og skilles etterpå.
-                            val rader = (delberegning.linjer + delberegning.sums).map { linje ->
-                                val typenavn = linje.type.name.lowercase().replaceFirstChar(Char::uppercase)
-                                Rad(
-                                    type = linje.type.name,
-                                    rowName = linje.kodeKlasse?.let { "$typenavn ${it.visningskode}" } ?: typenavn,
-                                    columnValues = linje.dagsbeloep.map { it.beloep.heltall() },
-                                    rowValue = linje.beloep.heltall(),
-                                    ekstra = ekstraInfo(motorJson.encodeToJsonElement(linje.ekstra)),
-                                    capacity = linje.kapasitet?.let { kapasitet ->
-                                        Kapasitet(
-                                            dayCapacity = kapasitet.dagbeloep.values.map { it.heltall() },
-                                            lumpCapacity = kapasitet.periodeBeloep.heltall(),
-                                        )
-                                    },
-                                    satstype = linje.satsType?.name,
-                                    sats = linje.sats?.toDouble(),
-                                    oppdragslinjekjedeId = linje.oppdragslinjekjedeId?.id?.toInt(),
-                                    kodeKlasse = linje.kodeKlasse?.kode,
-                                    reskontroKonto = linje.reskontroKonto,
-                                    trekkVedtakId = linje.trekkvedtakId?.id?.toInt(),
-                                )
-                            }
-                            Delberegning(
-                                oppdragId = requireNotNull(delberegning.oppdragId) { "Delberegning mangler oppdragId" }.id.toInt(),
-                                columns = delberegning.datoIntervall.dager.map { it.toString() },
-                                rows = rader.dropLast(1),
-                                ekstraInfo = ekstraInfo(motorJson.encodeToJsonElement(delberegning.ekstraInfo)),
-                                datoIntervall = delberegning.datoIntervall.let { Periode(it.fom.toString(), it.tom?.toString()) },
-                                sumColumn = delberegning.sumColumn.map { it.heltall() },
-                                sums = rader.last(),
-                            )
-                        },
-                    )
-                }
-                beregninger shouldBe scenario.resultat.beregninger
+                val kontextOgBeregninger = beregningsflyt.beregn(beregningsperiode, oppdrag.oppdragstidslinje, skatteKontekst)
+
+                val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(kontextOgBeregninger.first, kontextOgBeregninger.second )
+                val modifisertberegningskontekstpresentasjon = beregningsmotorKontekstPresentasjon.copy(beregninger = beregningsmotorKontekstPresentasjon.beregninger.map { beregning ->
+                    beregning.copy(gjelder = AktoerId(scenario.kontekst.gjelder.toLong()), overfoeres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
+                        beregnet = LocalDateTime.parse(scenario.kontekst.beregnet), utbetalesTil = scenario.kontekst.utbetalesTil?.let { AktoerId(it.toLong()) } )
+                })
+
+                modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString(scenario.raw.resultat)
             }
             is Oppdrag.Simulering -> fail("Simleringer støttes ikke i beregningsflyten enda")
             is Oppdrag.UgyldigOppdrag -> fail("Feil: ${oppdrag.feil.stackTraceToString()}")
@@ -94,7 +62,43 @@ class BeregningsflytTest: FunSpec({
     }
 })
 
-private val motorJson = Json { encodeDefaults = true }
+private val motorJson = Json {
+    encodeDefaults = true
+    ignoreUnknownKeys = true
+    serializersModule = SerializersModule {
+        polymorphicDefaultDeserializer(MotorEkstraInfo::class) { type ->
+            when (type) {
+                "TekstEkstraInfo" -> TekstEkstraInfo.serializer()
+                else -> null
+            }
+        }
+    }
+}
+
+class MotorJsonTest : FunSpec({
+    test("dekoder kort og fullstendig typenavn for motorens EkstraInfo") {
+        val forventet = TekstEkstraInfo(MotorEkstraInfo.Reasons.SKATT_TILLEGGSOPPLYSNING)
+        listOf("TekstEkstraInfo", TekstEkstraInfo.serializer().descriptor.serialName).forEach { type ->
+            motorJson.decodeFromString<MotorEkstraInfo>(
+                """{"type":"$type","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
+            ) shouldBe forventet
+        }
+    }
+
+    test("beholder motorens fullstendige typenavn ved serialisering") {
+        val info: MotorEkstraInfo = TekstEkstraInfo(MotorEkstraInfo.Reasons.SKATT_TILLEGGSOPPLYSNING)
+        motorJson.encodeToJsonElement(info).jsonObject.getValue("type").jsonPrimitive.content shouldBe
+            "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo"
+    }
+
+    test("avviser ukjente typer for motorens EkstraInfo") {
+        shouldThrow<SerializationException> {
+            motorJson.decodeFromString<MotorEkstraInfo>(
+                """{"type":"UkjentEkstraInfo","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
+            )
+        }
+    }
+})
 private val fasitJson = Json { ignoreUnknownKeys = true }
 
 // Motorens EkstraInfo har fullt klassenavn som type. Fasiten bruker bare klassenavnet.

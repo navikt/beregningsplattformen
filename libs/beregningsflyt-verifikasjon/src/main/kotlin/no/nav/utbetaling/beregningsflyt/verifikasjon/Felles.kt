@@ -1,5 +1,6 @@
 package no.nav.utbetaling.beregningsflyt.verifikasjon
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,6 +20,7 @@ data class Verdi(
 sealed interface EkstraInfo
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 @SerialName("TekstEkstraInfo")
 data class TekstEkstraInfo(
     val grunn: String,

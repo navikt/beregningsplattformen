@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month.DECEMBER
 import java.time.Month.JANUARY
+import kotlin.time.DurationUnit
 import no.nav.sokos.dare.poc.beregning.DatoIntervall
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
@@ -11,12 +12,12 @@ import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 
-data class Beregingsopplysninger(
+data class Beregningsopplysninger(
     val oppdragopplysninger: Opplysninger,
     val tøyseteller: Int,
 )
 
-fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tidslinje<Opplysninger>, skatteKontekst: SkatteKontekst, beregningsDato: LocalDateTime): Tidslinje<Beregingsopplysninger> {
+fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tidslinje<Opplysninger>, beregningsDato: LocalDateTime): Tidslinje<Beregningsopplysninger> {
 
     val perioder = skattekortBoundaries(beregningsperiode, beregningsDato)
 
@@ -25,16 +26,19 @@ fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tid
 
     }.build()
 
-    tidslinje.begrensetTil(beregningsperiode.tom) // todo lag en begrensTilPeriode i tidslinje som tar en periode og begrenser tidslinjen til den perioden.
 
+    val begrensettidslinje = tidslinje.begrensetTil(beregningsperiode.tom) // todo lag en begrensTilPeriode i tidslinje som tar en periode og begrenser tidslinjen til den perioden.
 
-    return TODO("Provide the return value")
+     return begrensettidslinje.kombinerMed(skattetidslinje) { periode, oppdragsopplysninger, skatteOpplysninger ->
+         if (oppdragsopplysninger == null || skatteOpplysninger == null) {
+             null
+         } else {
+             Beregningsopplysninger(oppdragsopplysninger, skatteOpplysninger)
+         }
+
+     }
+
 }
-
-
-
-
-
 
     private fun skattekortBoundaries(
         periode: Periode.LukketPeriode,
@@ -47,7 +51,7 @@ fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tid
 
         return if (needsDecemberSplit || needsJanFebSplit) {
             buildList {
-                if (needsDecemberSplit) add(Periode.LukketPeriode(periode.fom, desemberIFjor))
+                if (needsDecemberSplit) add(Periode.LukketPeriode(periode.fom, desemberIFjor.minusDays(1))) // skal lage splitt siste dag i november
                 if (needsJanFebSplit) add(janFeb)
             }.toList()
         } else {
