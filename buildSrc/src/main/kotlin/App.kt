@@ -5,7 +5,7 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
 internal data class Miljø(
-    val miljø: String,
+    val cluster: String,
     val naiseratorPath: String
 )
 
@@ -23,7 +23,7 @@ internal data class App (
                 val modulKatalog = rot.resolve(modulKataloger.getValue(modul))
                 val miljøer = miljøer(rot, modulKatalog)
                 if (miljøer.isEmpty()) return@mapNotNull null
-                val (prodmiljøer, testmiljøer) = miljøer.partition { it.miljø.startsWith("prod") }
+                val (prodmiljøer, testmiljøer) = miljøer.partition { it.cluster.startsWith("prod") }
                 App(
                     modul = modul,
                     katalog = modulKatalog.relativTil(rot),
@@ -33,17 +33,20 @@ internal data class App (
                 )
             }
 
+        // Naiserator-filer heter <hva-som-helst>_<cluster>.yaml, for eksempel q1_dev-gcp.yaml.
         private fun miljøer(rot: Path, modulKatalog: Path): List<Miljø> {
             val naisKatalog = modulKatalog.resolve(".nais")
             if (!naisKatalog.exists()) return emptyList()
-            return naisKatalog.listDirectoryEntries("naiserator-*.yaml")
-                .map { naiseratorPath ->
+            return naisKatalog.listDirectoryEntries("*.yaml")
+                .mapNotNull { naiseratorPath ->
+                    val deler = naiseratorPath.nameWithoutExtension.split("_")
+                    if (deler.size != 2 || deler.any { it.isBlank() }) return@mapNotNull null
                     Miljø(
-                        miljø = naiseratorPath.nameWithoutExtension.removePrefix("naiserator-"),
+                        cluster = deler[1],
                         naiseratorPath = naiseratorPath.relativTil(rot),
                     )
                 }
-                .sortedBy { it.miljø }
+                .sortedWith(compareBy({ it.cluster }, { it.naiseratorPath }))
         }
 
         private fun Path.relativTil(rot: Path) = rot.relativize(this).invariantSeparatorsPathString

@@ -10,7 +10,7 @@ internal fun jsonObjekt(vararg felter: Pair<String, String>) =
 
 internal fun Miljø.somJson() =
     jsonObjekt(
-        "miljo" to miljø.somJson(),
+        "cluster" to cluster.somJson(),
         "naiseratorPath" to naiseratorPath.somJson(),
     )
 
