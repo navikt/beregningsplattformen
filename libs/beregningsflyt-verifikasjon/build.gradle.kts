@@ -10,7 +10,3 @@ plugins {
 dependencies {
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
 }
-
-tasks.named<Test>("test") {
-    dependsOn(tasks.named("jar"))
-}
