@@ -73,7 +73,7 @@
                             "rowValue": -2922,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {
@@ -210,7 +210,7 @@
                             "rowValue": -4383,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {
@@ -277,7 +277,7 @@
             "beloepTilUtbetaling": 4383,
             "ekstraInfo": [
                 {
-                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                    "type": "TekstEkstraInfo",
                     "grunn": "AVVENT",
                     "verdier": {
                         "kodeArsak": {
@@ -358,7 +358,7 @@
                             "rowValue": -2435,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {

@@ -68,4 +68,8 @@ class StønadIdTest :
         }
     })
 
-private fun Oppdragstidslinje.satserMedStønadId() = perPeriode { it.sats.opplysning.verdi.toInt() to it.stønadId?.opplysning }
+private fun Oppdragstidslinje.satserMedStønadId() =
+    perPeriode {
+        it.sats.opplysning.verdi
+            .toInt() to it.stønadId?.opplysning
+    }

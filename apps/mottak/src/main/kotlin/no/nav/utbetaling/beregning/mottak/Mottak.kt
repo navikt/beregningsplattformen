@@ -7,6 +7,7 @@ import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
+import io.ktor.util.reflect.instanceOf
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.mottak.config.ApplicationState
@@ -34,21 +35,25 @@ private fun Application.mottak() {
         internalNaisRoutes(applicationState)
     }
 
-    val mottakXmlConsumerProperties = PropertiesConfig.mqProperties
-
-    val mottakXmlConsumer =
+    val mottakXMLQueue =
         DefaultMQ(
             MQConfig(
-                host = mottakXmlConsumerProperties.hostname,
-                port = mottakXmlConsumerProperties.port,
-                channel = mottakXmlConsumerProperties.channel,
-                manager = mottakXmlConsumerProperties.manager,
-                username = mottakXmlConsumerProperties.username,
-                password = mottakXmlConsumerProperties.password,
+                host = PropertiesConfig.mqProperties.hostname,
+                port = PropertiesConfig.mqProperties.port,
+                channel = PropertiesConfig.mqProperties.channel,
+                manager = PropertiesConfig.mqProperties.manager,
+                username = PropertiesConfig.mqProperties.username,
+                password = PropertiesConfig.mqProperties.password,
             ),
         )
 
-    val mottakXMLConsumer = OppdragXMLConsumer(mottakXmlConsumer, MQQueue(mottakXmlConsumerProperties.queue))
+    Log.info("Får jeg hentet ut servicename: ${PropertiesConfig.mqProperties.username}")
+    Log.info("Starting Mottak application with MQ queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
+
+    val mottakXMLConsumer = MottakXMLConsumer(mottakXMLQueue, MQQueue(PropertiesConfig.mqProperties.mottakXmlQueue))
+
+    Log.info("Mottak application started and listening for messages on queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
+
     monitor.subscribe(ApplicationStarted) {
         mottakXMLConsumer.start()
     }

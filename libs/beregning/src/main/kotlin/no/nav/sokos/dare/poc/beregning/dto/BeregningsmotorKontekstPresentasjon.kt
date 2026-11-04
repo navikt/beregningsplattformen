@@ -17,7 +17,7 @@ data class BeregningsmotorKontekstPresentasjon(
     val satsBoetter: List<SatsBoettePresentasjon>,
     val initielleSaldoBoetter: List<SaldoBoettePresentasjon> = emptyList(),
     val initielleSatsBoetter: List<SatsBoettePresentasjon> = emptyList(),
-    val restFrikortBeloep: BigDecimalJson?,
+    val restFrikortBeloep: BigDecimalJson? = null,
 ) {
     constructor(kontekst: BeregningsmotorKontekst, beregninger: List<Beregning>? = null) : this(
         periode = kontekst.periode,

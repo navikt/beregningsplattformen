@@ -60,7 +60,7 @@
                             "rowValue": -175,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_TABELL_HOVEDARBEIDSGIVER",
                                     "verdier": {
                                         "trekktabell": {
@@ -111,7 +111,7 @@
                     },
                     "ekstraInfo": [
                         {
-                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "type": "TekstEkstraInfo",
                             "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
                             "verdier": {
                                 "bruttoYtelse": {

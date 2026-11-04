@@ -13,6 +13,5 @@ include(
     "libs:oppdrag",
     "libs:beregning",
     "libs:beregningsflyt",
-    "libs:beregningsflyt-verifikasjon",
     "libs:tid",
 )

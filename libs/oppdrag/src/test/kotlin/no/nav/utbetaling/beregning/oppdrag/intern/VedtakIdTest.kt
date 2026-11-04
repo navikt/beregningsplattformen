@@ -38,4 +38,8 @@ class VedtakIdTest :
         }
     })
 
-private fun Oppdragstidslinje.satserMedVedtakId() = perPeriode { it.sats.opplysning.verdi.toInt() to it.vedtakId?.opplysning?.id }
+private fun Oppdragstidslinje.satserMedVedtakId() =
+    perPeriode {
+        it.sats.opplysning.verdi
+            .toInt() to it.vedtakId?.opplysning?.id
+    }

@@ -150,4 +150,9 @@ class KjedeTest :
         }
     })
 
-private fun Oppdragstidslinje.satserPerFagsystemId() = perPeriode { it.fagsystemId.id to it.sats.opplysning.verdi.toInt() }
+private fun Oppdragstidslinje.satserPerFagsystemId() =
+    perPeriode {
+        it.fagsystemId.id to
+            it.sats.opplysning.verdi
+                .toInt()
+    }

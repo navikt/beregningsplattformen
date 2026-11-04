@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint")
     `java-library`
 }
@@ -7,5 +8,4 @@ plugins {
 dependencies {
     implementation(project(":libs:beregning"))
     implementation(project(":libs:oppdrag"))
-    testImplementation(project(":libs:beregningsflyt-verifikasjon"))
 }
