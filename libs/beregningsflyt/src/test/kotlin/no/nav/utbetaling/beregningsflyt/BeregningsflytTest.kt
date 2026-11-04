@@ -4,15 +4,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 import io.kotest.assertions.fail
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withData
-import io.kotest.matchers.shouldBe
-import no.nav.sokos.dare.poc.beregning.EkstraInfo as MotorEkstraInfo
 import no.nav.sokos.dare.poc.aktoer.AktoerId
-import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
+import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
@@ -41,7 +38,7 @@ class BeregningsflytTest: FunSpec({
     }
 
     fun kjørScenaro(scenario: Scenario) {
-        val skatteKontekst = motorJson.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
+        val skatteKontekst = Json.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
         val beregningsperiode = LukketPeriode(
             fom = LocalDate.parse(scenario.kontekst.periode.fom),
             tom = LocalDate.parse(scenario.kontekst.periode.tom),
@@ -64,12 +61,10 @@ class BeregningsflytTest: FunSpec({
                         utbetalesTil = scenario.kontekst.utbetalesTil?.let { AktoerId(it.toLong()) }
                     )
                 })
-
-                BeregningsmotorKontekstKomparator.sammenlign(
-                    faktisk = modifisertberegningskontekstpresentasjon,
-                    forventet = motorJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
+                sammenliknBeregning(
+                    scenario = scenario,
+                    resultat = modifisertberegningskontekstpresentasjon,
                 )
-                //modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
             }
             is Oppdrag.Simulering -> fail("Simleringer støttes ikke i beregningsflyten enda")
             is Oppdrag.UgyldigOppdrag -> fail("Feil: ${oppdrag.feil.stackTraceToString()}")
@@ -89,33 +84,11 @@ class BeregningsflytTest: FunSpec({
         }
     }
 
-    test("dekoder kort og fullstendig typenavn for motorens EkstraInfo") {
-        val forventet = TekstEkstraInfo(MotorEkstraInfo.Reasons.SKATT_TILLEGGSOPPLYSNING)
-        listOf("TekstEkstraInfo", TekstEkstraInfo.serializer().descriptor.serialName).forEach { type ->
-            motorJson.decodeFromString<MotorEkstraInfo>(
-                """{"type":"$type","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
-            ) shouldBe forventet
-        }
-    }
-
     test("avviser ukjente typer for motorens EkstraInfo") {
         shouldThrow<SerializationException> {
-            motorJson.decodeFromString<MotorEkstraInfo>(
+            Json.decodeFromString<EkstraInfo>(
                 """{"type":"UkjentEkstraInfo","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
             )
         }
     }
 })
-
-private val motorJson = Json {
-    encodeDefaults = true
-    ignoreUnknownKeys = true
-    serializersModule = SerializersModule {
-        polymorphicDefaultDeserializer(MotorEkstraInfo::class) { type ->
-            when (type) {
-                "TekstEkstraInfo" -> TekstEkstraInfo.serializer()
-                else -> null
-            }
-        }
-    }
-}
