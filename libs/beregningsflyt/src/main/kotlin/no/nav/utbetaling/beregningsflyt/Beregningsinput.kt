@@ -23,7 +23,7 @@ fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tid
     }.build()
 
 
-    val begrensettidslinje = tidslinje.begrensetTil(beregningsperiode.tom) // todo lag en begrensTilPeriode i tidslinje som tar en periode og begrenser tidslinjen til den perioden.
+    val begrensettidslinje = tidslinje.begrensetTil(beregningsperiode)
 
      return begrensettidslinje.kombinerMed(skattetidslinje) { periode, oppdragsopplysninger, skatteOpplysninger ->
          if (oppdragsopplysninger == null || skatteOpplysninger == null) {

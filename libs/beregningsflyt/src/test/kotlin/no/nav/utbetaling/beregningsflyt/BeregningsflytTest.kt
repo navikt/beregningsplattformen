@@ -30,7 +30,9 @@ class BeregningsflytTest: FunSpec({
             "GrunnleggendeTest/oppdrag_med_to_linjer_uten_overlapp_eller_hull",
             "GrunnleggendeTest/oppdrag_uten_noe_annet",
             "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
-            "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats"
+            "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats",
+            "SkattAarsskifteTest/januar_beregning_ikke_fjoraars_skattekort",
+            "SkattAarsskifteTest/januar_med_fjoraars_skattekort"
         )
     }
 
