@@ -4,10 +4,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month.DECEMBER
 import java.time.Month.JANUARY
-import kotlin.time.DurationUnit
-import no.nav.sokos.dare.poc.beregning.DatoIntervall
-import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
-import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
