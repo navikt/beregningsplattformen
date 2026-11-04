@@ -7,52 +7,26 @@ import java.time.Month.JANUARY
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
+import no.nav.utbetaling.beregning.tid.til
 
 data class Beregningsopplysninger(
     val oppdragopplysninger: Opplysninger,
-    val tøyseteller: Int,
+    val skatteperiode: Any, // TODO: Hadde det vært mulig å legge inn skattereglene som er grunnen til at vi splitter opp?
 )
 
 fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tidslinje<Opplysninger>, beregningsDato: LocalDateTime): Tidslinje<Beregningsopplysninger> {
-
-    val perioder = skattekortBoundaries(beregningsperiode, beregningsDato)
-
-    val skattetidslinje = perioder.foldIndexed(Tidslinje.Builder<Int>()) { index, builder, periode ->
-        builder.periode(periode, index)
-
-    }.build()
-
-
-    val begrensettidslinje = tidslinje.begrensetTil(beregningsperiode)
-
-     return begrensettidslinje.kombinerMed(skattetidslinje) { periode, oppdragsopplysninger, skatteOpplysninger ->
-         if (oppdragsopplysninger == null || skatteOpplysninger == null) {
-             null
-         } else {
-             Beregningsopplysninger(oppdragsopplysninger, skatteOpplysninger)
-         }
-
-     }
-
-}
-
-    private fun skattekortBoundaries(
-        periode: Periode.LukketPeriode,
-        beregningsDato: LocalDateTime,
-    ): List<Periode.LukketPeriode> {
-        val desemberIFjor = LocalDate.of(beregningsDato.year - 1, DECEMBER, 1)
-        val needsDecemberSplit = periode.contains(desemberIFjor)
-        val janFeb = Periode.LukketPeriode(LocalDate.of(beregningsDato.year, JANUARY, 1), LocalDate.of(beregningsDato.year, JANUARY, 31))
-        val needsJanFebSplit = periode.overlapperMed(janFeb)
-
-        return if (needsDecemberSplit || needsJanFebSplit) {
-            buildList {
-                if (needsDecemberSplit) add(Periode.LukketPeriode(periode.fom, desemberIFjor.minusDays(1))) // skal lage splitt siste dag i november
-                if (needsJanFebSplit) add(janFeb)
-            }.toList()
-        } else {
-            listOf(periode)
+     return tidslinje.begrensetTil(beregningsperiode)
+         .kombinerMed(skattekortOppdeling(beregningsDato)) { _, oppdragsopplysninger, skatteperiode ->
+             oppdragsopplysninger?.let { Beregningsopplysninger(it, skatteperiode ?: Any()) }
         }
-
 }
+
+private fun skattekortOppdeling(
+    beregningsDato: LocalDateTime,
+) = Tidslinje.Builder<Any>()
+    // Om perioden inneholder desember i fjor er det viktig at den perioden blir splittet opp
+    .periode(LocalDate.of(beregningsDato.year - 1, DECEMBER, 1) til LocalDate.of(beregningsDato.year - 1, DECEMBER, 31), Any())
+    // Om januar inneholder januar i år er det viktig at den perioden blir splittet opp
+    .periode(LocalDate.of(beregningsDato.year, JANUARY, 1) til LocalDate.of(beregningsDato.year, JANUARY, 31), Any())
+    .build()
 

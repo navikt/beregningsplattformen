@@ -32,7 +32,11 @@ class BeregningsflytTest: FunSpec({
             "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
             "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats",
             "SkattAarsskifteTest/januar_beregning_ikke_fjoraars_skattekort",
-            "SkattAarsskifteTest/januar_med_fjoraars_skattekort"
+            "SkattAarsskifteTest/januar_med_fjoraars_skattekort",
+            "SkattAarsskifteTest/aarsskifte_frikort",
+            "SkattAarsskifteTest/aarsskifte_med_fjoraars_januar_februar",
+            "SkattAarsskifteTest/aarsskifte_prosentkort",
+            "SkattAarsskifteTest/januar_februar_split_med_fjoraars"
         )
     }
 
