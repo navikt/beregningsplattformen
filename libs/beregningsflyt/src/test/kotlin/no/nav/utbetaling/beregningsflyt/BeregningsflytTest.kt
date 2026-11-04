@@ -29,7 +29,8 @@ class BeregningsflytTest: FunSpec({
             "GrunnleggendeTest/oppdrag_med_komplisert_kjeding",
             "GrunnleggendeTest/oppdrag_med_to_linjer_uten_overlapp_eller_hull",
             "GrunnleggendeTest/oppdrag_uten_noe_annet",
-            "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke"
+            "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
+            "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats"
         )
     }
 
@@ -41,15 +42,27 @@ class BeregningsflytTest: FunSpec({
         )
         when (val oppdrag = Oppdrag.fraJson(scenario.oppdrag)) {
             is Oppdrag.Utbetaling -> {
-                val kontextOgBeregninger = beregningsflyt.beregn(beregningsperiode, oppdrag.oppdragstidslinje, skatteKontekst)
+                val kontextOgBeregninger = beregningsflyt.beregn(
+                    beregningsperiode = beregningsperiode,
+                    oppdragstidslinje = oppdrag.oppdragstidslinje,
+                    skatteKontekst = skatteKontekst,
+                    beregnet = LocalDateTime.parse(scenario.kontekst.beregnet)
+                )
 
                 val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(kontextOgBeregninger.first, kontextOgBeregninger.second )
                 val modifisertberegningskontekstpresentasjon = beregningsmotorKontekstPresentasjon.copy(beregninger = beregningsmotorKontekstPresentasjon.beregninger.map { beregning ->
-                    beregning.copy(gjelder = AktoerId(scenario.kontekst.gjelder.toLong()), overfoeres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
-                        beregnet = LocalDateTime.parse(scenario.kontekst.beregnet), utbetalesTil = scenario.kontekst.utbetalesTil?.let { AktoerId(it.toLong()) } )
+                    beregning.copy(
+                        gjelder = AktoerId(scenario.kontekst.gjelder.toLong()),
+                        overfoeres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
+                        utbetalesTil = scenario.kontekst.utbetalesTil?.let { AktoerId(it.toLong()) }
+                    )
                 })
 
-                modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString(scenario.resultat)
+                BeregningsmotorKontekstKomparator.sammenlign(
+                    faktisk = modifisertberegningskontekstpresentasjon,
+                    forventet = motorJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
+                )
+                //modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
             }
             is Oppdrag.Simulering -> fail("Simleringer støttes ikke i beregningsflyten enda")
             is Oppdrag.UgyldigOppdrag -> fail("Feil: ${oppdrag.feil.stackTraceToString()}")

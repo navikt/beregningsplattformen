@@ -42,14 +42,14 @@ class Beregningsflyt {
         val kid: String?
     )
 
-    fun beregn(beregningsperiode: Periode.LukketPeriode, oppdragstidslinje: Oppdragstidslinje, skatteKontekst: SkatteKontekst): Pair<BeregningsmotorKontekst, List<Beregning>> {
+    fun beregn(beregningsperiode: Periode.LukketPeriode, oppdragstidslinje: Oppdragstidslinje, skatteKontekst: SkatteKontekst, beregnet: LocalDateTime): Pair<BeregningsmotorKontekst, List<Beregning>> {
         val fom = beregningsperiode.fom
         val tom = beregningsperiode.tom
         //todo finne splittpunkter basert på skattekontekst se beregningsfordeler.
 
 
         val delperioder = oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
-            val beregningstidslinje = beregningstidslinje(beregningsperiode, tidslinje, LocalDateTime.now())
+            val beregningstidslinje = beregningstidslinje(beregningsperiode, tidslinje, beregnet)
 
             beregningstidslinje.map { (periode, beregningsopplysninger ) ->
                 val oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger
@@ -97,7 +97,7 @@ class Beregningsflyt {
                                     beskrivelse = "ja",
                                     grunnlagSkatt = true,
                                     grunnlagTrekk = true,
-                                    fagomraader = emptyList(),
+                                    fagomraader = listOf(FagomraadeKode.AAP), // TODO
                                     tidspktOpprettet = LocalDateTime.now()
                                 ),
                                 skyldnerId = when (val skyldner = oppdragsopplysninger.skyldner?.opplysning) {
@@ -141,7 +141,7 @@ class Beregningsflyt {
                     periode = datoIntervall,
                     konto = "",
                     gjelder = AktoerId(oppdragsopplysninger.gjelderId!!.opplysning.identifikator.toLong()),
-                    beregnet = LocalDateTime.now(),
+                    beregnet = beregnet,
                     utbetalesTil = utbetalesTil1,
                     status = BeregningsStatus.BEREGNET,
                     trekk = emptyList(),
@@ -176,7 +176,7 @@ class Beregningsflyt {
                 innkommendeSaldoer = emptyMap()
             ),
             overføringsdato = LocalDate.now(),
-            beregnet = LocalDateTime.now()
+            beregnet = beregnet
         )
 
         val beregningsmotor = Beregningsmotor(
