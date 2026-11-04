@@ -8,5 +8,4 @@ plugins {
 dependencies {
     implementation(project(":libs:beregning"))
     implementation(project(":libs:oppdrag"))
-    testImplementation(project(":libs:beregningsflyt-verifikasjon"))
 }

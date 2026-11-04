@@ -1,7 +1,6 @@
 package no.nav.utbetaling.beregningsflyt
 
 import kotlinx.serialization.Serializable
-import no.nav.utbetaling.beregningsflyt.verifikasjon.Periode
 
 @Serializable
 data class Kontekst(
@@ -11,4 +10,10 @@ data class Kontekst(
     val beregnet: String,
     val overfoeringsdato: String,
     val ledigFrikortBeloep: Int? = null,
+)
+
+@Serializable
+data class Periode(
+    val fom: String,
+    val tom: String?
 )
