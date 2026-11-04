@@ -59,7 +59,7 @@
                             "rowValue": -2500,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TIDLIGERE_UTBETALT",
                                     "verdier": {
                                         "beregningId": {
@@ -88,7 +88,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -131,7 +131,7 @@
                                     "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
                                 },
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "FEIL_I_BEREGNING",
                                     "template": "For dette trekket finnes det negative satsbøtter. Dette er ikke støttet. Denne beregningen er feil"
                                 }
@@ -159,7 +159,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_ETTERBETALING",
                                     "verdier": {
                                         "grunnlag": {
@@ -194,7 +194,7 @@
                     },
                     "ekstraInfo": [
                         {
-                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "type": "TekstEkstraInfo",
                             "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
                             "verdier": {
                                 "bruttoYtelse": {
@@ -268,7 +268,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -329,7 +329,7 @@
                     },
                     "ekstraInfo": [
                         {
-                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "type": "TekstEkstraInfo",
                             "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
                             "verdier": {
                                 "bruttoYtelse": {
@@ -410,7 +410,7 @@
                             "rowValue": -2500,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TIDLIGERE_UTBETALT",
                                     "verdier": {
                                         "beregningId": {
@@ -433,7 +433,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -499,7 +499,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_ETTERBETALING",
                                     "verdier": {
                                         "grunnlag": {
@@ -534,7 +534,7 @@
                     },
                     "ekstraInfo": [
                         {
-                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "type": "TekstEkstraInfo",
                             "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
                             "verdier": {
                                 "bruttoYtelse": {
@@ -662,7 +662,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -737,7 +737,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_TABELL_HOVEDARBEIDSGIVER",
                                     "verdier": {
                                         "trekktabell": {
@@ -797,7 +797,7 @@
                     },
                     "ekstraInfo": [
                         {
-                            "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                            "type": "TekstEkstraInfo",
                             "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
                             "verdier": {
                                 "bruttoYtelse": {

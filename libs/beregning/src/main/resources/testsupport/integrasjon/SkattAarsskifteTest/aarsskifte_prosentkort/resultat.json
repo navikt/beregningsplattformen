@@ -77,7 +77,7 @@
                             "rowValue": -2610,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_TREKK_PROSENT",
                                     "verdier": {
                                         "inntektsAar": {
@@ -209,7 +209,7 @@
                             "rowValue": -2284,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_TREKK_PROSENT",
                                     "verdier": {
                                         "inntektsAar": {

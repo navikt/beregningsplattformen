@@ -34,7 +34,7 @@
               "rowValue": -900,
               "ekstra": [
                 {
-                  "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                  "type": "TekstEkstraInfo",
                   "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                   "verdier": {
                     "grunnlag": {"verdi": "3000", "skjult": false},
@@ -53,7 +53,7 @@
               "rowValue": -1000,
               "ekstra": [
                 {
-                  "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                  "type": "TekstEkstraInfo",
                   "grunn": "TREKK",
                   "verdier": {
                     "kode": {"verdi": "TRK1", "skjult": false},

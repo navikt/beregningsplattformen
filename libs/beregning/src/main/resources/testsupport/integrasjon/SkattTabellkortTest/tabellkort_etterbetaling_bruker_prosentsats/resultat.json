@@ -59,7 +59,7 @@
                             "rowValue": -2000,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TIDLIGERE_UTBETALT",
                                     "verdier": {
                                         "beregningId": {
@@ -84,7 +84,7 @@
                             "rowValue": -150,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_ETTERBETALING",
                                     "verdier": {
                                         "grunnlag": {

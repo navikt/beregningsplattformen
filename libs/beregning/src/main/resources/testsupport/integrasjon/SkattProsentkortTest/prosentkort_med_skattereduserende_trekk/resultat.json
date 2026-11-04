@@ -46,7 +46,7 @@
                             "rowValue": -200,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -109,7 +109,7 @@
                             "rowValue": -288,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_TREKK_PROSENT",
                                     "verdier": {
                                         "inntektsAar": {
@@ -227,7 +227,7 @@
                             "rowValue": -200,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -300,7 +300,7 @@
                             "rowValue": -3187,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_TREKK_PROSENT",
                                     "verdier": {
                                         "inntektsAar": {
