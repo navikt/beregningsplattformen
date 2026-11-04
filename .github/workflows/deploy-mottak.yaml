@@ -18,6 +18,7 @@ on:
       - "gradle.properties"
       - "gradle/**"
       - "gradlew"
+      - "buildSrc/**"
       - ".github/workflows/deploy-mottak.yaml"
   workflow_dispatch:
   workflow_call:
@@ -32,26 +33,26 @@ jobs:
   build-mottak:
     permissions:
       contents: read
-    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@02ef55dcef76850a0c319cdf705904401e77a002 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.3
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@f76a78f10742990ced901927ed5113f6a0803961 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@v1.1.4
     with:
-      # TODO: Skill arbeidsmappe og artefaktmappe i fellesworkflowen slik at vi kan bygge fra repo-roten.
-      project-directory: apps/mottak
-      gradle-task: ../../gradlew -p ../.. :apps:mottak:build :apps:mottak:installDist --configuration-cache
+      gradle-task: ./gradlew :apps:mottak:build :apps:mottak:installDist --configuration-cache
       upload-artifact: true
-    secrets: inherit
+      artifact-directory: apps/mottak
+      artifact-name: mottak
 
   build-mottak-image:
     needs: build-mottak
     permissions:
       contents: read
       id-token: write
-    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@02ef55dcef76850a0c319cdf705904401e77a002 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@v1.1.3
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@f76a78f10742990ced901927ed5113f6a0803961 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@v1.1.4
     with:
       docker-context: apps/mottak
       dockerfile: apps/mottak/.nais/dev/Dockerfile
       image-tag: ${{ github.sha }}
       image-suffix: mottak
       use-artifact: true
+      artifact-name: mottak
 
   deploy-mottak-dev:
     needs: build-mottak-image
@@ -60,20 +61,22 @@ jobs:
       id-token: write
       pull-requests: write
       deployments: write
-    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@02ef55dcef76850a0c319cdf705904401e77a002 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@v1.1.3
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@f76a78f10742990ced901927ed5113f6a0803961 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@v1.1.4
     with:
       cluster: dev-gcp
       resource: apps/mottak/.nais/dev/naiserator-dev.yaml
       image: ${{ needs.build-mottak-image.outputs.image }}
 
+  # Prod ved push til main og cron. Manuell kjøring deployer bare til dev.
   # deploy-mottak-prod:
+  #   if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule') }}
   #   needs: [build-mottak-image, deploy-mottak-dev]
   #   permissions:
   #     contents: read
   #     id-token: write
   #     pull-requests: write
   #     deployments: write
-  #   uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@02ef55dcef76850a0c319cdf705904401e77a002 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@v1.1.3
+  #   uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@f76a78f10742990ced901927ed5113f6a0803961 # ratchet:navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@v1.1.4
   #   with:
   #     cluster: prod-gcp
   #     resource: apps/mottak/.nais/prod/naiserator-prod.yaml
