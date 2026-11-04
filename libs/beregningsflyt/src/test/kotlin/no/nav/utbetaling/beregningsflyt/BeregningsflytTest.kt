@@ -17,7 +17,6 @@ import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
-import no.nav.utbetaling.beregningsflyt.verifikasjon.Scenario
 
 class BeregningsflytTest: FunSpec({
 
@@ -35,12 +34,12 @@ class BeregningsflytTest: FunSpec({
     }
 
     fun kjørScenaro(scenario: Scenario) {
-        val skatteKontekst = motorJson.decodeFromString<SkatteKontekst>(scenario.raw.skatteKontekst)
+        val skatteKontekst = motorJson.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
         val beregningsperiode = LukketPeriode(
             fom = LocalDate.parse(scenario.kontekst.periode.fom),
             tom = LocalDate.parse(scenario.kontekst.periode.tom),
         )
-        when (val oppdrag = Oppdrag.fraJson(scenario.raw.oppdrag)) {
+        when (val oppdrag = Oppdrag.fraJson(scenario.oppdrag)) {
             is Oppdrag.Utbetaling -> {
                 val kontextOgBeregninger = beregningsflyt.beregn(beregningsperiode, oppdrag.oppdragstidslinje, skatteKontekst)
 
@@ -50,7 +49,7 @@ class BeregningsflytTest: FunSpec({
                         beregnet = LocalDateTime.parse(scenario.kontekst.beregnet), utbetalesTil = scenario.kontekst.utbetalesTil?.let { AktoerId(it.toLong()) } )
                 })
 
-                modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString(scenario.raw.resultat)
+                modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString(scenario.resultat)
             }
             is Oppdrag.Simulering -> fail("Simleringer støttes ikke i beregningsflyten enda")
             is Oppdrag.UgyldigOppdrag -> fail("Feil: ${oppdrag.feil.stackTraceToString()}")

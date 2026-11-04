@@ -1,0 +1,27 @@
+{
+  "skattekort" : {
+    "aktoerId" : 1,
+    "inntektsaar" : 2025,
+    "kilde" : "skatteetaten",
+    "identifikator" : 1,
+    "utstedtDato" : "2025-01-15",
+    "tilleggsopplysning" : [ ],
+    "forskuddsTrekk" : [ {
+      "typeForskuddsTrekk" : "FRIKORT",
+      "trekkKode" : "LOENN_FRA_NAV",
+      "frikortBelop" : null,
+      "tidspktReg" : "2025-01-15T10:00:00"
+    }, {
+      "typeForskuddsTrekk" : "FRIKORT",
+      "trekkKode" : "PENSJON_FRA_NAV",
+      "frikortBelop" : null,
+      "tidspktReg" : "2025-01-15T10:00:00"
+    }, {
+      "typeForskuddsTrekk" : "FRIKORT",
+      "trekkKode" : "UFOERETRYGD_FRA_NAV",
+      "frikortBelop" : null,
+      "tidspktReg" : "2025-01-15T10:00:00"
+    } ]
+  },
+  "allokeringer" : { }
+}

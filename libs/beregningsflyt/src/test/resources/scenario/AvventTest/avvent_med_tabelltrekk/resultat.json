@@ -1,0 +1,482 @@
+{
+    "periode": {
+        "fom": "2026-03-02",
+        "tom": "2026-03-20"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2026-03-02",
+                "tom": "2026-03-09"
+            },
+            "status": "BEREGNET",
+            "overfoeres": "2026-03-21",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-03-21T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-02",
+                        "2026-03-03",
+                        "2026-03-04",
+                        "2026-03-05",
+                        "2026-03-06",
+                        "2026-03-07",
+                        "2026-03-08",
+                        "2026-03-09"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse",
+                            "columnValues": [
+                                500,
+                                500,
+                                500,
+                                500,
+                                500,
+                                0,
+                                0,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    0,
+                                    0,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 3000,
+                            "satstype": "DAG",
+                            "sats": 500
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -210,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_TABELL_HOVEDARBEIDSGIVER",
+                                    "verdier": {
+                                        "trekktabell": {
+                                            "verdi": "8010",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "7500",
+                                            "skjult": false
+                                        },
+                                        "dager": {
+                                            "verdi": "21",
+                                            "skjult": false
+                                        },
+                                        "totalSkatt": {
+                                            "verdi": "525",
+                                            "skjult": false
+                                        },
+                                        "skattegrunnlag": {
+                                            "verdi": "3000",
+                                            "skjult": false
+                                        },
+                                        "lokalSkatt": {
+                                            "verdi": "210",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    0,
+                                    0,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 3000,
+                            "satstype": "TABELL",
+                            "sats": 0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-02",
+                        "tom": "2026-03-09"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "7500",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "15",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "21",
+                                    "skjult": false
+                                }
+                            }
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            500,
+                            500,
+                            500,
+                            500,
+                            500,
+                            0,
+                            0,
+                            500
+                        ],
+                        "rowValue": -210,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        3000,
+                        -210
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 2790
+        },
+        {
+            "periode": {
+                "fom": "2026-03-10",
+                "tom": "2026-03-14"
+            },
+            "status": "AVVENT",
+            "statusflagg": ["MANUELL"],
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-03-21T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-10",
+                        "2026-03-11",
+                        "2026-03-12",
+                        "2026-03-13",
+                        "2026-03-14"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse",
+                            "columnValues": [
+                                500,
+                                500,
+                                500,
+                                500,
+                                0
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 2000,
+                            "satstype": "DAG",
+                            "sats": 500
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -140,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_TABELL_HOVEDARBEIDSGIVER",
+                                    "verdier": {
+                                        "trekktabell": {
+                                            "verdi": "8010",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "7500",
+                                            "skjult": false
+                                        },
+                                        "dager": {
+                                            "verdi": "21",
+                                            "skjult": false
+                                        },
+                                        "totalSkatt": {
+                                            "verdi": "525",
+                                            "skjult": false
+                                        },
+                                        "skattegrunnlag": {
+                                            "verdi": "2000",
+                                            "skjult": false
+                                        },
+                                        "lokalSkatt": {
+                                            "verdi": "140",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    0
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 2000,
+                            "satstype": "TABELL",
+                            "sats": 0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-10",
+                        "tom": "2026-03-14"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "7500",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "15",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "21",
+                                    "skjult": false
+                                }
+                            }
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            500,
+                            500,
+                            500,
+                            500,
+                            0
+                        ],
+                        "rowValue": -140,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        2000,
+                        -140
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 1860
+        },
+        {
+            "periode": {
+                "fom": "2026-03-15",
+                "tom": "2026-03-20"
+            },
+            "status": "BEREGNET",
+            "overfoeres": "2026-03-21",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2026-03-21T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2026-03-15",
+                        "2026-03-16",
+                        "2026-03-17",
+                        "2026-03-18",
+                        "2026-03-19",
+                        "2026-03-20"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse",
+                            "columnValues": [
+                                0,
+                                500,
+                                500,
+                                500,
+                                500,
+                                500
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 2500,
+                            "satstype": "DAG",
+                            "sats": 500
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -175,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_TABELL_HOVEDARBEIDSGIVER",
+                                    "verdier": {
+                                        "trekktabell": {
+                                            "verdi": "8010",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "7500",
+                                            "skjult": false
+                                        },
+                                        "dager": {
+                                            "verdi": "21",
+                                            "skjult": false
+                                        },
+                                        "totalSkatt": {
+                                            "verdi": "525",
+                                            "skjult": false
+                                        },
+                                        "skattegrunnlag": {
+                                            "verdi": "2500",
+                                            "skjult": false
+                                        },
+                                        "lokalSkatt": {
+                                            "verdi": "175",
+                                            "skjult": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    0,
+                                    500,
+                                    500,
+                                    500,
+                                    500,
+                                    500
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "grunnlag": 2500,
+                            "satstype": "TABELL",
+                            "sats": 0
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2026-03-15",
+                        "tom": "2026-03-20"
+                    },
+                    "ekstraInfo": [
+                        {
+                            "type": "TekstEkstraInfo",
+                            "grunn": "SKATT_TABELL_VERDIBEREGNET_PARTISJON",
+                            "verdier": {
+                                "bruttoYtelse": {
+                                    "verdi": "7500",
+                                    "skjult": false
+                                },
+                                "vedtakssats": {
+                                    "verdi": "500",
+                                    "skjult": false
+                                },
+                                "arbeidsdager": {
+                                    "verdi": "15",
+                                    "skjult": false
+                                },
+                                "skattedager": {
+                                    "verdi": "21",
+                                    "skjult": false
+                                }
+                            }
+                        }
+                    ],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            0,
+                            500,
+                            500,
+                            500,
+                            500,
+                            500
+                        ],
+                        "rowValue": -175,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        2500,
+                        -175
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 2325
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "id": 999,
+    "periode": {"fom": "2026-04-06", "tom": "2026-04-10"},
+    "konto": "konto1",
+    "overfoeres": "2026-04-17",
+    "fagomraade": "AAP",
+    "gjelder": 1,
+    "beregnet": "2026-04-17T11:00:00",
+    "delberegning": [
+      {
+        "oppdragId": 0,
+        "columns": ["2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10"],
+        "linjer": [
+          {
+            "type": "YTELSE",
+            "dagsbeloep": [
+              {"dato": "2026-04-06", "beloep": 600},
+              {"dato": "2026-04-07", "beloep": 600},
+              {"dato": "2026-04-08", "beloep": 600},
+              {"dato": "2026-04-09", "beloep": 600},
+              {"dato": "2026-04-10", "beloep": 600}
+            ],
+            "beloep": 0,
+            "kodeKlasse": {
+              "kode": "AAPUAA",
+              "beskrivelse": "AAP under arbeidsavklaring",
+              "grunnlagSkatt": true,
+              "grunnlagTrekk": true,
+              "fagomraader": ["AAP", "AAPARENA", "MAAPAREN"]
+            },
+            "typeSats": "DAG",
+            "sats": 600
+          },
+          {
+            "type": "SKATT",
+            "dagsbeloep": [],
+            "beloep": -1500,
+            "typeSats": "PROSENT",
+            "sats": 50
+          },
+          {
+            "type": "TREKK",
+            "dagsbeloep": [],
+            "beloep": -500,
+            "trekkvedtakId": 900
+          }
+        ],
+        "datoIntervall": {"fom": "2026-04-06", "tom": "2026-04-10"}
+      }
+    ],
+    "status": "BEREGNET",
+    "gyldig": true,
+    "kilde": "POC"
+  }
+]

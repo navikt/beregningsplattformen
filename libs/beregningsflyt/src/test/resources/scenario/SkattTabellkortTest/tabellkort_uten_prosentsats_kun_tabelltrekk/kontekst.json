@@ -1,0 +1,11 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2026-03-02",
+    "tom": "2026-03-06"
+  },
+  "beregnet": "2026-03-07T11:00:00",
+  "overfoeringsdato": "2026-03-07",
+  "ledigFrikortBeloep": null
+}

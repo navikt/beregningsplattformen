@@ -1,0 +1,11 @@
+{
+  "gjelder": 1,
+  "utbetalesTil": null,
+  "periode": {
+    "fom": "2025-03-31",
+    "tom": "2025-04-11"
+  },
+  "beregnet": "2025-04-12T11:00:00",
+  "overfoeringsdato": "2025-04-12",
+  "ledigFrikortBeloep": 5000
+}

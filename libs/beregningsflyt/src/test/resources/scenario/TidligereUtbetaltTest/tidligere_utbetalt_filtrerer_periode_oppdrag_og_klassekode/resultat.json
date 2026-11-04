@@ -1,0 +1,488 @@
+{
+    "periode": {
+        "fom": "2025-03-31",
+        "tom": "2025-04-11"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2025-03-31",
+                "tom": "2025-04-11"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [
+                "MANGLER_SKATTEKORT"
+            ],
+            "overfoeres": "2025-04-12",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2025-04-12T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-03-31"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=PENAPET)",
+                            "columnValues": [
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "kodeKlasse": "PENAPET"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -487,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "974",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skattekort mangler, grunnlag {grunnlag:beloep}, bruker fast skattesats {prosentSats:prosent} prosent"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-03-31",
+                        "tom": "2025-03-31"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974
+                        ],
+                        "rowValue": -487,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        974,
+                        -487
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-04-01",
+                        "2025-04-02"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=PENAPET)",
+                            "columnValues": [
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "kodeKlasse": "PENAPET"
+                        },
+                        {
+                            "type": "TIDLIGERE_UTBETALT",
+                            "rowName": "Tidligere_utbetalt",
+                            "columnValues": [],
+                            "rowValue": -100,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "TIDLIGERE_UTBETALT",
+                                    "verdier": {
+                                        "beregningId": {
+                                            "verdi": "990",
+                                            "skjult": false
+                                        },
+                                        "overfoertDato": {
+                                            "verdi": "2025-04-12",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Tidligere utbetalt i beregning {beregningId}, overført {overfoertDato:dato}"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -924,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "1848",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skattekort mangler, grunnlag {grunnlag:beloep}, bruker fast skattesats {prosentSats:prosent} prosent"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    924,
+                                    924
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-04-01",
+                        "tom": "2025-04-02"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974
+                        ],
+                        "rowValue": -1024,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        1948,
+                        -100,
+                        -924
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-04-03",
+                        "2025-04-04"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=PENAPET)",
+                            "columnValues": [
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "kodeKlasse": "PENAPET"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -974,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "1948",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skattekort mangler, grunnlag {grunnlag:beloep}, bruker fast skattesats {prosentSats:prosent} prosent"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-04-03",
+                        "tom": "2025-04-04"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974
+                        ],
+                        "rowValue": -974,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        1948,
+                        -974
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-04-07",
+                        "2025-04-08"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                567,
+                                567
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    567,
+                                    567
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 567,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "TIDLIGERE_UTBETALT",
+                            "rowName": "Tidligere_utbetalt",
+                            "columnValues": [],
+                            "rowValue": -80,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "TIDLIGERE_UTBETALT",
+                                    "verdier": {
+                                        "beregningId": {
+                                            "verdi": "990",
+                                            "skjult": false
+                                        },
+                                        "overfoertDato": {
+                                            "verdi": "2025-04-12",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Tidligere utbetalt i beregning {beregningId}, overført {overfoertDato:dato}"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -527,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "1054",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skattekort mangler, grunnlag {grunnlag:beloep}, bruker fast skattesats {prosentSats:prosent} prosent"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    527,
+                                    527
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-04-07",
+                        "tom": "2025-04-08"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            567,
+                            567
+                        ],
+                        "rowValue": -607,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        1134,
+                        -80,
+                        -527
+                    ]
+                },
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-04-09",
+                        "2025-04-10",
+                        "2025-04-11"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                567,
+                                567,
+                                567
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    567,
+                                    567,
+                                    567
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 567,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -850,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "SKATT_MANGLENDE_SKATTEKORT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "1701",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Skattekort mangler, grunnlag {grunnlag:beloep}, bruker fast skattesats {prosentSats:prosent} prosent"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    567,
+                                    567,
+                                    567
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-04-09",
+                        "tom": "2025-04-11"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            567,
+                            567,
+                            567
+                        ],
+                        "rowValue": -850,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        1701,
+                        -850
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 3763,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [],
+    "initielleSatsBoetter": []
+}

@@ -1,0 +1,264 @@
+{
+    "periode": {
+        "fom": "2025-03-31",
+        "tom": "2025-04-11"
+    },
+    "beregninger": [
+        {
+            "periode": {
+                "fom": "2025-03-31",
+                "tom": "2025-04-11"
+            },
+            "status": "BEREGNET",
+            "statusflagg": [],
+            "overfoeres": "2025-04-12",
+            "fagomraade": "AAP",
+            "gjelder": 1,
+            "beregnet": "2025-04-12T11:00",
+            "delberegninger": [
+                {
+                    "oppdragId": 0,
+                    "columns": [
+                        "2025-03-31",
+                        "2025-04-01",
+                        "2025-04-02",
+                        "2025-04-03",
+                        "2025-04-04",
+                        "2025-04-05",
+                        "2025-04-06",
+                        "2025-04-07",
+                        "2025-04-08",
+                        "2025-04-09",
+                        "2025-04-10",
+                        "2025-04-11"
+                    ],
+                    "rows": [
+                        {
+                            "type": "YTELSE",
+                            "rowName": "Ytelse YtelseKlasseKodeRef(kode=AAPUAA)",
+                            "columnValues": [
+                                974,
+                                974,
+                                974,
+                                974,
+                                974,
+                                0,
+                                0,
+                                974,
+                                974,
+                                974,
+                                974,
+                                974
+                            ],
+                            "rowValue": 0,
+                            "ekstra": [],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "DAG",
+                            "sats": 974,
+                            "oppdragslinjekjedeId": -1,
+                            "kodeKlasse": "AAPUAA"
+                        },
+                        {
+                            "type": "SKATT",
+                            "rowName": "Skatt FSKTSKAT",
+                            "kodeKlasse": "FSKTSKAT",
+                            "reskontro_konto": "0510000",
+                            "columnValues": [],
+                            "rowValue": -2370,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "FRIKORT_MED_BELOEPSGRENSE_BRUKT_RESTSKATT",
+                                    "verdier": {
+                                        "grunnlag": {
+                                            "verdi": "9740",
+                                            "skjult": false
+                                        },
+                                        "dekketAvFrikort": {
+                                            "verdi": "5000",
+                                            "skjult": false
+                                        },
+                                        "overskudd": {
+                                            "verdi": "4740",
+                                            "skjult": false
+                                        },
+                                        "prosentSats": {
+                                            "verdi": "50",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "Frikortbeløp brukt. Grunnlag={grunnlag:beloep}, dekket av frikort={dekketAvFrikort:beloep}, beskattet overskudd={overskudd:beloep}, sats={prosentSats:prosent}%"
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    0,
+                                    0,
+                                    974,
+                                    974,
+                                    974,
+                                    974,
+                                    974
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "PROSENT",
+                            "sats": 50
+                        },
+                        {
+                            "type": "FRIKORT_BRUK",
+                            "rowName": "Frikort_bruk",
+                            "columnValues": [],
+                            "rowValue": 5000,
+                            "ekstra": [],
+                            "satstype": "PROSENT",
+                            "sats": 0
+                        },
+                        {
+                            "type": "TREKK",
+                            "rowName": "Trekk",
+                            "columnValues": [],
+                            "rowValue": -7370,
+                            "ekstra": [
+                                {
+                                    "type": "TekstEkstraInfo",
+                                    "grunn": "TREKK",
+                                    "verdier": {
+                                        "kode": {
+                                            "verdi": "BSKT",
+                                            "skjult": false
+                                        },
+                                        "sats": {
+                                            "verdi": "100",
+                                            "skjult": false
+                                        },
+                                        "saldo": {
+                                            "verdi": "20000",
+                                            "skjult": false
+                                        },
+                                        "redusererSkattegrunnlag": {
+                                            "verdi": "false",
+                                            "skjult": false
+                                        },
+                                        "alternativ": {
+                                            "verdi": "SAL",
+                                            "skjult": false
+                                        },
+                                        "datoFom": {
+                                            "verdi": "2025-03-31",
+                                            "skjult": false
+                                        },
+                                        "datoTom": {
+                                            "verdi": "2025-04-11",
+                                            "skjult": false
+                                        },
+                                        "trekkgrunnlag": {
+                                            "verdi": "9740",
+                                            "skjult": false
+                                        },
+                                        "kapasitet": {
+                                            "verdi": "7370",
+                                            "skjult": false
+                                        }
+                                    },
+                                    "template": "trekk: {kode} {alternativ}, Fra: {datoFom:dato}, Til: {datoTom:dato}, sats: {sats:beloep}, skattered: {redusererSkattegrunnlag}, saldo: {saldo}, trekkgrunnlag: {trekkgrunnlag}, kapasitet: {kapasitet} "
+                                }
+                            ],
+                            "capacity": {
+                                "dayCapacity": [
+                                    737,
+                                    737,
+                                    737,
+                                    737,
+                                    737,
+                                    0,
+                                    0,
+                                    737,
+                                    737,
+                                    737,
+                                    737,
+                                    737
+                                ],
+                                "lumpCapacity": 0
+                            },
+                            "satstype": "SAL",
+                            "sats": 100,
+                            "trekkVedtakId": 1
+                        }
+                    ],
+                    "datoIntervall": {
+                        "fom": "2025-03-31",
+                        "tom": "2025-04-11"
+                    },
+                    "ekstraInfo": [],
+                    "sums": {
+                        "type": "SUM",
+                        "rowName": "Sum",
+                        "columnValues": [
+                            974,
+                            974,
+                            974,
+                            974,
+                            974,
+                            0,
+                            0,
+                            974,
+                            974,
+                            974,
+                            974,
+                            974
+                        ],
+                        "rowValue": -9740,
+                        "ekstra": []
+                    },
+                    "sumColumn": [
+                        9740,
+                        -2370,
+                        0,
+                        -7370
+                    ]
+                }
+            ],
+            "beloepTilUtbetaling": 0,
+            "ekstraInfo": []
+        }
+    ],
+    "saldoBoetter": [
+        {
+            "trekkvedtakId": 1,
+            "opprinneligSaldo": 20000,
+            "restSaldo": 12630
+        }
+    ],
+    "satsBoetter": [],
+    "initielleSaldoBoetter": [
+        {
+            "trekkvedtakId": 1,
+            "opprinneligSaldo": 20000,
+            "restSaldo": 20000
+        }
+    ],
+    "initielleSatsBoetter": [],
+    "restFrikortBeloep": 0
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "id": 100,
+    "eksternTrekkId": null,
+    "trekktypeKode": "AVAA",
+    "kreditorIdTss": null,
+    "kreditorTrekkId": null,
+    "kreditorRef": null,
+    "trekkalt": "LOP",
+    "belopSaldo": null,
+    "belopSaldoTrukket": null,
+    "kreditorKid": null,
+    "gyldigTom": null,
+    "ansvarligEnhet": "1234",
+    "debitorId": 1,
+    "datoPriFom": null,
+    "kilde": null,
+    "trekkstatus": "LOPE",
+    "trekkperioder": [
+      {
+        "id": 200,
+        "trekkvedtakId": 100,
+        "datoFom": "2025-03-31",
+        "datoTom": "2025-04-11",
+        "sats": 25,
+        "satstype": "P",
+        "feilReg": false,
+        "bruker": "test",
+        "tidspktReg": "2026-03-01T00:00:00",
+        "periode": {
+          "fom": "2025-04-02",
+          "tom": "2025-04-06"
+        }
+      }
+    ],
+    "fagomraader": [
+      {
+        "id": null,
+        "trekkvedtakId": 100,
+        "fagomraadeKode": "AAP",
+        "aktiv": true,
+        "tidspktReg": "2025-03-01T00:00:00"
+      }
+    ],
+    "trekktype": {
+      "kodeTrekktype": "AVAA",
+      "beskrivelse": "Avregning arbeidsavklaringspenger",
+      "prioritet": "1",
+      "kodeKlasseTrekk": "AVAAINTE",
+      "kodeTrekkategori": "INTE",
+      "reduserSkattegr": true,
+      "kodeOppgjoerstype": "IUTR",
+      "kodeKlasseOppgj": "AVAAINTE",
+      "belopsgrense": 0,
+      "bruker": "TOB-1958",
+      "tidspktEndret": "2023-03-11T09:33:47",
+      "trekkberegningstype": "YTELPER"
+    },
+    "bruker": "test",
+    "tidspktReg": "2025-03-01T00:00:00"
+  },
+  {
+    "id": 101,
+    "eksternTrekkId": null,
+    "trekktypeKode": "AVAA",
+    "kreditorIdTss": null,
+    "kreditorTrekkId": null,
+    "kreditorRef": null,
+    "trekkalt": "LOP",
+    "belopSaldo": null,
+    "belopSaldoTrukket": null,
+    "kreditorKid": null,
+    "gyldigTom": null,
+    "ansvarligEnhet": "1234",
+    "debitorId": 1,
+    "datoPriFom": null,
+    "kilde": null,
+    "trekkstatus": "LOPE",
+    "trekkperioder": [
+      {
+        "id": 201,
+        "trekkvedtakId": 101,
+        "datoFom": "2025-03-01",
+        "datoTom": "2025-04-30",
+        "sats": 200,
+        "satstype": "M",
+        "feilReg": false,
+        "bruker": "test",
+        "tidspktReg": "2025-03-01T00:00:00",
+        "periode": {
+          "fom": "2025-03-01",
+          "tom": "2025-04-30"
+        }
+      }
+    ],
+    "fagomraader": [
+      {
+        "id": null,
+        "trekkvedtakId": 101,
+        "fagomraadeKode": "AAP",
+        "aktiv": true,
+        "tidspktReg": "2025-03-01T00:00:00"
+      }
+    ],
+    "trekktype": {
+      "kodeTrekktype": "AVAA",
+      "beskrivelse": "Avregning arbeidsavklaringspenger",
+      "prioritet": "1",
+      "kodeKlasseTrekk": "AVAAINTE",
+      "kodeTrekkategori": "INTE",
+      "reduserSkattegr": true,
+      "kodeOppgjoerstype": "IUTR",
+      "kodeKlasseOppgj": "AVAAINTE",
+      "belopsgrense": 0,
+      "bruker": "TOB-1958",
+      "tidspktEndret": "2023-03-11T09:33:47",
+      "trekkberegningstype": "YTELPER"
+    },
+    "bruker": "test",
+    "tidspktReg": "2025-03-01T00:00:00"
+  }
+]

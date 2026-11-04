@@ -1,0 +1,34 @@
+[
+    {
+        "id": 999,
+        "periode": {
+            "fom": "2026-02-16",
+            "tom": "2026-02-20"
+        },
+        "konto": "konto1",
+        "overfoeres": "2026-02-21",
+        "fagomraade": "AAP",
+        "gjelder": 1,
+        "beregnet": "2026-02-21T10:00:00",
+        "delberegning": [
+            {
+                "columns": ["2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20"],
+                "linjer": [
+                    {
+                        "type": "TREKK",
+                        "dagsbeloep": [],
+                        "beloep": -400,
+                        "trekkvedtakId": 100
+                    }
+                ],
+                "datoIntervall": {
+                    "fom": "2026-02-16",
+                    "tom": "2026-02-20"
+                }
+            }
+        ],
+        "status": "BEREGNET",
+        "gyldig": true,
+        "kilde": "POC"
+    }
+]

@@ -1,0 +1,62 @@
+[ {
+  "id" : 100,
+  "eksternTrekkId" : null,
+  "trekktypeKode" : "AVAA",
+  "kreditorIdTss" : null,
+  "kreditorTrekkId" : null,
+  "kreditorRef" : null,
+  "trekkalt" : "LOP",
+  "belopSaldo" : null,
+  "belopSaldoTrukket" : null,
+  "kreditorKid" : null,
+  "gyldigTom" : null,
+  "ansvarligEnhet" : "1234",
+  "debitorId" : 1,
+  "datoPriFom" : null,
+  "kilde" : null,
+  "trekkstatus" : "LOPE",
+  "trekkperioder" : [ {
+    "id" : 200,
+    "trekkvedtakId" : 100,
+    "datoFom" : "2026-03-02",
+    "datoTom" : "2026-03-27",
+    "sats" : 200,
+    "satstype" : "D",
+    "feilReg" : false,
+    "bruker" : "test",
+    "tidspktReg" : "2026-03-01T00:00:00",
+    "periode" : {
+      "fom" : "2026-03-02",
+      "tom" : "2026-03-27"
+    }
+  } ],
+  "fagomraader" : [ {
+    "id" : null,
+    "trekkvedtakId" : 100,
+    "fagomraadeKode" : "AAP",
+    "aktiv" : true,
+    "tidspktReg" : "2026-03-01T00:00:00"
+  }, {
+    "id" : null,
+    "trekkvedtakId" : 100,
+    "fagomraadeKode" : "MAAP",
+    "aktiv" : true,
+    "tidspktReg" : "2026-03-01T00:00:00"
+  } ],
+  "trekktype" : {
+    "kodeTrekktype" : "AVAA",
+    "beskrivelse" : "Avregning arbeidsavklaringspenger",
+    "prioritet" : "1",
+    "kodeKlasseTrekk" : "AVAAINTE",
+    "kodeTrekkategori" : "INTE",
+    "reduserSkattegr" : true,
+    "kodeOppgjoerstype" : "IUTR",
+    "kodeKlasseOppgj" : "AVAAINTE",
+    "belopsgrense" : 0,
+    "bruker" : "TOB-1958",
+    "tidspktEndret" : "2023-03-11T09:33:47",
+    "trekkberegningstype" : "YTELPER"
+  },
+  "bruker" : "test",
+  "tidspktReg" : "2026-03-01T00:00:00"
+} ]

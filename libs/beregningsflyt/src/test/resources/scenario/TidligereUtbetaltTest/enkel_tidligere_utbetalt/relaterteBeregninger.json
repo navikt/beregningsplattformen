@@ -1,0 +1,44 @@
+[
+    {
+        "id": 888,
+        "periode": {
+            "fom": "2026-03-02",
+            "tom": "2026-03-03"
+        },
+        "konto": "konto1",
+        "overfoeres": "2026-03-04",
+        "fagomraade": "AAP",
+        "gjelder": 1,
+        "beregnet": "2026-03-04T10:00:00",
+        "delberegning": [
+            {
+                "oppdragId": 0,
+                "columns": ["2026-03-02", "2026-03-03"],
+                "linjer": [
+                    {
+                        "type": "YTELSE",
+                        "dagsbeloep": [
+                            { "dato": "2026-03-02", "beloep": 500 },
+                            { "dato": "2026-03-03", "beloep": 500 }
+                        ],
+                        "beloep": 0,
+                        "kodeKlasse": {
+                            "kode": "AAPUAA",
+                            "beskrivelse": "AAP under arbeidsavklaring",
+                            "grunnlagSkatt": true,
+                            "grunnlagTrekk": true,
+                            "fagomraader": ["AAP", "AAPARENA", "MAAPAREN"]
+                        }
+                    }
+                ],
+                "datoIntervall": {
+                    "fom": "2026-03-02",
+                    "tom": "2026-03-03"
+                }
+            }
+        ],
+        "status": "BEREGNET",
+        "gyldig": true,
+        "kilde": "POC"
+    }
+]
