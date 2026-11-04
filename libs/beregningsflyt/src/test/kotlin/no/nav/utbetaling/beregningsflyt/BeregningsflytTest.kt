@@ -48,7 +48,8 @@ class BeregningsflytTest: FunSpec({
                     beregningsperiode = beregningsperiode,
                     oppdragstidslinje = oppdrag.oppdragstidslinje,
                     skatteKontekst = skatteKontekst,
-                    beregnet = LocalDateTime.parse(scenario.kontekst.beregnet)
+                    beregnet = LocalDateTime.parse(scenario.kontekst.beregnet),
+                    restFrikortBeloep = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal()
                 )
 
                 val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(kontextOgBeregninger.first, kontextOgBeregninger.second )

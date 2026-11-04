@@ -1,5 +1,6 @@
 package no.nav.utbetaling.beregningsflyt
 
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import no.nav.sokos.dare.poc.aktoer.AktoerId
@@ -42,7 +43,13 @@ class Beregningsflyt {
         val kid: String?
     )
 
-    fun beregn(beregningsperiode: Periode.LukketPeriode, oppdragstidslinje: Oppdragstidslinje, skatteKontekst: SkatteKontekst, beregnet: LocalDateTime): Pair<BeregningsmotorKontekst, List<Beregning>> {
+    fun beregn(
+        beregningsperiode: Periode.LukketPeriode,
+        oppdragstidslinje: Oppdragstidslinje,
+        skatteKontekst: SkatteKontekst,
+        beregnet: LocalDateTime,
+        restFrikortBeloep: BigDecimal?
+    ): Pair<BeregningsmotorKontekst, List<Beregning>> {
         val fom = beregningsperiode.fom
         val tom = beregningsperiode.tom
         //todo finne splittpunkter basert på skattekontekst se beregningsfordeler.
@@ -166,7 +173,7 @@ class Beregningsflyt {
 
         val beregningsmotorKontekst = BeregningsmotorKontekst(
             periode = DatoIntervall(fom, tom),
-            restFrikortBeloep = null,
+            restFrikortBeloep = restFrikortBeloep,
             segmenter = beregningssegment,
             skatteKontekst = skatteKontekst,
             satsBoetter = SatsBoetter(
