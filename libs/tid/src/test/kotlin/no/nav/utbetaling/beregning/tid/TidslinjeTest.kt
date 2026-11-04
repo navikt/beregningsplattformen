@@ -358,6 +358,100 @@ class TidslinjeTest :
 
                 tidslinje.begrensetTil(15.januar).isEmpty() shouldBe true
             }
+
+            test("skal kutte i begge ender når perioden er lukket") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(februar, verdi2)
+                        .periode(ÅpenPeriode(1.mars), verdi3)
+                        .build()
+
+                val forventet =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(15.januar til 31.januar, verdi1)
+                        .periode(februar, verdi2)
+                        .periode(1.mars til 15.mars, verdi3)
+                        .build()
+
+                tidslinje.begrensetTil(15.januar til 15.mars) shouldBeEqual forventet
+            }
+
+            test("skal beholde åpen hale når perioden er åpen") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(ÅpenPeriode(1.februar), verdi2)
+                        .build()
+
+                val forventet =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(15.januar til 31.januar, verdi1)
+                        .periode(ÅpenPeriode(1.februar), verdi2)
+                        .build()
+
+                tidslinje.begrensetTil(ÅpenPeriode(15.januar)) shouldBeEqual forventet
+            }
+
+            test("skal gi en tom tidslinje når perioden faller i et hull") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(mars, verdi2)
+                        .build()
+
+                tidslinje.begrensetTil(februar).isEmpty() shouldBe true
+            }
+        }
+
+        context("begrensetFra") {
+            test("skal kutte bort perioder før datoen og beholde verdien som gjelder på datoen") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(januar, verdi1)
+                        .periode(februar, verdi2)
+                        .periode(mars, verdi3)
+                        .build()
+
+                val forventet =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(15.februar til 29.februar, verdi2)
+                        .periode(mars, verdi3)
+                        .build()
+
+                tidslinje.begrensetFra(15.februar) shouldBeEqual forventet
+            }
+
+            test("skal beholde den åpne halen") {
+                val tidslinje =
+                    Tidslinje
+                        .Builder<MinVerdi>()
+                        .periode(ÅpenPeriode(1.januar), verdi1)
+                        .build()
+
+                val forventet = Tidslinje.Builder<MinVerdi>().periode(ÅpenPeriode(15.mars), verdi1).build()
+
+                tidslinje.begrensetFra(15.mars) shouldBeEqual forventet
+            }
+
+            test("skal ikke endre en tidslinje som starter etter datoen") {
+                val tidslinje = Tidslinje.Builder<MinVerdi>().periode(februar, verdi1).build()
+
+                tidslinje.begrensetFra(15.januar) shouldBeEqual tidslinje
+            }
+
+            test("skal gi en tom tidslinje når datoen er etter siste periode") {
+                val tidslinje = Tidslinje.Builder<MinVerdi>().periode(januar, verdi1).build()
+
+                tidslinje.begrensetFra(1.februar).isEmpty() shouldBe true
+            }
         }
 
         context("mapVerdier") {
