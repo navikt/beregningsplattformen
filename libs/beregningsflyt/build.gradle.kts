@@ -8,4 +8,5 @@ plugins {
 dependencies {
     implementation(project(":libs:beregning"))
     implementation(project(":libs:oppdrag"))
+    testImplementation(testFixtures(project(":libs:tid")))
 }
