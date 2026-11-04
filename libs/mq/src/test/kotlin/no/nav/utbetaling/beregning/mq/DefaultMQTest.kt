@@ -1,11 +1,18 @@
 package no.nav.utbetaling.beregning.mq
 
 import java.io.Serializable
+import java.util.Collections
 import java.util.Enumeration
 import java.util.UUID
 
 import com.ibm.mq.jakarta.jms.MQQueue
 import io.kotest.core.spec.style.FunSpec
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.api.trace.SpanContext
+import io.opentelemetry.api.trace.TraceFlags
+import io.opentelemetry.api.trace.TraceState
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
+import io.opentelemetry.context.Context
 import jakarta.jms.BytesMessage
 import jakarta.jms.CompletionListener
 import jakarta.jms.ConnectionMetaData
@@ -26,6 +33,10 @@ import jakarta.jms.TemporaryTopic
 import jakarta.jms.TextMessage
 import jakarta.jms.Topic
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+
+private val w3c = W3CTraceContextPropagator.getInstance()
 
 internal class DefaultMQTest :
     FunSpec({
@@ -38,7 +49,42 @@ internal class DefaultMQTest :
             consumer.close()
         }
 
-        test("depth returns number of messages in queue") {
+        test("extract leser W3C traceparent fra egenskapene på JMS-meldingen") {
+            val message =
+                TextMessageFake("<xml/>").apply {
+                    properties["traceparent"] = "00-9b9920adecbf10c23c1af5194d60cd05-bfb9d59c8613ccf9-01"
+                }
+
+            val spanContext = Span.fromContext(Tracing.extract(message, Context.root(), w3c)).spanContext
+
+            assertEquals("9b9920adecbf10c23c1af5194d60cd05", spanContext.traceId)
+            assertEquals("bfb9d59c8613ccf9", spanContext.spanId)
+            assertTrue(spanContext.isRemote)
+        }
+
+        test("extract uten traceparent beholder foreldrekonteksten") {
+            val spanContext = Span.fromContext(Tracing.extract(TextMessageFake("<xml/>"), Context.root(), w3c)).spanContext
+
+            assertFalse(spanContext.isValid)
+        }
+
+        test("inject skriver traceparent som extract leser tilbake") {
+            val parent =
+                SpanContext.createFromRemoteParent(
+                    "9b9920adecbf10c23c1af5194d60cd05",
+                    "bfb9d59c8613ccf9",
+                    TraceFlags.getSampled(),
+                    TraceState.getDefault(),
+                )
+            val message = TextMessageFake("<xml/>")
+
+            Tracing.inject(message, Context.root().with(Span.wrap(parent)), w3c)
+
+            assertEquals("00-9b9920adecbf10c23c1af5194d60cd05-bfb9d59c8613ccf9-01", message.properties["traceparent"])
+            assertEquals(parent.traceId, Span.fromContext(Tracing.extract(message, Context.root(), w3c)).spanContext.traceId)
+        }
+
+        test("depth returnerer antall meldinger på køen") {
             assertEquals(0, FakeConsumerService.received.size)
 
             mq.fakeReply(replyQueue) {
@@ -164,17 +210,23 @@ class JMSContextFake : JMSContextStub() {
 class TextMessageFake(
     private val msg: String,
 ) : TextMessageStub() {
-    var correlationID: String = UUID.randomUUID().toString()
+    val messageID: String = UUID.randomUUID().toString()
+    val properties = mutableMapOf<String, String>()
 
-    override fun getJMSCorrelationID(): String = correlationID
-
-    override fun getJMSMessageID(): String = correlationID
+    override fun getJMSMessageID(): String = messageID
 
     override fun getText(): String = msg
 
-    override fun setJMSCorrelationID(correlationID: String) {
-        // Oppdrag UR skriver over denne, men det kunne være nyttig å sette den pga. OTEL
+    override fun getStringProperty(name: String?): String? = properties[name]
+
+    override fun setStringProperty(
+        name: String?,
+        value: String?,
+    ) {
+        if (name != null && value != null) properties[name] = value
     }
+
+    override fun getPropertyNames(): Enumeration<*> = Collections.enumeration(properties.keys)
 }
 
 class JMSConsumerFake : JMSConsumerStub() {
@@ -443,6 +495,10 @@ abstract class TextMessageStub : TextMessage {
 
     override fun setJMSTimestamp(timestamp: Long) = TODO("fake")
 
+    override fun getJMSCorrelationID(): String = TODO("fake")
+
+    override fun setJMSCorrelationID(correlationID: String?) = TODO("fake")
+
     override fun getJMSCorrelationIDAsBytes(): ByteArray = TODO("fake")
 
     override fun setJMSCorrelationIDAsBytes(correlationID: ByteArray?) = TODO("fake")
@@ -497,7 +553,7 @@ abstract class TextMessageStub : TextMessage {
 
     override fun getDoubleProperty(name: String?): Double = TODO("fake")
 
-    override fun getStringProperty(name: String?): String = "fake"
+    override fun getStringProperty(name: String?): String? = "fake"
 
     override fun getObjectProperty(name: String?): Any = TODO("fake")
 
@@ -541,7 +597,7 @@ abstract class TextMessageStub : TextMessage {
     override fun setStringProperty(
         name: String?,
         value: String?,
-    ) = TODO("fake")
+    ): Unit = TODO("fake")
 
     override fun setObjectProperty(
         name: String?,

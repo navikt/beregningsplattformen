@@ -11,6 +11,7 @@ import com.ibm.mq.jakarta.jms.MQQueue
 import com.ibm.msg.client.jakarta.jms.JmsConstants
 import com.ibm.msg.client.jakarta.wmq.WMQConstants
 import io.opentelemetry.api.trace.SpanBuilder
+import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.StatusCode
 import jakarta.jms.ExceptionListener
 import jakarta.jms.JMSConsumer
@@ -48,14 +49,14 @@ class DefaultMQProducer(
                 "mq.produce",
                 { builder ->
                     builder
+                        .setSpanKind(SpanKind.PRODUCER)
                         .setAttribute("messaging.system", "ibmmq")
                         .setAttribute("messaging.destination", queue.baseQueueName)
                         .setAttribute("messaging.operation", "send")
                 },
             ) { span ->
+                Tracing.inject(textMessage)
                 producer.send(queue, textMessage)
-                textMessage.jmsCorrelationID = textMessage.jmsMessageID
-                Tracing.storeContext(textMessage.jmsMessageID)
                 span.setAttribute("messaging.message_id", textMessage.jmsMessageID)
             }
 
@@ -117,12 +118,13 @@ open class DefaultMQConsumer(
         message: TextMessage,
     ): SpanBuilder =
         builder
+            .setSpanKind(SpanKind.CONSUMER)
             .setAttribute("messaging.system", "ibmmq")
             .setAttribute("messaging.destination", queue.baseQueueName)
             .setAttribute("messaging.destination_kind", "queue")
             .setAttribute("messaging.message_id", message.jmsMessageID)
-            .setAttribute("messaging.operation", "receive")
-            .setParent(Tracing.restoreContext(message.jmsCorrelationID))
+            .setAttribute("messaging.operation", "process")
+            .setParent(Tracing.extract(message))
 
     override fun onException(exception: JMSException) {
         Log.error("MQ ${queue.baseQueueName} failed, reconnecting...", exception)

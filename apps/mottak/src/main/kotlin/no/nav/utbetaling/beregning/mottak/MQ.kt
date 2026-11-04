@@ -9,7 +9,7 @@ import no.nav.utbetaling.beregning.mq.DefaultMQConsumer
 import no.nav.utbetaling.beregning.mq.MQ
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
-class OppdragXMLConsumer(
+class MottakXMLConsumer(
     mq: MQ,
     queue: MQQueue,
 ) : AutoCloseable {

@@ -77,7 +77,7 @@
                             "rowValue": -3646,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "FRIKORT_MED_BELOEPSGRENSE_BRUKT_RESTSKATT",
                                     "verdier": {
                                         "grunnlag": {
@@ -215,7 +215,7 @@
                             "rowValue": -3409,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "FRIKORT_MED_BELOEPSGRENSE_BRUKT_RESTSKATT",
                                     "verdier": {
                                         "grunnlag": {

@@ -52,7 +52,7 @@
                             "rowValue": -1000,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TIDLIGERE_UTBETALT",
                                     "verdier": {
                                         "beregningId": {
@@ -77,7 +77,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {
@@ -163,7 +163,7 @@
                             "rowValue": -750,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {

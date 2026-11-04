@@ -100,7 +100,7 @@
                             "rowValue": -5571,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATTESATS_FORRIGE_AAR",
                                     "verdier": {
                                         "aar": {
@@ -115,7 +115,7 @@
                                     "template": "Beregning for forrige år ({aar:heltall}), bruker fast skattesats {prosentSats:prosent}%"
                                 },
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATTESATS_DEFAULT",
                                     "verdier": {
                                         "prosentSats": {
@@ -311,7 +311,7 @@
                             "rowValue": -10714,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {
@@ -491,7 +491,7 @@
                             "rowValue": -4870,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {

@@ -56,7 +56,7 @@ object PropertiesConfig {
         val port: Int,
         val manager: String,
         val channel: String,
-        val queue: String,
+        val mottakXmlQueue: String,
         val username: String,
         val password: String,
     )

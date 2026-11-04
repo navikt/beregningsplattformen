@@ -18,10 +18,10 @@ jobs:
       packages: write
     steps:
       - name: Check out release commit
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Java 25
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v4.2.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v4.2.1
         with:
           distribution: temurin
           java-version: "25"
@@ -38,12 +38,10 @@ jobs:
 
       - name: Publish to GitHub Packages
         env:
-          MAVEN_PUBLISH_URL: https://maven.pkg.github.com/navikt/beregningsplattformen
-          MAVEN_PUBLISH_USER: ${{ github.actor }}
-          MAVEN_PUBLISH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSJON: ${{ steps.versjon.outputs.versjon }}
+          BIBLIOTEK_PUBLISERING_BRUKER: ${{ github.actor }}
+          BIBLIOTEK_PUBLISERING_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew :libs:beregning:publish \
-            "-PpublicationVersion=$VERSJON" \
+            "-PbibliotekVersjon=${{ steps.versjon.outputs.versjon }}" \
             -x ktlintFormat \
             --no-configuration-cache

@@ -15,12 +15,23 @@ class Tidslinje<T> private constructor(
 
     operator fun get(dato: LocalDate): T? = knekkpunkter.floorEntry(dato)?.value
 
-    fun begrensetTil(dato: LocalDate): Tidslinje<T> {
-        if (isEmpty()) return this
-        val (sisteDato, sisteVerdi) = knekkpunkter.lastEntry()
-        if (sisteVerdi == null && sisteDato.forrigeDag <= dato) return this
-        val nye = TreeMap(knekkpunkter.headMap(dato.nesteDag))
-        nye[dato.nesteDag] = null
+    fun begrensetTil(dato: LocalDate): Tidslinje<T> = begrensetTil(LocalDate.MIN til dato)
+
+    fun begrensetFra(dato: LocalDate): Tidslinje<T> = begrensetTil(ÅpenPeriode(dato))
+
+    fun begrensetTil(periode: Periode): Tidslinje<T> {
+        val nye = TreeMap<LocalDate, T?>()
+        nye[periode.fom] = this[periode.fom]
+        when (periode) {
+            is ÅpenPeriode -> {
+                nye.putAll(knekkpunkter.tailMap(periode.fom, false))
+            }
+
+            is LukketPeriode -> {
+                nye.putAll(knekkpunkter.subMap(periode.fom, false, periode.tom.nesteDag, false))
+                nye[periode.tom.nesteDag] = null
+            }
+        }
         return Tidslinje(nye.komprimert())
     }
 

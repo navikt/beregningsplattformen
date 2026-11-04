@@ -136,7 +136,7 @@
                             "rowValue": -700,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {
@@ -227,7 +227,7 @@
                             "rowValue": -5150,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "SKATT_MANGLENDE_SKATTEKORT",
                                     "verdier": {
                                         "grunnlag": {

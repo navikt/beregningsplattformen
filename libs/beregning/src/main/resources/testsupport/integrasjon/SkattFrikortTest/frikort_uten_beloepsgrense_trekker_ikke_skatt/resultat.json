@@ -81,7 +81,7 @@
                             "rowValue": 0,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "FRIKORT_UTEN_BELOPSGRENSE_BRUKT",
                                     "verdier": {
                                         "grunnlag": {
@@ -131,7 +131,7 @@
                             "rowValue": -9740,
                             "ekstra": [
                                 {
-                                    "type": "no.nav.sokos.dare.poc.beregning.TekstEkstraInfo",
+                                    "type": "TekstEkstraInfo",
                                     "grunn": "TREKK",
                                     "verdier": {
                                         "kode": {

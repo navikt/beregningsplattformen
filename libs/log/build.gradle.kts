@@ -5,5 +5,5 @@ plugins {
 }
 
 dependencies {
-    api("ch.qos.logback:logback-classic:1.6.5")
+    api("ch.qos.logback:logback-classic:1.6.6")
 }

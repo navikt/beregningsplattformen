@@ -1,35 +1,70 @@
 package no.nav.utbetaling.beregning.mq
 
 import java.util.Collections
-import java.util.concurrent.ConcurrentHashMap
-
-import kotlin.collections.set
 
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.SpanContext
 import io.opentelemetry.api.trace.StatusCode
-import io.opentelemetry.api.trace.TraceFlags
-import io.opentelemetry.api.trace.TraceState
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.context.Context
 import io.opentelemetry.context.propagation.TextMapGetter
+import io.opentelemetry.context.propagation.TextMapPropagator
+import io.opentelemetry.context.propagation.TextMapSetter
+import jakarta.jms.Message
 
 import no.nav.utbetaling.beregning.log.logger
 
 val traceLog = logger("trace")
 
+/**
+ * Leser og skriver W3C trace context (traceparent/tracestate) som JMS string properties.
+ * Samme format som OpenTelemetry javaagent sin JMS-instrumentering bruker (helved setter `traceparent` slik).
+ */
+internal object JmsMessageGetter : TextMapGetter<Message> {
+    override fun keys(carrier: Message): Iterable<String> = carrier.propertyNames.toList().map { it.toString() }
+
+    override fun get(
+        carrier: Message?,
+        key: String,
+    ): String? = carrier?.runCatching { getStringProperty(key) }?.getOrNull()
+}
+
+internal object JmsMessageSetter : TextMapSetter<Message> {
+    override fun set(
+        carrier: Message?,
+        key: String,
+        value: String,
+    ) {
+        carrier?.setStringProperty(key, value)
+    }
+}
+
 object Tracing {
     val tracer: Tracer = GlobalOpenTelemetry.getTracer("mq-tracer")
 
-    private val traceparents = ConcurrentHashMap<String, String>()
+    private fun propagator(): TextMapPropagator = GlobalOpenTelemetry.getPropagators().textMapPropagator
 
-    fun storeContext(key: String) {
-        getTraceparent()?.let { traceparents[key] = it } ?: traceLog.warn("No traceparent on context for key: $key")
+    /**
+     * Henter trace context fra en mottatt MQ-melding. Mangler `traceparent` returneres [parent] uendret.
+     */
+    fun extract(
+        message: Message,
+        parent: Context = Context.current(),
+        propagator: TextMapPropagator = propagator(),
+    ): Context = propagator.extract(parent, message, JmsMessageGetter)
+
+    /**
+     * Skriver trace context fra [context] inn på en MQ-melding før sending.
+     */
+    fun inject(
+        message: Message,
+        context: Context = Context.current(),
+        propagator: TextMapPropagator = propagator(),
+    ) {
+        propagator.inject(context, message, JmsMessageSetter)
     }
-
-    fun restoreContext(key: String): Context = traceparents[key]?.let { propagateSpan(it) } ?: Context.current()
 
     fun getTraceparent(): String? {
         val ctx = Span.current().spanContext
@@ -42,20 +77,6 @@ object Tracing {
         if (!ctx.isValid) return null
         val sampled = if (ctx.traceFlags.isSampled) "01" else "00"
         return "00-${ctx.traceId}-${ctx.spanId}-$sampled"
-    }
-
-    private fun propagateSpan(traceparent: String): Context {
-        val split = traceparent.split("-")
-        if (split.size < 4) {
-            traceLog.warn("Invalid traceparent: $traceparent")
-            return Context.current()
-        }
-        val traceId = split[1]
-        val parentSpanId = split[2]
-        val traceFlags = TraceFlags.getSampled()
-        val traceState = TraceState.getDefault()
-        val spanCtx = SpanContext.createFromRemoteParent(traceId, parentSpanId, traceFlags, traceState)
-        return Context.current().with(Span.wrap(spanCtx))
     }
 
     /**
@@ -102,9 +123,8 @@ object Tracing {
             ): String? = if ("traceparent" == key) carrier else null
         }
 
-    fun contextFromTraceparent(traceparent: String): Context =
-        GlobalOpenTelemetry
-            .getPropagators()
-            .textMapPropagator
-            .extract(Context.current(), traceparent, traceContextGetter)
+    /**
+     * Gjenoppretter trace context fra en lagret traceparent, f.eks. når en avvist melding sendes tilbake senere.
+     */
+    fun contextFromTraceparent(traceparent: String): Context = propagator().extract(Context.current(), traceparent, traceContextGetter)
 }
