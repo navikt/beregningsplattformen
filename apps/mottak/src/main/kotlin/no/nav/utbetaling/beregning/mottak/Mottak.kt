@@ -46,19 +46,16 @@ private fun Application.mottak() {
             ),
         )
 
-    Log.info("Får jeg hentet ut servicename: ${PropertiesConfig.mqProperties.username}")
-    Log.info("Starting Mottak application with MQ queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
-
     val mottakXMLConsumer = MottakXMLConsumer(mottakXMLQueue, MQQueue(PropertiesConfig.mqProperties.mottakXmlQueue))
 
-    Log.info("Mottak application started and listening for messages on queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
-
     monitor.subscribe(ApplicationStarted) {
+        Log.info("Using profile: ${PropertiesConfig.applicationProperties.profile}")
         mottakXMLConsumer.start()
+        Log.info("Mottak application started and listening for messages on queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
     }
     monitor.subscribe(ApplicationStopping) {
+        Log.info("Mottak application stopping")
         mottakXMLConsumer.close()
+        Log.info("MQ consumer closed for queue: ${PropertiesConfig.mqProperties.mottakXmlQueue}")
     }
-
-    Log.info("Application started with profile: ${PropertiesConfig.applicationProperties.profile}")
 }

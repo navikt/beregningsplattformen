@@ -1,10 +1,11 @@
+@file:Suppress("ktlint:standard:filename")
+
 package no.nav.utbetaling.beregning.mottak
 
 import com.ibm.mq.jakarta.jms.MQQueue
 import jakarta.jms.TextMessage
 
 import no.nav.utbetaling.beregning.log.secureLog
-import no.nav.utbetaling.beregning.mottak.config.Metrics
 import no.nav.utbetaling.beregning.mq.DefaultMQConsumer
 import no.nav.utbetaling.beregning.mq.MQ
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
@@ -29,11 +30,4 @@ class MottakXMLConsumer(
         Metrics.registrerOppdrag(oppdrag)
         secureLog.info("Received MQ message: {}", oppdrag.toString())
     }
-}
-
-class OppdragZProducer(
-    private val mq: MQ,
-    private val queue: MQQueue,
-) {
-    // TODO:
 }

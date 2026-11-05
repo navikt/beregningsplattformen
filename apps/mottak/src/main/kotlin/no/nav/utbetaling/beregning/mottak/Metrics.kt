@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.mottak.config
+package no.nav.utbetaling.beregning.mottak
 
 import io.micrometer.core.instrument.Tag
 import io.micrometer.prometheusmetrics.PrometheusConfig

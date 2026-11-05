@@ -2,7 +2,11 @@ package no.nav.utbetaling.beregning.mottak.config
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationStarted
+import io.ktor.server.application.ApplicationStopped
+import io.ktor.server.application.ServerReady
 import io.ktor.server.application.install
+import io.ktor.server.application.log
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
@@ -13,6 +17,8 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
+
+import no.nav.utbetaling.beregning.mottak.Metrics
 
 fun Application.commonConfig() {
     install(MicrometerMetrics) {
@@ -59,3 +65,26 @@ fun Routing.internalNaisRoutes(
         }
     }
 }
+
+fun Application.applicationLifecycleConfig(applicationState: ApplicationState) {
+    monitor.subscribe(ApplicationStarted) {
+        applicationState.alive = true
+        it.log.info("Application is started")
+    }
+
+    monitor.subscribe(ServerReady) {
+        applicationState.ready = true
+        it.log.info("Server is ready")
+    }
+
+    monitor.subscribe(ApplicationStopped) {
+        applicationState.alive = false
+        applicationState.ready = false
+        it.log.info("Application is stopped")
+    }
+}
+
+class ApplicationState(
+    var ready: Boolean = false,
+    var alive: Boolean = false,
+)

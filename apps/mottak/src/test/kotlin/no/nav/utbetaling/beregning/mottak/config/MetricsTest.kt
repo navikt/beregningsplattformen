@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.micrometer.core.instrument.Tag
 
+import no.nav.utbetaling.beregning.mottak.Metrics
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 
