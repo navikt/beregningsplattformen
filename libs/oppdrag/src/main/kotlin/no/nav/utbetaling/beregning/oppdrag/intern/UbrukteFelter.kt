@@ -16,7 +16,7 @@ internal object UbrukteFelter {
                 validerIngenKodeArbeidsgiver(oppdrag110) +
                 validerIngenValutaGrense(oppdrag110) +
                 validerFagsystemIdRef(oppdrag110) +
-                validerIngendatoKlassifikFom(oppdrag110) +
+                validerKodeKlassifikPeriode(oppdrag110) +
                 validerAksjonskodeverdier(oppdrag110)
 
         valider(feil.isEmpty()) {
@@ -123,7 +123,7 @@ internal object UbrukteFelter {
             }.toSet()
     }
 
-    private fun validerIngendatoKlassifikFom(oppdrag110: Oppdrag110): Set<String> {
+    private fun validerKodeKlassifikPeriode(oppdrag110: Oppdrag110): Set<String> {
         val linjerMedDatoKlassfikFom =
             oppdrag110.oppdragsLinje150
                 .filter { it.datoKlassifikFom != null }
@@ -133,7 +133,7 @@ internal object UbrukteFelter {
 
         return linjerMedDatoKlassfikFom
             .map { linje ->
-                "oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt datoKlassifikFom, dette feltet skal ikke være i bruk!"
+                "oppdrags-linje-150 med delytelseId ${linje.delytelseId} har satt datoKlassifikFom til noe annet enn datoVedtakFom, dette skal ikke skje!"
             }.toSet()
     }
 
