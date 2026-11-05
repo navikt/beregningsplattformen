@@ -72,31 +72,31 @@ internal object FraXmlFormat {
                             )
                         }
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
-                        .fullJoin(statuser) { _, builder, statusendring ->
-                            builder?.medStatus(statusendring)
-                        }.fullJoin(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
-                            builder?.copy(utbetalesTil = utbetalesTil)
-                        }.fullJoin(SkyldnerIder.fra(linjer)) { _, builder, skyldner ->
-                            builder?.copy(skyldner = skyldner)
-                        }.fullJoin(Refusjonsinfoer.fra(linjer)) { _, builder, refusjonsinfo ->
-                            builder?.copy(refusjonsinfo = refusjonsinfo)
-                        }.fullJoin(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
-                            builder?.copy(kidnummer = kidnummer)
+                        .leftJoin(statuser) { _, builder, statusendring ->
+                            builder.medStatus(statusendring)
+                        }.leftJoin(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
+                            builder.copy(utbetalesTil = utbetalesTil)
+                        }.leftJoin(SkyldnerIder.fra(linjer)) { _, builder, skyldner ->
+                            builder.copy(skyldner = skyldner)
+                        }.leftJoin(Refusjonsinfoer.fra(linjer)) { _, builder, refusjonsinfo ->
+                            builder.copy(refusjonsinfo = refusjonsinfo)
+                        }.leftJoin(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
+                            builder.copy(kidnummer = kidnummer)
                         }
                 }
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
                 .mapValues { (_, builderTidslinje) ->
                     builderTidslinje
-                        .fullJoin(avventinger) { _, builder, avventing ->
-                            builder?.copy(avventingsårsakEndring = avventing)
-                        }.fullJoin(bostedsenheter) { _, builder, bostedsenhet ->
-                            builder?.copy(bostedsenhet = bostedsenhet)
-                        }.fullJoin(behandlendeEnheter) { _, builder, behandlendeEnhet ->
-                            builder?.copy(behandlendeEnhet = behandlendeEnhet)
-                        }.fullJoin(gjelderIder) { _, builder, gjelderId ->
-                            builder?.copy(gjelderId = gjelderId)
-                        }.fullJoin(omposeringer) { _, builder, ompostering ->
-                            builder?.copy(omposteringEndring = ompostering)
+                        .leftJoin(avventinger) { _, builder, avventing ->
+                            builder.copy(avventingsårsakEndring = avventing)
+                        }.leftJoin(bostedsenheter) { _, builder, bostedsenhet ->
+                            builder.copy(bostedsenhet = bostedsenhet)
+                        }.leftJoin(behandlendeEnheter) { _, builder, behandlendeEnhet ->
+                            builder.copy(behandlendeEnhet = behandlendeEnhet)
+                        }.leftJoin(gjelderIder) { _, builder, gjelderId ->
+                            builder.copy(gjelderId = gjelderId)
+                        }.leftJoin(omposeringer) { _, builder, ompostering ->
+                            builder.copy(omposteringEndring = ompostering)
                         }
                 }
                 // Bygger tidslinjen med kun linjenivå-verdier; oppdragsnivå løftes ut i oppdragsverdier

@@ -149,25 +149,25 @@ internal data class OpplysningerIntern(
         }
 
         private fun velgStatus(
-            oppdragsdag: OpplysningerIntern?,
+            oppdragsdag: OpplysningerIntern,
             status: Opplysning<Status>?,
             unntatt: Set<DelytelseId> = emptySet(),
         ) = when {
-            status == null || oppdragsdag == null -> oppdragsdag
+            status == null -> oppdragsdag
             oppdragsdag.delytelseId in unntatt -> oppdragsdag
             else -> oppdragsdag.copy(status = velgOpplysning(status, oppdragsdag.status))
         }
 
         fun velgStatus(
-            oppdragsdag: OpplysningerIntern?,
+            oppdragsdag: OpplysningerIntern,
             statusendring: Statusendring?,
         ) = velgStatus(oppdragsdag, statusendring?.status, statusendring?.unntatt ?: emptySet())
 
         fun videreførGjelderId(
-            oppdragsdag: OpplysningerIntern?,
+            oppdragsdag: OpplysningerIntern,
             gjelderId: Opplysning<Personidentifikator>?,
         ) = when {
-            oppdragsdag == null || gjelderId == null -> oppdragsdag
+            gjelderId == null -> oppdragsdag
             // Om det er satt en gjelderId eksplisitt brukes den
             oppdragsdag.gjelderId != null -> oppdragsdag
             // Om det mangler så viderefører vi gjelderId
@@ -175,10 +175,10 @@ internal data class OpplysningerIntern(
         }
 
         fun videreførUtbetalesTil(
-            oppdragsdag: OpplysningerIntern?,
+            oppdragsdag: OpplysningerIntern,
             utbetalesTil: Opplysning<UtbetalesTil>?,
         ) = when {
-            oppdragsdag == null || utbetalesTil == null -> oppdragsdag
+            utbetalesTil == null -> oppdragsdag
             // Om det er satt en utbetalesTil eksplisitt brukes den
             oppdragsdag.utbetalesTil != null -> oppdragsdag
             // Om det mangler så viderefører vi utbetalesTIl
@@ -186,10 +186,10 @@ internal data class OpplysningerIntern(
         }
 
         fun videreførSkyldner(
-            oppdragsdag: OpplysningerIntern?,
+            oppdragsdag: OpplysningerIntern,
             skyldner: Opplysning<Part>?,
         ) = when {
-            oppdragsdag == null || skyldner == null -> oppdragsdag
+            skyldner == null -> oppdragsdag
             // Om det er satt en skyldner eksplisitt brukes den
             oppdragsdag.skyldner != null -> oppdragsdag
             // Om det mangler så viderefører vi skyldner
@@ -197,10 +197,10 @@ internal data class OpplysningerIntern(
         }
 
         fun videreførRefusjonsinfo(
-            oppdragsdag: OpplysningerIntern?,
+            oppdragsdag: OpplysningerIntern,
             refusjonsinfo: Opplysning<Refusjonsinfo>?,
         ) = when {
-            oppdragsdag == null || refusjonsinfo == null -> oppdragsdag
+            refusjonsinfo == null -> oppdragsdag
             // Om det er satt en refusjonsinfo eksplisitt brukes den
             oppdragsdag.refusjonsinfo != null -> oppdragsdag
             // Om det mangler så viderefører vi refusjonsinfo

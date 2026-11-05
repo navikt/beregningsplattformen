@@ -117,17 +117,17 @@ class Oppdragstidslinje private constructor(
             utgangspunkt
                 .fullJoin(endretTidslinje) { periode, eksisterendeOpplysninger, nyeOpplysninger ->
                     OpplysningerIntern.velg(eksisterendeOpplysninger, nyeOpplysninger, periode, endretPeriode)
-                }.fullJoin(oppdragstatus) { _, opplysninger, statusendring ->
+                }.leftJoin(oppdragstatus) { _, opplysninger, statusendring ->
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
-                }.fullJoin(kjedestatus) { _, opplysninger, statusendring ->
+                }.leftJoin(kjedestatus) { _, opplysninger, statusendring ->
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
-                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, opplysninger, gjelderId ->
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, opplysninger, gjelderId ->
                     OpplysningerIntern.videreførGjelderId(opplysninger, gjelderId)
-                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
                     OpplysningerIntern.videreførUtbetalesTil(opplysninger, utbetalesTil)
-                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
                     OpplysningerIntern.videreførSkyldner(opplysninger, skyldner)
-                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::refusjonsinfo)) { _, opplysninger, refusjonsinfo ->
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::refusjonsinfo)) { _, opplysninger, refusjonsinfo ->
                     OpplysningerIntern.videreførRefusjonsinfo(opplysninger, refusjonsinfo)
                 }
         }
