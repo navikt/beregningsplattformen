@@ -23,7 +23,7 @@ class OppdragstidslinjeFraXMLTest :
             resultat.tidslinjer.values
                 .single()
                 .first()
-                .second.vedtaksSats
+                .second.vedtakssats
                 ?.opplysning shouldBe
                 Sats(verdi = java.math.BigDecimal("974"), satsType = "")
             resultat.assertGjenskaptfraTidslinjer()
@@ -33,7 +33,7 @@ class OppdragstidslinjeFraXMLTest :
             uten.tidslinjer.values
                 .single()
                 .first()
-                .second.vedtaksSats shouldBe null
+                .second.vedtakssats shouldBe null
 
             (Oppdrag.fraXml(xml) is Oppdrag.Utbetaling) shouldBe true
 

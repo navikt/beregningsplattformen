@@ -89,6 +89,6 @@ class GjelderIdTest :
         }
     })
 
-private fun Oppdragstidslinje.gjelder() = perPeriode { it.gjelderId?.opplysning }
+private fun Oppdragstidslinje.gjelder() = perPeriode { it.gjelder?.opplysning }
 
-private fun Oppdragstidslinje.fagsystemIdTilGjelderId() = perPeriode { it.fagsystemId to it.gjelderId?.opplysning }
+private fun Oppdragstidslinje.fagsystemIdTilGjelderId() = perPeriode { it.fagsystemId to it.gjelder?.opplysning }

@@ -7,8 +7,6 @@ import io.kotest.core.spec.style.FunSpec
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
-import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
-import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
@@ -37,7 +35,7 @@ class UtbetalesTilIdTest :
 
             innsending1.utbetalesTil() skalVæreLik
                 mapOf(
-                    1.januar til 31.januar to setOf(UtbetalesTil.Person(Personidentifikator("12345678901"))),
+                    1.januar til 31.januar to setOf(Personidentifikator("12345678901")),
                 )
 
             val innsending2 =
@@ -59,16 +57,16 @@ class UtbetalesTilIdTest :
             innsending2.utbetalesTil() skalVæreLik
                 mapOf(
                     1.februar til 9.februar to setOf(null),
-                    10.februar til 29.februar to setOf(UtbetalesTil.Person(Personidentifikator("12345678902"))),
+                    10.februar til 29.februar to setOf(Personidentifikator("12345678902")),
                 )
 
             val resultat = innsending1 + innsending2
 
             resultat.utbetalesTil() skalVæreLik
                 mapOf(
-                    1.januar til 31.januar to setOf(UtbetalesTil.Person(Personidentifikator("12345678901"))),
-                    1.februar til 9.februar to setOf(UtbetalesTil.Person(Personidentifikator("12345678901"))),
-                    10.februar til 29.februar to setOf(UtbetalesTil.Person(Personidentifikator("12345678902"))),
+                    1.januar til 31.januar to setOf(Personidentifikator("12345678901")),
+                    1.februar til 9.februar to setOf(Personidentifikator("12345678901")),
+                    10.februar til 29.februar to setOf(Personidentifikator("12345678902")),
                 )
         }
 
@@ -87,27 +85,7 @@ class UtbetalesTilIdTest :
                 )
             innsending.utbetalesTil() skalVæreLik
                 mapOf(
-                    1.januar til 31.januar to setOf(UtbetalesTil.Organisasjon(Organisasjonsnummer("987654321"))),
-                )
-        }
-
-        test("Utbetales til samhandler") {
-            val innsending =
-                oppdragstidslinje(
-                    linjer =
-                        listOf(
-                            linje(
-                                fom = 1.januar,
-                                tom = 31.januar,
-                                delytelseId = "1",
-                                utbetalesTilId = "81111111111",
-                            ),
-                        ),
-                )
-
-            innsending.utbetalesTil() skalVæreLik
-                mapOf(
-                    1.januar til 31.januar to setOf(UtbetalesTil.Samhandler(SamhandlerId(tssId = "81111111111"))),
+                    1.januar til 31.januar to setOf(Organisasjonsnummer("987654321")),
                 )
         }
     })

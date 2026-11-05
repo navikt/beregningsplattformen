@@ -11,8 +11,9 @@ import kotlinx.serialization.Serializable
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Opplysning
-import no.nav.utbetaling.beregning.oppdrag.Part
-import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
+import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
+import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
+import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
 
 @Serializable
@@ -70,7 +71,8 @@ data class KjedePerioderDTO(
     val forfall: OpplysningDTO?,
     val utbetalesTil: OpplysningDTO?,
     val skyldner: OpplysningDTO?,
-    val refusjonsinfo: OpplysningDTO?,
+    val refunderesTil: OpplysningDTO?,
+    val maksdato: OpplysningDTO?,
     val typeSøknad: OpplysningDTO?,
     val gjelderId: OpplysningDTO?,
     val henvisning: OpplysningDTO?,
@@ -91,13 +93,6 @@ private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
         saksbehandlerId = saksbehandlerId.id,
         opplysning = stringverdi(opplysning),
     )
-
-private fun Part.format(): String =
-    when (this) {
-        is Part.Organisasjon -> "Organisasjon ${organisasjonsnummer.nummer}"
-        is Part.Person -> "Person ${personidentifikator.identifikator}"
-        is Part.Samhandler -> "Samhandler ${samhandlerId.tssId}"
-    }
 
 private val DATO_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
@@ -132,19 +127,24 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                         utbetalesTil =
                                             opplysning.utbetalesTil?.toDto {
                                                 when (it) {
-                                                    is UtbetalesTil.Organisasjon -> "Organisasjon ${it.organisasjonsnummer.nummer}"
-                                                    is UtbetalesTil.Person -> "Person ${it.personidentifikator.identifikator}"
-                                                    is UtbetalesTil.Samhandler -> "Samhandler ${it.samhandlerId.tssId}"
+                                                    is Organisasjonsnummer -> "Organisasjon ${it.nummer}"
+                                                    is Personidentifikator -> "Person ${it.identifikator}"
                                                 }
                                             },
-                                        skyldner = opplysning.skyldner?.toDto { it.format() },
-                                        refusjonsinfo =
-                                            opplysning.refusjonsinfo?.toDto {
-                                                val refunderes = it.refunderes?.format() ?: "ukjent"
-                                                val maksDato = it.maksDato?.format(DATO_FORMAT) ?: "ingen"
-                                                "Refunderes $refunderes, maksdato $maksDato"
+                                        skyldner =
+                                            opplysning.skyldner?.toDto {
+                                                when (it) {
+                                                    is SamhandlerId -> "Samhandler ${it.tssId}"
+                                                }
                                             },
-                                        typeSøknad = opplysning.typeSøknad?.toDto { it.type },
+                                        refunderesTil =
+                                            opplysning.refunderesTil?.toDto {
+                                                when (it) {
+                                                    is Organisasjonsnummer -> "Organisasjon ${it.nummer}"
+                                                }
+                                            },
+                                        maksdato = opplysning.maksdato?.toDto { it.format(DATO_FORMAT) },
+                                        typeSøknad = opplysning.søknadstype?.toDto { it.type },
                                         forfall = opplysning.forfall?.toDto { it.format(DATO_FORMAT) },
                                         avventingsårsak =
                                             opplysning.avventingsårsak?.toDto {
@@ -157,7 +157,12 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                                         }
                                                 }
                                             },
-                                        gjelderId = opplysning.gjelderId?.toDto { it.identifikator },
+                                        gjelderId =
+                                            opplysning.gjelder?.toDto {
+                                                when (it) {
+                                                    is Personidentifikator -> "Person ${it.identifikator}"
+                                                }
+                                            },
                                         delytelseId = opplysning.delytelseId.id,
                                         sats = opplysning.sats.toDto { it.verdi.toPlainString() },
                                         henvisning = opplysning.henvisning?.toDto { it.henvisning },

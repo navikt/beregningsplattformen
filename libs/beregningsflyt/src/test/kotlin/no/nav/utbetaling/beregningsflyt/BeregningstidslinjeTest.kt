@@ -2,7 +2,6 @@ package no.nav.utbetaling.beregningsflyt
 
 import io.kotest.core.spec.style.FunSpec
 import java.math.BigDecimal
-import java.time.LocalDateTime
 import io.kotest.matchers.shouldBe
 import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.DelytelseId
@@ -29,13 +28,14 @@ class BeregningstidslinjeTest: FunSpec( {
         fagsystemId = FagsystemId("fagsystem-1"),
         delytelseId = DelytelseId("delytelse-1"),
         refDelytelseId = null,
-        gjelderId = Opplysning(SaksbehandlerId("Z999999"), Personidentifikator("12345678910")),
+        gjelder = Opplysning(SaksbehandlerId("Z999999"), Personidentifikator("12345678910")),
         utbetalesTil = null,
         sats = Opplysning(SaksbehandlerId("Z999999"), Sats(BigDecimal("1000"), "MND")),
-        vedtaksSats = null,
+        vedtakssats = null,
         skyldner = null,
-        refusjonsinfo = null,
-        typeSøknad = null,
+        refunderesTil = null,
+        maksdato = null,
+        søknadstype = null,
         henvisning = null,
         stønadId = null,
         forfall = null,

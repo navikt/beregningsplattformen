@@ -16,8 +16,8 @@
 | `oppdrag-110.utbetFrekvens`                   |   ✅   | Mappes til `utbetalingsfrekvens`.                                                                                                           |
 | `oppdrag-110.datoForfall`                     |   ✅   | Mappes til `forfall`.                                                                                                                       |
 | `oppdrag-110.stonadId`                        |   ✅   | Mappes til `stønadId`.                                                                                                                      |
-| `oppdrag-110.oppdragGjelderId`                |   ✅   | Brukes til `gjelderId`.                                                                                                                     |
-| `oppdrag-110.datoOppdragGjelderFom`           |   ✅   | Hensyntas for å kun bruke `gjelderId` fra og med denne datoen.                                                                              |
+| `oppdrag-110.oppdragGjelderId`                |   ✅   | Brukes til `gjelder`.                                                                                                                       |
+| `oppdrag-110.datoOppdragGjelderFom`           |   ✅   | Hensyntas for å kun bruke `gjelder` fra og med denne datoen.                                                                                |
 | `oppdrag-110.saksbehId`                       |   ✅   | Brukes for alle opplysninger som ligger på oppdragsnivå.                                                                                    |
 | `oppdrag-110.oppdrags-status-111.*`           |   ❌   | Avvises som output-felt.                                                                                                                    |
 | `oppdrag-110.oppdrag-gjelder-112.*`           |   ❌   | Avvises som output-felt.                                                                                                                    |
@@ -62,9 +62,9 @@
 | `oppdrag-110.oppdrags-linje-150.datoVedtakTom`                  |   ✅   | Brukes som til og med-verdi for perioden.                                                                                |
 | `oppdrag-110.oppdrags-linje-150.sats`                           |   ✅   | Mappes inn som `sats`                                                                                                    |
 | `oppdrag-110.oppdrags-linje-150.fradragTillegg`                 |   ☑️   | Angir om det er fradrag eller utbetaling, behøves ikke.                                                                  |
-| `oppdrag-110.oppdrags-linje-150.typeSats`                       |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.skyldnerId`                     |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.datoSkyldnerFom`                |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.typeSats`                       |   ✅   | Mappes inn som `satstype` i både `sats` og `vedtakssats`                                                                 |
+| `oppdrag-110.oppdrags-linje-150.skyldnerId`                     |   ✅   | Mappes inn som `skyldner`                                                                                                |
+| `oppdrag-110.oppdrags-linje-150.datoSkyldnerFom`                |   ✅   | Hensyntas for å sette `skyldner` i ret periode                                                                           |
 | `oppdrag-110.oppdrags-linje-150.kravhaverId`                    |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.datoKravhaverFom`               |   ❌   | Avvises som et felt som ikke skal være i bruk.                                                                           |
 | `oppdrag-110.oppdrags-linje-150.kid`                            |   ✅   | Mappes til `kidnummer` i opplysninger.                                                                                   |
@@ -85,10 +85,10 @@
 | `oppdrag-110.oppdrags-linje-150.skyldner-153.*`                 |   ❌   | Avvises som output-felt.                                                                                                 |
 | `oppdrag-110.oppdrags-linje-150.kid-154.*`                      |   ❌   | Avvises som output-felt.                                                                                                 |
 | `oppdrag-110.oppdrags-linje-150.utbetales-til-155.*`            |   ❌   | Avvises som output-felt.                                                                                                 |
-| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.maksDato`     |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.refunderesId` |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.datoFom`      |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
-| `oppdrag-110.oppdrags-linje-150.vedtakssats-157.vedtakssats`    |   ✅   | 🧮 Trengs til input for beregning                                                                                        |
+| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.maksDato`     |   ✅   | Mappes til `maksdato`                                                                                                    |
+| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.refunderesId` |   ✅   | Mappes til `refunderesTil`                                                                                               |
+| `oppdrag-110.oppdrags-linje-150.refusjonsinfo-156.datoFom`      |   ✅   | Brukes for å sette henholdsvis `maksdato` og `refunderesTil` på rett perioder.                                           |
+| `oppdrag-110.oppdrags-linje-150.vedtakssats-157.vedtakssats`    |   ✅   | Mappes til `vedtakssats`                                                                                                 |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekstLnr`       |   ☑️   | Rekkefølge ved flere tekstlinjer.                                                                                        |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekstKode`      |   ☑️   | Kode som UR benytter til å legge på ferdig definerte tekster.                                                            |
 | `oppdrag-110.oppdrags-linje-150.linje-tekst-158.tekst`          |   ☑️   | Fritekst knyttet til oppdragslinjen.                                                                                     |

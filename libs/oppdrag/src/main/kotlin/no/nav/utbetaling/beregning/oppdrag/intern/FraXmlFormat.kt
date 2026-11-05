@@ -23,7 +23,7 @@ import no.nav.utbetaling.beregning.oppdrag.Opplysning
 import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Sats
 import no.nav.utbetaling.beregning.oppdrag.StønadId
-import no.nav.utbetaling.beregning.oppdrag.TypeSøknad
+import no.nav.utbetaling.beregning.oppdrag.Søknadstype
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
 import no.nav.utbetaling.beregning.oppdrag.YtelseKlassekode
@@ -65,8 +65,8 @@ internal object FraXmlFormat {
                                 refDelytelseId = oppdragsLinje150.refDelytelseId.mapVerdi { DelytelseId(it) },
                                 henvisning = oppdragsLinje150.henvisning.mapVerdi { Henvisning(it) },
                                 sats = Sats(verdi = oppdragsLinje150.sats, satsType = oppdragsLinje150.typeSats),
-                                vedtaksSats = oppdragsLinje150.vedtakssats157?.vedtakssats?.let { Sats(verdi = it, satsType = "") },
-                                typeSøknad = oppdragsLinje150.typeSoknad.mapVerdi { TypeSøknad(it) },
+                                vedtakssats = oppdragsLinje150.vedtakssats157?.vedtakssats?.let { Sats(verdi = it, satsType = "") },
+                                søknadstype = oppdragsLinje150.typeSoknad.mapVerdi { Søknadstype(it) },
                                 brukKjøreplan = oppdragsLinje150.brukKjoreplan?.takeIf { it == "N" }?.let { BrukKjøreplan.Nei },
                                 ytelseKlassekode = YtelseKlassekode(oppdragsLinje150.kodeKlassifik),
                             )
@@ -78,8 +78,10 @@ internal object FraXmlFormat {
                             builder.copy(utbetalesTil = utbetalesTil)
                         }.leftJoin(SkyldnerIder.fra(linjer)) { _, builder, skyldner ->
                             builder.copy(skyldner = skyldner)
-                        }.leftJoin(Refusjonsinfoer.fra(linjer)) { _, builder, refusjonsinfo ->
-                            builder.copy(refusjonsinfo = refusjonsinfo)
+                        }.leftJoin(RefunderesTilIder.fra(linjer)) { _, builder, refunderesTil ->
+                            builder.copy(refunderesTil = refunderesTil)
+                        }.leftJoin(Maksdatoer.fra(linjer)) { _, builder, maksDato ->
+                            builder.copy(maksdato = maksDato)
                         }.leftJoin(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
                             builder.copy(kidnummer = kidnummer)
                         }
@@ -93,8 +95,8 @@ internal object FraXmlFormat {
                             builder.copy(bostedsenhet = bostedsenhet)
                         }.leftJoin(behandlendeEnheter) { _, builder, behandlendeEnhet ->
                             builder.copy(behandlendeEnhet = behandlendeEnhet)
-                        }.leftJoin(gjelderIder) { _, builder, gjelderId ->
-                            builder.copy(gjelderId = gjelderId)
+                        }.leftJoin(gjelderIder) { _, builder, gjelder ->
+                            builder.copy(gjelder = gjelder)
                         }.leftJoin(omposeringer) { _, builder, ompostering ->
                             builder.copy(omposteringEndring = ompostering)
                         }

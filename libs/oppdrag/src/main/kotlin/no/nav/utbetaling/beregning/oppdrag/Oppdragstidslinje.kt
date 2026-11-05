@@ -121,14 +121,16 @@ class Oppdragstidslinje private constructor(
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
                 }.leftJoin(kjedestatus) { _, opplysninger, statusendring ->
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, opplysninger, gjelderId ->
-                    OpplysningerIntern.videreførGjelderId(opplysninger, gjelderId)
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelder)) { _, opplysninger, gjelderId ->
+                    OpplysningerIntern.videreførGjelder(opplysninger, gjelderId)
                 }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
                     OpplysningerIntern.videreførUtbetalesTil(opplysninger, utbetalesTil)
                 }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
                     OpplysningerIntern.videreførSkyldner(opplysninger, skyldner)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::refusjonsinfo)) { _, opplysninger, refusjonsinfo ->
-                    OpplysningerIntern.videreførRefusjonsinfo(opplysninger, refusjonsinfo)
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::refunderesTil)) { _, opplysninger, refunderesTil ->
+                    OpplysningerIntern.videreførRefunderesTil(opplysninger, refunderesTil)
+                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::maksdato)) { _, opplysninger, maksDato ->
+                    OpplysningerIntern.videreførMaksdato(opplysninger, maksDato)
                 }
         }
     }
@@ -180,12 +182,13 @@ class Oppdragstidslinje private constructor(
             fagsystemId = kjede.fagsystemId,
             delytelseId = opplysningerIntern.delytelseId,
             refDelytelseId = opplysningerIntern.refDelytelseId,
-            gjelderId = opplysningerIntern.gjelderId,
+            gjelder = opplysningerIntern.gjelder,
             sats = opplysningerIntern.sats,
-            vedtaksSats = opplysningerIntern.vedtaksSats,
+            vedtakssats = opplysningerIntern.vedtakssats,
             skyldner = opplysningerIntern.skyldner,
-            refusjonsinfo = opplysningerIntern.refusjonsinfo,
-            typeSøknad = opplysningerIntern.typeSøknad,
+            refunderesTil = opplysningerIntern.refunderesTil,
+            maksdato = opplysningerIntern.maksdato,
+            søknadstype = opplysningerIntern.søknadstype,
             henvisning = opplysningerIntern.henvisning,
             stønadId = oppdragsverdier.stønadId,
             forfall = oppdragsverdier.forfall,
