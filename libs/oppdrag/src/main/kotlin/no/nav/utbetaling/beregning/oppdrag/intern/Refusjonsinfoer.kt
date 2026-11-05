@@ -16,8 +16,7 @@ internal object Refusjonsinfoer {
                 verdi =
                     Refusjonsinfo(
                         maksDato = refusjonsinfo156.maksDato,
-                        refunderes = refusjonsinfo156.refunderesId?.let { Partklassifisering.fra(it) },
-                        datoFom = refusjonsinfo156.datoFom,
+                        refunderes = refusjonsinfo156.refunderesId?.let { Partklassifisering.fra(it) }
                     ),
             )
         }

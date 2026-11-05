@@ -160,7 +160,6 @@ data class Sats(
 data class Refusjonsinfo(
     val maksDato: LocalDate?,
     val refunderes: Part?,
-    val datoFom: LocalDate,
 )
 
 data class Opplysninger(

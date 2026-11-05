@@ -142,7 +142,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                             opplysning.refusjonsinfo?.toDto {
                                                 val refunderes = it.refunderes?.format() ?: "ukjent"
                                                 val maksDato = it.maksDato?.format(DATO_FORMAT) ?: "ingen"
-                                                "Refunderes $refunderes, maksdato $maksDato, fra ${it.datoFom.format(DATO_FORMAT)}"
+                                                "Refunderes $refunderes, maksdato $maksDato"
                                             },
                                         typeSøknad = opplysning.typeSøknad?.toDto { it.type },
                                         forfall = opplysning.forfall?.toDto { it.format(DATO_FORMAT) },

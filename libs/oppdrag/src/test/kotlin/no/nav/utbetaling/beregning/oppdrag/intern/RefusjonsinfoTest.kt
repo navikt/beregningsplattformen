@@ -41,8 +41,7 @@ class RefusjonsinfoTest :
                         setOf(
                             Refusjonsinfo(
                                 maksDato = 28.februar,
-                                refunderes = Part.Person(Personidentifikator("12345678901")),
-                                datoFom = 10.januar,
+                                refunderes = Part.Person(Personidentifikator("12345678901"))
                             ),
                         ),
                 )
@@ -53,7 +52,7 @@ class RefusjonsinfoTest :
                 oppdragstidslinje(linjer = listOf(linje(fom = 1.januar, tom = 31.januar, delytelseId = "1", refusjonMaksDato = 28.februar)))
 
             innsending.refusjonsinfo() skalVæreLik
-                mapOf(1.januar til 31.januar to setOf(Refusjonsinfo(maksDato = 28.februar, refunderes = null, datoFom = 1.januar)))
+                mapOf(1.januar til 31.januar to setOf(Refusjonsinfo(maksDato = 28.februar, refunderes = null)))
         }
 
         test("Refusjonsinfo videreføres når en senere innsending ikke nevner den") {
@@ -66,7 +65,7 @@ class RefusjonsinfoTest :
             val resultat = innsending1 + innsending2
 
             val forventet =
-                Refusjonsinfo(maksDato = null, refunderes = Part.Person(Personidentifikator("12345678901")), datoFom = 1.januar)
+                Refusjonsinfo(maksDato = null, refunderes = Part.Person(Personidentifikator("12345678901")))
             resultat.refusjonsinfo() skalVæreLik
                 mapOf(
                     1.januar til 31.januar to setOf(forventet),
