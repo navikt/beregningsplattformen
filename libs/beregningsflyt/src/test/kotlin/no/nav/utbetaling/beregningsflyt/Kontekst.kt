@@ -15,5 +15,5 @@ data class Kontekst(
 @Serializable
 data class Periode(
     val fom: String,
-    val tom: String?
+    val tom: String?,
 )

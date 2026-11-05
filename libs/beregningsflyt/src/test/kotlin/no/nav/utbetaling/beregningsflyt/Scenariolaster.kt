@@ -2,10 +2,10 @@ package no.nav.utbetaling.beregningsflyt
 
 import java.nio.file.Files
 import java.nio.file.Path
+
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.readText
-
 import kotlinx.serialization.json.Json
 
 /**

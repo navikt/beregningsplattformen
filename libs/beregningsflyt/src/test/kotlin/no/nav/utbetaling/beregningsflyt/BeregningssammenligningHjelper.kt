@@ -1,15 +1,18 @@
 package no.nav.utbetaling.beregningsflyt
 
 import kotlinx.serialization.json.Json
-import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
+
 import org.opentest4j.AssertionFailedError
 
-internal val prettyPrintJson = Json {
-    encodeDefaults = true
-    ignoreUnknownKeys = true
-    prettyPrint = true
-    prettyPrintIndent = "  "
-}
+import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
+
+internal val prettyPrintJson =
+    Json {
+        encodeDefaults = true
+        ignoreUnknownKeys = true
+        prettyPrint = true
+        prettyPrintIndent = "  "
+    }
 
 internal fun sammenliknBeregning(
     scenario: Scenario,
@@ -19,14 +22,15 @@ internal fun sammenliknBeregning(
     try {
         BeregningsmotorKontekstKomparator.sammenlign(
             faktisk = resultat,
-            forventet = forventet
+            forventet = forventet,
         )
     } catch (e: Throwable) {
-        val diffFeil = AssertionFailedError(
-            "Sammenlikning feilet: ${scenario.navn}",
-            prettyPrintJson.encodeToString(forventet),
-            prettyPrintJson.encodeToString(resultat),
-        )
+        val diffFeil =
+            AssertionFailedError(
+                "Sammenlikning feilet: ${scenario.navn}",
+                prettyPrintJson.encodeToString(forventet),
+                prettyPrintJson.encodeToString(resultat),
+            )
         diffFeil.addSuppressed(e)
         throw diffFeil
     }

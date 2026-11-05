@@ -19,14 +19,21 @@ internal data class Linjer(
         internal fun fra(oppdrag110: Oppdrag110): Map<Kjede, Linjer> {
             val fagområde = oppdrag110.kodeFagomraade.mapVerdi { Fagområde(it) } ?: error("Mangler kodeFagomraade")
             val fagsystemId = oppdrag110.fagsystemId.mapVerdi { FagsystemId(it) } ?: error("Mangler fagsystemId")
+            oppdrag110.oppdragsLinje150.groupBy { it.delytelseId() }.forEach { (delytelseId, linjer) ->
+                require(linjer.count { it.refDelytelseId() != null } <= 1) {
+                    "DelytelseId ${delytelseId.id} kan bare ha én linje med refDelytelseId"
+                }
+            }
             val gruppertPåKjede =
                 oppdrag110.oppdragsLinje150
+                    .associateBy { it.delytelseId() }
+                    .values
                     .map { linje ->
                         Kjede(fagområde = fagområde, fagsystemId = fagsystemId, delytelseIder = linje.delytelseIder()) to linje
                     }.grupperPåKjede()
 
             return gruppertPåKjede.mapValues { (_, linjer) ->
-                require(linjer.map { it.delytelseId() }.toSet().size == linjer.size) { "DelytelseId må være unik på tvers av linjene" }
+                require(linjer.none { it.delytelseId() == it.refDelytelseId() }) { "En linje kan ikke peke på seg selv" }
                 val pekere = linjer.mapNotNull { it.refDelytelseId }
                 require(pekere.toSet().size == pekere.size) { "Flere linjer kan ikke peke på samme linje" }
                 require(pekere.size == linjer.size || pekere.size == linjer.size - 1) { "Denne kjeden kan umulig gi mening!" }

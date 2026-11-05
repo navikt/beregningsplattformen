@@ -9,14 +9,15 @@ internal class UgyldigInnsendingException private constructor(
             value: Boolean,
             feilmelding: () -> String,
         ) {
-            if (value) return
-            throw UgyldigInnsendingException(feilmelding())
+            if (!value) {
+                ugyldigInnsending(feilmelding())
+            }
         }
 
-        inline fun <T> validerIkkeNull(
+        inline fun <T : Any> validerIkkeNull(
             value: T?,
             feilmelding: () -> String,
-        ) = valider(value != null, feilmelding).let { value!! }
+        ): T = value ?: ugyldigInnsending(feilmelding())
 
         fun ugyldigInnsending(
             feilmelding: String,
