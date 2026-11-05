@@ -5,7 +5,7 @@ import java.util.UUID
 import io.kotest.core.spec.style.FunSpec
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.TypeSøknad
+import no.nav.utbetaling.beregning.oppdrag.Søknadstype
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.linje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.perPeriode
@@ -13,16 +13,16 @@ import no.nav.utbetaling.beregning.oppdrag.hjelpefunksjoner.skalVæreLik
 import no.nav.utbetaling.beregning.tid.januar
 import no.nav.utbetaling.beregning.tid.til
 
-class TypeSøknadTest :
+class SøknadstypeTest :
     FunSpec({
-        test("typeSøknad mappes fra linjen") {
+        test("typeSoknad mappes fra linjen") {
             val innsending =
                 oppdragstidslinje(linjer = listOf(linje(fom = 1.januar, tom = 31.januar, delytelseId = "1", typeSoknad = "U")))
 
-            innsending.typeSøknad() skalVæreLik mapOf(1.januar til 31.januar to setOf(TypeSøknad("U")))
+            innsending.søknadstype() skalVæreLik mapOf(1.januar til 31.januar to setOf(Søknadstype("U")))
         }
 
-        test("typeSøknad videreføres ikke, men beholdes på linjen der den er satt") {
+        test("typeSoknad videreføres ikke, men beholdes på linjen der den er satt") {
             val fagsystemId = "${UUID.randomUUID()}"
             val innsending1 =
                 oppdragstidslinje(fagsystemId = fagsystemId, linjer = listOf(linje(fom = 1.januar, tom = 31.januar, delytelseId = "1", typeSoknad = "U")))
@@ -31,13 +31,13 @@ class TypeSøknadTest :
 
             val resultat = innsending1 + innsending2
 
-            resultat.typeSøknad() skalVæreLik mapOf(1.januar til 31.januar to setOf(TypeSøknad("U")))
+            resultat.søknadstype() skalVæreLik mapOf(1.januar til 31.januar to setOf(Søknadstype("U")))
         }
 
-        test("Ingen typeSøknad gir null") {
+        test("Ingen typeSoknad gir null") {
             val innsending = oppdragstidslinje(linjer = listOf(linje(fom = 1.januar, tom = 31.januar, delytelseId = "1")))
-            innsending.typeSøknad() skalVæreLik mapOf(1.januar til 31.januar to setOf(null))
+            innsending.søknadstype() skalVæreLik mapOf(1.januar til 31.januar to setOf(null))
         }
     })
 
-private fun Oppdragstidslinje.typeSøknad() = perPeriode { it.typeSøknad?.opplysning }
+private fun Oppdragstidslinje.søknadstype() = perPeriode { it.søknadstype?.opplysning }

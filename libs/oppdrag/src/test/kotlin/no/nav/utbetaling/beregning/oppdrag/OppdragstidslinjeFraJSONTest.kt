@@ -22,7 +22,7 @@ class OppdragstidslinjeFraJSONTest :
             resultat.tidslinjer.values
                 .first()
                 .first()
-                .second.vedtaksSats
+                .second.vedtakssats
                 ?.opplysning shouldBe
                 Sats(verdi = java.math.BigDecimal("974"), satsType = "")
 

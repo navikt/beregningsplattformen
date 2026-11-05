@@ -4,20 +4,36 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 
+/** Reglene på hva slags typer disse kan være
+ er nå basert på hva vi tror fagsystemene sender inn,
+ ettersom det er det oppdragstidslinjen er tenkt til å representere.
+ Dette regelsettet er ikke rett om man ser på beregning i stort.
+ (og kan åpenbart ha mangler ettersom vi ikke kjenner til hva alle fagystemer sender ennå)
+*/
+sealed interface Gjelder
+
+sealed interface UtbetalesTil
+
+sealed interface RefunderesTil
+
+sealed interface Skyldner
+
 @JvmInline
 value class Personidentifikator(
     val identifikator: String,
-)
+) : Gjelder,
+    UtbetalesTil
 
 @JvmInline
 value class Organisasjonsnummer(
     val nummer: String,
-)
+) : UtbetalesTil,
+    RefunderesTil
 
 @JvmInline
 value class SamhandlerId(
     val tssId: String,
-)
+) : Skyldner
 
 @JvmInline
 value class SaksbehandlerId(
@@ -84,37 +100,8 @@ data class Opplysning<T>(
     val opplysning: T,
 )
 
-sealed interface UtbetalesTil {
-    data class Person(
-        val personidentifikator: Personidentifikator,
-    ) : UtbetalesTil
-
-    data class Organisasjon(
-        val organisasjonsnummer: Organisasjonsnummer,
-    ) : UtbetalesTil
-
-    data class Samhandler(
-        val samhandlerId: SamhandlerId,
-    ) : UtbetalesTil
-}
-
-/** En part identifisert av person, organisasjon eller samhandler. Brukes for skyldner og refunderes. */
-sealed interface Part {
-    data class Person(
-        val personidentifikator: Personidentifikator,
-    ) : Part
-
-    data class Organisasjon(
-        val organisasjonsnummer: Organisasjonsnummer,
-    ) : Part
-
-    data class Samhandler(
-        val samhandlerId: SamhandlerId,
-    ) : Part
-}
-
 @JvmInline
-value class TypeSøknad(
+value class Søknadstype(
     val type: String,
 )
 
@@ -157,24 +144,19 @@ data class Sats(
     val satsType: String, // TODO gjør om til enum se TypeSats
 )
 
-data class Refusjonsinfo(
-    val maksDato: LocalDate?,
-    val refunderes: Part?,
-    val datoFom: LocalDate,
-)
-
 data class Opplysninger(
     val fagområde: Fagområde,
     val fagsystemId: FagsystemId,
     val delytelseId: DelytelseId,
     val refDelytelseId: DelytelseId?,
-    val gjelderId: Opplysning<Personidentifikator>?,
+    val gjelder: Opplysning<Gjelder>?,
     val utbetalesTil: Opplysning<UtbetalesTil>?,
     val sats: Opplysning<Sats>,
-    val vedtaksSats: Opplysning<Sats>?,
-    val skyldner: Opplysning<Part>?,
-    val refusjonsinfo: Opplysning<Refusjonsinfo>?,
-    val typeSøknad: Opplysning<TypeSøknad>?,
+    val vedtakssats: Opplysning<Sats>?,
+    val skyldner: Opplysning<Skyldner>?,
+    val refunderesTil: Opplysning<RefunderesTil>?,
+    val maksdato: Opplysning<LocalDate>?,
+    val søknadstype: Opplysning<Søknadstype>?,
     val henvisning: Opplysning<Henvisning>?,
     val stønadId: Opplysning<StønadId>?,
     val forfall: Opplysning<LocalDate>?,

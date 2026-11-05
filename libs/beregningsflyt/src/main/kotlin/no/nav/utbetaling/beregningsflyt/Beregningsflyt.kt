@@ -1,5 +1,6 @@
 package no.nav.utbetaling.beregningsflyt
 
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -30,8 +31,9 @@ import no.nav.sokos.dare.poc.trekk.FagomraadeKode
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
-import no.nav.utbetaling.beregning.oppdrag.Part
-import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
+import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
+import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
+import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
 
 class Beregningsflyt {
@@ -47,6 +49,7 @@ class Beregningsflyt {
         oppdragstidslinje: Oppdragstidslinje,
         skatteKontekst: SkatteKontekst,
         beregnet: LocalDateTime,
+        restFrikortBeloep: BigDecimal?,
     ): Pair<BeregningsmotorKontekst, List<Beregning>> {
         val fom = beregningsperiode.fom
         val tom = beregningsperiode.tom
@@ -60,11 +63,14 @@ class Beregningsflyt {
                     val oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger
                     val datoIntervall = DatoIntervall(periode.fom, (periode as? Periode.LukketPeriode)?.tom)
                     val oppdragId = OppdragId(0)
-                    val utbetalesTil1 =
+                    val gjelderId =
+                        when (val gjelder = oppdragsopplysninger.gjelder!!.opplysning) {
+                            is Personidentifikator -> AktoerId(gjelder.identifikator.toLong())
+                        }
+                    val utbetalesTil =
                         when (val utbetalesTil = oppdragsopplysninger.utbetalesTil!!.opplysning) {
-                            is UtbetalesTil.Organisasjon -> AktoerId(utbetalesTil.organisasjonsnummer.nummer.toLong())
-                            is UtbetalesTil.Person -> AktoerId(utbetalesTil.personidentifikator.identifikator.toLong())
-                            is UtbetalesTil.Samhandler -> AktoerId(utbetalesTil.samhandlerId.tssId.toLong())
+                            is Organisasjonsnummer -> AktoerId(utbetalesTil.nummer.toLong())
+                            is Personidentifikator -> AktoerId(utbetalesTil.identifikator.toLong())
                         }
                     val bruker = oppdragsopplysninger.sats.saksbehandlerId.id
                     OppdragDelperiode(
@@ -74,12 +80,7 @@ class Beregningsflyt {
                                 fagsystemId = oppdragsopplysninger.fagsystemId.id,
                                 fagomraade = FagomraadeKode.fromValue(oppdragsopplysninger.fagområde.fagområde),
                                 datoForfall = oppdragsopplysninger.forfall?.opplysning,
-                                gjelderId =
-                                    AktoerId(
-                                        oppdragsopplysninger.gjelderId!!
-                                            .opplysning.identifikator
-                                            .toLong(),
-                                    ),
+                                gjelderId = gjelderId,
                                 datoTom = datoIntervall.tom,
                                 bilagsType = oppdragsopplysninger.bilagstype?.opplysning?.type,
                                 bruker = bruker,
@@ -108,7 +109,7 @@ class Beregningsflyt {
                                                         datoVedtakTom = (periode as? Periode.LukketPeriode)?.tom,
                                                         vedtakId = oppdragsopplysninger.vedtakId?.opplysning?.id ?: "Javel",
                                                         henvisning = oppdragsopplysninger.henvisning?.opplysning?.henvisning,
-                                                        utbetalesTilId = utbetalesTil1,
+                                                        utbetalesTilId = utbetalesTil,
                                                         kodeKlasse =
                                                             YtelseKlasseKode(
                                                                 kode = YtelseKlasseKodeRef(oppdragsopplysninger.ytelseKlassekode.opplysning.kode),
@@ -120,24 +121,20 @@ class Beregningsflyt {
                                                             ),
                                                         skyldnerId =
                                                             when (val skyldner = oppdragsopplysninger.skyldner?.opplysning) {
-                                                                is Part.Organisasjon -> AktoerId(skyldner.organisasjonsnummer.nummer.toLong())
-                                                                is Part.Person -> AktoerId(skyldner.personidentifikator.identifikator.toLong())
-                                                                is Part.Samhandler -> AktoerId(skyldner.samhandlerId.tssId.toLong())
+                                                                is SamhandlerId -> AktoerId(skyldner.tssId.toLong())
                                                                 null -> null
                                                             },
                                                         kid = oppdragsopplysninger.kidnummer?.opplysning?.nummer,
-                                                        typeSoknad = oppdragsopplysninger.typeSøknad?.opplysning?.type,
-                                                        maksDato = oppdragsopplysninger.refusjonsinfo?.opplysning?.maksDato,
+                                                        typeSoknad = oppdragsopplysninger.søknadstype?.opplysning?.type,
+                                                        maksDato = oppdragsopplysninger.maksdato?.opplysning,
                                                         refunderesId =
-                                                            when (val refunderes = oppdragsopplysninger.refusjonsinfo?.opplysning?.refunderes) {
-                                                                is Part.Organisasjon -> refunderes.organisasjonsnummer.nummer
-                                                                is Part.Person -> refunderes.personidentifikator.identifikator
-                                                                is Part.Samhandler -> refunderes.samhandlerId.tssId
+                                                            when (val refunderes = oppdragsopplysninger.refunderesTil?.opplysning) {
+                                                                is Organisasjonsnummer -> refunderes.nummer
                                                                 null -> null
                                                             },
                                                         bruker = bruker,
                                                         tidspktReg = LocalDateTime.now(),
-                                                        vedtakssats = oppdragsopplysninger.vedtaksSats?.opplysning?.verdi,
+                                                        vedtakssats = oppdragsopplysninger.vedtakssats?.opplysning?.verdi,
                                                         annullert = false,
                                                     ),
                                                 ),
@@ -169,14 +166,9 @@ class Beregningsflyt {
                             ),
                         periode = datoIntervall,
                         konto = "",
-                        gjelder =
-                            AktoerId(
-                                oppdragsopplysninger.gjelderId!!
-                                    .opplysning.identifikator
-                                    .toLong(),
-                            ),
+                        gjelder = gjelderId,
                         beregnet = beregnet,
-                        utbetalesTil = utbetalesTil1,
+                        utbetalesTil = utbetalesTil,
                         status = BeregningsStatus.BEREGNET,
                         trekk = emptyList(),
                         ekstraInfo = mutableListOf(),
@@ -210,7 +202,7 @@ class Beregningsflyt {
         val beregningsmotorKontekst =
             BeregningsmotorKontekst(
                 periode = DatoIntervall(fom, tom),
-                restFrikortBeloep = null,
+                restFrikortBeloep = restFrikortBeloep,
                 segmenter = beregningssegment,
                 skatteKontekst = skatteKontekst,
                 satsBoetter =

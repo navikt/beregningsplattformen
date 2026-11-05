@@ -82,7 +82,7 @@ internal data class Linjer(
                         null -> linje.somTidslinje()
                         else -> linje.somTidslinje().begrensetTil(begrensetTom)
                     }
-                sammenslått.kombinerMed(aktivDel) { _, eksisterende, ny -> ny ?: eksisterende }
+                sammenslått.fullJoin(aktivDel) { _, eksisterende, ny -> ny ?: eksisterende }
             }
         }
 

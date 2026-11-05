@@ -5,21 +5,23 @@ import java.time.LocalDateTime
 
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 
 import io.kotest.assertions.fail
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withData
-import io.kotest.matchers.shouldBe
 
-import no.nav.sokos.dare.poc.beregning.EkstraInfo as MotorEkstraInfo
 import no.nav.sokos.dare.poc.aktoer.AktoerId
-import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
+import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
+
+internal val JsonIgnoreUnknown =
+    Json {
+        ignoreUnknownKeys = true
+    }
 
 class BeregningsflytTest :
     FunSpec({
@@ -37,11 +39,17 @@ class BeregningsflytTest :
                         "GrunnleggendeTest/oppdrag_uten_noe_annet",
                         "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
                         "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats",
+                        "SkattAarsskifteTest/januar_beregning_ikke_fjoraars_skattekort",
+                        "SkattAarsskifteTest/januar_med_fjoraars_skattekort",
+                        "SkattAarsskifteTest/aarsskifte_frikort",
+                        "SkattAarsskifteTest/aarsskifte_med_fjoraars_januar_februar",
+                        "SkattAarsskifteTest/aarsskifte_prosentkort",
+                        "SkattAarsskifteTest/januar_februar_split_med_fjoraars",
                     )
             }
 
         fun kjørScenaro(scenario: Scenario) {
-            val skatteKontekst = motorJson.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
+            val skatteKontekst = JsonIgnoreUnknown.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
             val beregningsperiode =
                 LukketPeriode(
                     fom = LocalDate.parse(scenario.kontekst.periode.fom),
@@ -55,6 +63,7 @@ class BeregningsflytTest :
                             oppdragstidslinje = oppdrag.oppdragstidslinje,
                             skatteKontekst = skatteKontekst,
                             beregnet = LocalDateTime.parse(scenario.kontekst.beregnet),
+                            restFrikortBeloep = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
                         )
 
                     val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(kontextOgBeregninger.first, kontextOgBeregninger.second)
@@ -69,12 +78,10 @@ class BeregningsflytTest :
                                     )
                                 },
                         )
-
-                    BeregningsmotorKontekstKomparator.sammenlign(
-                        faktisk = modifisertberegningskontekstpresentasjon,
-                        forventet = motorJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat),
+                    sammenliknBeregning(
+                        scenario = scenario,
+                        resultat = modifisertberegningskontekstpresentasjon,
                     )
-                    // modifisertberegningskontekstpresentasjon shouldBe motorJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
                 }
                 is Oppdrag.Simulering -> fail("Simleringer støttes ikke i beregningsflyten enda")
                 is Oppdrag.UgyldigOppdrag -> fail("Feil: ${oppdrag.feil.stackTraceToString()}")
@@ -94,35 +101,11 @@ class BeregningsflytTest :
             }
         }
 
-        test("dekoder kort og fullstendig typenavn for motorens EkstraInfo") {
-            val forventet = TekstEkstraInfo(MotorEkstraInfo.Reasons.SKATT_TILLEGGSOPPLYSNING)
-            listOf("TekstEkstraInfo", TekstEkstraInfo.serializer().descriptor.serialName).forEach { type ->
-                motorJson.decodeFromString<MotorEkstraInfo>(
-                    """{"type":"$type","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
-                ) shouldBe forventet
-            }
-        }
-
         test("avviser ukjente typer for motorens EkstraInfo") {
             shouldThrow<SerializationException> {
-                motorJson.decodeFromString<MotorEkstraInfo>(
+                JsonIgnoreUnknown.decodeFromString<EkstraInfo>(
                     """{"type":"UkjentEkstraInfo","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
                 )
             }
         }
     })
-
-private val motorJson =
-    Json {
-        encodeDefaults = true
-        ignoreUnknownKeys = true
-        serializersModule =
-            SerializersModule {
-                polymorphicDefaultDeserializer(MotorEkstraInfo::class) { type ->
-                    when (type) {
-                        "TekstEkstraInfo" -> TekstEkstraInfo.serializer()
-                        else -> null
-                    }
-                }
-            }
-    }

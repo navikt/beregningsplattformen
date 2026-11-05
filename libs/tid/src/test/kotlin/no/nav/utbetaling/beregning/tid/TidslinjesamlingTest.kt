@@ -127,7 +127,7 @@ class TidslinjesamlingTest :
             }
         }
 
-        test("kombinerMed skal kombinere verdier per nøkkel") {
+        test("fullJoin skal kombinere verdier per nøkkel") {
             val satser =
                 DefaultTidslinjesamling(
                     mapOf(
@@ -144,7 +144,7 @@ class TidslinjesamlingTest :
                 )
 
             val resultat =
-                satser.kombinerMed(tillegg) { _, sats, ekstra ->
+                satser.fullJoin(tillegg) { _, sats, ekstra ->
                     sats?.toInt()?.plus(ekstra?.toInt() ?: 0)
                 }
 
@@ -155,11 +155,11 @@ class TidslinjesamlingTest :
                 )
         }
 
-        test("kombinerMed skal ta med nøkler som bare finnes i den ene samlingen") {
+        test("fullJoin skal ta med nøkler som bare finnes i den ene samlingen") {
             val denne = DefaultTidslinjesamling(mapOf("a" to tidslinje(januar, "A")))
             val andre = DefaultTidslinjesamling(mapOf("b" to tidslinje(januar, "B")))
 
-            val resultat = denne.kombinerMed(andre) { _, d, a -> d ?: a }
+            val resultat = denne.fullJoin(andre) { _, d, a -> d ?: a }
 
             resultat[15.januar] shouldBe mapOf("a" to "A", "b" to "B")
         }

@@ -210,7 +210,7 @@ class TidslinjeTest :
 
         context("plus") {
             operator fun Tidslinje<MinVerdi>.plus(other: Tidslinje<MinVerdi>) =
-                kombinerMed(other) { _, eksiterende, ny ->
+                fullJoin(other) { _, eksiterende, ny ->
                     ny ?: eksiterende
                 }
             test("skal la den nye tidslinjen overstyre den gamle dag for dag") {
@@ -268,7 +268,7 @@ class TidslinjeTest :
 
         context("minus") {
             operator fun Tidslinje<MinVerdi>.minus(other: Tidslinje<MinVerdi>) =
-                kombinerMed(other) { _, eksiterende, ny ->
+                fullJoin(other) { _, eksiterende, ny ->
                     if (ny == eksiterende) null else ny ?: eksiterende
                 }
 
@@ -500,12 +500,12 @@ class TidslinjeTest :
             }
         }
 
-        context("kombinerMed") {
+        context("fullJoin") {
             test("skal la venstre side avgjøre om dagen har en verdi") {
                 val venstre = Tidslinje.Builder<String>().periode(januar, "A").build()
                 val høyre = Tidslinje.Builder<Int>().periode(mars, 42).build()
 
-                val resultat = venstre.kombinerMed(høyre) { _, denne, andre -> denne?.let { "$it${andre ?: ""}" } }
+                val resultat = venstre.fullJoin(høyre) { _, denne, andre -> denne?.let { "$it${andre ?: ""}" } }
                 val forventet = Tidslinje.Builder<String>().periode(januar, "A").build()
 
                 resultat shouldBeEqual forventet
@@ -515,7 +515,7 @@ class TidslinjeTest :
                 val linjer = Tidslinje.Builder<String>().periode(ÅpenPeriode(1.januar), "Linje").build()
                 val avventinger = Tidslinje.Builder<Int>().periode(mars, 42).build()
 
-                val resultat = linjer.kombinerMed(avventinger) { _, linje, avventing -> linje?.let { "$it-${avventing ?: "ingen"}" } }
+                val resultat = linjer.fullJoin(avventinger) { _, linje, avventing -> linje?.let { "$it-${avventing ?: "ingen"}" } }
                 val forventet =
                     Tidslinje
                         .Builder<String>()
@@ -525,6 +525,66 @@ class TidslinjeTest :
                         .build()
 
                 resultat shouldBeEqual forventet
+            }
+        }
+
+        context("leftJoin") {
+            test("skal dekke periodene til venstre, også hullene, og ignorere høyre utenfor dem") {
+                val venstre =
+                    Tidslinje
+                        .Builder<String>()
+                        .periode(januar, "A")
+                        .periode(mars, "B")
+                        .build()
+                val høyre = Tidslinje.Builder<Int>().periode(ÅpenPeriode(1.januar), 1).build()
+
+                val resultat = venstre.leftJoin(høyre) { _, v, h -> "$v$h" }
+                val forventet =
+                    Tidslinje
+                        .Builder<String>()
+                        .periode(januar, "A1")
+                        .periode(mars, "B1")
+                        .build()
+
+                resultat shouldBeEqual forventet
+            }
+
+            test("skal gi null som høyre der høyre mangler verdi, og dele venstre der høyre endrer seg") {
+                val venstre = Tidslinje.Builder<String>().periode(1.januar til 31.mars, "A").build()
+                val høyre = Tidslinje.Builder<Int>().periode(februar, 42).build()
+
+                val resultat = venstre.leftJoin(høyre) { _, v, h -> "$v-${h ?: "ingen"}" }
+                val forventet =
+                    Tidslinje
+                        .Builder<String>()
+                        .periode(januar, "A-ingen")
+                        .periode(februar, "A-42")
+                        .periode(mars, "A-ingen")
+                        .build()
+
+                resultat shouldBeEqual forventet
+            }
+
+            test("skal beholde en åpen venstre periode åpen") {
+                val venstre = Tidslinje.Builder<String>().periode(ÅpenPeriode(1.januar), "A").build()
+                val høyre = Tidslinje.Builder<Int>().periode(januar, 1).build()
+
+                val resultat = venstre.leftJoin(høyre) { _, v, _ -> v }
+
+                resultat shouldBeEqual venstre
+            }
+
+            test("skal gi samme dekning som venstre selv når høyre er tom") {
+                val venstre =
+                    Tidslinje
+                        .Builder<String>()
+                        .periode(januar, "A")
+                        .periode(ÅpenPeriode(1.mars), "B")
+                        .build()
+
+                val resultat = venstre.leftJoin(Tidslinje.Builder<Int>().build()) { _, v, h -> v.length + (h ?: 0) }
+
+                resultat.map { it.first } shouldBe venstre.map { it.first }
             }
         }
 

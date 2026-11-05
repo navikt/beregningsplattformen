@@ -15,7 +15,7 @@ interface Tidslinjesamling<K, V> : Iterable<Pair<Periode, Map<K, V>>> {
 
     fun perioderIterator(): Iterable<Pair<Periode, List<V>>> = map { (periode, verdier) -> periode to verdier.values.toList() }
 
-    fun <U, R> kombinerMed(
+    fun <U, R> fullJoin(
         other: Tidslinjesamling<K, U>,
         transform: (nøkkel: K, denne: V?, andre: U?) -> R?,
     ): Tidslinjesamling<K, R>
@@ -43,7 +43,7 @@ class DefaultTidslinjesamling<K, V>(
 
     private val kombinert: Tidslinje<Map<K, V>> by lazy {
         tidslinjer.entries.fold(Tidslinje.Builder<Map<K, V>>().build()) { samlet, (nøkkel, tidslinje) ->
-            samlet.kombinerMed(tidslinje) { _, gjeldende, verdi ->
+            samlet.fullJoin(tidslinje) { _, gjeldende, verdi ->
                 (gjeldende.orEmpty() + listOfNotNull(verdi?.let { nøkkel to it })).takeIf { it.isNotEmpty() }
             }
         }
@@ -59,7 +59,7 @@ class DefaultTidslinjesamling<K, V>(
 
     override fun tidslinjeIterator(): Iterator<Tidslinje<V>> = tidslinjer.values.iterator()
 
-    override fun <U, R> kombinerMed(
+    override fun <U, R> fullJoin(
         other: Tidslinjesamling<K, U>,
         transform: (nøkkel: K, denne: V?, andre: U?) -> R?,
     ): Tidslinjesamling<K, R> {
@@ -67,7 +67,7 @@ class DefaultTidslinjesamling<K, V>(
             (tidslinjer.keys + other.tidslinjer.keys).associateWith { nøkkel ->
                 val denneTidslinjen = tidslinjer[nøkkel] ?: Tidslinje.Builder<V>().build()
                 val andreTidslinjen = other.tidslinjer[nøkkel] ?: Tidslinje.Builder<U>().build()
-                denneTidslinjen.kombinerMed(andreTidslinjen) { _, denne, andre -> transform(nøkkel, denne, andre) }
+                denneTidslinjen.fullJoin(andreTidslinjen) { _, denne, andre -> transform(nøkkel, denne, andre) }
             }
 
         return DefaultTidslinjesamling(kombinert.filterValues { !it.isEmpty() })

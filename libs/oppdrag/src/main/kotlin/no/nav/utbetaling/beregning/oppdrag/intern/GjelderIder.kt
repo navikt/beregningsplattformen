@@ -8,8 +8,11 @@ import no.nav.utbetaling.beregning.tid.Tidslinje
 internal object GjelderIder {
     fun fra(oppdrag110: Oppdrag110): Tidslinje<Personidentifikator> {
         val builder = Tidslinje.Builder<Personidentifikator>()
+        val oppdragGjelderId = oppdrag110.oppdragGjelderId
 
-        val gjelderId = oppdrag110.oppdragGjelderId.mapVerdi { Personidentifikator(it) } ?: return builder.build()
+        val gjelderId =
+            oppdragGjelderId.personidentifikator()
+                ?: error("oppdragGjelderId var ikke en personidentifikator")
 
         return builder
             .periode(Periode.ÅpenPeriode(oppdrag110.datoOppdragGjelderFom), gjelderId)
