@@ -15,6 +15,11 @@ import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
 
+
+internal val JsonIgnoreUnknown = Json {
+    ignoreUnknownKeys = true
+}
+
 class BeregningsflytTest: FunSpec({
 
     val beregningsflyt = Beregningsflyt()
@@ -38,7 +43,7 @@ class BeregningsflytTest: FunSpec({
     }
 
     fun kjørScenaro(scenario: Scenario) {
-        val skatteKontekst = Json.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
+        val skatteKontekst = JsonIgnoreUnknown.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
         val beregningsperiode = LukketPeriode(
             fom = LocalDate.parse(scenario.kontekst.periode.fom),
             tom = LocalDate.parse(scenario.kontekst.periode.tom),
@@ -86,7 +91,7 @@ class BeregningsflytTest: FunSpec({
 
     test("avviser ukjente typer for motorens EkstraInfo") {
         shouldThrow<SerializationException> {
-            Json.decodeFromString<EkstraInfo>(
+            JsonIgnoreUnknown.decodeFromString<EkstraInfo>(
                 """{"type":"UkjentEkstraInfo","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
             )
         }

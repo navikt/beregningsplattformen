@@ -15,7 +15,7 @@ internal fun sammenliknBeregning(
     scenario: Scenario,
     resultat: BeregningsmotorKontekstPresentasjon,
 ) {
-    val forventet = Json.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
+    val forventet = prettyPrintJson.decodeFromString<BeregningsmotorKontekstPresentasjon>(scenario.resultat)
     try {
         BeregningsmotorKontekstKomparator.sammenlign(
             faktisk = resultat,
