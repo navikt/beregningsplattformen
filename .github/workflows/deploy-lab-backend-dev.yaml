@@ -17,7 +17,7 @@ on:
       - "gradle.properties"
       - "gradle/**"
       - "gradlew"
-      - "buildSrc/**"
+      - "build-logic/**"
       - ".github/workflows/deploy-lab-backend-dev.yaml"
   workflow_dispatch:
   workflow_call:

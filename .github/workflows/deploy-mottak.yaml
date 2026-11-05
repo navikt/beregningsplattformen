@@ -18,7 +18,7 @@ on:
       - "gradle.properties"
       - "gradle/**"
       - "gradlew"
-      - "buildSrc/**"
+      - "build-logic/**"
       - ".github/workflows/deploy-mottak.yaml"
   workflow_dispatch:
   workflow_call:

@@ -25,7 +25,7 @@ internal class PåvirkedeModuler(
             "gradle/wrapper/",
             "gradlew",
             "gradlew.bat",
-            "buildSrc/",
+            "build-logic/",
         )
 
 
