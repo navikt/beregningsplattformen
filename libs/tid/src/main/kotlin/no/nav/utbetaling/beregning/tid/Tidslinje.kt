@@ -41,7 +41,7 @@ class Tidslinje<T> private constructor(
         return Tidslinje(nye.komprimert())
     }
 
-    fun <U, R> kombinerMed(
+    fun <U, R> fullJoin(
         other: Tidslinje<U>,
         transform: (periode: Periode, denne: T?, andre: U?) -> R?,
     ): Tidslinje<R> {

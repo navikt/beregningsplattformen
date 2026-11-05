@@ -210,7 +210,7 @@ class TidslinjeTest :
 
         context("plus") {
             operator fun Tidslinje<MinVerdi>.plus(other: Tidslinje<MinVerdi>) =
-                kombinerMed(other) { _, eksiterende, ny ->
+                fullJoin(other) { _, eksiterende, ny ->
                     ny ?: eksiterende
                 }
             test("skal la den nye tidslinjen overstyre den gamle dag for dag") {
@@ -268,7 +268,7 @@ class TidslinjeTest :
 
         context("minus") {
             operator fun Tidslinje<MinVerdi>.minus(other: Tidslinje<MinVerdi>) =
-                kombinerMed(other) { _, eksiterende, ny ->
+                fullJoin(other) { _, eksiterende, ny ->
                     if (ny == eksiterende) null else ny ?: eksiterende
                 }
 
@@ -500,12 +500,12 @@ class TidslinjeTest :
             }
         }
 
-        context("kombinerMed") {
+        context("fullJoin") {
             test("skal la venstre side avgjøre om dagen har en verdi") {
                 val venstre = Tidslinje.Builder<String>().periode(januar, "A").build()
                 val høyre = Tidslinje.Builder<Int>().periode(mars, 42).build()
 
-                val resultat = venstre.kombinerMed(høyre) { _, denne, andre -> denne?.let { "$it${andre ?: ""}" } }
+                val resultat = venstre.fullJoin(høyre) { _, denne, andre -> denne?.let { "$it${andre ?: ""}" } }
                 val forventet = Tidslinje.Builder<String>().periode(januar, "A").build()
 
                 resultat shouldBeEqual forventet
@@ -515,7 +515,7 @@ class TidslinjeTest :
                 val linjer = Tidslinje.Builder<String>().periode(ÅpenPeriode(1.januar), "Linje").build()
                 val avventinger = Tidslinje.Builder<Int>().periode(mars, 42).build()
 
-                val resultat = linjer.kombinerMed(avventinger) { _, linje, avventing -> linje?.let { "$it-${avventing ?: "ingen"}" } }
+                val resultat = linjer.fullJoin(avventinger) { _, linje, avventing -> linje?.let { "$it-${avventing ?: "ingen"}" } }
                 val forventet =
                     Tidslinje
                         .Builder<String>()

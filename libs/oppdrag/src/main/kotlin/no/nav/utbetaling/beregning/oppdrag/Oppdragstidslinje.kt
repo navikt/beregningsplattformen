@@ -115,19 +115,19 @@ class Oppdragstidslinje private constructor(
                 }
 
             utgangspunkt
-                .kombinerMed(endretTidslinje) { periode, eksisterendeOpplysninger, nyeOpplysninger ->
+                .fullJoin(endretTidslinje) { periode, eksisterendeOpplysninger, nyeOpplysninger ->
                     OpplysningerIntern.velg(eksisterendeOpplysninger, nyeOpplysninger, periode, endretPeriode)
-                }.kombinerMed(oppdragstatus) { _, opplysninger, statusendring ->
+                }.fullJoin(oppdragstatus) { _, opplysninger, statusendring ->
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
-                }.kombinerMed(kjedestatus) { _, opplysninger, statusendring ->
+                }.fullJoin(kjedestatus) { _, opplysninger, statusendring ->
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
-                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, opplysninger, gjelderId ->
+                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelderId)) { _, opplysninger, gjelderId ->
                     OpplysningerIntern.videreførGjelderId(opplysninger, gjelderId)
-                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
+                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
                     OpplysningerIntern.videreførUtbetalesTil(opplysninger, utbetalesTil)
-                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
+                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
                     OpplysningerIntern.videreførSkyldner(opplysninger, skyldner)
-                }.kombinerMed(eksisterendeTidslinje.viderefør(OpplysningerIntern::refusjonsinfo)) { _, opplysninger, refusjonsinfo ->
+                }.fullJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::refusjonsinfo)) { _, opplysninger, refusjonsinfo ->
                     OpplysningerIntern.videreførRefusjonsinfo(opplysninger, refusjonsinfo)
                 }
         }
@@ -135,7 +135,7 @@ class Oppdragstidslinje private constructor(
 
     operator fun minus(other: Oppdragstidslinje) =
         kombinerMed(other) { _, eksisterendeTidslinje, nyTidslinje ->
-            eksisterendeTidslinje.kombinerMed(nyTidslinje) { _, eksisterendeOpplysninger, nyeOpplysninger ->
+            eksisterendeTidslinje.fullJoin(nyTidslinje) { _, eksisterendeOpplysninger, nyeOpplysninger ->
                 nyeOpplysninger.takeUnless { it == eksisterendeOpplysninger }
             }
         }

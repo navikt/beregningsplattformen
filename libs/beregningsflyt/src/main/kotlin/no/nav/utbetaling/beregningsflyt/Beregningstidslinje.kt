@@ -18,9 +18,9 @@ data class Beregningsopplysninger(
 
 fun beregningstidslinje(beregningsperiode: Periode.LukketPeriode, tidslinje: Tidslinje<Opplysninger>, beregningsDato: LocalDateTime): Tidslinje<Beregningsopplysninger> {
      return tidslinje.begrensetTil(beregningsperiode)
-         .kombinerMed(skattekortOppdeling(beregningsDato)) { _, oppdragsopplysninger, skatteperiode ->
+         .fullJoin(skattekortOppdeling(beregningsDato)) { _, oppdragsopplysninger, skatteperiode ->
              oppdragsopplysninger?.let { Beregningsopplysninger(it, skatteperiode ?: Any()) }
-        }.kombinerMed(årsoppdeling(beregningsperiode)) { _, beregningsopplysninger, år ->
+        }.fullJoin(årsoppdeling(beregningsperiode)) { _, beregningsopplysninger, år ->
             beregningsopplysninger?.copy(år = checkNotNull(år))
         }
 }

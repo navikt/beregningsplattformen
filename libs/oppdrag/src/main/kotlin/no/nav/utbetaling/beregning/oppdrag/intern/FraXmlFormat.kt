@@ -72,30 +72,30 @@ internal object FraXmlFormat {
                             )
                         }
                         // Periodierte verdier på linjen som er periodisert på et annet nivå enn linjen selv
-                        .kombinerMed(statuser) { _, builder, statusendring ->
+                        .fullJoin(statuser) { _, builder, statusendring ->
                             builder?.medStatus(statusendring)
-                        }.kombinerMed(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
+                        }.fullJoin(UtbetalesTilIder.fra(linjer)) { _, builder, utbetalesTil ->
                             builder?.copy(utbetalesTil = utbetalesTil)
-                        }.kombinerMed(SkyldnerIder.fra(linjer)) { _, builder, skyldner ->
+                        }.fullJoin(SkyldnerIder.fra(linjer)) { _, builder, skyldner ->
                             builder?.copy(skyldner = skyldner)
-                        }.kombinerMed(Refusjonsinfoer.fra(linjer)) { _, builder, refusjonsinfo ->
+                        }.fullJoin(Refusjonsinfoer.fra(linjer)) { _, builder, refusjonsinfo ->
                             builder?.copy(refusjonsinfo = refusjonsinfo)
-                        }.kombinerMed(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
+                        }.fullJoin(Kidnumre.fra(linjer)) { _, builder, kidnummer ->
                             builder?.copy(kidnummer = kidnummer)
                         }
                 }
                 // Periodiserte verdier fra oppdragsnivå som er periodisert på et annet nivå enn linjene
                 .mapValues { (_, builderTidslinje) ->
                     builderTidslinje
-                        .kombinerMed(avventinger) { _, builder, avventing ->
+                        .fullJoin(avventinger) { _, builder, avventing ->
                             builder?.copy(avventingsårsakEndring = avventing)
-                        }.kombinerMed(bostedsenheter) { _, builder, bostedsenhet ->
+                        }.fullJoin(bostedsenheter) { _, builder, bostedsenhet ->
                             builder?.copy(bostedsenhet = bostedsenhet)
-                        }.kombinerMed(behandlendeEnheter) { _, builder, behandlendeEnhet ->
+                        }.fullJoin(behandlendeEnheter) { _, builder, behandlendeEnhet ->
                             builder?.copy(behandlendeEnhet = behandlendeEnhet)
-                        }.kombinerMed(gjelderIder) { _, builder, gjelderId ->
+                        }.fullJoin(gjelderIder) { _, builder, gjelderId ->
                             builder?.copy(gjelderId = gjelderId)
-                        }.kombinerMed(omposeringer) { _, builder, ompostering ->
+                        }.fullJoin(omposeringer) { _, builder, ompostering ->
                             builder?.copy(omposteringEndring = ompostering)
                         }
                 }
