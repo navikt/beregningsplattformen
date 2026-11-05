@@ -13,8 +13,8 @@ import no.nav.utbetaling.beregning.oppdrag.intern.OppdragId
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsendringer
 import no.nav.utbetaling.beregning.oppdrag.intern.Oppdragsverdier
 import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern
-import no.nav.utbetaling.beregning.oppdrag.intern.OpplysningerIntern.Companion.viderefør
 import no.nav.utbetaling.beregning.oppdrag.intern.Statusendring
+import no.nav.utbetaling.beregning.oppdrag.intern.Videreføring.Companion.videreførManglendeFra
 import no.nav.utbetaling.beregning.tid.DefaultTidslinjesamling
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
@@ -121,17 +121,7 @@ class Oppdragstidslinje private constructor(
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
                 }.leftJoin(kjedestatus) { _, opplysninger, statusendring ->
                     OpplysningerIntern.velgStatus(opplysninger, statusendring)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::gjelder)) { _, opplysninger, gjelderId ->
-                    OpplysningerIntern.videreførGjelder(opplysninger, gjelderId)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::utbetalesTil)) { _, opplysninger, utbetalesTil ->
-                    OpplysningerIntern.videreførUtbetalesTil(opplysninger, utbetalesTil)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::skyldner)) { _, opplysninger, skyldner ->
-                    OpplysningerIntern.videreførSkyldner(opplysninger, skyldner)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::refunderesTil)) { _, opplysninger, refunderesTil ->
-                    OpplysningerIntern.videreførRefunderesTil(opplysninger, refunderesTil)
-                }.leftJoin(eksisterendeTidslinje.viderefør(OpplysningerIntern::maksdato)) { _, opplysninger, maksDato ->
-                    OpplysningerIntern.videreførMaksdato(opplysninger, maksDato)
-                }
+                }.videreførManglendeFra(eksisterendeTidslinje)
         }
     }
 
