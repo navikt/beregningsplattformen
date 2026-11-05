@@ -11,7 +11,7 @@ import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 import no.nav.utbetaling.beregning.tid.til
 
-data class Beregningstidslinje(
+data class Beregningsopplysninger(
     val oppdragopplysninger: Opplysninger,
     private val skatteperiode: Any, // TODO: Hadde det vært mulig å legge inn skattereglene som er grunnen til at vi splitter opp?
     private val år: Year? = null,
@@ -21,14 +21,14 @@ fun beregningstidslinje(
     beregningsperiode: Periode.LukketPeriode,
     tidslinje: Tidslinje<Opplysninger>,
     beregningstidspunkt: LocalDateTime,
-): Tidslinje<Beregningstidslinje> =
+): Tidslinje<Beregningsopplysninger> =
     // TODO finne splittpunkter basert på skattekontekst se beregningsfordeler.
     tidslinje
         .begrensetTil(beregningsperiode)
-        .fullJoin(skattekortOppdeling(beregningstidspunkt)) { _, oppdragsopplysninger, skatteperiode ->
-            oppdragsopplysninger?.let { Beregningstidslinje(it, skatteperiode ?: Any()) }
-        }.fullJoin(årsoppdeling(beregningsperiode)) { _, beregningsopplysninger, år ->
-            beregningsopplysninger?.copy(år = checkNotNull(år))
+        .leftJoin(skattekortOppdeling(beregningstidspunkt)) { _, oppdragsopplysninger, skatteperiode ->
+            Beregningsopplysninger(oppdragsopplysninger, skatteperiode ?: Any())
+        }.leftJoin(årsoppdeling(beregningsperiode)) { _, beregningsopplysninger, år ->
+            beregningsopplysninger.copy(år = checkNotNull(år))
         }
 
 private fun skattekortOppdeling(beregningsDato: LocalDateTime) =
