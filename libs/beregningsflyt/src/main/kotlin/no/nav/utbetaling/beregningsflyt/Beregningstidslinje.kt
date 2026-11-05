@@ -20,11 +20,11 @@ data class Beregningstidslinje(
 fun beregningstidslinje(
     beregningsperiode: Periode.LukketPeriode,
     tidslinje: Tidslinje<Opplysninger>,
-    beregningsDato: LocalDateTime,
+    beregningstidspunkt: LocalDateTime,
 ): Tidslinje<Beregningstidslinje> =
     tidslinje
         .begrensetTil(beregningsperiode)
-        .fullJoin(skattekortOppdeling(beregningsDato)) { _, oppdragsopplysninger, skatteperiode ->
+        .fullJoin(skattekortOppdeling(beregningstidspunkt)) { _, oppdragsopplysninger, skatteperiode ->
             oppdragsopplysninger?.let { Beregningstidslinje(it, skatteperiode ?: Any()) }
         }.fullJoin(årsoppdeling(beregningsperiode)) { _, beregningsopplysninger, år ->
             beregningsopplysninger?.copy(år = checkNotNull(år))

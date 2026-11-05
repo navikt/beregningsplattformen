@@ -57,16 +57,16 @@ class BeregningsflytTest :
                 )
             when (val oppdrag = Oppdrag.fraJson(scenario.oppdrag)) {
                 is Oppdrag.Utbetaling -> {
-                    val kontextOgBeregninger =
-                        beregningsflyt.beregn(
-                            beregningsperiode = beregningsperiode,
-                            oppdragstidslinje = oppdrag.oppdragstidslinje,
-                            skatteKontekst = skatteKontekst,
-                            beregnet = LocalDateTime.parse(scenario.kontekst.beregnet),
-                            restFrikortBeloep = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
-                        )
+                    val beregningsgrunnlag = Beregningsgrunnlag(
+                        beregningsperiode = beregningsperiode,
+                        oppdragstidslinje = oppdrag.oppdragstidslinje,
+                        skatteKontekst = skatteKontekst,
+                        beregningstidspunkt = { LocalDateTime.parse(scenario.kontekst.beregnet)},
+                        tilgjengeligFrikortbeløp = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
+                    )
+                    val (beregningskontekst, beregninger) = beregningsflyt.beregn(beregningsgrunnlag)
 
-                    val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(kontextOgBeregninger.first, kontextOgBeregninger.second)
+                    val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(beregningskontekst, beregninger)
                     val modifisertberegningskontekstpresentasjon =
                         beregningsmotorKontekstPresentasjon.copy(
                             beregninger =

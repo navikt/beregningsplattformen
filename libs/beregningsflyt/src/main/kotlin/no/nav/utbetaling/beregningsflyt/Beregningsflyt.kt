@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregningsflyt
 
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -19,7 +18,6 @@ import no.nav.sokos.dare.poc.beregning.fordeler.LinjeGroupKey
 import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
 import no.nav.sokos.dare.poc.beregning.fordeler.SaldoBoetter
 import no.nav.sokos.dare.poc.beregning.fordeler.SatsBoetter
-import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.sokos.dare.poc.oppdrag.Oppdrag
 import no.nav.sokos.dare.poc.oppdrag.OppdragId
 import no.nav.sokos.dare.poc.oppdrag.Oppdragslinje
@@ -30,7 +28,6 @@ import no.nav.sokos.dare.poc.oppdrag.YtelseKlasseKodeRef
 import no.nav.sokos.dare.poc.trekk.FagomraadeKode
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
-import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
 import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
@@ -44,21 +41,17 @@ class Beregningsflyt {
         val kid: String?,
     )
 
-    fun beregn(
-        beregningsperiode: Periode.LukketPeriode,
-        oppdragstidslinje: Oppdragstidslinje,
-        skatteKontekst: SkatteKontekst,
-        beregnet: LocalDateTime,
-        restFrikortBeloep: BigDecimal?,
-    ): Pair<BeregningsmotorKontekst, List<Beregning>> {
-        val fom = beregningsperiode.fom
-        val tom = beregningsperiode.tom
+    fun beregn(beregningsgrunnlag: Beregningsgrunnlag): Pair<BeregningsmotorKontekst, List<Beregning>> {
+        val beregningstidspunkt = beregningsgrunnlag.beregningstidspunkt()
         // todo finne splittpunkter basert på skattekontekst se beregningsfordeler.
 
         val delperioder =
-            oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
-                val beregningstidslinje = beregningstidslinje(beregningsperiode, tidslinje, beregnet)
-
+            beregningsgrunnlag.oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
+                val beregningstidslinje = beregningstidslinje(
+                    beregningsperiode = beregningsgrunnlag.beregningsperiode,
+                    tidslinje = tidslinje,
+                    beregningstidspunkt = beregningstidspunkt
+                )
                 beregningstidslinje.map { (periode, beregningsopplysninger) ->
                     val oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger
                     val datoIntervall = DatoIntervall(periode.fom, (periode as? Periode.LukketPeriode)?.tom)
@@ -167,7 +160,7 @@ class Beregningsflyt {
                         periode = datoIntervall,
                         konto = "",
                         gjelder = gjelderId,
-                        beregnet = beregnet,
+                        beregnet = beregningstidspunkt,
                         utbetalesTil = utbetalesTil,
                         status = BeregningsStatus.BEREGNET,
                         trekk = emptyList(),
@@ -201,10 +194,10 @@ class Beregningsflyt {
 
         val beregningsmotorKontekst =
             BeregningsmotorKontekst(
-                periode = DatoIntervall(fom, tom),
-                restFrikortBeloep = restFrikortBeloep,
+                periode = DatoIntervall(beregningsgrunnlag.beregningsperiode.fom, beregningsgrunnlag.beregningsperiode.tom),
+                restFrikortBeloep = beregningsgrunnlag.tilgjengeligFrikortbeløp,
                 segmenter = beregningssegment,
-                skatteKontekst = skatteKontekst,
+                skatteKontekst = beregningsgrunnlag.skatteKontekst,
                 satsBoetter =
                     SatsBoetter(
                         innkommendeSatser = emptyMap(),
@@ -214,7 +207,7 @@ class Beregningsflyt {
                         innkommendeSaldoer = emptyMap(),
                     ),
                 overføringsdato = LocalDate.now(),
-                beregnet = beregnet,
+                beregnet = beregningstidspunkt,
             )
 
         val beregningsmotor =
