@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregningsflyt
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 import no.nav.sokos.dare.poc.aktoer.AktoerId
@@ -47,11 +46,12 @@ class Beregningsflyt {
 
         val delperioder =
             beregningsgrunnlag.oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
-                val beregningstidslinje = beregningstidslinje(
-                    beregningsperiode = beregningsgrunnlag.beregningsperiode,
-                    tidslinje = tidslinje,
-                    beregningstidspunkt = beregningstidspunkt
-                )
+                val beregningstidslinje =
+                    beregningstidslinje(
+                        beregningsperiode = beregningsgrunnlag.beregningsperiode,
+                        tidslinje = tidslinje,
+                        beregningstidspunkt = beregningstidspunkt,
+                    )
                 beregningstidslinje.map { (periode, beregningsopplysninger) ->
                     val oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger
                     val datoIntervall = DatoIntervall(periode.fom, (periode as? Periode.LukketPeriode)?.tom)
@@ -165,7 +165,7 @@ class Beregningsflyt {
                         status = BeregningsStatus.BEREGNET,
                         trekk = emptyList(),
                         ekstraInfo = mutableListOf(),
-                        overfoeringsdato = null,
+                        overfoeringsdato = beregningsgrunnlag.overføres,
                         tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
                     )
                 }
@@ -206,7 +206,7 @@ class Beregningsflyt {
                     SaldoBoetter(
                         innkommendeSaldoer = emptyMap(),
                     ),
-                overføringsdato = LocalDate.now(),
+                overføringsdato = beregningsgrunnlag.overføres,
                 beregnet = beregningstidspunkt,
             )
 

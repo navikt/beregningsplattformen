@@ -22,6 +22,7 @@ fun beregningstidslinje(
     tidslinje: Tidslinje<Opplysninger>,
     beregningstidspunkt: LocalDateTime,
 ): Tidslinje<Beregningstidslinje> =
+    // TODO finne splittpunkter basert på skattekontekst se beregningsfordeler.
     tidslinje
         .begrensetTil(beregningsperiode)
         .fullJoin(skattekortOppdeling(beregningstidspunkt)) { _, oppdragsopplysninger, skatteperiode ->

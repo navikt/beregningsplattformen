@@ -57,13 +57,15 @@ class BeregningsflytTest :
                 )
             when (val oppdrag = Oppdrag.fraJson(scenario.oppdrag)) {
                 is Oppdrag.Utbetaling -> {
-                    val beregningsgrunnlag = Beregningsgrunnlag(
-                        beregningsperiode = beregningsperiode,
-                        oppdragstidslinje = oppdrag.oppdragstidslinje,
-                        skatteKontekst = skatteKontekst,
-                        beregningstidspunkt = { LocalDateTime.parse(scenario.kontekst.beregnet)},
-                        tilgjengeligFrikortbeløp = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
-                    )
+                    val beregningsgrunnlag =
+                        Beregningsgrunnlag(
+                            beregningsperiode = beregningsperiode,
+                            oppdragstidslinje = oppdrag.oppdragstidslinje,
+                            skatteKontekst = skatteKontekst,
+                            beregningstidspunkt = { LocalDateTime.parse(scenario.kontekst.beregnet) },
+                            tilgjengeligFrikortbeløp = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
+                            overføres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
+                        )
                     val (beregningskontekst, beregninger) = beregningsflyt.beregn(beregningsgrunnlag)
 
                     val beregningsmotorKontekstPresentasjon = BeregningsmotorKontekstPresentasjon(beregningskontekst, beregninger)
@@ -73,7 +75,6 @@ class BeregningsflytTest :
                                 beregningsmotorKontekstPresentasjon.beregninger.map { beregning ->
                                     beregning.copy(
                                         gjelder = AktoerId(scenario.kontekst.gjelder.toLong()),
-                                        overfoeres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
                                         utbetalesTil = scenario.kontekst.utbetalesTil?.let { AktoerId(it.toLong()) },
                                     )
                                 },
