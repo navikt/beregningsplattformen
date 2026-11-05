@@ -181,7 +181,6 @@ class UbrukteFelterTest :
                 oppdrags-linje-150 med delytelseId 1 har satt kodeArbeidsgiver til P, dette feltet skal ikke være i bruk!
                 oppdrags-linje-150 med delytelseId 1 har satt valuta-190, dette feltet skal ikke være i bruk!
                 oppdrags-linje-150 med delytelseId 1 har satt refFagsystemId til en annen verdi enn fagsystemId i oppdrag-110!
-                oppdrags-linje-150 med delytelseId 1 har satt datoKlassifikFom, dette feltet skal ikke være i bruk!
                 oppdrag-110 har satt kodeAksjon til 2, denne verdien skal ikke være i bruk!
                 """.trimIndent()
 

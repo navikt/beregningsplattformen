@@ -23,7 +23,9 @@ sealed interface Oppdrag {
     data class UgyldigOppdrag(
         val feil: Throwable,
         override val metrikker: List<Metrikk>,
-    ) : Oppdrag
+    ) : Oppdrag {
+        override fun toString(): String = "UgyldigOppdrag(feil=$feil, cause=${feil.cause}, metrikker=$metrikker)"
+    }
 
     data class UgyldigKombinasjon(
         val feil: Throwable,
