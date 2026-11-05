@@ -45,7 +45,8 @@ internal class PåvirkedeModuler(
 
         if (endredeFiler.any { fil -> globaleFiler.any { fil == it || fil.startsWith(it) } }) {
             logger.lifecycle("Global fil er endret – alle moduler er påvirket.")
-            return modulKataloger.keys.toSortedSet()
+            val buildLogic = setOf(":build-logic").takeIf { endredeFiler.any { it.startsWith("build-logic/") } }.orEmpty()
+            return (modulKataloger.keys + buildLogic).toSortedSet()
         }
 
         return utvidMedAvhengige(modulerForFiler(endredeFiler))
