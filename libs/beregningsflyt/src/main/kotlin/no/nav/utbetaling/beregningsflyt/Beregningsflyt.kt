@@ -31,6 +31,8 @@ import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
+import no.nav.utbetaling.beregningsflyt.Avventinger.avventingstidslinje
+import no.nav.utbetaling.beregningsflyt.Avventinger.medAvventing
 
 class Beregningsflyt {
     private data class Segmentgruppering(
@@ -42,7 +44,7 @@ class Beregningsflyt {
 
     fun beregn(beregningsgrunnlag: Beregningsgrunnlag): Pair<BeregningsmotorKontekst, List<Beregning>> {
         val beregningstidspunkt = beregningsgrunnlag.beregningstidspunkt()
-        // todo finne splittpunkter basert på skattekontekst se beregningsfordeler.
+        val avventingstidslinje = beregningsgrunnlag.oppdragstidslinje.avventingstidslinje()
 
         val delperioder =
             beregningsgrunnlag.oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
@@ -189,7 +191,7 @@ class Beregningsflyt {
                     BeregningsSegment(
                         linjeGroupKey = LinjeGroupKey(utbetalesTilId = segmentgruppering.utbetalesTil, kid = segmentgruppering.kid),
                         delperioder = delperioder,
-                    )
+                    ).medAvventing(avventingstidslinje)
                 }
 
         val beregningsmotorKontekst =

@@ -45,6 +45,7 @@ class BeregningsflytTest :
                         "SkattAarsskifteTest/aarsskifte_med_fjoraars_januar_februar",
                         "SkattAarsskifteTest/aarsskifte_prosentkort",
                         "SkattAarsskifteTest/januar_februar_split_med_fjoraars",
+                        "AvventTest/avrk_enkel",
                     )
             }
 
