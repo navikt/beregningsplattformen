@@ -124,7 +124,11 @@ internal object UbrukteFelter {
     }
 
     private fun validerIngendatoKlassifikFom(oppdrag110: Oppdrag110): Set<String> {
-        val linjerMedDatoKlassfikFom = oppdrag110.oppdragsLinje150.filter { it.datoKlassifikFom != null }
+        val linjerMedDatoKlassfikFom =
+            oppdrag110.oppdragsLinje150
+                .filter { it.datoKlassifikFom != null }
+                .filter { it.datoKlassifikFom != it.datoVedtakFom }
+
         if (linjerMedDatoKlassfikFom.isEmpty()) return emptySet()
 
         return linjerMedDatoKlassfikFom
