@@ -1,9 +1,19 @@
+import io.kotest.core.annotation.Condition
+import io.kotest.core.annotation.DisabledIf
+import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.gradle.api.logging.Logging
 import java.io.File
+import kotlin.reflect.KClass
 
+// Testene bruker ekte commits i repoet. CI sjekker ut med fetch-depth: 1 og har dem ikke.
+class PåCI : Condition {
+    override fun evaluate(kclass: KClass<out Spec>) = System.getenv("CI") != null
+}
+
+@DisabledIf(PåCI::class)
 class PåvirkedeModulerTest :
     FunSpec({
         val prosjektRot = File("..").canonicalFile
