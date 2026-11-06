@@ -1,0 +1,130 @@
+# Finner Gradle-modulene som er endret i pushen til main (siden `github.event.before`) med `./gradlew paavirkedeModuler`, og
+# - deployer apper (moduler under :apps med <navn>_<cluster>.yaml i .nais) via gradle-deploy-app.yaml
+# - publiserer biblioteker med pluginen publiser-bibliotek
+# - kjører `:test` på resten
+# Alle apper redeployes ukentlig av gradle-scheduled-apps-main.yaml.
+name: "Deployer/publiserer/tester påvirkede Gradle-moduler på main"
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  # Delt med gradle-scheduled-apps-main.yaml, slik at samme app ikke deployes fra to kjøringer samtidig.
+  group: gradle-main-deploy
+  cancel-in-progress: false # Må la en påstartet deploy kjøre ferdig
+
+jobs:
+  finn-moduler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      apper: ${{ steps.finn.outputs.apper }}
+      biblioteker: ${{ steps.finn.outputs.biblioteker }}
+      resten: ${{ steps.finn.outputs.resten }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: gradle
+
+      - name: Finn påvirkede moduler
+        id: finn
+        shell: bash
+        env:
+          SIDEN: ${{ github.event.before }}
+        run: |
+          ./gradlew -q paavirkedeModuler "--siden=$SIDEN" | tail -n1 > moduler.json
+          echo "Påvirkede moduler: $(cat moduler.json)"
+          echo "apper=$(jq -c .apper moduler.json)" >> "$GITHUB_OUTPUT"
+          echo "biblioteker=$(jq -c .publiserteBiblioteker moduler.json)" >> "$GITHUB_OUTPUT"
+          echo "resten=$(jq -c .resten moduler.json)" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy ${{ matrix.app.navn }}
+    needs: finn-moduler
+    if: needs.finn-moduler.outputs.apper != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.finn-moduler.outputs.apper) }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: ./.github/workflows/gradle-deploy-app.yaml
+    with:
+      modul: ${{ matrix.app.modul }}
+      katalog: ${{ matrix.app.katalog }}
+      navn: ${{ matrix.app.navn }}
+      testmiljoer: ${{ toJson(matrix.app.testmiljoer) }}
+      prodmiljoer: ${{ toJson(matrix.app.prodmiljoer) }}
+
+  publiser:
+    name: Publiser ${{ matrix.modul }}
+    needs: finn-moduler
+    if: needs.finn-moduler.outputs.biblioteker != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        modul: ${{ fromJson(needs.finn-moduler.outputs.biblioteker) }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: gradle
+
+      - name: Bygg og test
+        env:
+          MODUL: ${{ matrix.modul }}
+        run: ./gradlew "$MODUL:build" -x ktlintFormat
+
+      - name: Generer versjon
+        id: versjon
+        run: |
+          VERSJON=$(TZ=Europe/Oslo date +%Y%m%d.%H%M)
+          echo "## Versjon $VERSJON" >> "$GITHUB_STEP_SUMMARY"
+          echo "versjon=$VERSJON" >> "$GITHUB_OUTPUT"
+
+      - name: Publiser til GitHub Packages
+        env:
+          MODUL: ${{ matrix.modul }}
+          VERSJON: ${{ steps.versjon.outputs.versjon }}
+          BIBLIOTEK_PUBLISERING_BRUKER: ${{ github.actor }}
+          BIBLIOTEK_PUBLISERING_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew "$MODUL:publish" "-PbibliotekVersjon=$VERSJON" -x ktlintFormat --no-configuration-cache
+
+  test:
+    name: Test ${{ matrix.modul }}
+    needs: finn-moduler
+    if: needs.finn-moduler.outputs.resten != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        modul: ${{ fromJson(needs.finn-moduler.outputs.resten) }}
+    permissions:
+      contents: read
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@f76a78f10742990ced901927ed5113f6a0803961 # v1.1.4
+    with:
+      gradle-task: ./gradlew ${{ matrix.modul }}:test -x ktlintFormat

@@ -1,0 +1,98 @@
+# Bygger og deployer én app fra gradle-push-main.yaml og gradle-scheduled-apps-main.yaml.
+# Testmiljøene deployes først. Prodmiljøene deployes bare hvis alle testmiljøene gikk bra.
+name: Deploy app
+
+on:
+  workflow_call:
+    inputs:
+      modul:
+        required: true
+        type: string
+        description: Gradle-modulen, for eksempel :apps:lab:backend
+      katalog:
+        required: true
+        type: string
+        description: Katalogen til modulen, relativ til repo-roten
+      navn:
+        required: true
+        type: string
+        description: Navnet på appen, brukt som image-suffiks
+      testmiljoer:
+        required: true
+        type: string
+        description: JSON-liste med {cluster, naiseratorPath}
+      prodmiljoer:
+        required: true
+        type: string
+        description: JSON-liste med {cluster, naiseratorPath}
+
+permissions: {}
+
+jobs:
+  bygg:
+    name: Bygg og test
+    permissions:
+      contents: read
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-test-app.yaml@f76a78f10742990ced901927ed5113f6a0803961 # v1.1.4
+    with:
+      gradle-task: ./gradlew ${{ inputs.modul }}:build ${{ inputs.modul }}:installDist -x ktlintFormat
+      upload-artifact: true
+      artifact-directory: ${{ inputs.katalog }}
+      artifact-name: ${{ inputs.navn }}
+
+  bygg-image:
+    name: Bygg image
+    needs: bygg
+    permissions:
+      contents: read
+      id-token: write
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/gradle-build-push-image.yaml@f76a78f10742990ced901927ed5113f6a0803961 # v1.1.4
+    with:
+      docker-context: ${{ inputs.katalog }}
+      dockerfile: ${{ inputs.katalog }}/.nais/Dockerfile
+      image-tag: ${{ github.sha }}
+      image-suffix: ${{ inputs.navn }}
+      artifact-name: ${{ inputs.navn }}
+
+  deploy-test:
+    name: Deploy ${{ matrix.miljo.cluster }}
+    needs: bygg-image
+    if: inputs.testmiljoer != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        miljo: ${{ fromJson(inputs.testmiljoer) }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@f76a78f10742990ced901927ed5113f6a0803961 # v1.1.4
+    with:
+      cluster: ${{ matrix.miljo.cluster }}
+      resource: ${{ matrix.miljo.naiseratorPath }}
+      image: ${{ needs.bygg-image.outputs.image }}
+
+  deploy-prod:
+    name: Deploy ${{ matrix.miljo.cluster }}
+    needs: [bygg-image, deploy-test]
+    # Kjører også når appen ikke har testmiljøer (deploy-test er da skipped), men aldri når et testmiljø feilet.
+    if: >-
+      !cancelled()
+      && inputs.prodmiljoer != '[]'
+      && needs.bygg-image.result == 'success'
+      && (needs.deploy-test.result == 'success' || needs.deploy-test.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        miljo: ${{ fromJson(inputs.prodmiljoer) }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: navikt/beregningsplattform-gha-workflows/.github/workflows/nais-deploy.yaml@f76a78f10742990ced901927ed5113f6a0803961 # v1.1.4
+    with:
+      cluster: ${{ matrix.miljo.cluster }}
+      resource: ${{ matrix.miljo.naiseratorPath }}
+      image: ${{ needs.bygg-image.outputs.image }}

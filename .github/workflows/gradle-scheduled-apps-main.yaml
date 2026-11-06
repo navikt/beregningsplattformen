@@ -1,0 +1,63 @@
+# Redeployer alle apper (moduler under :apps med <navn>_<cluster>.yaml i .nais) fra main ukentlig,
+# slik at de får med oppdaterte baseimages og avhengigheter selv om koden ikke er endret.
+# Endrede moduler på main håndteres av gradle-push-main.yaml.
+name: "Redeployer alle apper på main"
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+
+permissions: {}
+
+concurrency:
+  # Delt med gradle-push-main.yaml, slik at samme app ikke deployes fra to kjøringer samtidig.
+  group: gradle-main-deploy
+  cancel-in-progress: false # Må la en påstartet deploy kjøre ferdig
+
+jobs:
+  finn-apper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      apper: ${{ steps.finn.outputs.apper }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: gradle
+
+      - name: Finn alle apper
+        id: finn
+        shell: bash
+        run: |
+          APPER=$(./gradlew -q paavirkedeModuler --alle-apper | tail -n1 | jq -c .apper)
+          echo "Apper: $APPER"
+          echo "apper=$APPER" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy ${{ matrix.app.navn }}
+    needs: finn-apper
+    if: needs.finn-apper.outputs.apper != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.finn-apper.outputs.apper) }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: ./.github/workflows/gradle-deploy-app.yaml
+    with:
+      modul: ${{ matrix.app.modul }}
+      katalog: ${{ matrix.app.katalog }}
+      navn: ${{ matrix.app.navn }}
+      testmiljoer: ${{ toJson(matrix.app.testmiljoer) }}
+      prodmiljoer: ${{ toJson(matrix.app.prodmiljoer) }}
