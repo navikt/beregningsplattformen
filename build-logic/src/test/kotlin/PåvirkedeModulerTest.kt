@@ -39,10 +39,10 @@ class PåvirkedeModulerTest :
             moduler.finn(siden = GitReferanse("b5b891a6"), til = GitReferanse("b5b891a6")).shouldBeEmpty()
         }
 
-        test("endring i build-logic gir alle moduler og :build-logic") {
+        test("endring i build-logic gir bare :build-logic") {
             // 62a97b8b endrer bare build-logic/src/main/kotlin/PåvirkedeModuler.kt
             moduler.finn(siden = GitReferanse("62a97b8b~1"), til = GitReferanse("62a97b8b")) shouldBe
-                setOf(":apps:lab:backend", ":build-logic", ":libs:beregning")
+                setOf(":build-logic")
         }
 
         test("endring i annen global fil gir alle moduler, men ikke :build-logic") {

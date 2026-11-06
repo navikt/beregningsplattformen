@@ -16,6 +16,8 @@ internal class PåvirkedeModuler(
     private val logger: Logger,
 ) {
     // Filer som påvirker hele byggingen uansett hvilken modul de ligger i.
+    // build-logic/ er ikke med, siden pluginene der ikke endrer hvordan modulene bygges eller testes.
+    // Legges det til convention-plugins (for eksempel felles Kotlin-oppsett), må build-logic/ inn her.
     private val globaleFiler =
         listOf(
             "settings.gradle.kts",
@@ -25,7 +27,6 @@ internal class PåvirkedeModuler(
             "gradle/wrapper/",
             "gradlew",
             "gradlew.bat",
-            "build-logic/",
         )
 
 
@@ -43,13 +44,14 @@ internal class PåvirkedeModuler(
             return emptySet()
         }
 
+        val buildLogic = setOf(":build-logic").takeIf { endredeFiler.any { it.startsWith("build-logic/") } }.orEmpty()
+
         if (endredeFiler.any { fil -> globaleFiler.any { fil == it || fil.startsWith(it) } }) {
             logger.lifecycle("Global fil er endret – alle moduler er påvirket.")
-            val buildLogic = setOf(":build-logic").takeIf { endredeFiler.any { it.startsWith("build-logic/") } }.orEmpty()
             return (modulKataloger.keys + buildLogic).toSortedSet()
         }
 
-        return utvidMedAvhengige(modulerForFiler(endredeFiler))
+        return (utvidMedAvhengige(modulerForFiler(endredeFiler)) + buildLogic).toSortedSet()
     }
 
     /** Null når det ikke finnes noen felles stamfar, for eksempel fordi `siden` ikke finnes etter en force-push. */

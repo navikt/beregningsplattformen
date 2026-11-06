@@ -24,7 +24,7 @@ Tasken sammenligner `HEAD` med felles stamfar til `--siden` (lokalt mot origin/m
 
 En modul er påvirket når den har en endret fil, eller når den avhenger av en påvirket modul, direkte eller gjennom andre moduler.
 
-Endrer du en global fil, blir alle moduler påvirket. De globale filene er `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, `gradle/libs.versions.toml`, Gradle-wrapperen og alt under `build-logic/`. Endringer i `build-logic/` tar også med `:build-logic`.
+Endrer du en global fil, blir alle moduler påvirket. De globale filene er `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, `gradle/libs.versions.toml` og Gradle-wrapperen. Endringer under `build-logic/` gir bare `:build-logic`, siden pluginene der ikke endrer hvordan modulene bygges.
 
 Finnes det ingen felles stamfar, for eksempel etter en force-push, regnes alle moduler som påvirket.
 
