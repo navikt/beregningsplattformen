@@ -13,7 +13,6 @@ import no.nav.sokos.dare.poc.beregning.beregningsmotor.Ytelsesmotor
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatus
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsSegment
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsmotorKontekst
-import no.nav.sokos.dare.poc.beregning.fordeler.LinjeGroupKey
 import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
 import no.nav.sokos.dare.poc.beregning.fordeler.SaldoBoetter
 import no.nav.sokos.dare.poc.beregning.fordeler.SatsBoetter
@@ -31,7 +30,6 @@ import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
-import no.nav.utbetaling.beregningsflyt.Avventinger.avventingstidslinje
 
 class Beregningsflyt {
     internal data class Segmentgruppering(
@@ -44,7 +42,6 @@ class Beregningsflyt {
 
     fun beregn(beregningsgrunnlag: Beregningsgrunnlag): Pair<BeregningsmotorKontekst, List<Beregning>> {
         val beregningstidspunkt = beregningsgrunnlag.beregningstidspunkt()
-        val avventingstidslinje = beregningsgrunnlag.oppdragstidslinje.avventingstidslinje()
 
         val delperioder =
             beregningsgrunnlag.oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
@@ -169,22 +166,22 @@ class Beregningsflyt {
                         ekstraInfo = mutableListOf(),
                         overfoeringsdato = beregningsgrunnlag.overføres,
                         tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
-                    )
+                    ) to beregningsopplysninger
                 }
             }
 
         var nåværendeSegment: Pair<Segmentgruppering, BeregningsSegment>? = null
         val ferdigeSegmenter = mutableListOf<BeregningsSegment>()
-        delperioder.forEach {
-            val (gruppering, segment) = Avventinger.lagBeregningsSegment(
-                delperiode = it,
-                avventingstidslinje = avventingstidslinje,
-            )
-            if (nåværendeSegment == null) nåværendeSegment = gruppering to segment
-            else if (gruppering == nåværendeSegment.first) {
-                nåværendeSegment = nåværendeSegment.first to nåværendeSegment.second.copy(
-                    delperioder = nåværendeSegment.second.delperioder + segment.delperioder,
+        delperioder.forEach { (delperiode, beregningsopplysninger) ->
+            val (gruppering, segment) =
+                Avventinger.lagBeregningsSegment(
+                    delperiode = delperiode,
+                    oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger,
                 )
+            if (nåværendeSegment == null) {
+                nåværendeSegment = gruppering to segment
+            } else if (gruppering == nåværendeSegment.first) {
+                nåværendeSegment = nåværendeSegment.first to nåværendeSegment.second.utvidMed(segment.delperioder)
             } else {
                 ferdigeSegmenter.add(nåværendeSegment.second)
                 nåværendeSegment = gruppering to segment
@@ -219,5 +216,9 @@ class Beregningsflyt {
             )
 
         return beregningsmotorKontekst to beregningsmotor.calculate(beregningsmotorKontekst).beregninger()
+    }
+
+    private companion object {
+        fun BeregningsSegment.utvidMed(delperioder: List<OppdragDelperiode>) = this.copy(delperioder = this.delperioder + delperioder)
     }
 }

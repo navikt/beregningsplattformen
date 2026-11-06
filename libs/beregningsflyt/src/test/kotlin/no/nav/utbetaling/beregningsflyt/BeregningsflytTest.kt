@@ -47,7 +47,7 @@ class BeregningsflytTest :
                         "SkattAarsskifteTest/januar_februar_split_med_fjoraars",
                         "AvventTest/avrk_enkel",
                         "AvventTest/avav_enkel",
-                        "AvventTest/avvent_delvis_overlapp"
+                        "AvventTest/avvent_delvis_overlapp",
                     )
             }
 
