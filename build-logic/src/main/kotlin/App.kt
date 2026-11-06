@@ -33,6 +33,26 @@ internal data class App (
                 )
             }
 
+        fun Set<String>.app(rot: Path, modulKataloger: Map<String, String>, navn: String, miljø: String): App? {
+            val apper = apper(rot, modulKataloger)
+            val app = apper.singleOrNull { it.navn == navn }
+                ?: apper.singleOrNull { it.navn.contains(navn) }
+                ?: return null // Ikke unikt nok navn/ fant ikke app
+
+            val testmiljø = app.testmiljøer.velg(miljø)
+            val prodmiljø = app.prodmiljøer.velg(miljø)
+
+            return when {
+                testmiljø != null && prodmiljø != null -> null // Ikke unikt nok miljønavn
+                testmiljø != null -> app.copy(testmiljøer = listOf(testmiljø), prodmiljøer = emptyList())
+                prodmiljø != null -> app.copy(testmiljøer = emptyList(), prodmiljøer = listOf(prodmiljø))
+                else -> null // Fant ikke miljø/ ikke unikt nok miljønavn
+            }
+        }
+
+        private val Miljø.filnavn get() = naiseratorPath.substringAfterLast('/').substringBeforeLast('.')
+        private fun List<Miljø>.velg(miljø: String) = singleOrNull { it.filnavn == miljø } ?: singleOrNull { it.filnavn.contains(miljø) }
+
         // Naiserator-filer heter <hva-som-helst>_<cluster>.yaml, for eksempel q1_dev-gcp.yaml.
         private fun miljøer(rot: Path, modulKatalog: Path): List<Miljø> {
             val naisKatalog = modulKatalog.resolve(".nais")

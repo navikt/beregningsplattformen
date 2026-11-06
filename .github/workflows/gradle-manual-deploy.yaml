@@ -1,0 +1,74 @@
+# Deployer én valgt app til ett miljø. Startes manuelt.
+# Miljøet slås opp med `./gradlew appDeployConfig`. Testmiljøer kan deployes fra alle brancher, prodmiljøer bare fra main.
+name: "Deployer app manuelt"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: Navnet på appen, for eksempel lab-backend. Holder at det er unikt.
+        required: true
+        type: string
+      miljo:
+        description: Miljøet, for eksempel dev-gcp. Holder at det er unikt.
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: gradle-manual-deploy-${{ inputs.app }}
+  cancel-in-progress: false # Må la en påstartet deploy kjøre ferdig
+
+jobs:
+  finn-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      app: ${{ steps.finn.outputs.app }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+
+      - name: Finn app
+        id: finn
+        shell: bash
+        env:
+          APP: ${{ inputs.app }}
+          MILJO: ${{ inputs.miljo }}
+        run: |
+          VALGT=$(./gradlew -q appDeployConfig "--app=$APP" "--miljo=$MILJO" | tail -n1)
+          if [ "$(jq '.prodmiljoer | length' <<< "$VALGT")" -ne 0 ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::'$MILJO' er et prodmiljø. Prod kan bare deployes fra main, ikke fra $GITHUB_REF."
+            exit 1
+          fi
+          echo "App: $VALGT"
+          echo "app=$VALGT" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy ${{ inputs.app }}
+    needs: finn-app
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      deployments: write
+    uses: ./.github/workflows/gradle-deploy-app.yaml
+    with:
+      modul: ${{ fromJson(needs.finn-app.outputs.app).modul }}
+      katalog: ${{ fromJson(needs.finn-app.outputs.app).katalog }}
+      navn: ${{ fromJson(needs.finn-app.outputs.app).navn }}
+      testmiljoer: ${{ toJson(fromJson(needs.finn-app.outputs.app).testmiljoer) }}
+      prodmiljoer: ${{ toJson(fromJson(needs.finn-app.outputs.app).prodmiljoer) }}

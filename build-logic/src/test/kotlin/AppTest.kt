@@ -1,7 +1,9 @@
+import App.Companion.app
 import App.Companion.apper
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.nio.file.Path
 import kotlin.io.path.createParentDirectories
@@ -88,6 +90,90 @@ class AppTest :
             fil("libs/beregning/.nais/app_dev-gcp.yaml")
 
             setOf(":libs:beregning").apper(rot, kataloger).shouldBeEmpty()
+        }
+
+        context("app") {
+            val moduler = setOf(":apps:backend", ":apps:mottak", ":apps:lab:backend")
+            val alleKataloger = kataloger + (":apps:lab:backend" to "apps/lab/backend")
+
+            fun naisFiler() {
+                fil("apps/mottak/.nais/q1_dev-fss.yaml")
+                fil("apps/mottak/.nais/q2_dev-fss.yaml")
+                fil("apps/mottak/.nais/app_prod-fss.yaml")
+                fil("apps/backend/.nais/app_dev-gcp.yaml")
+                fil("apps/lab/backend/.nais/app_dev-gcp.yaml")
+            }
+
+            test("gir appen med bare testmiljøet som matcher") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "q1") shouldBe
+                    App(
+                        ":apps:mottak",
+                        "apps/mottak",
+                        "mottak",
+                        testmiljøer = listOf(Miljø("dev-fss", "apps/mottak/.nais/q1_dev-fss.yaml")),
+                        prodmiljøer = emptyList(),
+                    )
+            }
+
+            test("gir appen med bare prodmiljøet som matcher") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "prod") shouldBe
+                    App(
+                        ":apps:mottak",
+                        "apps/mottak",
+                        "mottak",
+                        testmiljøer = emptyList(),
+                        prodmiljøer = listOf(Miljø("prod-fss", "apps/mottak/.nais/app_prod-fss.yaml")),
+                    )
+            }
+
+            test("null når appen ikke finnes") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "finnes-ikke", miljø = "dev").shouldBeNull()
+            }
+
+            test("null når navnet matcher flere apper") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "ackend", miljø = "dev").shouldBeNull()
+            }
+
+            test("eksakt navn velges selv om det også er en del av et annet navn") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "backend", miljø = "dev") shouldBe
+                    App(
+                        ":apps:backend",
+                        "apps/backend",
+                        "backend",
+                        testmiljøer = listOf(Miljø("dev-gcp", "apps/backend/.nais/app_dev-gcp.yaml")),
+                        prodmiljøer = emptyList(),
+                    )
+            }
+
+            test("null når miljøet ikke finnes") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "dev-gcp").shouldBeNull()
+            }
+
+            test("null når miljøet matcher flere testmiljøer") {
+                naisFiler()
+                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "dev-fss").shouldBeNull()
+            }
+
+            test("eksakt filnavn velges selv om det også er en del av et annet filnavn") {
+                naisFiler()
+                fil("apps/mottak/.nais/q1_dev-fss-2.yaml")
+
+                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "q1_dev-fss")?.testmiljøer shouldBe
+                    listOf(Miljø("dev-fss", "apps/mottak/.nais/q1_dev-fss.yaml"))
+            }
+
+            test("null når miljøet matcher både et testmiljø og et prodmiljø") {
+                naisFiler()
+                fil("apps/mottak/.nais/q1_prod-fss.yaml")
+
+                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "q1").shouldBeNull()
+            }
         }
 
         test("somJson escaper anførselstegn og backslash, og gir tomme lister") {

@@ -4,20 +4,17 @@ Du trenger ikke lage egne workflows når du lager nye libs/apper i Gradle. Det s
 
 Workflowene tester, deployer og publiserer bare Gradle-modulene som er påvirket av en endring. Gradle-tasken `paavirkedeModuler` i `build-logic` finner modulene.
 
-| Workflow                          | Trigger           | Gjør                                                                                              |
-|-----------------------------------|-------------------|---------------------------------------------------------------------------------------------------|
-| `gradle-test-pull-request.yaml`   | pull request      | Kjører `:test` på alle påvirkede moduler                                                          |
-| `gradle-push-main.yaml`           | push til main     | Deployer påvirkede apper, publiserer påvirkede biblioteker og tester interne libs                 |
-| `gradle-scheduled-apps-main.yaml` | mandag kl. 05 UTC | Redeployer alle apper (selv om de ikke er endret), slik at de får nye baseimages og avhengigheter |
-| `gradle-deploy-app.yaml`          | `workflow_call`   | Bygger, lager image og deployer én app. Brukes av de to over                                      |
+| Workflow                          | Trigger                | Gjør                                                                                                                                                                                                                                                     |
+|-----------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `gradle-test-pull-request.yaml`   | pull request           | Kjører `:test` på alle påvirkede moduler                                                                                                                                                                                                                 |
+| `gradle-push-main.yaml`           | push til main          | Deployer påvirkede apper, publiserer påvirkede biblioteker og tester interne libs                                                                                                                                                                        |
+| `gradle-scheduled-apps-main.yaml` | mandag kl. 05 UTC      | Redeployer alle apper (selv om de ikke er endret), slik at de får nye baseimages og avhengigheter                                                                                                                                                        |
+| `gradle-manual-deploy.yaml`       | manuelt, alle brancher | Deployer én app til ett miljø, prod bare fra main (input `app` og `miljo` blir brukt som input til `./gradlew appDeployConfig`). Det du skriver inn av app og miljø må ikke være helt ordrett, men være unikt nok til å identifisere én app i ett miljø. |
+| `gradle-deploy-app.yaml`          | `workflow_call`        | Bygger, lager image og deployer én app. Brukes av de tre over                                                                                                                                                                                            |
 
 De gjenbrukbare stegene (bygg, image og Nais-deploy) ligger i [navikt/beregningsplattform-gha-workflows](https://github.com/navikt/beregningsplattform-gha-workflows).
 
 ## Påvirkede moduler
-
-```sh
-./gradlew -q paavirkedeModuler --siden=origin/main
-```
 
 Tasken sammenligner `HEAD` med felles stamfar til `--siden` (lokalt mot origin/main om du ikke sender inn noe) og skriver ut JSON:
 
@@ -67,6 +64,9 @@ plugins {
 ```sh
 # Moduler påvirket av branchen din
 ./gradlew -q paavirkedeModuler
+
+# Finne app deploy config
+./gradlew -q appDeployConfig --app=mottak --miljo=dev-gcp
 
 # Testene for build-logic
 ./gradlew :build-logic:test
