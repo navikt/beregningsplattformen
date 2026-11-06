@@ -32,14 +32,14 @@ import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregningsflyt.Avventinger.avventingstidslinje
-import no.nav.utbetaling.beregningsflyt.Avventinger.medAvventing
 
 class Beregningsflyt {
-    private data class Segmentgruppering(
+    internal data class Segmentgruppering(
         val fagområde: FagomraadeKode,
         val fagsystemId: String,
         val utbetalesTil: AktoerId,
         val kid: String?,
+        val status: BeregningsStatus,
     )
 
     fun beregn(beregningsgrunnlag: Beregningsgrunnlag): Pair<BeregningsmotorKontekst, List<Beregning>> {
@@ -173,32 +173,31 @@ class Beregningsflyt {
                 }
             }
 
-        val beregningssegment =
-            delperioder
-                .groupBy {
-                    Segmentgruppering(
-                        fagområde = it.oppdrag.fagomraade,
-                        fagsystemId = it.oppdrag.fagsystemId,
-                        utbetalesTil = it.utbetalesTil!!,
-                        kid =
-                            it.oppdrag.oppdragslinjekjeder
-                                .single()
-                                .linjer
-                                .single()
-                                .kid,
-                    )
-                }.map { (segmentgruppering, delperioder) ->
-                    BeregningsSegment(
-                        linjeGroupKey = LinjeGroupKey(utbetalesTilId = segmentgruppering.utbetalesTil, kid = segmentgruppering.kid),
-                        delperioder = delperioder,
-                    ).medAvventing(avventingstidslinje)
-                }
+        var nåværendeSegment: Pair<Segmentgruppering, BeregningsSegment>? = null
+        val ferdigeSegmenter = mutableListOf<BeregningsSegment>()
+        delperioder.forEach {
+            val (gruppering, segment) = Avventinger.lagBeregningsSegment(
+                delperiode = it,
+                avventingstidslinje = avventingstidslinje,
+            )
+            if (nåværendeSegment == null) nåværendeSegment = gruppering to segment
+            else if (gruppering == nåværendeSegment.first) {
+                nåværendeSegment = nåværendeSegment.first to nåværendeSegment.second.copy(
+                    delperioder = nåværendeSegment.second.delperioder + segment.delperioder,
+                )
+            } else {
+                ferdigeSegmenter.add(nåværendeSegment.second)
+                nåværendeSegment = gruppering to segment
+            }
+        }
+
+        if (nåværendeSegment != null) ferdigeSegmenter.add(nåværendeSegment.second)
 
         val beregningsmotorKontekst =
             BeregningsmotorKontekst(
                 periode = DatoIntervall(beregningsgrunnlag.beregningsperiode.fom, beregningsgrunnlag.beregningsperiode.tom),
                 restFrikortBeloep = beregningsgrunnlag.tilgjengeligFrikortbeløp,
-                segmenter = beregningssegment,
+                segmenter = ferdigeSegmenter,
                 skatteKontekst = beregningsgrunnlag.skatteKontekst,
                 satsBoetter =
                     SatsBoetter(

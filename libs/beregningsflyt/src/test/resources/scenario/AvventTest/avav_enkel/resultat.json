@@ -12,6 +12,7 @@
             "status": "AVVENT",
             "statusflagg": ["MANUELL", "MANGLER_SKATTEKORT"],
             "fagomraade": "AAP",
+            "overfoeres": "2026-04-01",
             "gjelder": 1,
             "beregnet": "2026-03-15T11:00",
             "delberegninger": [

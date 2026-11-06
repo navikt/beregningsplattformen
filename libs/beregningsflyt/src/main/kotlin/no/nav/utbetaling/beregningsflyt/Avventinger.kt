@@ -1,15 +1,23 @@
 package no.nav.utbetaling.beregningsflyt
 
+import no.nav.sokos.dare.poc.aktoer.AktoerId
 import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.EkstraInfoDsl.verdi
 import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatus
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatusflagg
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsSegment
+import no.nav.sokos.dare.poc.beregning.fordeler.LinjeGroupKey
+import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
+import no.nav.sokos.dare.poc.trekk.FagomraadeKode
 import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
+import no.nav.utbetaling.beregning.oppdrag.Fagområde
+import no.nav.utbetaling.beregning.oppdrag.Kidnummer
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
+import no.nav.utbetaling.beregning.oppdrag.UtbetalesTil
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
+import no.nav.utbetaling.beregningsflyt.Beregningsflyt.*
 
 internal object Avventinger {
     // Lager en tidslinje med avventinger fra oppdragstidslinjen
@@ -25,9 +33,34 @@ internal object Avventinger {
             }.build()
     }
 
+    internal fun lagBeregningsSegment(
+        delperiode: OppdragDelperiode,
+        avventingstidslinje: Tidslinje<Avventingsårsak>
+    ): Pair<Segmentgruppering, BeregningsSegment> {
+        val kid = delperiode.oppdrag.oppdragslinjekjeder
+            .single()
+            .linjer
+            .single()
+            .kid
+        val beregningsSegment = BeregningsSegment(
+            linjeGroupKey = LinjeGroupKey(utbetalesTilId = delperiode.utbetalesTil!!, kid = kid),
+            delperioder = listOf(delperiode),
+        ).medAvventing(avventingstidslinje)
+
+        val segmentGruppering = Segmentgruppering(
+            fagområde = delperiode.oppdrag.fagomraade,
+            fagsystemId = delperiode.oppdrag.fagsystemId,
+            utbetalesTil = delperiode.utbetalesTil!!,
+            kid = kid,
+            status = beregningsSegment.avventStatus ?: BeregningsStatus.BEREGNET
+        )
+
+        return segmentGruppering to beregningsSegment
+    }
+
     // Legger til avventing på et BeregningsSegment,
     // hvis det finnes en avventing som overlapper med noen av delperiodene i segmentet.
-    internal fun BeregningsSegment.medAvventing(avventingstidslinje: Tidslinje<Avventingsårsak>): BeregningsSegment {
+    private fun BeregningsSegment.medAvventing(avventingstidslinje: Tidslinje<Avventingsårsak>): BeregningsSegment {
         val periodene = delperioder.map { Periode.LukketPeriode(it.periode.fom, it.periode.tom!!) }
 
         val avventingsårsak =
