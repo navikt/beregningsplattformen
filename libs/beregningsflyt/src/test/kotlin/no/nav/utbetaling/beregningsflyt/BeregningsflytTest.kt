@@ -72,6 +72,8 @@ class BeregningsflytTest :
                         "AvventTest/avvent_delvis_overlapp",
                         "AvventTest/avvent_to_perioder",
                         "AvventTest/avvent_med_tabelltrekk",
+                        "TidligereUtbetaltTest/enkel_tidligere_utbetalt",
+                        "TidligereUtbetaltTest/tidligere_utbetalt_med_proratering",
                     )
             }
 

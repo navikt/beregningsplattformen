@@ -178,6 +178,7 @@ class Beregningsflyt {
                         ekstraInfo = mutableListOf(),
                         overfoeringsdato = beregningsgrunnlag.overføres,
                         tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
+                        relaterteBeregninger = beregningsopplysninger.tidligereYtelsesberegninger,
                     ) to beregningsopplysninger
                 }
             }

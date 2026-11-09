@@ -12,7 +12,7 @@ import kotlin.collections.map
 
 import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DatoIntervall
-import no.nav.sokos.dare.poc.beregning.Delberegning
+import no.nav.sokos.dare.poc.beregning.DelberegningType
 import no.nav.sokos.dare.poc.trekk.SatsType
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
@@ -21,20 +21,20 @@ import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 import no.nav.utbetaling.beregning.tid.til
 
-data class Trekkperiodedel(
+internal data class Trekkperiodedel(
     val måned: Month?,
     val trekkperiode: Trekkperiode,
 )
 
-data class Beregningsopplysninger(
+internal data class Beregningsopplysninger(
     val oppdragopplysninger: Opplysninger,
     private val skatteperiode: Any, // TODO: Hadde det vært mulig å legge inn skattereglene som er grunnen til at vi splitter opp?
     private val år: Year? = null,
-    private val relaterteBeregninger: List<Delberegning> = emptyList(),
+    val tidligereYtelsesberegninger: List<Beregning> = emptyList(),
     private val trekkperiodedel: List<Trekkperiodedel> = emptyList(),
 )
 
-fun beregningstidslinje(
+internal fun beregningstidslinje(
     beregningsperiode: Periode.LukketPeriode,
     tidslinje: Tidslinje<Opplysninger>,
     beregningstidspunkt: LocalDateTime,
@@ -50,6 +50,8 @@ fun beregningstidslinje(
             beregningsopplysninger.copy(år = checkNotNull(år))
         }.leftJoin(trekktidslinje(trekk, beregningsperiode)) { _, beregningsopplysnigner, trekkperiodedeler ->
             beregningsopplysnigner.copy(trekkperiodedel = trekkperiodedeler ?: emptyList())
+        }.leftJoin(tidligereYtelsesberegninger(relaterteBeregninger)) { _, beregningsopplysninger, tidligereYtelsesberegnigner ->
+            beregningsopplysninger.copy(tidligereYtelsesberegninger = tidligereYtelsesberegnigner ?: emptyList())
         }
 
 private fun trekktidslinje(
@@ -79,16 +81,25 @@ private fun trekktidslinje(
     }
 }
 
-/*
-private fun relaterteBeregningerOppdeling(relaterteBeregninger: List<Beregning>): List<Tidslinje<Delberegning>> {
-    // TODO: Her må vi filtrere på oppdragId
-    relaterteBeregninger.flatMap { beregning: Beregning -> beregning.delberegning }.filter { delberegning -> delberegning.linjer.any { it: Delberegningslinje -> it.type == DelberegningType.YTELSE } }
-        .map { delberegning: Delberegning ->
-            Tidslinje.Builder<Any>()
-                .periode(delberegning.datoIntervall.fom til delberegning.datoIntervall.tom!!, delberegning).build()
+private fun tidligereYtelsesberegninger(relaterteBeregninger: List<Beregning>): Tidslinje<List<Beregning>> {
+    val tidslinjePerRelatertBeregning =
+        relaterteBeregninger
+            .map { beregning ->
+                // TODO: Her må vi filtrere på oppdragId
+                // TODO: Kunne vi unngått å lage Beregning-objektet og heller bruke Delberegning ?
+                val builder = Tidslinje.Builder<Beregning>()
+                beregning.delberegning.filter { it.linjer.any { linje -> linje.type == DelberegningType.YTELSE } }.forEach { delberegning ->
+                    builder.periode(delberegning.datoIntervall.fom til delberegning.datoIntervall.tom!!, beregning.copy(delberegning = listOf(delberegning)))
+                }
+                builder.build()
+            }
 
+    return tidslinjePerRelatertBeregning.fold(Tidslinje.Builder<List<Beregning>>().build()) { samletTidslinje, tidslinjeForEnBeregning ->
+        samletTidslinje.fullJoin(tidslinjeForEnBeregning) { _, eksisterende, ny ->
+            eksisterende.orEmpty() + listOfNotNull(ny)
         }
-}*/
+    }
+}
 
 private fun skattekortOppdeling(beregningsDato: LocalDateTime) =
     Tidslinje
