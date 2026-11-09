@@ -48,6 +48,8 @@ class BeregningsflytTest :
                         "AvventTest/avrk_enkel",
                         "AvventTest/avav_enkel",
                         "AvventTest/avvent_delvis_overlapp",
+                        "AvventTest/avvent_to_perioder",
+                        "AvventTest/avvent_med_tabelltrekk",
                     )
             }
 

@@ -176,6 +176,7 @@
             },
             "status": "AVVENT",
             "statusflagg": ["MANUELL"],
+            "overfoeres": "2026-03-21",
             "fagomraade": "AAP",
             "gjelder": 1,
             "beregnet": "2026-03-21T11:00",
