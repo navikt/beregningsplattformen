@@ -65,6 +65,7 @@ class BeregningstidslinjeTest :
                     beregningsperiode = periode,
                     tidslinje = tidslinje,
                     beregningstidspunkt = 2.januar(2026).atStartOfDay(),
+                    emptyList(), emptyList()
                 )
 
             tidslinje.single().first shouldBe periode

@@ -1,11 +1,10 @@
 package no.nav.sokos.dare.poc.beregning
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
+import no.nav.sokos.dare.poc.LocalDateJson
+import no.nav.sokos.dare.poc.LocalDateTimeJson
 import no.nav.sokos.dare.poc.aktoer.AktoerId
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatus
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatusflagg
@@ -20,10 +19,10 @@ data class Beregning(
     val eksternRef: Long? = null,
     val periode: DatoIntervall,
     val konto: String,
-    @Contextual val overfoeres: LocalDate?,
+    @Contextual val overfoeres: LocalDateJson?,
     val fagomraade: FagomraadeKode,
     val gjelder: AktoerId,
-    @Contextual val beregnet: LocalDateTime,
+    @Contextual val beregnet: LocalDateTimeJson,
     val delberegning: List<Delberegning>,
     val utbetalesTil: AktoerId? = null,
     val kid: String? = null,

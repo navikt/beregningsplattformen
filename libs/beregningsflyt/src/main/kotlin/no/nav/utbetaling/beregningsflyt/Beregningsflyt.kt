@@ -57,6 +57,8 @@ class Beregningsflyt {
                 val beregningstidslinje =
                     beregningstidslinje(
                         beregningsperiode = beregningsgrunnlag.beregningsperiode,
+                        trekk = beregningsgrunnlag.trekkVedtak,
+                        relaterteBeregninger = beregningsgrunnlag.relaterteBeregninger,
                         tidslinje = tidslinje,
                         beregningstidspunkt = beregningstidspunkt,
                     )

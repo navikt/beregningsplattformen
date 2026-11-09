@@ -7,6 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+import no.nav.sokos.dare.poc.BigDecimalJson
 import no.nav.sokos.dare.poc.beregning.Delberegning.Companion.COLUMN_HEADER_WIDTH
 import no.nav.sokos.dare.poc.beregning.Delberegning.Companion.COLUMN_WIDTH
 import no.nav.sokos.dare.poc.beregning.dataklasser.Satstype
@@ -93,11 +94,11 @@ data class Delberegningslinje(
     val delberegningId: DelberegningId? = null,
     val type: DelberegningType,
     val dagsbeloep: List<Dagbeloep>,
-    @Contextual val beloep: BigDecimal, // TODO: Fra beregning
+    @Contextual val beloep: BigDecimalJson, // TODO: Fra beregning
     val ekstra: Set<EkstraInfo> = emptySet(),
     @Transient val kapasitet: Kapasitet? = null, // TODO: detaljer som ikke lagres?
     val satsType: Satstype? = null,
-    @Contextual val sats: BigDecimal? = null,
+    @Contextual val sats: BigDecimalJson? = null,
     val trekkvedtakId: TrekkvedtakId? = null,
     val oppdragslinjekjedeId: OppdragslinjekjedeId? = null,
     val skattType: String? = null,
