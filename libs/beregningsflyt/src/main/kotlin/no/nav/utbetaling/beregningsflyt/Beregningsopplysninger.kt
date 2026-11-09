@@ -6,27 +6,32 @@ import java.time.Month
 import java.time.Month.DECEMBER
 import java.time.Month.JANUARY
 import java.time.Year
+import java.time.YearMonth
+
 import kotlin.collections.map
+
 import no.nav.sokos.dare.poc.beregning.Beregning
+import no.nav.sokos.dare.poc.beregning.DatoIntervall
 import no.nav.sokos.dare.poc.beregning.Delberegning
-import no.nav.sokos.dare.poc.beregning.DelberegningType
-import no.nav.sokos.dare.poc.beregning.Delberegningslinje
 import no.nav.sokos.dare.poc.trekk.SatsType
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
-
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregning.tid.Tidslinje
 import no.nav.utbetaling.beregning.tid.til
+
+data class Trekkperiodedel(
+    val måned: Month?,
+    val trekkperiode: Trekkperiode,
+)
 
 data class Beregningsopplysninger(
     val oppdragopplysninger: Opplysninger,
     private val skatteperiode: Any, // TODO: Hadde det vært mulig å legge inn skattereglene som er grunnen til at vi splitter opp?
     private val år: Year? = null,
     private val relaterteBeregninger: List<Delberegning> = emptyList(),
-    private val trekk: List<Trekkperiode>? = null,
-    private val måned: Month? = null
+    private val trekkperiodedel: List<Trekkperiodedel> = emptyList(),
 )
 
 fun beregningstidslinje(
@@ -43,24 +48,36 @@ fun beregningstidslinje(
             Beregningsopplysninger(oppdragsopplysninger, skatteperiode ?: Any())
         }.leftJoin(årsoppdeling(beregningsperiode)) { _, beregningsopplysninger, år ->
             beregningsopplysninger.copy(år = checkNotNull(år))
+        }.leftJoin(trekktidslinje(trekk, beregningsperiode)) { _, beregningsopplysnigner, trekkperiodedeler ->
+            beregningsopplysnigner.copy(trekkperiodedel = trekkperiodedeler ?: emptyList())
         }
 
-    private fun trekkOppdeling(trekk: List<Trekkvedtak>) {
-        trekk.map { trekk ->
-            val builder = Tidslinje.Builder<Trekkperiode>()
-            trekk.trekkperioder.map { trekkperiode ->
-                val builder1 = if (trekkperiode.satstype == SatsType.M) {
-
-                    trekkperiode.periode.months()
-
-                    builder.periode(trekkperiode.periode.fom til trekkperiode.periode.tom!!, trekkperiode)
+private fun trekktidslinje(
+    trekk: List<Trekkvedtak>,
+    beregningsperiode: Periode.LukketPeriode,
+): Tidslinje<List<Trekkperiodedel>> {
+    val tidslinjePerTrekkvedtak =
+        trekk.map { trekkvedtak ->
+            val builder = Tidslinje.Builder<Trekkperiodedel>()
+            trekkvedtak.trekkperioder.forEach trekkperiode@{ trekkperiode ->
+                val periode = trekkperiode.periode.somLukketPeriode(beregningsperiode.tom) ?: return@trekkperiode
+                if (trekkperiode.satstype == SatsType.M) {
+                    periode.delOppVedNyMåned().forEach { månedDel ->
+                        builder.periode(månedDel, Trekkperiodedel(månedDel.start.month, trekkperiode))
+                    }
                 } else {
-                    builder.periode(trekkperiode.periode.fom til trekkperiode.periode.tom!!, trekkperiode)
+                    builder.periode(periode, Trekkperiodedel(null, trekkperiode))
                 }
-                builder1
             }
+            builder.build()
+        }
+
+    return tidslinjePerTrekkvedtak.fold(Tidslinje.Builder<List<Trekkperiodedel>>().build()) { samletTidslinje, tidslinjeForEtTrekkvedtak ->
+        samletTidslinje.fullJoin(tidslinjeForEtTrekkvedtak) { _, eksiterenede, ny ->
+            eksiterenede.orEmpty() + listOfNotNull(ny)
         }
     }
+}
 
 /*
 private fun relaterteBeregningerOppdeling(relaterteBeregninger: List<Beregning>): List<Tidslinje<Delberegning>> {
@@ -72,7 +89,6 @@ private fun relaterteBeregningerOppdeling(relaterteBeregninger: List<Beregning>)
 
         }
 }*/
-
 
 private fun skattekortOppdeling(beregningsDato: LocalDateTime) =
     Tidslinje
@@ -91,3 +107,17 @@ private fun årsoppdeling(beregningsperiode: Periode.LukketPeriode): Tidslinje<Y
             builder.periode(Periode.LukketPeriode(LocalDate.of(year.value, JANUARY, 1), LocalDate.of(year.value, DECEMBER, 31)), year)
         }.build()
 }
+
+private fun DatoIntervall.somLukketPeriode(maksTilOgMed: LocalDate): Periode.LukketPeriode? {
+    if (fom > maksTilOgMed) return null
+    return when (val tilOgMed = tom) {
+        null -> Periode.LukketPeriode(fom, maksTilOgMed)
+        else -> Periode.LukketPeriode(fom, minOf(tilOgMed, maksTilOgMed))
+    }
+}
+
+private fun Periode.LukketPeriode.delOppVedNyMåned(): List<Periode.LukketPeriode> =
+    generateSequence(YearMonth.from(fom)) { it.plusMonths(1) }
+        .takeWhile { it <= YearMonth.from(tom) }
+        .map { måned -> maxOf(måned.atDay(1), fom) til minOf(måned.atEndOfMonth(), tom) }
+        .toList()

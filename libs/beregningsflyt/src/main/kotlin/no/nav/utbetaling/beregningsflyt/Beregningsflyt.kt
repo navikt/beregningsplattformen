@@ -3,6 +3,7 @@ package no.nav.utbetaling.beregningsflyt
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
+
 import no.nav.sokos.dare.poc.aktoer.AktoerId
 import no.nav.sokos.dare.poc.avvent.Avvent
 import no.nav.sokos.dare.poc.beregning.Beregning
@@ -173,7 +174,7 @@ class Beregningsflyt {
                         beregnet = beregningstidspunkt,
                         utbetalesTil = utbetalesTil,
                         status = BeregningsStatus.BEREGNET,
-                        trekk = buildTrekkForDelperiode(datoIntervall, beregningsgrunnlag.overføres  ,beregningsgrunnlag.trekkVedtak),
+                        trekk = buildTrekkForDelperiode(datoIntervall, beregningsgrunnlag.overføres, beregningsgrunnlag.trekkVedtak),
                         ekstraInfo = mutableListOf(),
                         overfoeringsdato = beregningsgrunnlag.overføres,
                         tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
@@ -231,7 +232,6 @@ class Beregningsflyt {
         fun BeregningsSegment.utvidMed(delperioder: List<OppdragDelperiode>) = this.copy(delperioder = this.delperioder + delperioder)
     }
 }
-
 
 // --- Grunnlagsbygging ---
 private fun buildTrekkForDelperiode(

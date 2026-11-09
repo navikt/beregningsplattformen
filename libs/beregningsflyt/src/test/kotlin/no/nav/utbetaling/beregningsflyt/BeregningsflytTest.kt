@@ -2,10 +2,13 @@ package no.nav.utbetaling.beregningsflyt
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+
 import kotlinx.serialization.json.Json
+
 import io.kotest.assertions.fail
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withData
+
 import no.nav.sokos.dare.poc.aktoer.AktoerId
 import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
@@ -53,6 +56,8 @@ class BeregningsflytTest :
                         "SatsRelatertTest/ytelper_relatert_med_annet_trekkvedtak_paavirker_ikke",
                         "SatsRelatertTest/ytelper_dagssats_uten_relaterte",
                         "SatsRelatertTest/ytelper_prosenttrekk_ikke_begrenset_av_satsboette",
+                        "SatsRelatertTest/ytelper_maanedssats_med_relatert_som_reduserer",
+                        "SkattProsentkortTest/prosentkort_med_skattereduserende_trekk",
                         "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats",
                         "SkattFrikortTest/frikort_belopsgrense_uttoemmes",
                         "SkattFrikortTest/frikort_uten_beloepsgrense_trekker_ikke_skatt",
@@ -73,9 +78,10 @@ class BeregningsflytTest :
         fun kjørScenario(scenario: Scenario) {
             val skatteKontekst = JsonIgnoreUnknown.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
             val trekkvedtak = JsonIgnoreUnknown.decodeFromString<List<Trekkvedtak>>(scenario.trekk)
-            val relaterteBeregninger = scenario.relaterteBeregninger?.let {
-                JsonIgnoreUnknown.decodeFromString<List<Beregning>>(it)
-            } ?: emptyList()
+            val relaterteBeregninger =
+                scenario.relaterteBeregninger?.let {
+                    JsonIgnoreUnknown.decodeFromString<List<Beregning>>(it)
+                } ?: emptyList()
 
             val beregningsperiode =
                 LukketPeriode(

@@ -3,8 +3,8 @@ package no.nav.utbetaling.beregningsflyt
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import no.nav.sokos.dare.poc.beregning.Beregning
 
+import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje

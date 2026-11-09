@@ -2,8 +2,8 @@ package no.nav.utbetaling.beregningsflyt
 
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.exists
 
+import kotlin.io.path.exists
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.readText
@@ -21,9 +21,12 @@ internal object Scenariolaster {
     fun last(navn: String): Scenario {
         val katalog = ROT.resolve(navn)
         val relaterteBeregningerPath = katalog.resolve("relaterteBeregninger.json")
-        val relaterteBeregninger = if (relaterteBeregningerPath.exists()) {
-            relaterteBeregningerPath.readText()
-        } else null
+        val relaterteBeregninger =
+            if (relaterteBeregningerPath.exists()) {
+                relaterteBeregningerPath.readText()
+            } else {
+                null
+            }
 
         return Scenario(
             navn = navn,
