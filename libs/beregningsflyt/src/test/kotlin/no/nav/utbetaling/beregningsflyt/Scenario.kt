@@ -6,6 +6,7 @@ data class Scenario(
     val oppdrag: String,
     val skatteKontekst: String,
     val trekk: String,
+    val relaterteBeregninger: String?,
     val resultat: String,
 ) {
     companion object {

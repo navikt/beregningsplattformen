@@ -1,7 +1,10 @@
 package no.nav.sokos.dare.poc.trekk
 
-import java.time.LocalDateTime
+import kotlinx.serialization.Serializable
 
+import no.nav.sokos.dare.poc.LocalDateTimeJson
+
+@Serializable
 data class Trekktype(
     val kodeTrekktype: String,
     val beskrivelse: String,
@@ -13,6 +16,6 @@ data class Trekktype(
     val kodeKlasseOppgj: String,
     val belopsgrense: Long,
     val bruker: String,
-    val tidspktEndret: LocalDateTime,
+    val tidspktEndret: LocalDateTimeJson,
     val trekkberegningstype: Trekkberegningstype,
 )

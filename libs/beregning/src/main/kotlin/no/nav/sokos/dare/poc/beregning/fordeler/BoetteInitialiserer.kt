@@ -7,7 +7,7 @@ import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
 import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
 
-internal fun beregnInitielleSaldoer(
+fun beregnInitielleSaldoer(
     trekk: List<Trekkvedtak>,
     relaterteBeregninger: List<Beregning>,
 ): Map<TrekkvedtakId, BigDecimal> =
@@ -18,7 +18,7 @@ internal fun beregnInitielleSaldoer(
             vedtak.id to (vedtak.belopSaldo!! - alreadyDeducted)
         }
 
-internal fun beregnInitielleSatser(
+fun beregnInitielleSatser(
     segmenter: List<BeregningsSegment>,
     relaterteBeregninger: List<Beregning>,
 ): Map<SatsBoetteId, BigDecimal> =

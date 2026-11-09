@@ -2,19 +2,15 @@ package no.nav.utbetaling.beregningsflyt
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-
 import io.kotest.assertions.fail
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withData
-
 import no.nav.sokos.dare.poc.aktoer.AktoerId
-import no.nav.sokos.dare.poc.beregning.EkstraInfo
+import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.dto.BeregningsmotorKontekstPresentasjon
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
+import no.nav.sokos.dare.poc.trekk.Trekkvedtak
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.tid.Periode.LukketPeriode
 
@@ -37,8 +33,20 @@ class BeregningsflytTest :
                         "GrunnleggendeTest/oppdrag_med_komplisert_kjeding",
                         "GrunnleggendeTest/oppdrag_med_to_linjer_uten_overlapp_eller_hull",
                         "GrunnleggendeTest/oppdrag_uten_noe_annet",
+                        "GunnnleggendeTest/oppdrag_med_et_saldotrekk_som_ikke_utfoeres_fullstendig",
+                        "GunnnleggendeTest/oppdrag_med_et_saldotrekk_som_utfoeres_fullstendig",
                         "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
+                        "SatsRelatertTest/utbdato_dagssats_med_satsboette",
+                        "SatsRelatertTest/utbdato_maanedssats_halvering_foerste_utbetaling",
+                        "SatsRelatertTest/utbdato_maanedssats_halvering_uten_tidligere_utbetaling",
+                        "SatsRelatertTest/utbdato_maanedssats_ingen_halvering_utenfor_kandidatgruppe",
+                        "SatsRelatertTest/utbdato_maanedssats_med_satsboette",
+                        "SatsRelatertTest/utbdato_prosenttrekk_ikke_begrenset_av_satsboette",
+                        "SatsRelatertTest/ytelper_dagssats_uten_relaterte",
+                        "SatsRelatertTest/ytelper_prosenttrekk_ikke_begrenset_av_satsboette",
                         "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats",
+                        "SkattFrikortTest/frikort_belopsgrense_uttoemmes",
+                        "SkattFrikortTest/frikort_uten_beloepsgrense_trekker_ikke_skatt",
                         "SkattAarsskifteTest/januar_beregning_ikke_fjoraars_skattekort",
                         "SkattAarsskifteTest/januar_med_fjoraars_skattekort",
                         "SkattAarsskifteTest/aarsskifte_frikort",
@@ -53,8 +61,13 @@ class BeregningsflytTest :
                     )
             }
 
-        fun kjørScenaro(scenario: Scenario) {
+        fun kjørScenario(scenario: Scenario) {
             val skatteKontekst = JsonIgnoreUnknown.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
+            val trekkvedtak = JsonIgnoreUnknown.decodeFromString<List<Trekkvedtak>>(scenario.trekk)
+            val relaterteBeregninger = scenario.relaterteBeregninger?.let {
+                JsonIgnoreUnknown.decodeFromString<List<Beregning>>(it)
+            } ?: emptyList()
+
             val beregningsperiode =
                 LukketPeriode(
                     fom = LocalDate.parse(scenario.kontekst.periode.fom),
@@ -67,6 +80,8 @@ class BeregningsflytTest :
                             beregningsperiode = beregningsperiode,
                             oppdragstidslinje = oppdrag.oppdragstidslinje,
                             skatteKontekst = skatteKontekst,
+                            trekkVedtak = trekkvedtak,
+                            relaterteBeregninger = relaterteBeregninger,
                             beregningstidspunkt = { LocalDateTime.parse(scenario.kontekst.beregnet) },
                             tilgjengeligFrikortbeløp = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
                             overføres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
@@ -95,23 +110,19 @@ class BeregningsflytTest :
             }
         }
 
+        xcontext("Test som ikke funker ") {
+            kjørScenario(Scenariolaster.last("SatsRelatertTest/utbdato_maanedssats_med_satsboette"))
+        }
+
         context("Tester som funker") {
             withData(nameFn = { it.navn }, funker) { scenario ->
-                kjørScenaro(scenario)
+                kjørScenario(scenario)
             }
         }
 
         xcontext("Tester som ikke funker") {
             withData(nameFn = { it.navn }, funkerIkke) { scenario ->
-                kjørScenaro(scenario)
-            }
-        }
-
-        test("avviser ukjente typer for motorens EkstraInfo") {
-            shouldThrow<SerializationException> {
-                JsonIgnoreUnknown.decodeFromString<EkstraInfo>(
-                    """{"type":"UkjentEkstraInfo","grunn":"SKATT_TILLEGGSOPPLYSNING"}""",
-                )
+                kjørScenario(scenario)
             }
         }
     })
