@@ -72,9 +72,10 @@ class Beregningsflyt {
                             is Personidentifikator -> AktoerId(gjelder.identifikator.toLong())
                         }
                     val utbetalesTil =
-                        when (val utbetalesTil = oppdragsopplysninger.utbetalesTil!!.opplysning) {
+                        when (val utbetalesTil = oppdragsopplysninger.utbetalesTil?.opplysning) {
                             is Organisasjonsnummer -> AktoerId(utbetalesTil.nummer.toLong())
                             is Personidentifikator -> AktoerId(utbetalesTil.identifikator.toLong())
+                            null -> gjelderId
                         }
                     val bruker = oppdragsopplysninger.sats.saksbehandlerId.id
                     OppdragDelperiode(

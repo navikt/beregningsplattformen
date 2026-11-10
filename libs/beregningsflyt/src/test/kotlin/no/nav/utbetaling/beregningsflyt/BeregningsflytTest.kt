@@ -82,8 +82,8 @@ class BeregningsflytTest :
                         "SkattTabellkortTest/tabellkort_med_skattereduserende_trekk",
                         "SkattTabellkortTest/tabellkort_uten_prosentsats_kun_tabelltrekk",
                         "SkattTabellkortTest/tabellkort_verdiberegnet_med_to_vedtakssatser",
-//                        "ReskontroKontoTest/svalbard",
-//                        "ReskontroKontoTest/kildeskatt",
+                        "ReskontroKontoTest/svalbard",
+                        "ReskontroKontoTest/kildeskatt",
                     )
             }
 
