@@ -59,6 +59,33 @@ plugins {
 - Feiler en kjøring, tar ikke neste push med seg endringene derfra. Kjør den feilede kjøringen på nytt.
 - Push-main og scheduled deler concurrency-gruppen `gradle-main-deploy`. GitHub lar bare én kjøring vente i køen. Kommer det en ny, avbrytes den som venter, og endringene i den blir ikke deployet.
 
+## Sikkerhetssjekk med zizmor
+
+[zizmor](https://docs.zizmor.sh/) analyserer GitHub Actions-workflows for sikkerhetsproblemer,
+for eksempel for brede tilganger, ukritisk videreføring av secrets og utrygg bruk av uttrykk i shell-kommandoer.
+Det skanner workflow-konfigurasjonen, ikke applikasjonskoden eller avhengighetene.
+
+Workflowen [zizmor-scan.yaml](zizmor-scan.yaml) kjører når `.yaml`- eller `.yml`-filer
+under `.github/workflows/` endres i en pull request eller ved push til `main`.
+Den kan også startes manuelt fra Actions-fanen. Hver kjøring skanner hele `.github/workflows/`,
+ikke bare filene som er endret.
+
+Jobben feiler ved funn som ikke er eksplisitt unntatt. Se jobbens logg for regel, fil og linjenummer.
+Skanningen blokkerer bare merge dersom den er satt som en påkrevd sjekk i repoets branch-beskyttelse.
+
+Installer zizmor på macOS med Homebrew:
+
+```shell
+brew install zizmor
+```
+
+Se [installasjonsveiledningen](https://docs.zizmor.sh/installation/) for andre plattformer.
+Kjør deretter analysen fra prosjektroten:
+
+```shell
+zizmor .github/workflows/
+```
+
 ## Kjøre lokalt
 
 ```sh
