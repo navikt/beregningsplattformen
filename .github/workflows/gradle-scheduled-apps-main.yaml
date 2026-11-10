@@ -57,7 +57,7 @@ jobs:
       id-token: write
       pull-requests: write
       deployments: write
-    uses: ./.github/workflows/gradle-deploy-app.yaml
+    uses: $/.github/workflows/gradle-deploy-app.yaml
     with:
       modul: ${{ matrix.app.modul }}
       katalog: ${{ matrix.app.katalog }}

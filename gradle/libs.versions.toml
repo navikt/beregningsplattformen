@@ -3,7 +3,7 @@
 kotlin = "2.4.21"
 
 # Ktor
-ktorVersion = "3.6.0"
+ktorVersion = "3.6.1"
 
 # Micrometer
 micrometerVersion = "1.17.2"

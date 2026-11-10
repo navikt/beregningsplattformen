@@ -4,7 +4,7 @@ plugins {
     `java-library`
 }
 
-val ktorVersion = "3.6.0"
+val ktorVersion = "3.6.1"
 
 dependencies {
     api("org.slf4j:slf4j-api:2.0.20")
