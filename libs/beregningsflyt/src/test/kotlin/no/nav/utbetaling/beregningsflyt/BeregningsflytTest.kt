@@ -74,6 +74,16 @@ class BeregningsflytTest :
                         "AvventTest/avvent_med_tabelltrekk",
                         "TidligereUtbetaltTest/enkel_tidligere_utbetalt",
                         "TidligereUtbetaltTest/tidligere_utbetalt_med_proratering",
+                        "SkattTabellkortTest/tabellkort_biarbeidsgiver_bruker_prosentsats",
+                        "SkattTabellkortTest/tabellkort_blanding_etterbetaling_og_tabelltrekk",
+                        "SkattTabellkortTest/tabellkort_etterbetaling_bruker_prosentsats",
+                        "SkattTabellkortTest/tabellkort_fordelt_grunnlag_med_deltrekk",
+                        "SkattTabellkortTest/tabellkort_hovedarbeidsgiver_beregner_tabelltrekk",
+                        "SkattTabellkortTest/tabellkort_med_skattereduserende_trekk",
+                        "SkattTabellkortTest/tabellkort_uten_prosentsats_kun_tabelltrekk",
+                        "SkattTabellkortTest/tabellkort_verdiberegnet_med_to_vedtakssatser",
+//                        "ReskontroKontoTest/svalbard",
+//                        "ReskontroKontoTest/kildeskatt",
                     )
             }
 
@@ -128,7 +138,7 @@ class BeregningsflytTest :
         }
 
         xcontext("Test som ikke funker ") {
-            kjørScenario(Scenariolaster.last("SatsRelatertTest/utbdato_maanedssats_med_satsboette"))
+            kjørScenario(Scenariolaster.last("GrunnleggendeTest/oppdrag_med_to_linjer_med_2_ulike_klassekoder"))
         }
 
         context("Tester som funker") {

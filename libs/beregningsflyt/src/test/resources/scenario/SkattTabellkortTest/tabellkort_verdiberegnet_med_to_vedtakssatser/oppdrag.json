@@ -63,16 +63,13 @@
         "kodeArbeidsgiver": null,
         "henvisning": "tabellkortVerdiToSatserRef1",
         "refFagsystemId": null,
-        "utbetalingsgrad150": null,
         "attestant180": [
           {
             "attestantId": "Test",
             "datoUgyldigFom": null
           }
         ],
-        "grad170": [],
-        "valuta160": [],
-        "tekst160": []
+        "grad170": []
       },
       {
         "kodeEndringLinje": "NY",
@@ -104,19 +101,14 @@
         "kodeArbeidsgiver": null,
         "henvisning": "tabellkortVerdiToSatserRef2",
         "refFagsystemId": null,
-
-        "utbetalingsgrad150": null,
         "attestant180": [
           {
             "attestantId": "Test",
             "datoUgyldigFom": null
           }
         ],
-        "grad170": [],
-        "valuta160": [],
-        "tekst160": []
+        "grad170": []
       }
-    ],
-    "tilknyttetMikrofrontend": null
+    ]
   }
 ]
