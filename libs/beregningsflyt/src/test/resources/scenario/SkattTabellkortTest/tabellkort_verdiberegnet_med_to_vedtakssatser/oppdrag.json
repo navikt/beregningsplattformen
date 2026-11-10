@@ -63,7 +63,6 @@
         "kodeArbeidsgiver": null,
         "henvisning": "tabellkortVerdiToSatserRef1",
         "refFagsystemId": null,
-        "datoRefFagsystemIdFom": null,
         "utbetalingsgrad150": null,
         "attestant180": [
           {
@@ -105,7 +104,7 @@
         "kodeArbeidsgiver": null,
         "henvisning": "tabellkortVerdiToSatserRef2",
         "refFagsystemId": null,
-        "datoRefFagsystemIdFom": null,
+
         "utbetalingsgrad150": null,
         "attestant180": [
           {

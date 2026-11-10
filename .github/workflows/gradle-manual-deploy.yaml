@@ -65,7 +65,7 @@ jobs:
       id-token: write
       pull-requests: write
       deployments: write
-    uses: ./.github/workflows/gradle-deploy-app.yaml
+    uses: $/.github/workflows/gradle-deploy-app.yaml
     with:
       modul: ${{ fromJson(needs.finn-app.outputs.app).modul }}
       katalog: ${{ fromJson(needs.finn-app.outputs.app).katalog }}
