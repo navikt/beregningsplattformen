@@ -56,7 +56,6 @@
     "kodeArbeidsgiver" : null,
     "henvisning" : "tabellkortEtterbetalingRef1",
     "refFagsystemId" : null,
-    "datoRefFagsystemIdFom" : null,
     "utbetalingsgrad150" : null,
     "attestant180" : [ {
       "attestantId" : "Test",
