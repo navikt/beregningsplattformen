@@ -1,8 +1,8 @@
-# Gradle-workflows
+# Workflows
 
 Du trenger ikke lage egne workflows når du lager nye libs/apper i Gradle. Det skal fanges automatisk opp av de etablerte workflowene.
 
-Workflowene tester, deployer og publiserer bare Gradle-modulene som er påvirket av en endring. Gradle-tasken `paavirkedeModuler` i `build-logic` finner modulene.
+Gradle-workflowene tester, deployer og publiserer bare Gradle-modulene som er påvirket av en endring. Gradle-tasken `paavirkedeModuler` i `build-logic` finner modulene.
 
 | Workflow                          | Trigger                | Gjør                                                                                                                                                                                                                                                     |
 |-----------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -11,8 +11,10 @@ Workflowene tester, deployer og publiserer bare Gradle-modulene som er påvirket
 | `gradle-scheduled-apps-main.yaml` | mandag kl. 05 UTC      | Redeployer alle apper (selv om de ikke er endret), slik at de får nye baseimages og avhengigheter                                                                                                                                                        |
 | `gradle-manual-deploy.yaml`       | manuelt, alle brancher | Deployer én app til ett miljø, prod bare fra main (input `app` og `miljo` blir brukt som input til `./gradlew appDeployConfig`). Det du skriver inn av app og miljø må ikke være helt ordrett, men være unikt nok til å identifisere én app i ett miljø. |
 | `gradle-deploy-app.yaml`          | `workflow_call`        | Bygger, lager image og deployer én app. Brukes av de tre over                                                                                                                                                                                            |
+| `dependabot-automerge.yaml` | hverdager kl. 08 UTC, manuelt | Automerger kvalifiserte Dependabot-PR-er for frontend-avhengigheter med labelen `javascript`. |
+| `zizmor-scan.yaml` | pull request og push til main ved workflow-endringer, manuelt | Skanner alle filer i `.github/workflows/` med zizmor for sikkerhetsproblemer. |
 
-De gjenbrukbare stegene (bygg, image og Nais-deploy) ligger i [navikt/beregningsplattform-gha-workflows](https://github.com/navikt/beregningsplattform-gha-workflows).
+De gjenbrukbare stegene (bygg, image, Nais-deploy og automerge) ligger i [navikt/beregningsplattform-gha-workflows](https://github.com/navikt/beregningsplattform-gha-workflows).
 
 ## Påvirkede moduler
 
@@ -58,6 +60,34 @@ plugins {
 
 - Feiler en kjøring, tar ikke neste push med seg endringene derfra. Kjør den feilede kjøringen på nytt.
 - Push-main og scheduled deler concurrency-gruppen `gradle-main-deploy`. GitHub lar bare én kjøring vente i køen. Kommer det en ny, avbrytes den som venter, og endringene i den blir ikke deployet.
+
+## Automatisk merge av frontend-avhengigheter
+
+[dependabot-automerge.yaml](dependabot-automerge.yaml) kjører mandag til fredag kl. 08 UTC
+og kan startes manuelt. Den bruker den delte automerge-workflowen med `APP_ID` og `PRIVATE_KEY`.
+
+Bare Dependabot-PR-er med labelen `javascript` vurderes.
+Dependabot setter denne labelen automatisk på npm-oppdateringer.
+I dette repoet gjelder det `apps/lab/frontend` og `apps/lab/frontend/server`.
+Ikke sett labelen på PR-er for backend eller GitHub Actions.
+Eksisterende PR-er uten labelen blir ikke vurdert.
+
+Det eneste eksplisitte inputet til den delte workflowen er frontend-filteret:
+
+```yaml
+with:
+  required-labels: javascript
+```
+
+Resten bruker standardverdiene i den pinnede versjonen av den delte workflowen:
+PR-ene må være minst to dager gamle, og alle avhengighetene i PR-en må være patch- eller minor-oppdateringer.
+Kvalifiserte PR-er godkjennes automatisk og merges med merge-commit
+når sjekkene i automerge-actionen og repoets branch-regler tillater det.
+Major-oppdateringer må håndteres manuelt.
+Påkrevde frontend-bygg og tester må konfigureres som CI-sjekker; automerge-workflowen kjører dem ikke selv.
+
+GitHub App-en må ha tilgang til repoet og nødvendige rettigheter til å godkjenne og merge PR-er.
+Den delte workflowen har også sperreperioder for helger, 1. mai, 17. mai og 24. desember til 3. januar.
 
 ## Sikkerhetssjekk med zizmor
 
