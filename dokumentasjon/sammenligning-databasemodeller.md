@@ -3,8 +3,8 @@
 ## Antakelser
 
 - Beregninger skjer på bakgrunn av siste versjon av et oppdrag. Vi gjør millioner av beregninger i uka, og det å hente ut siste versjon av et oppdrag må gå fort.
-- Det er behov for å hente tidligere versjoner av et oppdrag for debugging og analyse av beregninger. Det er et lite volum av slike oppslag og følgelig akseptabelt at det tar tid å produsere.
-  datagrunnlaget. Vi tror ikke vi har behov for å vise gamle versjoner av oppdrag i andre kontekster enn å se på en gammel beregning (?).
+- Det er behov for å hente tidligere versjoner av et oppdrag for debugging og analyse av beregninger. Det er et lite volum av slike oppslag og følgelig akseptabelt at det tar tid å produsere 
+  datagrunnlaget. Vi tror ikke vi har behov for å vise gamle versjoner av oppdrag i andre kontekster enn å se på en gammel beregning.
 - Vi trenger å tilby lenker tilbake til vedtakssystemet.
 - Vi trenger å tilby informasjon om hvilke beregninger som er gjort på bakgrunn av et oppdrag.
 - Vi trenger ikke å spore hvem som har gjort endringer som medfører at vi mottar nye oppdrag. Det er vedtakssystemets ansvar.
@@ -40,9 +40,14 @@ Andre momenter:
 - Lagre bevis for mottak for debuggingformål. Lagres i råformatet, inklusive informasjon om hvorfor mottaket ble godtatt eller avvist, og om mulighet for re-sending.
 - Tilby 10+1 års lagring av oppdrag. Vi har ikke lov til å tilby lagring av oppdrag ut over dette ihht GDPR? Innenfor denne perioden bør vi tilby å kunne vise alle versjoner av oppdrag vi har mottatt.
 - Tilby 1 års tilgang til bevistabeller for debuggingsformål i AAP. Vi bruker bevistabellene som tekniske logger.
+- Tilby 1 års tilgang til bevistabeller for debuggingsformål i AAP. Vi bruker bevistabellene som tekniske logger.
 - Vi tror ikke vi trenger å migrere bevis for mottak av gamle oppdrag fra oppdragz, slik at vi kan migrere bare nå-tilstand for oppdrag fra oppdrag z. Det betyr at vi mister muligheten
   til å vise frem gamle versjoner av oppdrag som er fra oppdragz-tiden. Dette er foreslått som en praktisk tilnærming til et tett prosjektløp.
 - Forutsetter at beregningsdatabasen har tilstrekkelig informasjon for å utføre beregninger og korrigerte beregninger.
+- Vi bruker ikke nøkler eid av andre systemer til å bygge relasjoner i våre databaser, slik at sammenhengen i vår databasemodell ikke er avhengig av implementasjonen av f.eks. vedtakssystemer.
+- Et databasedesign hvor vi ivaretar referensiell integritet.
+- Vi aksepterer ikke nedetid ved oppgradereing av datamodell. Endringer bør være bakoverkompatible slik at forrige versjon av applikasjonen kan
+  fortsette å kjøre under oppgraderingen (ref Sadalage/Ambler: databaserefactoring.com).
 
 ## Hvilke kriterier er viktige ved valg av modell?
 
@@ -51,12 +56,6 @@ Andre momenter:
 - Mulighet for endring og forbedring av persistensmodell for oppdrag? Erfaringer fra verifikasjon i test/prod kan resultere i at eksisterende modell må videreutvikles.
 - YtelseKrav til rekonstruksjon av tidligere mottatt oppdrag? Dersom behovet for å analyserer eldre oppdrag og tilknyttede beregninger er forholdsvis lavt, kan kravet til responstid for presentasjon
   være lavt.
-- Vi skal ikke ha nedetid dersom vi oppgraderer mottak av oppdrag til å arbeide med en forbedret datamodell. Det er ok å kreve bakoverkompatible endringer slik at forrige versjon av applikasjonen kan
-  fortsette å kjøre under oppgradering, ref Sadalage/Ambler: Database refactoring eller databaserefactoring.com
-- Databasen til oppdrag z bruker ikke fremmednøkler. Vi ønsker et databasedesign der vi bedre ivaretar referensiell integritet.
-- Vi skal ikke bruke nøkler eid av andre systemer til å bygge relasjoner i våre databaser, slik at sammenhengen i vår databasemodell ikke er avhengig av implementasjonen av f.eks. vedtakssystemer. Vi
-  er nødt til å lagre eksterne nøkler for oppslag.
-- Teamet ser to veier videre: Vi kan lagre oppdraget som et dokument i databasen (jsonb-format), eller vi kan lage et relasjonelt design.
 
 ## Uavklarte behov
 
@@ -69,7 +68,8 @@ Andre momenter:
 
 - Alle modellene benytter en egen bevis-tabell som holder informasjon om rådataene som ble mottatt og om oppdraget er godkjent eller avvist (med begrunnelse). Det er viktig at dette er formatet til
   systemet som sender.
-- Modell 1 passer som en relasjonell lagring av gjeldende tilstand.
+- Modell 0 passer som en relasjonell lagring av gjeldende tilstand ved api-nært mottak.
+- Modell 1 passer som en relasjonell lagring av gjeldende tilstand ved tidslinje-mottak.
 - Modell 2 passer bedre hvis løsningen ofte skal søke i enkeltlinjer og perioder direkte med SQL.
 - Modell 3 passer når koden håndterer constraints og mottaksregler for oppdraget og dokumentstørrelsene er håndterbare.
 - Modell 4 skiller innsendingshistorikk, gjeldende tilstand per kjede, periodiske sjekkpunkter og søkeprojeksjoner. Det reduserer behovet for å lagre en full kopi av alle kjeder etter hver innsending.
