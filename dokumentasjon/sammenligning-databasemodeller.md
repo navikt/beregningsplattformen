@@ -2,7 +2,7 @@
 
 ## Antakelser
 - Beregninger skjer på bakgrunn av siste versjon av et oppdrag. Vi gjør millioner av beregninger i uka, og det å hente ut siste versjon av et oppdrag må gå fort.
-- Det er behov for å hente tidligere versjoner av et oppdrag for debugging og analyse av beregninger. Det er et lite volum av slike oppslag og følgelig akseptabelt at det tar tid  å produsere datagrunnlaget.
+- Det er behov for å hente tidligere versjoner av et oppdrag for debugging og analyse av beregninger. Det er et lite volum av slike oppslag og følgelig akseptabelt at det tar tid  å produsere datagrunnlaget. Vi tror ikke vi har behov for å vise gamle versjoner av oppdrag i andre kontekster enn å se på en gammel beregning (?).
 - Vi trenger å tilby lenker tilbake til vedtakssystemet
 - Vi trenger å tilby informasjon om hvilke beregninger som er gjort på bakgrunn av et oppdrag.
 - Vi trenger ikke å spore hvem som har gjort endringer som medfører at vi mottar nye oppdrag. Det er vedtakssystemets ansvar.
@@ -34,7 +34,8 @@ Andre momenter:
 - Lagre bevis for mottak for debuggingformål. Lagres i råformatet, inklusive informasjon om hvorfor mottaket ble godtatt eller avvist, og om mulighet for re-sending.
 - Tilby 10+1 års lagring av oppdrag. Vi har ikke lov til å tilby lagring av oppdrag ut over dette ihht GDPR? Innenfor denne perioden bør vi tilby å kunne vise alle versjoner av oppdrag vi har mottatt.
 - Tilby 1 års tilgang til bevistabeller for debuggingsformål i AAP. Vi bruker bevistabellene som tekniske logger.
-- Ingen krav til presentasjon av historikk for oppdrag som har blitt mottatt av oppdragz? Kun versjoner av oppdrag som har blitt mottatt av beregningsmotoren tilbyr fremvisning av disse versjonene.
+- Vi tror ikke vi trenger å migrere bevis for mottak av gamle oppdrag fra oppdragz, slik at vi kan migrere bare nå-tilstand for oppdrag fra oppdrag z. Det betyr  at vi mister muligheten
+ til å vise frem gamle versjoner av oppdrag som er fra oppdragz-tiden. Dette er foreslått som en praktisk tilnærming til et tett prosjektløp.
 - Forutsetter at beregningsdatabasen har tilstrekkelig informasjon for å utføre beregninger og korrigerte beregninger.
 
 ## Hvilke kriterier er viktige ved valg av modell?
@@ -43,8 +44,9 @@ Andre momenter:
 - Frikobling fra dagens mottaks-api? Det er ønskelig med et enklere og mer restriktivt API som ikke har avhengigheter til dagens mottaks-api.
 - Mulighet for endring og forbedring av persistensmodell for oppdrag? Erfaringer fra verifikasjon i test/prod kan resultere i at eksisterende modell må videreutvikles.
 - YtelseKrav til rekonstruksjon av tidligere mottatt oppdrag? Dersom behovet for å analyserer eldre oppdrag og tilknyttede beregninger er forholdsvis lavt, kan kravet til responstid for presentasjon være lavt.
-- Vi ønsker ikke å ha nedetid dersom vi oppgraderer mottak av oppdrag til å arbeide med en forbedret datamodell. Det er ok å kreve bakoverkompatible endringer slik at forrige versjon av applikasjonen kan fortsette å kjøre under oppgradering, ref Sadalage/Ambler: Database refactoring eller databaserefactoring.com
+- Vi skal ikke ha nedetid dersom vi oppgraderer mottak av oppdrag til å arbeide med en forbedret datamodell. Det er ok å kreve bakoverkompatible endringer slik at forrige versjon av applikasjonen kan fortsette å kjøre under oppgradering, ref Sadalage/Ambler: Database refactoring eller databaserefactoring.com
 - Databasen til oppdrag z bruker ikke fremmednøkler. Vi ønsker et databasedesign der vi bedre ivaretar referensiell integritet.
+- Vi skal ikke bruke nøkler eid av andre systemer til å bygge relasjoner i våre databaser, slik at sammenhengen i vår databasemodell ikke er avhengig av implementasjonen av f.eks. vedtakssystemer. Vi er nødt til å lagre eksterne nøkler for oppslag.
 - Teamet ser to veier videre: Vi kan lagre oppdraget som et dokument i databasen (jsonb-format), eller vi kan lage et relasjonelt design.
 
 ## Kort oppsumering av modellene
@@ -98,22 +100,30 @@ og utviklingstid.
 ```mermaid
 erDiagram
     oppdrag ||--o{ kjede : "har"
+    oppdrag |o--o{ bevis : "har"
     kjede ||--o{ kjede_delytelse : "har medlemskap"
     kjede ||--o{ kjede_periode : "har perioder"
     kjede_delytelse ||--o{ kjede_periode : "delytelse_id"
     kjede_delytelse |o--o{ kjede_periode : "ref_delytelse_id"
 
     oppdrag {
-        text fagomrade PK
-        text fagsystem_id PK
+        bigint id PK
+        text fagomrade 
+        text fagsystem_id 
         text stonad_id
         enum utbetalingsfrekvens
         text bilagstype
         date forfall
         text saksbehandler_id
     }
+    bevis {
+        bigint id FK
+        text mottatt
+        date lagret
+        text status
+    }
     kjede {
-        uuid id PK
+        bigint id PK
         text fagomrade FK
         text fagsystem_id FK
     }
@@ -121,56 +131,40 @@ erDiagram
         text fagomrade PK, FK
         text fagsystem_id PK, FK
         text delytelse_id PK
-        uuid kjede_id FK
+        bigint kjede_id FK
     }
     kjede_periode {
-        uuid kjede_id PK, FK
+        bigint kjede_id PK, FK
         date fom PK
         date tom
         text delytelse_id FK
         text ref_delytelse_id FK
         numeric sats
         text sats_type
-        text sats_saksbehandler_id
         numeric vedtakssats
         text vedtakssats_type
-        text vedtakssats_saksbehandler_id
         enum status
         text status_saksbehandler_id
         boolean bruk_kjoreplan
-        text bruk_kjoreplan_saksbehandler_id
         text ytelse_klassekode
-        text ytelse_klassekode_saksbehandler_id
         text gjelder_id
-        text gjelder_id_saksbehandler_id
         enum utbetales_til_type
         text utbetales_til_id
-        text utbetales_til_saksbehandler_id
         enum skyldner_type
         text skyldner_id
-        text skyldner_saksbehandler_id
         date refusjonsinfo_dato_fom
         date refusjonsinfo_maks_dato
         enum refusjonsinfo_refunderes_type
         text refusjonsinfo_refunderes_id
-        text refusjonsinfo_saksbehandler_id
         text type_soknad
-        text type_soknad_saksbehandler_id
         text henvisning
-        text henvisning_saksbehandler_id
         text kidnummer
-        text kidnummer_saksbehandler_id
         text vedtak_id
-        text vedtak_id_saksbehandler_id
         text bostedsenhet
-        text bostedsenhet_saksbehandler_id
         text behandlende_enhet
-        text behandlende_enhet_saksbehandler_id
         enum avventingsaarsak_type
         date avventingsaarsak_til
-        text avventingsaarsak_saksbehandler_id
         timestamptz ompostering_registrert
-        text ompostering_saksbehandler_id
     }
 ```
 
@@ -244,17 +238,17 @@ erDiagram
     }
     tidslinje_kjede {
         bigint versjon_id PK, FK
-        uuid kjede_id PK
+        bigint kjede_id PK
     }
     kjede_delytelse {
         bigint versjon_id PK, FK
         text delytelse_id PK
-        uuid kjede_id FK
+        bigint kjede_id FK
     }
     tidslinje_periode {
         bigint id PK
         bigint versjon_id FK
-        uuid kjede_id FK
+        bigint kjede_id FK
         daterange gyldighet
         integer dataformat_versjon
         jsonb opplysninger
@@ -392,7 +386,7 @@ erDiagram
     }
     kjede_tilstand {
         bigint oppdrag_id PK, FK
-        uuid kjede_id PK
+        bigint kjede_id PK
         bigint endret_ved_sekvens FK
         integer dataformat_versjon
         jsonb tidslinjedata
@@ -400,7 +394,7 @@ erDiagram
     kjede_delytelse {
         bigint oppdrag_id PK, FK
         text delytelse_id PK
-        uuid kjede_id FK
+        bigint kjede_id FK
     }
     oppdrag_sjekkpunkt {
         bigint oppdrag_id PK, FK
@@ -410,7 +404,7 @@ erDiagram
     }
     periode_soek {
         bigint oppdrag_id PK, FK
-        uuid kjede_id PK, FK
+        bigint kjede_id PK, FK
         date fom PK
         date tom
         daterange gyldighet
@@ -426,7 +420,7 @@ erDiagram
         bigint endring_id PK
         bigint sekvens FK
         integer endringsnummer
-        uuid kjede_id
+        bigint kjede_id
         text delytelse_id
         date fom
         date tom
