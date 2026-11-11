@@ -23,8 +23,8 @@
 De 4 hovedoppgavene er:
 1. Motta nytt oppdrag og persisterer det.
 2. Motta endret oppdrag og persisterer det nye gyldige oppdraget.
-3. Motta tidligere mottatt oppdrag ved tolkningsfeil for å kunne persistere oppdraget på nytt.
-4. Simulere oppdrag.
+3. Opsjonelt: Replay av tidligere mottatt og avvist oppdrag ved tolkningsfeil for å kunne persistere oppdraget på nytt.
+4. ~~Simulere oppdrag.~~ Simulering av oppdrag produserer en beregning. Derfor tror vi simulerings-apiet går rett på beregnings-modulen.
 
 Andre momenter:
 - Motta, tolke og persistere oppdrag.
@@ -34,7 +34,7 @@ Andre momenter:
 - Lagre bevis for mottak for debuggingformål. Lagres i råformatet, inklusive informasjon om hvorfor mottaket ble godtatt eller avvist, og om mulighet for re-sending.
 - Tilby 10+1 års lagring av oppdrag. Vi har ikke lov til å tilby lagring av oppdrag ut over dette ihht GDPR? Innenfor denne perioden bør vi tilby å kunne vise alle versjoner av oppdrag vi har mottatt.
 - Tilby 1 års tilgang til bevistabeller for debuggingsformål i AAP. Vi bruker bevistabellene som tekniske logger.
-- Ingen krav til presentasjon av oppdrag som har blitt mottatt av oppdragz? Kun versjoner av oppdrag som har blitt mottatt av beregningsmotoren tilbyr fremvisning av disse versjonene.
+- Ingen krav til presentasjon av historikk for oppdrag som har blitt mottatt av oppdragz? Kun versjoner av oppdrag som har blitt mottatt av beregningsmotoren tilbyr fremvisning av disse versjonene.
 - Forutsetter at beregningsdatabasen har tilstrekkelig informasjon for å utføre beregninger og korrigerte beregninger.
 
 ## Hvilke kriterier er viktige ved valg av modell?
@@ -43,14 +43,18 @@ Andre momenter:
 - Frikobling fra dagens mottaks-api? Det er ønskelig med et enklere og mer restriktivt API som ikke har avhengigheter til dagens mottaks-api.
 - Mulighet for endring og forbedring av persistensmodell for oppdrag? Erfaringer fra verifikasjon i test/prod kan resultere i at eksisterende modell må videreutvikles.
 - YtelseKrav til rekonstruksjon av tidligere mottatt oppdrag? Dersom behovet for å analyserer eldre oppdrag og tilknyttede beregninger er forholdsvis lavt, kan kravet til responstid for presentasjon være lavt.
+- Vi ønsker ikke å ha nedetid dersom vi oppgraderer mottak av oppdrag til å arbeide med en forbedret datamodell. Det er ok å kreve bakoverkompatible endringer slik at forrige versjon av applikasjonen kan fortsette å kjøre under oppgradering, ref Sadalage/Ambler: Database refactoring eller databaserefactoring.com
+- Databasen til oppdrag z bruker ikke fremmednøkler. Vi ønsker et databasedesign der vi bedre ivaretar referensiell integritet.
+- Teamet ser to veier videre: Vi kan lagre oppdraget som et dokument i databasen (jsonb-format), eller vi kan lage et relasjonelt design.
 
 ## Kort oppsumering av modellene
 
-- Alle modellene benytter en egen bevis-tabell som holder informasjon om rådataene som ble mottatt og om oppdraget er godkjent eller avvist (med begrunnelse).
+- Alle modellene benytter en egen bevis-tabell som holder informasjon om rådataene som ble mottatt og om oppdraget er godkjent eller avvist (med begrunnelse). Det er viktig at dette er formatet til systemet som sender.
 - Modell 1 passer som en relasjonell lagring av gjeldende tilstand.
 - Modell 2 passer bedre hvis løsningen ofte skal søke i enkeltlinjer og perioder direkte med SQL.
 - Modell 3 passer når koden håndterer constraints og mottaksregler for oppdraget og dokumentstørrelsene er håndterbare.
 - Modell 4 skiller innsendingshistorikk, gjeldende tilstand per kjede, periodiske sjekkpunkter og søkeprojeksjoner. Det reduserer behovet for å lagre en full kopi av alle kjeder etter hver innsending.
+- Vi ønsker ikke å bruke identifikatorer laget av eksterne systemer når vi lagrer oppdrag, eller peker på oppdrag fra andre beregningsmotor-objekter. Vi ønsker å kunne bytte ut vedtakssystemer uten at dette berører vår datamodell dypt.
 
 ## Hva modellene skal representere
 
@@ -59,8 +63,9 @@ Kotlin-koden grupperer linjer i kjeder og avgjør hvilke opplysninger som gjelde
 
 Følgende oppdrag-egenskaper skal bevares ved lagring:
 
-- Et oppdrag identifiseres av kombinasjonen `fagområde` og `fagsystemId`.
-- Kjeder har et sett med delytelse-ID-er, også ID-er som ikke lenger er synlige i periodene.
+- Et oppdrag identifiseres i forhold til fagsystemet av kombinasjonen `fagområde` og `fagsystemId`.
+- Vi identifiserer oppdrag med en bigint eller en versjon 7 uuid. Uuid tar dobbelt så stor plass som en bigint, og vi må følge med på lagrings- og minnebehov dersom vi velger å øke størrelsen på identifikatorene. Databasen til oppdrag z tar 3 TB med lagring.
+- Kjeder har et sett med delytelse-ID-er, også ID-er som ikke lenger er synlige i periodene. Disse ID-ene eies av fagsystemet.
 - En periode har en startdato og eventuelt en sluttdato. Sluttdatoen er inklusiv.
 - Opphørte perioder har status og opplysninger. Opphør betyr ikke at perioden skal slettes.
 
@@ -83,6 +88,12 @@ Følgende oppdrag-egenskaper skal bevares ved lagring:
 ## Modell 1: relasjonell lagring av gjeldende tilstand
 
 SQL-filen bruker PostgreSQL-schemaet `oppdrag`. Diagrammet viser et utvalg av kolonnene. `PK` markerer primærnøkkel og `FK` fremmednøkkel. Når flere kolonner er merket `PK` i samme tabell, utgjør de én sammensatt primærnøkkel.
+
+Denne modellen lagrer bare siste versjon av et oppdrag, ferdig organisert for å være enkelt å bruke for å lage beregninger.
+
+Fremvisning av eldre versjoner av et oppdrag gjøres ved å hente frem data fra bevistabellen, frem til en gitt dato. Dette brukes til å lage et ikke-persistert oppdrag, som så sendes til frontend for fremvisning. Vi tror dette
+er en så lite brukt funksjon at vi ikke har tenkt videre på om ytelsen kommer til å være rask nok, men det er helt klart mulig å cache tidligere versjoner av oppdrag dersom det er regningssvarende mtp lagringsplass
+og utviklingstid.
 
 ```mermaid
 erDiagram
@@ -165,6 +176,14 @@ erDiagram
 
 Begge ID-referansene fra `kjede_periode` er sammensatte fremmednøkler sammen med `kjede_id`. De sikrer at ID-ene tilhører samme kjede som perioden. `ref_delytelse_id` er valgfri. En GiST-eksklusjonsregel hindrer overlappende perioder i samme kjede.
 
+### Livssyklus på databasedesign
+
+Databasen vedlikeholdes med flyway-skript, og databasen inneholder oppdrag i versjonen som støttes av siste kjørende versjon av beregningsplattformen. Endringer av databasen må være bakoverkompatible 
+med forrige versjon av databasen, ref Ambler/Sadalage: Database Refactoring. Vi garanterer ikke at databaseskjema versjon N-2 fungerer.
+
+Vi foreslår at vi ikke tilbyr flyway-skript for å gå tilbake i database-versjoner som en praktisk tilpasning til en kort prosjektperiode. Vi tar mål av oss til å teste alle databasemigreringer
+automatisk, og foreslår at rest-risikoen spises av prosjektet. Det er også vanskelig å teste tilbakerullings-skript godt nok, så verdien ved å tilby slike skript er ofte mindre enn man håper.
+
 ### Fordeler
 
 - Databasen håndhever mange regler for datakvalitet.
@@ -244,6 +263,9 @@ erDiagram
 
 Resultatet peker til innsendingen med en sammensatt fremmednøkkel på `(oppdrag_id, innsending_id)`. Den sikrer at resultatet tilhører riktig oppdrag. Tilsvarende bruker medlemskap og perioder `(versjon_id, kjede_id)` for å peke til riktig kjedeversjon.
 
+### Livssyklus
+
+Databasen lagrer forskjellige versjoner av oppdrags-objektet, identifisert med dataformat_versjons-feltet. Vi kan ikke slette en utdatert dataformat-versjon før den ikke eksisterer i databasen lenger. Vi må ta frem regler for hvordan dette skal skje.
 
 ### Fordeler
 
@@ -299,6 +321,10 @@ erDiagram
 Også her sikrer den sammensatte fremmednøkkelen at resultat og innsending tilhører samme oppdrag. 
 
 Databasen krever at `oppdragsdata` inneholder arrayet `oppdragsLinje150`. Den krever også at `tidslinjedata` inneholder objektet `oppdragsverdier` og arrayet `kjeder`. Den kontrollerer ikke innholdet i arrayene.
+
+### Livssyklus
+
+Databasen lagrer forskjellige versjoner av oppdrags-objektet, identifisert med dataformat_versjons-feltet. Vi kan ikke slette en utdatert dataformat-versjon før den ikke eksisterer i databasen lenger. Vi må ta frem regler for hvordan dette skal skje i praksis.
 
 ### Fordeler
 
@@ -421,6 +447,9 @@ erDiagram
 
 Kotlin-koden kan endre status på linje- og oppdragsnivå og unnta bestemte delytelse-ID-er. Originalinstruksjonen, med omfang og unntak, bevares i innsendingen. `status_endring` beskriver det faktiske resultatet for hver berørt delytelse og periode etter at disse reglene er anvendt.
 
+### Livssyklus
+
+Databasen lagrer forskjellige versjoner av oppdrags-objektet, identifisert med dataformat_versjons-feltet. Vi kan ikke slette en utdatert dataformat-versjon før den ikke eksisterer i databasen lenger. Vi må ta frem regler for hvordan dette skal skje.
 
 ### Fordeler
 
