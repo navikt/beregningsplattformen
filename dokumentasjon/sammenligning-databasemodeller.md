@@ -3,12 +3,12 @@
 ## Antakelser
 
 - Beregninger skjer på bakgrunn av siste versjon av et oppdrag. Vi gjør millioner av beregninger i uka, og det å hente ut siste versjon av et oppdrag må gå fort.
-- Det er behov for å hente tidligere versjoner av et oppdrag for debugging og analyse av beregninger. Det er et lite volum av slike oppslag og følgelig akseptabelt at det tar tid å produsere
+- Det er behov for å hente tidligere versjoner av et oppdrag for debugging og analyse av beregninger. Det er et lite volum av slike oppslag og følgelig akseptabelt at det tar tid å produsere.
   datagrunnlaget. Vi tror ikke vi har behov for å vise gamle versjoner av oppdrag i andre kontekster enn å se på en gammel beregning (?).
-- Vi trenger å tilby lenker tilbake til vedtakssystemet
+- Vi trenger å tilby lenker tilbake til vedtakssystemet.
 - Vi trenger å tilby informasjon om hvilke beregninger som er gjort på bakgrunn av et oppdrag.
 - Vi trenger ikke å spore hvem som har gjort endringer som medfører at vi mottar nye oppdrag. Det er vedtakssystemets ansvar.
-- Oppslag på oppdrag skjer på bakgrunn av nøkkel fra vedtakssystem eller intern id i økonomiseksjonen.
+- Oppslag på oppdrag skjer på bakgrunn av nøkkel fra vedtakssystem eller intern db-generert id.
 - Vi bør tilby informasjon om at et oppdrag venter på å bli beregnet dersom det er tilfelle.
 
 ## Moduler som grenser til mottak oppdrag
@@ -19,8 +19,7 @@
 
 ### Downstream
 
-- beslutningsmodul for beregninger. Denne modulen tar i mot informasjon om innkommende oppdrag, trekkvedtak eller skattekort og beslutter om og når en beregning skal skje (krever persistens). Denne
-  komponenten holder oversikt over status i "venteregisteret" for beregninger og gir beregningskomponentene tilstrekkelig informasjon for beregning eller reberegning/korrigert beregning
+- beslutningsmodul for beregninger. Denne modulen tar i mot informasjon om innkommende oppdrag, trekkvedtak eller skattekort og beslutter om og når en beregning skal skje (krever persistens). Denne komponenten holder oversikt over status i "venteregisteret" for beregninger og gir beregningskomponentene tilstrekkelig informasjon for beregning eller reberegning/korrigert beregning
 
 ## Ansvaret til mottak oppdrag
 
@@ -59,6 +58,12 @@ Andre momenter:
   er nødt til å lagre eksterne nøkler for oppslag.
 - Teamet ser to veier videre: Vi kan lagre oppdraget som et dokument i databasen (jsonb-format), eller vi kan lage et relasjonelt design.
 
+## Uavklarte behov
+
+- Avstemming av oppdrag mot fagsystemer.
+- Krav til feilhåndtering, dvs. korrigering eller kompensasjon ved feil i persistering av oppdraget og/eller beregningen. Vi må kunne resende eller på annet vis kompensere for oppdrag som har blitt tolket feil og/eller persistert feil. Denne feilen kan også ha blitt videreført til beregningskomponenten hvor det også vil være behov for korrigeringer.
+- Krav til grensesnittet mot UR Z.
+
 ## Kort oppsumering av modellene
 
 - Alle modellene benytter en egen bevis-tabell som holder informasjon om rådataene som ble mottatt og om oppdraget er godkjent eller avvist (med begrunnelse). Det er viktig at dette er formatet til
@@ -67,8 +72,6 @@ Andre momenter:
 - Modell 2 passer bedre hvis løsningen ofte skal søke i enkeltlinjer og perioder direkte med SQL.
 - Modell 3 passer når koden håndterer constraints og mottaksregler for oppdraget og dokumentstørrelsene er håndterbare.
 - Modell 4 skiller innsendingshistorikk, gjeldende tilstand per kjede, periodiske sjekkpunkter og søkeprojeksjoner. Det reduserer behovet for å lagre en full kopi av alle kjeder etter hver innsending.
-- Vi ønsker ikke å bruke identifikatorer laget av eksterne systemer når vi lagrer oppdrag, eller peker på oppdrag fra andre beregningsmotor-objekter. Vi ønsker å kunne bytte ut vedtakssystemer uten at
-  dette berører vår datamodell dypt.
 
 ## Hva modellene skal representere
 
@@ -81,7 +84,7 @@ Følgende oppdrag-egenskaper skal bevares ved lagring:
 
 - Et oppdrag identifiseres i forhold til fagsystemet av kombinasjonen `fagområde` og `fagsystemId`.
 - Vi identifiserer oppdrag med en bigint eller en versjon 7 uuid. Uuid tar dobbelt så stor plass som en bigint, og vi må følge med på lagrings- og minnebehov dersom vi velger å øke størrelsen på
-  identifikatorene. Databasen til oppdrag z tar 3 TB med lagring.
+  identifikatorene.
 - Kjeder har et sett med delytelse-ID-er, også ID-er som ikke lenger er synlige i periodene. Disse ID-ene eies av fagsystemet.
 - En periode har en startdato og eventuelt en sluttdato. Sluttdatoen er inklusiv.
 - Opphørte perioder har status og opplysninger. Opphør betyr ikke at perioden skal slettes.
