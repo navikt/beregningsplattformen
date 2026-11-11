@@ -28,7 +28,7 @@ De 4 hovedoppgavene er:
 1. Motta nytt oppdrag og persisterer det.
 2. Motta endret oppdrag og persisterer det nye gyldige oppdraget.
 3. Opsjonelt: Replay av tidligere mottatt og avvist oppdrag ved tolkningsfeil for å kunne persistere oppdraget på nytt.
-4. Simulering av oppdrag produserer en beregning. Derfor tror vi simulerings-apiet går rett på beregnings-modulen.
+4. Simulering av oppdrag produserer en beregning.
 
 Andre momenter:
 
@@ -61,7 +61,8 @@ Andre momenter:
 ## Uavklarte behov
 
 - Avstemming av oppdrag mot fagsystemer.
-- Krav til feilhåndtering, dvs. korrigering eller kompensasjon ved feil i persistering av oppdraget og/eller beregningen. Vi må kunne resende eller på annet vis kompensere for oppdrag som har blitt tolket feil og/eller persistert feil. Denne feilen kan også ha blitt videreført til beregningskomponenten hvor det også vil være behov for korrigeringer.
+- Krav til feilhåndtering, dvs. korrigering eller kompensasjon ved feil i persistering av oppdraget og/eller beregningen. Vi må kunne resende eller på annet vis kompensere for oppdrag som har blitt tolket feil og/eller persistert feil. 
+  Denne feilen kan også ha blitt videreført til beregningskomponenten hvor det også vil være behov for korrigeringer.
 - Krav til grensesnittet mot UR Z.
 
 ## Kort oppsumering av modellene
@@ -104,7 +105,7 @@ Følgende oppdrag-egenskaper skal bevares ved lagring:
 | Søk i historiske statusendringer | Ingen historikk           | Ingen historikk                | Kan utledes fra versjonerte perioder           | Krever JSON-sammenligning eller gjennomspilling | Direkte søk i `status_endring`                                                              |
 | Tilpasning ved modellendring     | SQL-migrering             | Ofte SQL-migrering             | Avhenger av hvilket felt som endres            | Ofte ny JSON-formatversjon                      | Ny JSON-formatversjon og eventuelt SQL-migrering av søkeprojeksjoner                        |
 
-## Modell 0: relasjonel lagring av gjeldende tilstand
+## Modell 0: relasjonel lagring av gjeldende tilstand (api-nær)
 
 Diagrammet viser et utvalg av kolonnene. `PK` markerer primærnøkkel og `FK` fremmednøkkel. Når flere kolonner er merket `PK` i samme tabell, utgjør de én sammensatt primærnøkkel.
 
@@ -202,10 +203,7 @@ erDiagram
 Denne modellen lagrer bare siste versjon av et oppdrag, ferdig organisert for å være enkelt å bruke for å lage beregninger.
 
 Fremvisning av eldre versjoner av et oppdrag gjøres ved å hente frem data fra bevistabellen, frem til en gitt dato. Dette brukes til å lage et ikke-persistert oppdrag, som så sendes til frontend for
-fremvisning. Vi tror dette
-er en så lite brukt funksjon at vi ikke har tenkt videre på om ytelsen kommer til å være rask nok, men det er helt klart mulig å cache tidligere versjoner av oppdrag dersom det er regningssvarende mtp
-lagringsplass
-og utviklingstid.
+fremvisning. Antakelse: lite brukt funksjonalitet som kan forsvare suboptimal ytelse. 
 
 ```mermaid
 erDiagram
