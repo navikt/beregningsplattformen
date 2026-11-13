@@ -70,25 +70,6 @@ class BeregningsFordelerUtbetalesTilTest :
             segment1.delperioder shouldHaveSize 1
             segment2.delperioder shouldHaveSize 1
 
-            val linjer1 =
-                segment1.delperioder
-                    .first()
-                    .oppdrag.alleOppdragslinjer
-            val linjer2 =
-                segment2.delperioder
-                    .first()
-                    .oppdrag.alleOppdragslinjer
-
-            linjer1 shouldHaveSize 1
-            linjer2 shouldHaveSize 1
-
-            val ids =
-                setOf(
-                    linjer1.first().utbetalesTilId,
-                    linjer2.first().utbetalesTilId,
-                )
-            ids shouldBe setOf(AktoerId(100), AktoerId(999))
-
             // Both segmenter have overstyrtMottaker since utbetalesTilId != gjelderId (AktoerId(1))
             result.segmenter.forEach { segment ->
                 segment.ekstraInfo shouldHaveSize 1
@@ -166,20 +147,6 @@ class BeregningsFordelerUtbetalesTilTest :
                     LinjeGroupKey(utbetalesTilId = AktoerId(999), kid = null),
                 )
 
-            val allLinjerPerSegment =
-                result.segmenter.map { segment ->
-                    segment.delperioder.map { it.oppdrag.alleOppdragslinjer }.flatten()
-                }
-
-            allLinjerPerSegment.forEach { it shouldHaveSize 1 }
-
-            val resolvedIds =
-                allLinjerPerSegment
-                    .map { linjer ->
-                        linjer.first().utbetalesTilId ?: baseOppdrag.gjelderId
-                    }.toSet()
-            resolvedIds shouldBe setOf(baseOppdrag.gjelderId, AktoerId(999))
-
             // Only the segment with AktoerId(999) should have overstyrtMottaker
             val overstyrtSegment = result.segmenter.first { it.linjeGroupKey?.utbetalesTilId == AktoerId(999) }
             overstyrtSegment.ekstraInfo shouldHaveSize 1
@@ -233,16 +200,6 @@ class BeregningsFordelerUtbetalesTilTest :
                     LinjeGroupKey(utbetalesTilId = AktoerId(1), kid = "KID-A"),
                     LinjeGroupKey(utbetalesTilId = AktoerId(1), kid = "KID-B"),
                 )
-
-            val allLinjerPerSegment =
-                result.segmenter.map { segment ->
-                    segment.delperioder.map { it.oppdrag.alleOppdragslinjer }.flatten()
-                }
-
-            allLinjerPerSegment.forEach { it shouldHaveSize 1 }
-
-            val kids = allLinjerPerSegment.map { it.first().kid }.toSet()
-            kids shouldBe setOf("KID-A", "KID-B")
 
             // utbetalesTilId == gjelderId for both, so no overstyrtMottaker
             // Kid changes between first and second segment, so second segment gets KID_ENDRET

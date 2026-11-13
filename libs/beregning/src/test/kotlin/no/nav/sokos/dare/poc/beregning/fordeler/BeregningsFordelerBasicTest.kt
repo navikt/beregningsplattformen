@@ -68,7 +68,7 @@ class BeregningsFordelerBasicTest :
             foersteDelPeriode.ekstraInfo shouldHaveSize 0
             foersteDelPeriode.overfoeringsdato shouldNotBe null
 
-            foersteDelPeriode.oppdrag shouldBe oppdrag.first()
+            foersteDelPeriode.oppdragId() shouldBe oppdrag.first().id
 
             result.satsBoetter shouldBe SatsBoetter(emptyMap())
             result.saldoBoetter shouldBe SaldoBoetter(emptyMap())
@@ -521,19 +521,19 @@ class BeregningsFordelerBasicTest :
 
             // Sorted by oppdrag.id (5 before 10), then by periode
             segment.delperioder[0]
-                .oppdrag.id shouldBe OppdragId(5)
+                .oppdragId() shouldBe OppdragId(5)
             segment.delperioder[0].periode shouldBe DatoIntervall("2026-02-01", "2026-02-28")
 
             segment.delperioder[1]
-                .oppdrag.id shouldBe OppdragId(5)
+                .oppdragId() shouldBe OppdragId(5)
             segment.delperioder[1].periode shouldBe DatoIntervall("2026-03-01", "2026-03-15")
 
             segment.delperioder[2]
-                .oppdrag.id shouldBe OppdragId(10)
+                .oppdragId() shouldBe OppdragId(10)
             segment.delperioder[2].periode shouldBe DatoIntervall("2026-02-01", "2026-02-28")
 
             segment.delperioder[3]
-                .oppdrag.id shouldBe OppdragId(10)
+                .oppdragId() shouldBe OppdragId(10)
             segment.delperioder[3].periode shouldBe DatoIntervall("2026-03-01", "2026-03-15")
         }
         // testFordelingInput default overfoeringsdato is 2025-04-01

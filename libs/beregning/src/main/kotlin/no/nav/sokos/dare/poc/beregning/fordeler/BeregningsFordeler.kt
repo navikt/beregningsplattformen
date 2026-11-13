@@ -142,7 +142,7 @@ class BeregningsFordeler(
                         .flatMap { segment ->
                             lagDelperioderForSegment(oppdrag, trekk, input, segment, relaterteBeregninger)
                         }.filterNot {
-                            it.oppdrag.alleOppdragslinjer.isEmpty()
+                            it.ytelselinjer().isEmpty()
                         }
                 BeregningsSegment(
                     linjeGroupKey,
@@ -277,7 +277,7 @@ class BeregningsFordeler(
     private fun sortDelperioder(delperioder: List<OppdragDelperiode>): List<OppdragDelperiode> =
         delperioder.sortedWith(
             compareBy({
-                it.oppdrag.id?.id
+                it.oppdragId()?.id
             }, { it.periode.fom }),
         )
 

@@ -1,5 +1,6 @@
 package no.nav.sokos.dare.poc.beregning.fordeler
 
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -9,6 +10,9 @@ import no.nav.sokos.dare.poc.beregning.DatoIntervall
 import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatus
 import no.nav.sokos.dare.poc.oppdrag.Oppdrag
+import no.nav.sokos.dare.poc.oppdrag.OppdragId
+import no.nav.sokos.dare.poc.oppdrag.YtelseKlasseKode
+import no.nav.sokos.dare.poc.trekk.FagomraadeKode
 import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
 
 /**
@@ -16,8 +20,15 @@ import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
  * og bøtter for hele beregningskonteksten.
  * `periode` er delperioden som beregnes her. Hele beregningsperioden hentes fra `BeregningsmotorKontekst.periode`.
  */
+
+data class Ytelselinje(
+    val sats: BigDecimal,
+    val vedtakssats: BigDecimal?,
+    val ytelseKlassekode: YtelseKlasseKode,
+)
+
 data class OppdragDelperiode(
-    val oppdrag: Oppdrag,
+    private val oppdrag: Oppdrag,
     val periode: DatoIntervall,
     val konto: String,
     val gjelder: AktoerId,
@@ -29,6 +40,22 @@ data class OppdragDelperiode(
     val overfoeringsdato: LocalDate?,
     val tidligereTrukneTrekkvedtakIMaaneden: Set<TrekkvedtakId>,
     val relaterteBeregninger: List<Beregning> = emptyList(),
+    private val ytelselinjer: List<Ytelselinje>? = null,
+    private val oppdragId: OppdragId? = null,
+    private val fagomraade: FagomraadeKode? = null,
 ) {
+    fun ytelselinjer() =
+        ytelselinjer ?: oppdrag.alleOppdragslinjer.map {
+            Ytelselinje(
+                sats = it.sats,
+                vedtakssats = it.vedtakssats,
+                ytelseKlassekode = it.kodeKlasse,
+            )
+        }
+
+    fun oppdragId() = oppdragId ?: oppdrag.id
+
+    fun fagomraade() = fagomraade ?: oppdrag.fagomraade
+
     internal fun effektivOverfoeringsdato(): LocalDate = overfoeringsdato ?: beregnet.toLocalDate()
 }

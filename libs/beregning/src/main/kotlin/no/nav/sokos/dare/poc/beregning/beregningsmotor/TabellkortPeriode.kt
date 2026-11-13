@@ -20,8 +20,8 @@ internal data class TabellkortPeriode(
     val forskuddstrekk: Forskuddstrekk,
 ) {
     fun tabellkortPeriodetype() =
-        delperiode.oppdrag
-            .fagomraade
+        delperiode
+            .fagomraade()
             .tabellkortPeriodetype
 
     fun tilSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> =
@@ -30,22 +30,25 @@ internal data class TabellkortPeriode(
             TabellkortPeriodetype.KALENDERBEREGNET -> listOf(tilSkattTabellDagerPeriode())
         }
 
-    private fun tilVerdiberegnetSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> =
-        delperiode.periode.hverdager
-            .groupBy { dag -> requireNotNull(delperiode.oppdrag.vedtakSatsForDag(dag)) { "Oppdrag mangler vedtakssats for dag $dag" }.stripTrailingZeros() }
-            .map { (vedtakssats, arbeidsdager) ->
-                val bruttoYtelse = arbeidsdager.sumOf { dag -> delperiode.oppdrag.forDag(dag) }
-                SkattTabellDagerPeriode(
-                    bruttoYtelse = bruttoYtelse,
-                    vedtakssats = vedtakssats,
-                    antallKalenderdager = arbeidsdager.size,
-                    antallArbeidsdager = arbeidsdager.size,
-                )
-            }
+    private fun tilVerdiberegnetSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> {
+        val vedtakssats = delperiode.ytelselinjer().sumOf { it.vedtakssats ?: BigDecimal.ZERO }
+        val bruttoYtelse = delperiode.ytelselinjer().sumOf { it.sats }.stripTrailingZeros()
+        val hverdager = delperiode.periode.hverdager
+        return listOf(
+            SkattTabellDagerPeriode(
+                bruttoYtelse = hverdager.sumOf { bruttoYtelse },
+                vedtakssats = vedtakssats,
+                antallKalenderdager = hverdager.size, // TODO: Hvorfor er disse like?
+                antallArbeidsdager = hverdager.size,
+            ),
+        )
+    }
 
-    fun tilSkattTabellDagerPeriode(): SkattTabellDagerPeriode =
-        delperiode.periode.hverdager.let { arbeidsdager ->
-            val sumArbeidsdagSatser = arbeidsdager.sumOf { dag -> delperiode.oppdrag.vedtakSatsForDag(dag) }
+    fun tilSkattTabellDagerPeriode(): SkattTabellDagerPeriode {
+        val hverdager = delperiode.periode.hverdager
+        val sumArbeidsdagSatser = delperiode.ytelselinjer().sumOf { it.vedtakssats ?: BigDecimal.ZERO }
+
+        return hverdager.let { arbeidsdager ->
             SkattTabellDagerPeriode(
                 bruttoYtelse = skatteGrunnlag,
                 vedtakssats = if (arbeidsdager.isEmpty()) ZERO else sumArbeidsdagSatser.divide(BigDecimal(arbeidsdager.size), 10, RoundingMode.HALF_UP),
@@ -53,6 +56,7 @@ internal data class TabellkortPeriode(
                 antallArbeidsdager = arbeidsdager.size,
             )
         }
+    }
 }
 
 internal fun List<TabellkortPeriode>.beregnTabellkortDager(): Pair<Int, List<TekstEkstraInfo>> =
