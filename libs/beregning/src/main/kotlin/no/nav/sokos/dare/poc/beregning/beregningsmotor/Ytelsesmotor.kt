@@ -18,9 +18,9 @@ import no.nav.sokos.dare.poc.beregning.TekstEkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.Satstype
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsScratchpad
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsmotorKontekst
+import no.nav.sokos.dare.poc.beregning.fordeler.Ytelselinje
 import no.nav.sokos.dare.poc.beregning.isWeekday
 import no.nav.sokos.dare.poc.oppdrag.OppdragId
-import no.nav.sokos.dare.poc.oppdrag.Oppdragslinje
 import no.nav.sokos.dare.poc.util.BigDecimalUtils
 
 class
@@ -31,11 +31,11 @@ Ytelsesmotor {
         kontekst.segmenter.forEach { segment ->
             segment.delperioder.forEach { content ->
                 val delperiode = content.periode
-                val oppdragId = requireNotNull(content.oppdrag.id) { "Oppdrag mangler id" }
-                val scratchpad = segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
 
                 // På dette tidspunktet er linjeperiodene trimmet i henhold til kjederegler.
-                content.oppdrag.alleOppdragslinjer.forEach { linje ->
+                content.ytelselinjer().forEach { linje ->
+                    val oppdragId = requireNotNull(linje.oppdragId) { "Oppdrag mangler id" }
+                    val scratchpad = segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
                     require(linje.periode.contains(content.periode)) {
                         "OppdragDelperiode.periode ${content.periode} er utenfor OppdragsLinje.fom/tom ${linje.periode}"
                     }
@@ -54,8 +54,8 @@ Ytelsesmotor {
                             kapasitet = scratchpad.kapasitetStyring.snapshot(content.periode),
                             satsType = Satstype.DAG, // TODO: Bare AAP
                             sats = linje.sats,
-                            oppdragslinjekjedeId = linje.oppdragslinjekjedeId,
-                            kodeKlasse = LinjeKlassekode.Ytelse(linje.kodeKlasse),
+                            // oppdragslinjekjedeId = linje.oppdragslinjekjedeId,
+                            kodeKlasse = LinjeKlassekode.Ytelse(linje.ytelseKlassekode),
                         )
                     scratchpad.beregninger
                         .getOrPut(content.periode) { mutableListOf() }
@@ -64,8 +64,8 @@ Ytelsesmotor {
                         beregnTidligereUtbetalt(
                             relaterteBeregninger = content.relaterteBeregninger,
                             periode = content.periode,
-                            oppdragId = content.oppdrag.id,
-                            kodeKlasse = LinjeKlassekode.Ytelse(linje.kodeKlasse),
+                            oppdragId = oppdragId,
+                            kodeKlasse = LinjeKlassekode.Ytelse(linje.ytelseKlassekode),
                         )
                     scratchpad.erEtterbetaling[content.periode] = tidligereUtbetaltLinjer.isNotEmpty()
                     tidligereUtbetaltLinjer.forEach { linje ->
@@ -87,8 +87,8 @@ Ytelsesmotor {
                                         grunn = Reasons.KREVER_TILBAKEKREVING,
                                         verdier =
                                             mapOf(
-                                                "oppdrag" verdi content.oppdrag.id,
-                                                "periode" verdi content.periode,
+                                                "oppdrag" verdi oppdragId,
+                                                "periode" verdi delperiode,
                                                 "utbetalt" verdi deduction,
                                                 "ytelse" verdi skalarKapasitet,
                                             ),
@@ -163,7 +163,7 @@ Ytelsesmotor {
     }
 }
 
-private fun Oppdragslinje.beloepForDag(dato: LocalDate): Dagbeloep =
+private fun Ytelselinje.beloepForDag(dato: LocalDate): Dagbeloep =
     if (periode.contains(dato) && dato.isWeekday()) {
         Dagbeloep(dato = dato, beloep = sats)
     } else {
