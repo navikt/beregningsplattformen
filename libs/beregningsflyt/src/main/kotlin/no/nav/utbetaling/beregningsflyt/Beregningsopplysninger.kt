@@ -27,7 +27,7 @@ internal data class Trekkperiodedel(
 )
 
 internal data class Beregningsopplysninger(
-    val oppdragopplysninger: Opplysninger,
+    val oppdragopplysninger: Map<Oppdragsidentifikator, List<Opplysninger>>,
     private val skatteperiode: Any, // TODO: Hadde det vært mulig å legge inn skattereglene som er grunnen til at vi splitter opp?
     private val år: Year? = null,
     val tidligereYtelsesberegninger: List<Beregning> = emptyList(),
@@ -36,7 +36,7 @@ internal data class Beregningsopplysninger(
 
 internal fun beregningstidslinje(
     beregningsperiode: Periode.LukketPeriode,
-    tidslinje: Tidslinje<Opplysninger>,
+    tidslinje: Tidslinje<Map<Oppdragsidentifikator, List<Opplysninger>>>,
     beregningstidspunkt: LocalDateTime,
     trekk: List<Trekkvedtak>,
     relaterteBeregninger: List<Beregning>,

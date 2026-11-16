@@ -38,6 +38,7 @@ class BeregningsflytTest :
                         "GrunnleggendeTest/oppdrag_uten_noe_annet",
                         "GrunnleggendeTest/oppdrag_med_et_saldotrekk_som_ikke_utfoeres_fullstendig",
                         "GrunnleggendeTest/oppdrag_med_et_saldotrekk_som_utfoeres_fullstendig",
+                        "GrunnleggendeTest/oppdrag_med_to_linjer_med_2_ulike_klassekoder",
                         "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
                         "SatsRelatertTest/utbdato_dagssats_med_relatert_samme_overfoeringsdato",
                         "SatsRelatertTest/utbdato_dagssats_relatert_annen_overfoeringsdato_paavirker_ikke",
@@ -84,6 +85,9 @@ class BeregningsflytTest :
                         "SkattTabellkortTest/tabellkort_verdiberegnet_med_to_vedtakssatser",
                         "ReskontroKontoTest/svalbard",
                         "ReskontroKontoTest/kildeskatt",
+                        "FlereYtelserFlereTrekkTest/to_ytelser_med_forskjellig_klasskoder_og_to_trekk_dagsats_og_maanedsats",
+                        "FlereYtelserFlereTrekkTest/to_ytelser_med_forskjellig_klasskoder_og_to_trekk_dagsats_og_prosent",
+                        "FlereYtelserFlereTrekkTest/to_ytelser_med_forskjellig_klasskoder_og_to_trekk_maanedsats_og_prosent",
                     )
             }
 
@@ -138,7 +142,7 @@ class BeregningsflytTest :
         }
 
         xcontext("Test som ikke funker ") {
-            kjørScenario(Scenariolaster.last("GrunnleggendeTest/oppdrag_med_to_linjer_med_2_ulike_klassekoder"))
+            kjørScenario(Scenariolaster.last("SatsRelatertTest/utbdato_maanedssats_resten_etter_foerste_utbetaling"))
         }
 
         context("Tester som funker") {
