@@ -34,6 +34,7 @@ import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
 import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
+import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
@@ -62,101 +63,16 @@ class Beregningsflyt {
                         beregningstidspunkt = beregningstidspunkt,
                     )
                 beregningstidslinje.map { (periode, beregningsopplysninger) ->
-                    val oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger
-                    val datoIntervall = DatoIntervall(periode.fom, (periode as? Periode.LukketPeriode)?.tom)
-                    val oppdragId = OppdragId(0)
-                    val gjelderId =
-                        when (val gjelder = oppdragsopplysninger.gjelder!!.opplysning) {
-                            is Personidentifikator -> AktoerId(gjelder.identifikator.toLong())
-                        }
-                    val utbetalesTil =
-                        when (val utbetalesTil = oppdragsopplysninger.utbetalesTil?.opplysning) {
-                            is Organisasjonsnummer -> AktoerId(utbetalesTil.nummer.toLong())
-                            is Personidentifikator -> AktoerId(utbetalesTil.identifikator.toLong())
-                            null -> gjelderId
-                        }
-                    val bruker = oppdragsopplysninger.sats.saksbehandlerId.id
-                    OppdragDelperiode(
-                        oppdrag =
-                            Oppdrag(
-                                id = oppdragId,
-                                fagsystemId = oppdragsopplysninger.fagsystemId.id,
-                                fagomraade = FagomraadeKode.fromValue(oppdragsopplysninger.fagområde.fagområde),
-                                datoForfall = oppdragsopplysninger.forfall?.opplysning,
-                                gjelderId = gjelderId,
-                                datoTom = datoIntervall.tom,
-                                bilagsType = oppdragsopplysninger.bilagstype?.opplysning?.type,
-                                bruker = bruker,
-                                tidspktReg = LocalDateTime.now(),
-                                oppdragslinjekjeder =
-                                    listOf(
-                                        Oppdragslinjekjede(
-                                            id = null,
-                                            oppdragId = oppdragId,
-                                            tidspktReg = LocalDateTime.now(),
-                                            linjer =
-                                                listOf(
-                                                    Oppdragslinje(
-                                                        id = null,
-                                                        oppdragslinjekjedeId = null,
-                                                        linjeId = 0,
-                                                        delytelseId = oppdragsopplysninger.delytelseId.id,
-                                                        sats = oppdragsopplysninger.sats.opplysning.verdi,
-                                                        typeSats = TypeSats.valueOf(oppdragsopplysninger.sats.opplysning.satsType),
-                                                        brukKjoreplan =
-                                                            when (oppdragsopplysninger.brukKjøreplan.opplysning) {
-                                                                BrukKjøreplan.Ja -> true
-                                                                BrukKjøreplan.Nei -> false
-                                                            },
-                                                        datoVedtakFom = periode.fom,
-                                                        datoVedtakTom = (periode as? Periode.LukketPeriode)?.tom,
-                                                        vedtakId = oppdragsopplysninger.vedtakId?.opplysning?.id ?: "Javel",
-                                                        henvisning = oppdragsopplysninger.henvisning?.opplysning?.henvisning,
-                                                        utbetalesTilId = utbetalesTil,
-                                                        kodeKlasse =
-                                                            YtelseKlasseKode(
-                                                                kode = YtelseKlasseKodeRef(oppdragsopplysninger.ytelseKlassekode.opplysning.kode),
-                                                                beskrivelse = "ja",
-                                                                grunnlagSkatt = true,
-                                                                grunnlagTrekk = true,
-                                                                fagomraader = listOf(FagomraadeKode.AAP), // TODO
-                                                                tidspktOpprettet = LocalDateTime.now(),
-                                                            ),
-                                                        skyldnerId =
-                                                            when (val skyldner = oppdragsopplysninger.skyldner?.opplysning) {
-                                                                is SamhandlerId -> AktoerId(skyldner.tssId.toLong())
-                                                                null -> null
-                                                            },
-                                                        kid = oppdragsopplysninger.kidnummer?.opplysning?.nummer,
-                                                        typeSoknad = oppdragsopplysninger.søknadstype?.opplysning?.type,
-                                                        maksDato = oppdragsopplysninger.maksdato?.opplysning,
-                                                        refunderesId =
-                                                            when (val refunderes = oppdragsopplysninger.refunderesTil?.opplysning) {
-                                                                is Organisasjonsnummer -> refunderes.nummer
-                                                                null -> null
-                                                            },
-                                                        bruker = bruker,
-                                                        tidspktReg = LocalDateTime.now(),
-                                                        vedtakssats = oppdragsopplysninger.vedtakssats?.opplysning?.verdi,
-                                                        annullert = false,
-                                                    ),
-                                                ),
-                                        ),
-                                    ),
-                                avventPerioder = emptyList(),
-                            ),
-                        periode = datoIntervall,
-                        konto = "",
-                        gjelder = gjelderId,
-                        beregnet = beregningstidspunkt,
-                        utbetalesTil = utbetalesTil,
-                        status = BeregningsStatus.BEREGNET,
-                        trekk = buildTrekkForDelperiode(datoIntervall, beregningsgrunnlag.overføres, beregningsgrunnlag.trekkVedtak),
-                        ekstraInfo = mutableListOf(),
-                        overfoeringsdato = beregningsgrunnlag.overføres,
-                        tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
-                        relaterteBeregninger = beregningsopplysninger.tidligereYtelsesberegninger,
-                    ) to beregningsopplysninger
+                    val oppdragDelperiode =
+                        listOf(beregningsopplysninger.oppdragopplysninger).tilOppdragDelperiode(
+                            oppdragId = OppdragId(0),
+                            periode = periode,
+                            beregningstidspunkt = beregningstidspunkt,
+                            overføres = beregningsgrunnlag.overføres,
+                            tidligereYtelsesberegninger = beregningsopplysninger.tidligereYtelsesberegninger,
+                            trekkvedtak = beregningsgrunnlag.trekkVedtak,
+                        )
+                    oppdragDelperiode to beregningsopplysninger
                 }
             }
 
@@ -208,6 +124,109 @@ class Beregningsflyt {
 
     private companion object {
         fun BeregningsSegment.utvidMed(delperioder: List<OppdragDelperiode>) = this.copy(delperioder = this.delperioder + delperioder)
+
+        private fun List<Opplysninger>.tilOppdragDelperiode(
+            oppdragId: OppdragId,
+            periode: Periode,
+            beregningstidspunkt: LocalDateTime,
+            overføres: LocalDate,
+            tidligereYtelsesberegninger: List<Beregning>,
+            trekkvedtak: List<Trekkvedtak>,
+        ): OppdragDelperiode {
+            val datoIntervall = DatoIntervall(periode.fom, (periode as? Periode.LukketPeriode)?.tom)
+            val gjelderId =
+                when (val gjelder = first().gjelder!!.opplysning) {
+                    is Personidentifikator -> AktoerId(gjelder.identifikator.toLong())
+                }
+            val utbetalesTil =
+                when (val utbetalesTil = first().utbetalesTil?.opplysning) {
+                    is Organisasjonsnummer -> AktoerId(utbetalesTil.nummer.toLong())
+                    is Personidentifikator -> AktoerId(utbetalesTil.identifikator.toLong())
+                    null -> gjelderId
+                }
+            val bruker = first().sats.saksbehandlerId.id
+            return OppdragDelperiode(
+                oppdrag =
+                    Oppdrag(
+                        id = oppdragId,
+                        fagsystemId = first().fagsystemId.id,
+                        fagomraade = FagomraadeKode.fromValue(first().fagområde.fagområde),
+                        datoForfall = first().forfall?.opplysning,
+                        gjelderId = gjelderId,
+                        datoTom = datoIntervall.tom,
+                        bilagsType = first().bilagstype?.opplysning?.type,
+                        bruker = bruker,
+                        tidspktReg = LocalDateTime.now(),
+                        oppdragslinjekjeder =
+                            map { opplysninger ->
+                                Oppdragslinjekjede(
+                                    id = null,
+                                    oppdragId = oppdragId,
+                                    tidspktReg = LocalDateTime.now(),
+                                    linjer =
+                                        listOf(
+                                            Oppdragslinje(
+                                                id = null,
+                                                oppdragslinjekjedeId = null,
+                                                linjeId = 0,
+                                                delytelseId = opplysninger.delytelseId.id,
+                                                sats = opplysninger.sats.opplysning.verdi,
+                                                typeSats = TypeSats.valueOf(opplysninger.sats.opplysning.satsType),
+                                                brukKjoreplan =
+                                                    when (opplysninger.brukKjøreplan.opplysning) {
+                                                        BrukKjøreplan.Ja -> true
+                                                        BrukKjøreplan.Nei -> false
+                                                    },
+                                                datoVedtakFom = periode.fom,
+                                                datoVedtakTom = (periode as? Periode.LukketPeriode)?.tom,
+                                                vedtakId = opplysninger.vedtakId?.opplysning?.id ?: "Javel",
+                                                henvisning = opplysninger.henvisning?.opplysning?.henvisning,
+                                                utbetalesTilId = utbetalesTil,
+                                                kodeKlasse =
+                                                    YtelseKlasseKode(
+                                                        kode = YtelseKlasseKodeRef(opplysninger.ytelseKlassekode.opplysning.kode),
+                                                        beskrivelse = "ja",
+                                                        grunnlagSkatt = true,
+                                                        grunnlagTrekk = true,
+                                                        fagomraader = listOf(FagomraadeKode.AAP), // TODO
+                                                        tidspktOpprettet = LocalDateTime.now(),
+                                                    ),
+                                                skyldnerId =
+                                                    when (val skyldner = opplysninger.skyldner?.opplysning) {
+                                                        is SamhandlerId -> AktoerId(skyldner.tssId.toLong())
+                                                        null -> null
+                                                    },
+                                                kid = opplysninger.kidnummer?.opplysning?.nummer,
+                                                typeSoknad = opplysninger.søknadstype?.opplysning?.type,
+                                                maksDato = opplysninger.maksdato?.opplysning,
+                                                refunderesId =
+                                                    when (val refunderes = opplysninger.refunderesTil?.opplysning) {
+                                                        is Organisasjonsnummer -> refunderes.nummer
+                                                        null -> null
+                                                    },
+                                                bruker = bruker,
+                                                tidspktReg = LocalDateTime.now(),
+                                                vedtakssats = opplysninger.vedtakssats?.opplysning?.verdi,
+                                                annullert = false,
+                                            ),
+                                        ),
+                                )
+                            },
+                        avventPerioder = emptyList(),
+                    ),
+                periode = datoIntervall,
+                konto = "TODO-fjern-meg-jeg-skal-ikke-være-her",
+                gjelder = gjelderId,
+                beregnet = beregningstidspunkt,
+                utbetalesTil = utbetalesTil,
+                status = BeregningsStatus.BEREGNET,
+                trekk = buildTrekkForDelperiode(datoIntervall, overføres, trekkvedtak),
+                ekstraInfo = mutableListOf(),
+                overfoeringsdato = overføres,
+                tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
+                relaterteBeregninger = tidligereYtelsesberegninger,
+            )
+        }
     }
 }
 
