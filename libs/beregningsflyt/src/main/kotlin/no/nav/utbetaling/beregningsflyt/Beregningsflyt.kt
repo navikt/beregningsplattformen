@@ -7,6 +7,7 @@ import java.time.YearMonth
 import no.nav.sokos.dare.poc.aktoer.AktoerId
 import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DatoIntervall
+import no.nav.sokos.dare.poc.beregning.DelberegningType
 import no.nav.sokos.dare.poc.beregning.beregningsmotor.Beregningsmotor
 import no.nav.sokos.dare.poc.beregning.beregningsmotor.Skattemotor
 import no.nav.sokos.dare.poc.beregning.beregningsmotor.Trekkmotor
@@ -34,6 +35,7 @@ import no.nav.sokos.dare.poc.trekk.SatsType
 import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
+import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
 import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
@@ -48,6 +50,7 @@ class Beregningsflyt {
 
         val beregningsegmenter =
             Segmentering.grunnlag(beregningsgrunnlag.oppdragstidslinje).map { segmentgrunnlag ->
+
                 val oppdragDelperioder =
                     beregningstidslinje(
                         beregningsperiode = beregningsgrunnlag.beregningsperiode,
@@ -56,14 +59,25 @@ class Beregningsflyt {
                         tidslinje = segmentgrunnlag.delperiodegrunnlag,
                         beregningstidspunkt = beregningstidspunkt,
                     ).flatMap { (periode, beregningsopplysninger) ->
-                        beregningsopplysninger.oppdragopplysninger.entries.mapIndexed { index, (_, opplysninger) ->
+                        beregningsopplysninger.oppdragopplysninger.entries.map { (oppdragsidentifikator, opplysninger) ->
+                            val tidligereTrukneTrekkvedtakIMaaneden =
+                                beregningsgrunnlag.relaterteBeregninger
+                                    .filter { beregning -> beregning.overfoeres?.let { YearMonth.from(it) == YearMonth.from(beregningsgrunnlag.overføres) } == true }
+                                    .flatMap { it.delberegning }
+                                    .filter { it.oppdragId?.id == 0L } //husk bruke en id som er unik når vi kommer dit.
+                                    .flatMap { it.linjer }
+                                    .filter { it.type == DelberegningType.TREKK }
+                                    .mapNotNull { it.trekkvedtakId }
+                                    .toSet()
+
                             opplysninger.tilOppdragDelperiode(
-                                oppdragId = OppdragId(index.toLong()),
+                                oppdragId = OppdragId(0), //husk bruke en id som er unik når vi kommer dit.
                                 periode = periode,
                                 beregningstidspunkt = beregningstidspunkt,
                                 overføres = beregningsgrunnlag.overføres,
                                 tidligereYtelsesberegninger = beregningsopplysninger.tidligereYtelsesberegninger,
                                 trekkvedtak = beregningsgrunnlag.trekkVedtak,
+                                tidligereTrukneTrekkvedtakIMaaneden = tidligereTrukneTrekkvedtakIMaaneden,
                             )
                         }
                     }
@@ -113,6 +127,7 @@ class Beregningsflyt {
             overføres: LocalDate,
             tidligereYtelsesberegninger: List<Beregning>,
             trekkvedtak: List<Trekkvedtak>,
+            tidligereTrukneTrekkvedtakIMaaneden: Set<TrekkvedtakId>,
         ): OppdragDelperiode {
             val datoIntervall = DatoIntervall(periode.fom, (periode as? Periode.LukketPeriode)?.tom)
             val gjelderId =
@@ -204,7 +219,7 @@ class Beregningsflyt {
                 trekk = buildTrekkForDelperiode(datoIntervall, overføres, trekkvedtak),
                 ekstraInfo = mutableListOf(),
                 overfoeringsdato = overføres,
-                tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
+                tidligereTrukneTrekkvedtakIMaaneden = tidligereTrukneTrekkvedtakIMaaneden,
                 relaterteBeregninger = tidligereYtelsesberegninger,
             )
         }
