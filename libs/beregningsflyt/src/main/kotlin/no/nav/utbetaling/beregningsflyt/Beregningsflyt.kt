@@ -14,6 +14,7 @@ import no.nav.sokos.dare.poc.beregning.beregningsmotor.Ytelsesmotor
 import no.nav.sokos.dare.poc.beregning.dataklasser.BeregningsStatus
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsSegment
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsmotorKontekst
+import no.nav.sokos.dare.poc.beregning.fordeler.LinjeGroupKey
 import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
 import no.nav.sokos.dare.poc.beregning.fordeler.SaldoBoetter
 import no.nav.sokos.dare.poc.beregning.fordeler.SatsBoetter
@@ -39,72 +40,54 @@ import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
 import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
+import no.nav.utbetaling.beregningsflyt.Avventinger.medAvventing
 
 class Beregningsflyt {
-    internal data class Segmentgruppering(
-        val fagområde: FagomraadeKode,
-        val fagsystemId: String,
-        val utbetalesTil: AktoerId,
-        val kid: String?,
-        val status: BeregningsStatus,
-    )
-
     fun beregn(beregningsgrunnlag: Beregningsgrunnlag): Pair<BeregningsmotorKontekst, List<Beregning>> {
         val beregningstidspunkt = beregningsgrunnlag.beregningstidspunkt()
 
-        val delperioder =
-            beregningsgrunnlag.oppdragstidslinje.tidslinjer.flatMap { (_, tidslinje) ->
-                val beregningstidslinje =
+        val beregningsegmenter =
+            Segmentering.grunnlag(beregningsgrunnlag.oppdragstidslinje).map { segmentgrunnlag ->
+                val oppdragDelperioder =
                     beregningstidslinje(
                         beregningsperiode = beregningsgrunnlag.beregningsperiode,
                         trekk = beregningsgrunnlag.trekkVedtak,
                         relaterteBeregninger = beregningsgrunnlag.relaterteBeregninger,
-                        tidslinje = tidslinje,
+                        tidslinje = segmentgrunnlag.delperiodegrunnlag,
                         beregningstidspunkt = beregningstidspunkt,
+                    ).flatMap { (periode, beregningsopplysninger) ->
+                        beregningsopplysninger.oppdragopplysninger.entries.mapIndexed { index, (_, opplysninger) ->
+                            opplysninger.tilOppdragDelperiode(
+                                oppdragId = OppdragId(index.toLong()),
+                                periode = periode,
+                                beregningstidspunkt = beregningstidspunkt,
+                                overføres = beregningsgrunnlag.overføres,
+                                tidligereYtelsesberegninger = beregningsopplysninger.tidligereYtelsesberegninger,
+                                trekkvedtak = beregningsgrunnlag.trekkVedtak,
+                            )
+                        }
+                    }
+
+                val beregningsegment =
+                    BeregningsSegment(
+                        linjeGroupKey = LinjeGroupKey(utbetalesTilId = oppdragDelperioder.first().utbetalesTil!!, kid = segmentgrunnlag.kidnummer?.nummer),
+                        delperioder = oppdragDelperioder,
                     )
-                beregningstidslinje.map { (periode, beregningsopplysninger) ->
-                    val oppdragDelperiode =
-                        listOf(beregningsopplysninger.oppdragopplysninger).tilOppdragDelperiode(
-                            oppdragId = OppdragId(0),
-                            periode = periode,
-                            beregningstidspunkt = beregningstidspunkt,
-                            overføres = beregningsgrunnlag.overføres,
-                            tidligereYtelsesberegninger = beregningsopplysninger.tidligereYtelsesberegninger,
-                            trekkvedtak = beregningsgrunnlag.trekkVedtak,
-                        )
-                    oppdragDelperiode to beregningsopplysninger
+
+                when (val avventingsårsak = segmentgrunnlag.avventingsårsak) {
+                    null -> beregningsegment
+                    else -> beregningsegment.medAvventing(avventingsårsak)
                 }
             }
 
-        val ferdigeSegmenter = mutableListOf<BeregningsSegment>()
-        var nåværendeSegment: Pair<Segmentgruppering, BeregningsSegment>? = null
-
-        delperioder.forEach { (delperiode, beregningsopplysninger) ->
-            val (gruppering, segment) =
-                Avventinger.lagBeregningsSegment(
-                    delperiode = delperiode,
-                    oppdragsopplysninger = beregningsopplysninger.oppdragopplysninger,
-                )
-            if (nåværendeSegment == null) {
-                nåværendeSegment = gruppering to segment
-            } else if (gruppering == nåværendeSegment.first) {
-                nåværendeSegment = nåværendeSegment.first to nåværendeSegment.second.utvidMed(segment.delperioder)
-            } else {
-                ferdigeSegmenter.add(nåværendeSegment.second)
-                nåværendeSegment = gruppering to segment
-            }
-        }
-
-        if (nåværendeSegment != null) ferdigeSegmenter.add(nåværendeSegment.second)
-
         val saldoBoetter = beregnInitielleSaldoer(beregningsgrunnlag.trekkVedtak, beregningsgrunnlag.relaterteBeregninger)
-        val satsBoetter = beregnInitielleSatser(ferdigeSegmenter, beregningsgrunnlag.relaterteBeregninger)
+        val satsBoetter = beregnInitielleSatser(beregningsegmenter, beregningsgrunnlag.relaterteBeregninger)
 
         val beregningsmotorKontekst =
             BeregningsmotorKontekst(
                 periode = DatoIntervall(beregningsgrunnlag.beregningsperiode.fom, beregningsgrunnlag.beregningsperiode.tom),
                 restFrikortBeloep = beregningsgrunnlag.tilgjengeligFrikortbeløp,
-                segmenter = ferdigeSegmenter,
+                segmenter = beregningsegmenter,
                 skatteKontekst = beregningsgrunnlag.skatteKontekst,
                 satsBoetter = SatsBoetter(satsBoetter),
                 saldoBoetter = SaldoBoetter(saldoBoetter),
@@ -123,8 +106,6 @@ class Beregningsflyt {
     }
 
     private companion object {
-        fun BeregningsSegment.utvidMed(delperioder: List<OppdragDelperiode>) = this.copy(delperioder = this.delperioder + delperioder)
-
         private fun List<Opplysninger>.tilOppdragDelperiode(
             oppdragId: OppdragId,
             periode: Periode,

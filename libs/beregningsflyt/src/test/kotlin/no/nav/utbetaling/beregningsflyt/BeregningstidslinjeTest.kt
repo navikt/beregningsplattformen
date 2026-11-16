@@ -17,7 +17,12 @@ class BeregningstidslinjeTest :
 
         test("beregningstidslinje som spenner over mange år") {
             val periode = 31.desember(2018) til 31.desember(2026)
-            val tidslinje = Tidslinje.Builder<Opplysninger>().periode(periode, opplysninger()).build()
+            val opplysninger = opplysninger()
+            val tidslinje =
+                Tidslinje
+                    .Builder<Map<Oppdragsidentifikator, List<Opplysninger>>>()
+                    .periode(periode, mapOf(Oppdragsidentifikator(opplysninger.fagområde, opplysninger.fagsystemId) to listOf(opplysninger)))
+                    .build()
 
             val beregningstidslinje =
                 beregningstidslinje(
