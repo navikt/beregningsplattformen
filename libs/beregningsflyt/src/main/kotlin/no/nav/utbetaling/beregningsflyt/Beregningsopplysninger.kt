@@ -8,11 +8,13 @@ import java.time.Month.JANUARY
 import java.time.Year
 import java.time.YearMonth
 
+import kotlin.collections.contains
 import kotlin.collections.map
 
 import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DatoIntervall
-import no.nav.sokos.dare.poc.beregning.DelberegningType
+import no.nav.sokos.dare.poc.beregning.DelberegningType.YTELSE
+import no.nav.sokos.dare.poc.oppdrag.OppdragId
 import no.nav.sokos.dare.poc.trekk.SatsType
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
@@ -82,26 +84,31 @@ private fun trekktidslinje(
 }
 
 private fun tidligereYtelsesberegninger(relaterteBeregninger: List<Beregning>): Tidslinje<List<Beregning>> {
-    val tidslinjePerRelatertBeregning =
-        relaterteBeregninger
-            .map { beregning ->
-                // TODO: Her må vi filtrere på oppdragId
-                // TODO: Kunne vi unngått å lage Beregning-objektet og heller bruke Delberegning ?
-                val builder = Tidslinje.Builder<Beregning>()
-                val relevanteDelberegninger = beregning.delberegning.filter { it.oppdragId?.id == 0L }.filter { //husk bruke en id som er unik når vi kommer dit.
-                    it.linjer.any { linje -> linje.type == DelberegningType.YTELSE }
-                }
-                if (relevanteDelberegninger.isNotEmpty()) {
-                  builder.periode(beregning.periode.fom til beregning.periode.tom!!, beregning.copy(delberegning = relevanteDelberegninger ))
-                }
-                builder.build()
-            }
+    val oppdragIderSomBeregnesNå = setOf(OppdragId(0L)) // TODO: Må bli input
 
-    return tidslinjePerRelatertBeregning.fold(Tidslinje.Builder<List<Beregning>>().build()) { samletTidslinje, tidslinjeForEnBeregning ->
-        samletTidslinje.fullJoin(tidslinjeForEnBeregning) { _, eksisterende, ny ->
-            eksisterende.orEmpty() + listOfNotNull(ny)
-        }
-    }
+    val tidligereYtelsesberegninger =
+        relaterteBeregninger
+            .filter { it.delberegning.any { delberegning -> delberegning.oppdragId in oppdragIderSomBeregnesNå } }
+            .filter { it.delberegning.any { delberegning -> delberegning.linjer.any { linje -> linje.type == YTELSE } } }
+
+    val delberegningsperioder =
+        tidligereYtelsesberegninger
+            .flatMap { it.delberegning.map { delberegning -> delberegning.datoIntervall } }
+            .toSet()
+
+    return delberegningsperioder
+        .fold(Tidslinje.Builder<List<Beregning>>()) { builder, periode ->
+            val overlappendeBeregninger =
+                tidligereYtelsesberegninger.mapNotNull { beregning ->
+                    val overlapp = beregning.delberegning.filter { it.datoIntervall.overlaps(periode) }
+                    if (overlapp.isEmpty()) {
+                        null
+                    } else {
+                        beregning.copy(delberegning = overlapp)
+                    }
+                }
+            builder.periode(periode.fom til periode.tom!!, overlappendeBeregninger)
+        }.build()
 }
 
 private fun skattekortOppdeling(beregningsDato: LocalDateTime) =

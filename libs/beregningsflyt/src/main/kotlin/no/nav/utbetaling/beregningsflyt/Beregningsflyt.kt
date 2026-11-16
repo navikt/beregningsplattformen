@@ -64,14 +64,14 @@ class Beregningsflyt {
                                 beregningsgrunnlag.relaterteBeregninger
                                     .filter { beregning -> beregning.overfoeres?.let { YearMonth.from(it) == YearMonth.from(beregningsgrunnlag.overføres) } == true }
                                     .flatMap { it.delberegning }
-                                    .filter { it.oppdragId?.id == 0L } //husk bruke en id som er unik når vi kommer dit.
+                                    .filter { it.oppdragId?.id == 0L } // husk bruke en id som er unik når vi kommer dit.
                                     .flatMap { it.linjer }
                                     .filter { it.type == DelberegningType.TREKK }
                                     .mapNotNull { it.trekkvedtakId }
                                     .toSet()
 
                             opplysninger.tilOppdragDelperiode(
-                                oppdragId = OppdragId(0), //husk bruke en id som er unik når vi kommer dit.
+                                oppdragId = OppdragId(0), // husk bruke en id som er unik når vi kommer dit.
                                 periode = periode,
                                 beregningstidspunkt = beregningstidspunkt,
                                 overføres = beregningsgrunnlag.overføres,

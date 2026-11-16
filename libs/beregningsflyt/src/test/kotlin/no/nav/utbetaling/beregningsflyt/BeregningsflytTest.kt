@@ -27,71 +27,6 @@ class BeregningsflytTest :
 
         val beregningsflyt = Beregningsflyt()
 
-        val (funker, funkerIkke) =
-            Scenario.alle.partition {
-                it.navn in
-                    setOf(
-                        "GrunnleggendeTest/oppdrag_med_kjedet_ytelse_med_overlapp",
-                        "GrunnleggendeTest/oppdrag_med_kjedet_ytelse_uten_overlapp",
-                        "GrunnleggendeTest/oppdrag_med_komplisert_kjeding",
-                        "GrunnleggendeTest/oppdrag_med_to_linjer_uten_overlapp_eller_hull",
-                        "GrunnleggendeTest/oppdrag_uten_noe_annet",
-                        "GrunnleggendeTest/oppdrag_med_et_saldotrekk_som_ikke_utfoeres_fullstendig",
-                        "GrunnleggendeTest/oppdrag_med_et_saldotrekk_som_utfoeres_fullstendig",
-                        "GrunnleggendeTest/oppdrag_med_to_linjer_med_2_ulike_klassekoder",
-                        "SatsRelatertTest/utbdato_trekk_utenfor_overfoeringsdato_paavirker_ikke",
-                        "SatsRelatertTest/utbdato_dagssats_med_relatert_samme_overfoeringsdato",
-                        "SatsRelatertTest/utbdato_dagssats_relatert_annen_overfoeringsdato_paavirker_ikke",
-                        "SatsRelatertTest/utbdato_dagssats_med_satsboette",
-                        "SatsRelatertTest/utbdato_maanedssats_halvering_foerste_utbetaling",
-                        "SatsRelatertTest/utbdato_maanedssats_halvering_uten_tidligere_utbetaling",
-                        "SatsRelatertTest/utbdato_maanedssats_ingen_halvering_utenfor_kandidatgruppe",
-                        "SatsRelatertTest/utbdato_maanedssats_med_relatert_samme_overfoeringsdato",
-                        "SatsRelatertTest/utbdato_maanedssats_relatert_annen_overfoeringsdato_paavirker_ikke",
-                        "SatsRelatertTest/utbdato_maanedssats_med_satsboette",
-                        "SatsRelatertTest/utbdato_prosenttrekk_ikke_begrenset_av_satsboette",
-                        "SatsRelatertTest/ytelper_dagssats_med_relatert_som_dekker_en_dag",
-                        "SatsRelatertTest/ytelper_dagssats_med_relatert_beloep_prorateres",
-                        "SatsRelatertTest/ytelper_dagssats_med_relatert_som_spenner_flere_dager",
-                        "SatsRelatertTest/ytelper_maanedssats_kort_periode_med_relatert_som_reduserer",
-                        "SatsRelatertTest/ytelper_relatert_med_annet_trekkvedtak_paavirker_ikke",
-                        "SatsRelatertTest/ytelper_dagssats_uten_relaterte",
-                        "SatsRelatertTest/ytelper_prosenttrekk_ikke_begrenset_av_satsboette",
-                        "SatsRelatertTest/ytelper_maanedssats_med_relatert_som_reduserer",
-                        "SkattProsentkortTest/prosentkort_med_skattereduserende_trekk",
-                        "SkattProsentkortTest/prosentkort_beregner_skatt_med_prosentsats",
-                        "SkattFrikortTest/frikort_belopsgrense_uttoemmes",
-                        "SkattFrikortTest/frikort_uten_beloepsgrense_trekker_ikke_skatt",
-                        "SkattAarsskifteTest/januar_beregning_ikke_fjoraars_skattekort",
-                        "SkattAarsskifteTest/januar_med_fjoraars_skattekort",
-                        "SkattAarsskifteTest/aarsskifte_frikort",
-                        "SkattAarsskifteTest/aarsskifte_med_fjoraars_januar_februar",
-                        "SkattAarsskifteTest/aarsskifte_prosentkort",
-                        "SkattAarsskifteTest/januar_februar_split_med_fjoraars",
-                        "AvventTest/avrk_enkel",
-                        "AvventTest/avav_enkel",
-                        "AvventTest/avvent_delvis_overlapp",
-                        "AvventTest/avvent_to_perioder",
-                        "AvventTest/avvent_med_tabelltrekk",
-                        "TidligereUtbetaltTest/enkel_tidligere_utbetalt",
-                        "TidligereUtbetaltTest/tidligere_utbetalt_med_proratering",
-                        "SkattTabellkortTest/tabellkort_biarbeidsgiver_bruker_prosentsats",
-                        "SkattTabellkortTest/tabellkort_blanding_etterbetaling_og_tabelltrekk",
-                        "SkattTabellkortTest/tabellkort_etterbetaling_bruker_prosentsats",
-                        "SkattTabellkortTest/tabellkort_fordelt_grunnlag_med_deltrekk",
-                        "SkattTabellkortTest/tabellkort_hovedarbeidsgiver_beregner_tabelltrekk",
-                        "SkattTabellkortTest/tabellkort_med_skattereduserende_trekk",
-                        "SkattTabellkortTest/tabellkort_uten_prosentsats_kun_tabelltrekk",
-                        "SkattTabellkortTest/tabellkort_verdiberegnet_med_to_vedtakssatser",
-                        "ReskontroKontoTest/svalbard",
-                        "ReskontroKontoTest/kildeskatt",
-                        "FlereYtelserFlereTrekkTest/to_ytelser_med_forskjellig_klasskoder_og_to_trekk_dagsats_og_maanedsats",
-                        "FlereYtelserFlereTrekkTest/to_ytelser_med_forskjellig_klasskoder_og_to_trekk_dagsats_og_prosent",
-                        "FlereYtelserFlereTrekkTest/to_ytelser_med_forskjellig_klasskoder_og_to_trekk_maanedsats_og_prosent",
-                        "SatsRelatertTest/utbdato_maanedssats_resten_etter_foerste_utbetaling"
-                    )
-            }
-
         fun kjørScenario(scenario: Scenario) {
             val skatteKontekst = JsonIgnoreUnknown.decodeFromString<SkatteKontekst>(scenario.skatteKontekst)
             val trekkvedtak = JsonIgnoreUnknown.decodeFromString<List<Trekkvedtak>>(scenario.trekk)
@@ -142,15 +77,8 @@ class BeregningsflytTest :
             }
         }
 
-
-        xcontext("Tester som funker") {
-            withData(nameFn = { it.navn }, funker) { scenario ->
-                kjørScenario(scenario)
-            }
-        }
-
-        xcontext("Tester som ikke funker") {
-            withData(nameFn = { it.navn }, funkerIkke) { scenario ->
+        context("Scenarier") {
+            withData(nameFn = { it.navn }, Scenariolaster.lastAlle()) { scenario ->
                 kjørScenario(scenario)
             }
         }
