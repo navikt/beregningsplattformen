@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 
 import no.nav.sokos.dare.poc.aktoer.AktoerId
-import no.nav.sokos.dare.poc.avvent.Avvent
 import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DatoIntervall
 import no.nav.sokos.dare.poc.beregning.beregningsmotor.Beregningsmotor
@@ -34,7 +33,6 @@ import no.nav.sokos.dare.poc.trekk.SatsType
 import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
-import no.nav.utbetaling.beregning.oppdrag.Avventingsårsak
 import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
@@ -145,29 +143,7 @@ class Beregningsflyt {
                                                 ),
                                         ),
                                     ),
-                                avventPerioder =
-                                    oppdragsopplysninger.avventingsårsak?.let {
-                                        listOf(
-                                            Avvent(
-                                                id = null,
-                                                oppdragId = oppdragId,
-                                                periode = datoIntervall,
-                                                kodeArsak =
-                                                    when (it.opplysning) {
-                                                        is Avventingsårsak.Avregning -> "AVRE"
-                                                        is Avventingsårsak.Refusjonskrav -> "AVRK"
-                                                    },
-                                                datoOverfores =
-                                                    when (val avventing = it.opplysning) {
-                                                        is Avventingsårsak.Avregning -> avventing.til
-                                                        is Avventingsårsak.Refusjonskrav -> avventing.til
-                                                    },
-                                                kansellert = false,
-                                                bruker = it.saksbehandlerId.id,
-                                                tidspktReg = LocalDateTime.now(),
-                                            ),
-                                        )
-                                    } ?: emptyList(),
+                                avventPerioder = emptyList(),
                             ),
                         periode = datoIntervall,
                         konto = "",
