@@ -88,8 +88,11 @@ private fun tidligereYtelsesberegninger(relaterteBeregninger: List<Beregning>): 
                 // TODO: Her må vi filtrere på oppdragId
                 // TODO: Kunne vi unngått å lage Beregning-objektet og heller bruke Delberegning ?
                 val builder = Tidslinje.Builder<Beregning>()
-                beregning.delberegning.filter { it.linjer.any { linje -> linje.type == DelberegningType.YTELSE } }.forEach { delberegning ->
-                    builder.periode(delberegning.datoIntervall.fom til delberegning.datoIntervall.tom!!, beregning.copy(delberegning = listOf(delberegning)))
+                val relevanteDelberegninger = beregning.delberegning.filter { it.oppdragId?.id == 0L }.filter { //husk bruke en id som er unik når vi kommer dit.
+                    it.linjer.any { linje -> linje.type == DelberegningType.YTELSE }
+                }
+                if (relevanteDelberegninger.isNotEmpty()) {
+                  builder.periode(beregning.periode.fom til beregning.periode.tom!!, beregning.copy(delberegning = relevanteDelberegninger ))
                 }
                 builder.build()
             }
