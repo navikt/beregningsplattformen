@@ -13,7 +13,7 @@ trekkrutine2025 = "1.0_20250507160209_6be0e94"
 trekkrutine2026 = "1.0_20260113090201_5cbf08a"
 
 # Serialization
-jackson = "2.22.4"
+jackson = "2.23.0"
 kotlinx-serialization = "1.12.0"
 
 # Logging
