@@ -22,15 +22,17 @@ internal fun Route.beregningApi() {
                     is Oppdragstidslinjeresultat.Gyldig -> oppdragstidslinjeresultat.oppdragstidslinjer
                 }
 
-            BeregningstidslinjeDTO.fra(
-                oppdragstidslinje = oppdragstidslinje,
-                fom = beregningsRequest.fom,
-                tom = beregningsRequest.tom,
-            )
+            val beregningstidslinjeDTO =
+                BeregningstidslinjeDTO.fra(
+                    oppdragstidslinje = oppdragstidslinje,
+                    fom = beregningsRequest.fom,
+                    tom = beregningsRequest.tom,
+                )
 
             call.respond(
                 BeregningResponse(
                     oppdragstidslinje = oppdragstidslinjeDTO,
+                    beregningstidslinje = beregningstidslinjeDTO,
                 ),
             )
         }
