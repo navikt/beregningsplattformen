@@ -5,7 +5,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
 
-import no.nav.utbetaling.beregning.lab.api.labApi
+import no.nav.utbetaling.beregning.lab.beregning.beregningApi
 import no.nav.utbetaling.beregning.lab.config.commonConfig
 
 fun main() {
@@ -15,6 +15,6 @@ fun main() {
 private fun Application.testModule() {
     commonConfig()
     routing {
-        labApi()
+        beregningApi()
     }
 }
