@@ -215,6 +215,6 @@ class BeregningsFordelerFoersteUtbetalingTest :
             val delperioder = kontekst.segmenter.flatMap { it.delperioder }
 
             delperioder shouldHaveSize 2
-            delperioder.map { it.oppdragId() }.zip(erFoersteTrekk(kontekst)).toMap() shouldBe mapOf(oppdrag.id to false, annetOppdrag.id to true)
+            delperioder.map { it.oppdragId }.zip(erFoersteTrekk(kontekst)).toMap() shouldBe mapOf(oppdrag.id to false, annetOppdrag.id to true)
         }
     })

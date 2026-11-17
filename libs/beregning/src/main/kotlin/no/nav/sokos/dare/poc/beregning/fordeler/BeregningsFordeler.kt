@@ -142,7 +142,7 @@ class BeregningsFordeler(
                         .flatMap { segment ->
                             lagDelperioderForSegment(oppdrag, trekk, input, segment, relaterteBeregninger)
                         }.filterNot {
-                            it.ytelselinjer().isEmpty()
+                            it.ytelselinjer.isEmpty()
                         }
                 BeregningsSegment(
                     linjeGroupKey,
@@ -206,7 +206,6 @@ class BeregningsFordeler(
                     .mapNotNull { it.trekkvedtakId }
                     .toSet()
             OppdragDelperiode(
-                oppdrag = oppdragPeriode.medOppdragslinjer(oppdragPeriode.alleOppdragslinjer.filter { segment.overlaps(it.periode) }),
                 periode = segment,
                 konto = input.konto,
                 gjelder = input.gjelder,
@@ -218,6 +217,16 @@ class BeregningsFordeler(
                 overfoeringsdato = input.overfoeringsdato,
                 tidligereTrukneTrekkvedtakIMaaneden = tidligereTrukneTrekkvedtakIMaaneden,
                 relaterteBeregninger = filterRelaterteTilOppdrag(relaterteBeregninger, oppdragPeriode, segment),
+                ytelselinjer =
+                    oppdragPeriode.alleOppdragslinjer.filter { segment.overlaps(it.periode) }.map {
+                        Ytelselinje(
+                            sats = it.sats,
+                            vedtakssats = it.vedtakssats,
+                            ytelseKlassekode = it.kodeKlasse,
+                        )
+                    },
+                fagomraade = oppdragPeriode.fagomraade,
+                oppdragId = oppdragPeriode.id!!,
             )
         }
 
@@ -277,7 +286,7 @@ class BeregningsFordeler(
     private fun sortDelperioder(delperioder: List<OppdragDelperiode>): List<OppdragDelperiode> =
         delperioder.sortedWith(
             compareBy({
-                it.oppdragId()?.id
+                it.oppdragId.id
             }, { it.periode.fom }),
         )
 

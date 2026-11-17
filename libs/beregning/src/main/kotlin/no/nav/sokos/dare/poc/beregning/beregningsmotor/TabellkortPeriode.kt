@@ -21,7 +21,7 @@ internal data class TabellkortPeriode(
 ) {
     fun tabellkortPeriodetype() =
         delperiode
-            .fagomraade()
+            .fagomraade
             .tabellkortPeriodetype
 
     fun tilSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> =
@@ -31,8 +31,8 @@ internal data class TabellkortPeriode(
         }
 
     private fun tilVerdiberegnetSkattTabellDagerPerioder(): List<SkattTabellDagerPeriode> {
-        val vedtakssats = delperiode.ytelselinjer().sumOf { it.vedtakssats ?: BigDecimal.ZERO }
-        val bruttoYtelse = delperiode.ytelselinjer().sumOf { it.sats }.stripTrailingZeros()
+        val vedtakssats = delperiode.ytelselinjer.sumOf { it.vedtakssats ?: ZERO }
+        val bruttoYtelse = delperiode.ytelselinjer.sumOf { it.sats }.stripTrailingZeros()
         val hverdager = delperiode.periode.hverdager
         return listOf(
             SkattTabellDagerPeriode(
@@ -46,7 +46,7 @@ internal data class TabellkortPeriode(
 
     fun tilSkattTabellDagerPeriode(): SkattTabellDagerPeriode {
         val hverdager = delperiode.periode.hverdager
-        val sumArbeidsdagSatser = delperiode.ytelselinjer().sumOf { it.vedtakssats ?: BigDecimal.ZERO }
+        val sumArbeidsdagSatser = delperiode.ytelselinjer.sumOf { it.vedtakssats ?: ZERO }
 
         return hverdager.let { arbeidsdager ->
             SkattTabellDagerPeriode(

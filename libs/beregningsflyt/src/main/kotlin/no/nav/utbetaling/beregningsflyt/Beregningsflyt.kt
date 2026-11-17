@@ -24,11 +24,7 @@ import no.nav.sokos.dare.poc.beregning.fordeler.Ytelselinje
 import no.nav.sokos.dare.poc.beregning.fordeler.beregnInitielleSaldoer
 import no.nav.sokos.dare.poc.beregning.fordeler.beregnInitielleSatser
 import no.nav.sokos.dare.poc.beregning.fordeler.makeTrekkPeriodeForBeregning
-import no.nav.sokos.dare.poc.oppdrag.Oppdrag
 import no.nav.sokos.dare.poc.oppdrag.OppdragId
-import no.nav.sokos.dare.poc.oppdrag.Oppdragslinje
-import no.nav.sokos.dare.poc.oppdrag.Oppdragslinjekjede
-import no.nav.sokos.dare.poc.oppdrag.TypeSats
 import no.nav.sokos.dare.poc.oppdrag.YtelseKlasseKode
 import no.nav.sokos.dare.poc.oppdrag.YtelseKlasseKodeRef
 import no.nav.sokos.dare.poc.trekk.FagomraadeKode
@@ -37,11 +33,9 @@ import no.nav.sokos.dare.poc.trekk.Trekkberegningstype
 import no.nav.sokos.dare.poc.trekk.Trekkperiode
 import no.nav.sokos.dare.poc.trekk.Trekkvedtak
 import no.nav.sokos.dare.poc.trekk.TrekkvedtakId
-import no.nav.utbetaling.beregning.oppdrag.BrukKjøreplan
 import no.nav.utbetaling.beregning.oppdrag.Opplysninger
 import no.nav.utbetaling.beregning.oppdrag.Organisasjonsnummer
 import no.nav.utbetaling.beregning.oppdrag.Personidentifikator
-import no.nav.utbetaling.beregning.oppdrag.SamhandlerId
 import no.nav.utbetaling.beregning.tid.Periode
 import no.nav.utbetaling.beregningsflyt.Avventinger.medAvventing
 
@@ -146,7 +140,6 @@ class Beregningsflyt {
             val bruker = first().sats.saksbehandlerId.id
 
             return OppdragDelperiode(
-                oppdrag = null,
                 periode = datoIntervall,
                 konto = "TODO-fjern-meg-jeg-skal-ikke-være-her",
                 gjelder = gjelderId,

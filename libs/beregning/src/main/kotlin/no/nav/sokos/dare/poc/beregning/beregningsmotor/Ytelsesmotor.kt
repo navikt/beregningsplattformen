@@ -33,9 +33,9 @@ Ytelsesmotor {
                 val delperiode = content.periode
 
                 // På dette tidspunktet er linjeperiodene trimmet i henhold til kjederegler.
-                val oppdragId = requireNotNull(content.oppdragId()) { "Oppdrag mangler id" }
-                content.ytelselinjer().forEach { linje ->
-                    val scratchpad = segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
+
+                content.ytelselinjer.forEach { linje ->
+                    val scratchpad = segment.scratchpad.getOrPut(content.oppdragId) { BeregningsScratchpad() }
                     val dagsBeloep = delperiode.dager.map { linje.beloepForDag(it) }
                     scratchpad.kapasitetStyring.addYtelse(dagsBeloep)
 
@@ -60,7 +60,7 @@ Ytelsesmotor {
                         beregnTidligereUtbetalt(
                             relaterteBeregninger = content.relaterteBeregninger,
                             periode = content.periode,
-                            oppdragId = oppdragId,
+                            oppdragId = content.oppdragId,
                             kodeKlasse = LinjeKlassekode.Ytelse(linje.ytelseKlassekode),
                         )
                     scratchpad.erEtterbetaling[content.periode] = tidligereUtbetaltLinjer.isNotEmpty()
@@ -83,7 +83,7 @@ Ytelsesmotor {
                                         grunn = Reasons.KREVER_TILBAKEKREVING,
                                         verdier =
                                             mapOf(
-                                                "oppdrag" verdi oppdragId,
+                                                "oppdrag" verdi content.oppdragId,
                                                 "periode" verdi delperiode,
                                                 "utbetalt" verdi deduction,
                                                 "ytelse" verdi skalarKapasitet,

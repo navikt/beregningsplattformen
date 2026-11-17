@@ -18,6 +18,7 @@ import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsFordeler
 import no.nav.sokos.dare.poc.beregning.fordeler.BeregningsScratchpad
 import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
+import no.nav.sokos.dare.poc.beregning.fordeler.Ytelselinje
 import no.nav.sokos.dare.poc.oppdrag.Oppdrag
 import no.nav.sokos.dare.poc.oppdrag.OppdragId
 import no.nav.sokos.dare.poc.oppdrag.Oppdragslinje
@@ -148,7 +149,6 @@ private fun tabellkortPeriode(fagomraade: FagomraadeKode): TabellkortPeriode {
 
     val delperiode =
         OppdragDelperiode(
-            oppdrag = oppdrag,
             periode =
                 DatoIntervall(
                     fom = LocalDate.parse("2026-01-05"),
@@ -163,6 +163,16 @@ private fun tabellkortPeriode(fagomraade: FagomraadeKode): TabellkortPeriode {
             ekstraInfo = mutableListOf(),
             overfoeringsdato = null,
             tidligereTrukneTrekkvedtakIMaaneden = emptySet(),
+            ytelselinjer =
+                oppdrag.alleOppdragslinjer.map {
+                    Ytelselinje(
+                        sats = it.sats,
+                        vedtakssats = it.vedtakssats,
+                        ytelseKlassekode = it.kodeKlasse,
+                    )
+                },
+            oppdragId = oppdrag.id!!,
+            fagomraade = oppdrag.fagomraade,
         )
 
     return TabellkortPeriode(

@@ -22,7 +22,7 @@ data class BeregningsmotorKontekst(
         segmenter.filter { it.delperioder.isNotEmpty() }.map { segment: BeregningsSegment ->
             require(
                 segment.delperioder
-                    .map { it.oppdragId() }
+                    .map { it.oppdragId }
                     .distinct()
                     .size == 1,
             ) { "Vi har ikke implementert støtte for beregning av multiple oppdrag enda" }
@@ -42,7 +42,7 @@ data class BeregningsmotorKontekst(
                 konto = grunnlag.konto,
                 overfoeres = if (segment.avventStatus != null) segment.avventOverfoeres else grunnlag.overfoeringsdato,
                 fagomraade =
-                    segment.delperioder.first().fagomraade(), // TODO: På segmentnivå?
+                    segment.delperioder.first().fagomraade, // TODO: På segmentnivå?
                 gjelder = grunnlag.gjelder,
                 beregnet = grunnlag.beregnet,
                 utbetalesTil = grunnlag.utbetalesTil,

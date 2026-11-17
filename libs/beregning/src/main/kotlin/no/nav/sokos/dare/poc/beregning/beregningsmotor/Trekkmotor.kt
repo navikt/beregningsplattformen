@@ -30,7 +30,7 @@ class Trekkmotor(
                 val trekk = delperiode.trekk.filtrerPåKategori(kategori).sortedWith(trekkvedtakSortering)
                 if (trekk.isEmpty()) return@forEach
 
-                val oppdragId = requireNotNull(delperiode.oppdragId()) { "Oppdrag mangler id" }
+                val oppdragId = requireNotNull(delperiode.oppdragId) { "Oppdrag mangler id" }
                 val scratchpad = segment.scratchpad.getOrPut(oppdragId) { BeregningsScratchpad() }
                 val trekkgrunnlag = calculateTrekkgrunnlag(delperiode)
 
@@ -108,7 +108,7 @@ class Trekkmotor(
     }
 
     private fun calculateTrekkgrunnlag(delperiode: OppdragDelperiode): BigDecimal {
-        val trekkPliktigeYtelseSatser = delperiode.ytelselinjer().filter { it.ytelseKlassekode.grunnlagTrekk }.sumOf { it.sats }
+        val trekkPliktigeYtelseSatser = delperiode.ytelselinjer.filter { it.ytelseKlassekode.grunnlagTrekk }.sumOf { it.sats }
         return delperiode.periode.hverdager.sumOf { trekkPliktigeYtelseSatser }
     }
 
@@ -134,7 +134,7 @@ class Trekkmotor(
         ): Boolean =
             trekkvedtak.trekkperiode.satstype == SatsType.M &&
                 trekkvedtak.trekktype.trekkberegningstype == Trekkberegningstype.UTBDATO &&
-                delperiode.fagomraade().faggruppe.halverTrekkForFørsteUtbetalingIMåned &&
+                delperiode.fagomraade.faggruppe.halverTrekkForFørsteUtbetalingIMåned &&
                 trekkvedtak.id !in delperiode.tidligereTrukneTrekkvedtakIMaaneden
     }
 }
