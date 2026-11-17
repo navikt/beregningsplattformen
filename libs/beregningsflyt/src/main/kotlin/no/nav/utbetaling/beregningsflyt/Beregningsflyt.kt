@@ -20,6 +20,7 @@ import no.nav.sokos.dare.poc.beregning.fordeler.OppdragDelperiode
 import no.nav.sokos.dare.poc.beregning.fordeler.SaldoBoetter
 import no.nav.sokos.dare.poc.beregning.fordeler.SatsBoetter
 import no.nav.sokos.dare.poc.beregning.fordeler.TrekkvedtakForBeregning
+import no.nav.sokos.dare.poc.beregning.fordeler.Ytelselinje
 import no.nav.sokos.dare.poc.beregning.fordeler.beregnInitielleSaldoer
 import no.nav.sokos.dare.poc.beregning.fordeler.beregnInitielleSatser
 import no.nav.sokos.dare.poc.beregning.fordeler.makeTrekkPeriodeForBeregning
@@ -75,6 +76,7 @@ class Beregningsflyt {
                                 periode = periode,
                                 beregningstidspunkt = beregningstidspunkt,
                                 overføres = beregningsgrunnlag.overføres,
+                                fagomraade = FagomraadeKode.fromValue(oppdragsidentifikator.fagområde.fagområde),
                                 tidligereYtelsesberegninger = beregningsopplysninger.tidligereYtelsesberegninger,
                                 trekkvedtak = beregningsgrunnlag.trekkVedtak,
                                 tidligereTrukneTrekkvedtakIMaaneden = tidligereTrukneTrekkvedtakIMaaneden,
@@ -125,6 +127,7 @@ class Beregningsflyt {
             periode: Periode,
             beregningstidspunkt: LocalDateTime,
             overføres: LocalDate,
+            fagomraade: FagomraadeKode,
             tidligereYtelsesberegninger: List<Beregning>,
             trekkvedtak: List<Trekkvedtak>,
             tidligereTrukneTrekkvedtakIMaaneden: Set<TrekkvedtakId>,
@@ -141,81 +144,31 @@ class Beregningsflyt {
                     null -> gjelderId
                 }
             val bruker = first().sats.saksbehandlerId.id
+
             return OppdragDelperiode(
-                oppdrag =
-                    Oppdrag(
-                        id = oppdragId,
-                        fagsystemId = first().fagsystemId.id,
-                        fagomraade = FagomraadeKode.fromValue(first().fagområde.fagområde),
-                        datoForfall = first().forfall?.opplysning,
-                        gjelderId = gjelderId,
-                        datoTom = datoIntervall.tom,
-                        bilagsType = first().bilagstype?.opplysning?.type,
-                        bruker = bruker,
-                        tidspktReg = LocalDateTime.now(),
-                        oppdragslinjekjeder =
-                            map { opplysninger ->
-                                Oppdragslinjekjede(
-                                    id = null,
-                                    oppdragId = oppdragId,
-                                    tidspktReg = LocalDateTime.now(),
-                                    linjer =
-                                        listOf(
-                                            Oppdragslinje(
-                                                id = null,
-                                                oppdragslinjekjedeId = null,
-                                                linjeId = 0,
-                                                delytelseId = opplysninger.delytelseId.id,
-                                                sats = opplysninger.sats.opplysning.verdi,
-                                                typeSats = TypeSats.valueOf(opplysninger.sats.opplysning.satsType),
-                                                brukKjoreplan =
-                                                    when (opplysninger.brukKjøreplan.opplysning) {
-                                                        BrukKjøreplan.Ja -> true
-                                                        BrukKjøreplan.Nei -> false
-                                                    },
-                                                datoVedtakFom = periode.fom,
-                                                datoVedtakTom = (periode as? Periode.LukketPeriode)?.tom,
-                                                vedtakId = opplysninger.vedtakId?.opplysning?.id ?: "Javel",
-                                                henvisning = opplysninger.henvisning?.opplysning?.henvisning,
-                                                utbetalesTilId = utbetalesTil,
-                                                kodeKlasse =
-                                                    YtelseKlasseKode(
-                                                        kode = YtelseKlasseKodeRef(opplysninger.ytelseKlassekode.opplysning.kode),
-                                                        beskrivelse = "ja",
-                                                        grunnlagSkatt = true,
-                                                        grunnlagTrekk = true,
-                                                        fagomraader = listOf(FagomraadeKode.AAP), // TODO
-                                                        tidspktOpprettet = LocalDateTime.now(),
-                                                    ),
-                                                skyldnerId =
-                                                    when (val skyldner = opplysninger.skyldner?.opplysning) {
-                                                        is SamhandlerId -> AktoerId(skyldner.tssId.toLong())
-                                                        null -> null
-                                                    },
-                                                kid = opplysninger.kidnummer?.opplysning?.nummer,
-                                                typeSoknad = opplysninger.søknadstype?.opplysning?.type,
-                                                maksDato = opplysninger.maksdato?.opplysning,
-                                                refunderesId =
-                                                    when (val refunderes = opplysninger.refunderesTil?.opplysning) {
-                                                        is Organisasjonsnummer -> refunderes.nummer
-                                                        null -> null
-                                                    },
-                                                bruker = bruker,
-                                                tidspktReg = LocalDateTime.now(),
-                                                vedtakssats = opplysninger.vedtakssats?.opplysning?.verdi,
-                                                annullert = false,
-                                            ),
-                                        ),
-                                )
-                            },
-                        avventPerioder = emptyList(),
-                    ),
+                oppdrag = null,
                 periode = datoIntervall,
                 konto = "TODO-fjern-meg-jeg-skal-ikke-være-her",
                 gjelder = gjelderId,
                 beregnet = beregningstidspunkt,
                 utbetalesTil = utbetalesTil,
                 status = BeregningsStatus.BEREGNET,
+                ytelselinjer = this.map {
+                    Ytelselinje(
+                        sats = it.sats.opplysning.verdi,
+                        vedtakssats = it.vedtakssats?.opplysning?.verdi,
+                        ytelseKlassekode = YtelseKlasseKode(
+                            kode = YtelseKlasseKodeRef(it.ytelseKlassekode.opplysning.kode),
+                            beskrivelse = "ja",
+                            grunnlagSkatt = true,
+                            grunnlagTrekk = true,
+                            fagomraader = listOf(FagomraadeKode.AAP), // TODO
+                            tidspktOpprettet = LocalDateTime.now(),
+                        ),
+                    )
+                },
+                fagomraade = fagomraade,
+                oppdragId = oppdragId,
                 trekk = buildTrekkForDelperiode(datoIntervall, overføres, trekkvedtak),
                 ekstraInfo = mutableListOf(),
                 overfoeringsdato = overføres,

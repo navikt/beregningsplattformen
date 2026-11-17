@@ -28,7 +28,7 @@ data class Ytelselinje(
 )
 
 data class OppdragDelperiode(
-    private val oppdrag: Oppdrag,
+    private val oppdrag: Oppdrag?,
     val periode: DatoIntervall,
     val konto: String,
     val gjelder: AktoerId,
@@ -45,7 +45,7 @@ data class OppdragDelperiode(
     private val fagomraade: FagomraadeKode? = null,
 ) {
     fun ytelselinjer() =
-        ytelselinjer ?: oppdrag.alleOppdragslinjer.map {
+        ytelselinjer ?: oppdrag!!.alleOppdragslinjer.map {
             Ytelselinje(
                 sats = it.sats,
                 vedtakssats = it.vedtakssats,
@@ -53,9 +53,9 @@ data class OppdragDelperiode(
             )
         }
 
-    fun oppdragId() = oppdragId ?: oppdrag.id
+    fun oppdragId() = oppdragId ?: oppdrag!!.id
 
-    fun fagomraade() = fagomraade ?: oppdrag.fagomraade
+    fun fagomraade() = fagomraade ?: oppdrag!!.fagomraade
 
     internal fun effektivOverfoeringsdato(): LocalDate = overfoeringsdato ?: beregnet.toLocalDate()
 }
