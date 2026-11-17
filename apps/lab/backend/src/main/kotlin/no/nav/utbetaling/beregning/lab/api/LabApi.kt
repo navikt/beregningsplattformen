@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.Collections
 import java.util.IdentityHashMap
+
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
@@ -11,6 +12,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+
 import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.lab.config.createApiError
 import no.nav.utbetaling.beregning.lab.dto.OppdragstidslinjeDTO
@@ -86,19 +88,20 @@ fun Route.labApi() {
                 }
             val oppdragstidslinje = resultat.oppdragstidslinje
 
-            val grunnlag = Beregningsgrunnlag(
-                beregningsperiode = Periode.LukketPeriode(beregningsRequest.fom ?: oppdragstidslinje.minOf { it.first.fom }, beregningsRequest.tom ?: LocalDate.now()),
-                oppdragstidslinje = oppdragstidslinje,
-                skatteKontekst = SkatteKontekst(null, emptyMap()),
-                trekkVedtak = emptyList(),
-                overføres = LocalDate.now(),
-                relaterteBeregninger = emptyList(),
-                tilgjengeligFrikortbeløp = BigDecimal.ZERO
-            )
+            val grunnlag =
+                Beregningsgrunnlag(
+                    beregningsperiode = Periode.LukketPeriode(beregningsRequest.fom ?: oppdragstidslinje.minOf { it.first.fom }, beregningsRequest.tom ?: LocalDate.now()),
+                    oppdragstidslinje = oppdragstidslinje,
+                    skatteKontekst = SkatteKontekst(null, emptyMap()),
+                    trekkVedtak = emptyList(),
+                    overføres = LocalDate.now(),
+                    relaterteBeregninger = emptyList(),
+                    tilgjengeligFrikortbeløp = BigDecimal.ZERO,
+                )
             val beregninger = Beregningsflyt().beregn(grunnlag)
 
             Log.info(
-               " Beregninger: $beregninger"
+                " Beregninger: $beregninger",
             )
 
             call.respond(resultat.oppdragstidslinjeDTO)

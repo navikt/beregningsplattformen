@@ -146,20 +146,22 @@ class Beregningsflyt {
                 beregnet = beregningstidspunkt,
                 utbetalesTil = utbetalesTil,
                 status = BeregningsStatus.BEREGNET,
-                ytelselinjer = this.map {
-                    Ytelselinje(
-                        sats = it.sats.opplysning.verdi,
-                        vedtakssats = it.vedtakssats?.opplysning?.verdi,
-                        ytelseKlassekode = YtelseKlasseKode(
-                            kode = YtelseKlasseKodeRef(it.ytelseKlassekode.opplysning.kode),
-                            beskrivelse = "ja",
-                            grunnlagSkatt = true,
-                            grunnlagTrekk = true,
-                            fagomraader = listOf(FagomraadeKode.AAP), // TODO
-                            tidspktOpprettet = LocalDateTime.now(),
-                        ),
-                    )
-                },
+                ytelselinjer =
+                    this.map {
+                        Ytelselinje(
+                            sats = it.sats.opplysning.verdi,
+                            vedtakssats = it.vedtakssats?.opplysning?.verdi,
+                            ytelseKlassekode =
+                                YtelseKlasseKode(
+                                    kode = YtelseKlasseKodeRef(it.ytelseKlassekode.opplysning.kode),
+                                    beskrivelse = "ja",
+                                    grunnlagSkatt = true,
+                                    grunnlagTrekk = true,
+                                    fagomraader = listOf(FagomraadeKode.AAP), // TODO
+                                    tidspktOpprettet = LocalDateTime.now(),
+                                ),
+                        )
+                    },
                 fagomraade = fagomraade,
                 oppdragId = oppdragId,
                 trekk = buildTrekkForDelperiode(datoIntervall, overføres, trekkvedtak),
