@@ -12,7 +12,7 @@ internal const val API_V1 = "/api/v1"
 
 internal fun Route.beregningApi() {
     route(API_V1) {
-        post("tolk-oppdrag") {
+        post("beregn") {
             val beregningsRequest = call.receive<BeregningRequest>()
 
             val (oppdragstidslinjeDTO, oppdragstidslinje) =

@@ -9,13 +9,13 @@ const BASE_URI = {
 	API_V1: "/api/v1",
 };
 
-export async function postTolkOppdrag(
+export async function postBeregn(
 	request: BeregningRequest,
 	signal?: AbortSignal,
 ): Promise<BeregningResponse> {
 	const response = await axiosPostFetcher<BeregningRequest, unknown>(
 		BASE_URI.API_V1,
-		"/tolk-oppdrag",
+		"/beregn",
 		request,
 		{
 			signal,

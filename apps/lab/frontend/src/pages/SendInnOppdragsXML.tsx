@@ -23,7 +23,7 @@ import {
 } from "@navikt/ds-react";
 import { isAxiosError } from "axios";
 import { type SubmitEvent, useRef, useState } from "react";
-import { postTolkOppdrag } from "../api/apiService";
+import { postBeregn } from "../api/apiService";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
 import { HttpStatusCodeError } from "../types/Error";
@@ -290,7 +290,7 @@ export default function SendInnOppdragsXML() {
 		senderRef.current = true;
 		settSender(true);
 		try {
-			const response = await postTolkOppdrag({ xml: xmlPerUtkast });
+			const response = await postBeregn({ xml: xmlPerUtkast });
 			settRespons(response);
 			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
 				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
