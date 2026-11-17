@@ -40,7 +40,6 @@ internal object Metrikker {
                 node
                     .properties()
                     .asSequence()
-                    .filterNot { it.key in tagKeys }
                     .flatMap { (key, value) ->
                         fra(
                             node = value,
@@ -104,6 +103,7 @@ internal object Metrikker {
 
     private val visVerdierFor =
         setOf(
+            "oppdrag-110.kodeFagomraade",
             "oppdrag-110.kodeAksjon",
             "oppdrag-110.kodeEndring",
             "oppdrag-110.utbetFrekvens",
@@ -112,6 +112,7 @@ internal object Metrikker {
             "oppdrag-110.oppdrags-linje-150.brukKjoreplan",
             "oppdrag-110.oppdrags-linje-150.fradragTillegg",
             "oppdrag-110.oppdrags-linje-150.kodeEndringLinje",
+            "oppdrag-110.oppdrags-linje-150.kodeKlassifik",
             "oppdrag-110.oppdrags-enhet-120.typeEnhet",
         )
 
