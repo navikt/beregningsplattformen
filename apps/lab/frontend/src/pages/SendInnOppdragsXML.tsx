@@ -27,6 +27,7 @@ import { postTolkOppdrag } from "../api/apiService";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
 import { HttpStatusCodeError } from "../types/Error";
+import type { BeregningResponse } from "../types/BeregningResponse";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
 import { fillTypedTemplate, templateFields } from "../util/template";
 import styles from "./SendInnOppdragsXML.module.css";
@@ -169,7 +170,7 @@ export default function SendInnOppdragsXML() {
 	const [sender, settSender] = useState(false);
 	const [resultat, settResultat] = useState<string | null>(null);
 	const [feilmelding, settFeilmelding] = useState<string | null>(null);
-	const [respons, settRespons] = useState<OppdragstidslinjeDTO | null>(null);
+	const [respons, settRespons] = useState<BeregningResponse | null>(null);
 	const [xmlFeilId, settXmlFeilId] = useState<number | null>(null);
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
 		() => new Set(),
@@ -185,7 +186,7 @@ export default function SendInnOppdragsXML() {
 		historisk: boolean;
 	} | null>(null);
 	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(4);
-	const kjeder = respons?.kjeder ?? [];
+	const kjeder = respons?.oppdragstidslinje.kjeder ?? [];
 	const allePerioder = kjeder.flatMap((kjede) =>
 		kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 	);
@@ -291,7 +292,7 @@ export default function SendInnOppdragsXML() {
 		try {
 			const response = await postTolkOppdrag({ xml: xmlPerUtkast });
 			settRespons(response);
-			const perioder = response.kjeder.flatMap((kjede) =>
+			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
 				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 			);
 			if (perioder.length === 0) {

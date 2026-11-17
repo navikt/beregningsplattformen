@@ -28,7 +28,11 @@ internal fun Route.beregningApi() {
                 tom = beregningsRequest.tom,
             )
 
-            call.respond(oppdragstidslinjeDTO)
+            call.respond(
+                BeregningResponse(
+                    oppdragstidslinje = oppdragstidslinjeDTO,
+                ),
+            )
         }
     }
 }

@@ -1,8 +1,8 @@
 import type { BeregningRequest } from "../types/BeregningRequest";
 import {
-	type OppdragstidslinjeDTO,
-	oppdragstidslinjeSchema,
-} from "../types/OppdragstidslinjeDTO";
+	type BeregningResponse,
+	beregningResponseSchema,
+} from "../types/BeregningResponse";
 import { axiosPostFetcher } from "./config/apiConfig";
 
 const BASE_URI = {
@@ -12,7 +12,7 @@ const BASE_URI = {
 export async function postTolkOppdrag(
 	request: BeregningRequest,
 	signal?: AbortSignal,
-): Promise<OppdragstidslinjeDTO> {
+): Promise<BeregningResponse> {
 	const response = await axiosPostFetcher<BeregningRequest, unknown>(
 		BASE_URI.API_V1,
 		"/tolk-oppdrag",
@@ -22,5 +22,5 @@ export async function postTolkOppdrag(
 			responseType: "json",
 		},
 	);
-	return oppdragstidslinjeSchema.parse(response);
+	return beregningResponseSchema.parse(response);
 }

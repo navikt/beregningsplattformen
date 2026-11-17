@@ -5,6 +5,6 @@ const API_V1 = "/api/v1";
 
 export const handlers = [
 	http.post(`${API_V1}/tolk-oppdrag`, () =>
-		HttpResponse.json(tidslinjeData, { status: 200 }),
+		HttpResponse.json({ oppdragstidslinje: tidslinjeData }, { status: 200 }),
 	),
 ];
