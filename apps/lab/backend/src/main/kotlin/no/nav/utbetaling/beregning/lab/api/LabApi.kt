@@ -1,8 +1,9 @@
 package no.nav.utbetaling.beregning.lab.api
 
+import java.math.BigDecimal
+import java.time.LocalDate
 import java.util.Collections
 import java.util.IdentityHashMap
-
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
@@ -10,12 +11,16 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-
+import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
 import no.nav.utbetaling.beregning.lab.config.createApiError
 import no.nav.utbetaling.beregning.lab.dto.OppdragstidslinjeDTO
 import no.nav.utbetaling.beregning.lab.dto.toDTO
+import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
+import no.nav.utbetaling.beregning.tid.Periode
+import no.nav.utbetaling.beregningsflyt.Beregningsflyt
+import no.nav.utbetaling.beregningsflyt.Beregningsgrunnlag
 
 const val API_V1 = "/api/v1"
 
@@ -58,10 +63,10 @@ fun Route.labApi() {
         )
 
         post("tolk-oppdrag") {
-            val requestBody = call.receive<BeregningRequest>()
+            val beregningsRequest = call.receive<BeregningRequest>()
 
             val resultat =
-                requestBody.xml.foldIndexed(Oppdragstidslinjer()) { index, sammenslåttOppdragstidslinjer, xml ->
+                beregningsRequest.xml.foldIndexed(Oppdragstidslinjer()) { index, sammenslåttOppdragstidslinjer, xml ->
                     val innsending = index + 1
 
                     val oppdaterOppdragtidslinje =
@@ -79,6 +84,23 @@ fun Route.labApi() {
                         oppdragstidslinje = oppdaterOppdragtidslinje,
                     )
                 }
+            val oppdragstidslinje = resultat.oppdragstidslinje
+
+            val grunnlag = Beregningsgrunnlag(
+                beregningsperiode = Periode.LukketPeriode(beregningsRequest.fom ?: oppdragstidslinje.minOf { it.first.fom }, beregningsRequest.tom ?: LocalDate.now()),
+                oppdragstidslinje = oppdragstidslinje,
+                skatteKontekst = SkatteKontekst(null, emptyMap()),
+                trekkVedtak = emptyList(),
+                overføres = LocalDate.now(),
+                relaterteBeregninger = emptyList(),
+                tilgjengeligFrikortbeløp = BigDecimal.ZERO
+            )
+            val beregninger = Beregningsflyt().beregn(grunnlag)
+
+            Log.info(
+               " Beregninger: $beregninger"
+            )
+
             call.respond(resultat.oppdragstidslinjeDTO)
         }
     }

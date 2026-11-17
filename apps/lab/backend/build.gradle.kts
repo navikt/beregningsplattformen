@@ -8,7 +8,7 @@ plugins {
 group = "no.nav.utbetaling.beregning"
 
 dependencies {
-    implementation(project(":libs:oppdrag"))
+    implementation(project(":libs:beregningsflyt"))
     implementation(project(":libs:http"))
     implementation(project(":libs:kotlinx"))
     implementation(project(":libs:log"))

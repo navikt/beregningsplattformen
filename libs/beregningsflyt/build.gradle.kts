@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":libs:beregning"))
-    implementation(project(":libs:oppdrag"))
+    api(project(":libs:beregning"))
+    api(project(":libs:oppdrag"))
     testImplementation(testFixtures(project(":libs:tid")))
 }
