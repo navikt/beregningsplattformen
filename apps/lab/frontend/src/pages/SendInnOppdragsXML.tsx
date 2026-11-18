@@ -24,6 +24,7 @@ import {
 import { isAxiosError } from "axios";
 import { type SubmitEvent, useRef, useState } from "react";
 import { postBeregn } from "../api/apiService";
+import { Beregningstidslinje } from "../components/Beregningstidslinje";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
 import { HttpStatusCodeError } from "../types/Error";
@@ -419,7 +420,7 @@ export default function SendInnOppdragsXML() {
 				aria-labelledby="tidslinje-heading"
 			>
 				<Heading id="tidslinje-heading" level="2" size="medium">
-					Tidslinjer
+					Mottak
 				</Heading>
 				{feilmelding ? (
 					<LocalAlert status="error">
@@ -704,6 +705,21 @@ export default function SendInnOppdragsXML() {
 						</section>
 					)}
 				</Box>
+			</section>
+			<section
+				className={`${styles.laboratorium__panel} ${styles.laboratorium__tidslinje}`}
+				aria-labelledby="beregning-heading"
+			>
+				<Heading id="beregning-heading" level="2" size="medium">
+					Beregning
+				</Heading>
+				{respons ? (
+					<Beregningstidslinje
+						beregningstidslinje={respons.beregningstidslinje}
+					/>
+				) : (
+					<BodyShort>Ingen beregninger å vise.</BodyShort>
+				)}
 			</section>
 		</main>
 	);
