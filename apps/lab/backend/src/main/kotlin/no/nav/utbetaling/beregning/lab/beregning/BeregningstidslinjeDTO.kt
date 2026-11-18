@@ -16,6 +16,10 @@ import no.nav.utbetaling.beregningsflyt.Beregningsgrunnlag
 @Serializable
 data class BeregningDTO(
     val id: Int,
+    val gjelder: String,
+    val utbetalesTil: String,
+    val kidnummer: String?,
+    val status: String,
     val delberegninger: List<DelberegningDTO>,
 )
 
@@ -25,6 +29,9 @@ data class DelberegningDTO(
     @Contextual val fom: LocalDate,
     @Contextual val tom: LocalDate,
     val linjer: List<LinjeDTO>,
+    val fagomraade: String,
+    val beloep: String,
+    // TODO: fagsystemId
 )
 
 @Serializable
@@ -38,6 +45,8 @@ enum class LinjetypeDTO {
 data class LinjeDTO(
     val id: Int,
     val type: LinjetypeDTO,
+    val sats: String?,
+    val beloep: String,
 )
 
 @Serializable
@@ -75,16 +84,24 @@ data class BeregningstidslinjeDTO(
                 beregninger.mapIndexed { beregningIndex, beregning ->
                     BeregningDTO(
                         id = beregningIndex + 1,
+                        gjelder = "${beregning.gjelder.id}",
+                        utbetalesTil = "${beregning.utbetalesTil?.id ?: beregning.gjelder?.id}", // TODO: Rart den kunnskapen ligger her
+                        kidnummer = beregning.kid,
+                        status = beregning.status.name,
                         delberegninger =
                             beregning.delberegning.mapIndexed { delberegningIndex, delberegning ->
                                 DelberegningDTO(
                                     id = delberegningIndex + 1,
                                     fom = delberegning.datoIntervall.fom,
                                     tom = delberegning.datoIntervall.tom ?: error("Delberegning skal ha lukket periode"),
+                                    beloep = delberegning.sum.toPlainString(),
+                                    fagomraade = beregning.fagomraade.name, // TODO: Burde ligge på delberegningnivå i modellen også,
                                     linjer =
                                         delberegning.linjer.mapIndexed { linjeIndex, delberegningslinje ->
                                             LinjeDTO(
                                                 id = linjeIndex + 1,
+                                                beloep = delberegningslinje.sum.toPlainString(),
+                                                sats = delberegningslinje.sats?.let { "${it.toPlainString()} ${delberegningslinje.satsType!!.name}" },
                                                 type =
                                                     when (delberegningslinje.type) {
                                                         DelberegningType.YTELSE -> LinjetypeDTO.YTELSE
