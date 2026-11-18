@@ -14,6 +14,20 @@ import no.nav.utbetaling.beregningsflyt.Beregningsflyt
 import no.nav.utbetaling.beregningsflyt.Beregningsgrunnlag
 
 @Serializable
+data class BeregningDTO(
+    val id: Int,
+    val delberegninger: List<DelberegningDTO>,
+)
+
+@Serializable
+data class DelberegningDTO(
+    val id: Int,
+    @Contextual val fom: LocalDate,
+    @Contextual val tom: LocalDate,
+    val linjer: List<LinjeDTO>,
+)
+
+@Serializable
 enum class LinjetypeDTO {
     YTELSE,
     SKATT,
@@ -22,17 +36,13 @@ enum class LinjetypeDTO {
 
 @Serializable
 data class LinjeDTO(
-    val beregningId: Int,
-    val delperiodeId: Int,
-    val linjeId: Int,
+    val id: Int,
     val type: LinjetypeDTO,
-    @Contextual val fom: LocalDate,
-    @Contextual val tom: LocalDate,
 )
 
 @Serializable
 data class BeregningstidslinjeDTO(
-    val linjer: List<LinjeDTO>,
+    val beregninger: List<BeregningDTO>,
 ) {
     companion object {
         fun fra(
@@ -61,31 +71,37 @@ data class BeregningstidslinjeDTO(
 
             val (_, beregninger) = Beregningsflyt().beregn(grunnlag)
 
-            val linjer =
-                beregninger.flatMapIndexed { beregningIndex, beregning ->
-                    beregning.delberegning.flatMapIndexed { delberegningIndex, delberegning ->
-                        delberegning.linjer.mapIndexed { linjeIndex, delberegningslinje ->
-                            LinjeDTO(
-                                beregningId = beregningIndex + 1,
-                                delperiodeId = delberegningIndex + 1,
-                                linjeId = linjeIndex + 1,
-                                type =
-                                    when (delberegningslinje.type) {
-                                        DelberegningType.YTELSE -> LinjetypeDTO.YTELSE
-                                        DelberegningType.SKATT -> LinjetypeDTO.SKATT
-                                        DelberegningType.TREKK -> LinjetypeDTO.TREKK
-                                        DelberegningType.SUM,
-                                        DelberegningType.TIDLIGERE_UTBETALT,
-                                        DelberegningType.FRIKORT_BRUK,
-                                        -> error("Hva er linjetype ${delberegningslinje.type.name} ?")
-                                    },
-                                fom = delberegning.datoIntervall.fom,
-                                tom = delberegning.datoIntervall.tom ?: error("Delberegning skal ha lukket periode"),
-                            )
-                        }
-                    }
+            val beregningerDTO =
+                beregninger.mapIndexed { beregningIndex, beregning ->
+                    BeregningDTO(
+                        id = beregningIndex + 1,
+                        delberegninger =
+                            beregning.delberegning.mapIndexed { delberegningIndex, delberegning ->
+                                DelberegningDTO(
+                                    id = delberegningIndex + 1,
+                                    fom = delberegning.datoIntervall.fom,
+                                    tom = delberegning.datoIntervall.tom ?: error("Delberegning skal ha lukket periode"),
+                                    linjer =
+                                        delberegning.linjer.mapIndexed { linjeIndex, delberegningslinje ->
+                                            LinjeDTO(
+                                                id = linjeIndex + 1,
+                                                type =
+                                                    when (delberegningslinje.type) {
+                                                        DelberegningType.YTELSE -> LinjetypeDTO.YTELSE
+                                                        DelberegningType.SKATT -> LinjetypeDTO.SKATT
+                                                        DelberegningType.TREKK -> LinjetypeDTO.TREKK
+                                                        DelberegningType.SUM,
+                                                        DelberegningType.TIDLIGERE_UTBETALT,
+                                                        DelberegningType.FRIKORT_BRUK,
+                                                        -> error("Hva er linjetype ${delberegningslinje.type.name} ?")
+                                                    },
+                                            )
+                                        },
+                                )
+                            },
+                    )
                 }
-            return BeregningstidslinjeDTO(linjer)
+            return BeregningstidslinjeDTO(beregningerDTO)
         }
     }
 }
