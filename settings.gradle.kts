@@ -6,6 +6,7 @@ rootProject.name = "beregningsplattformen"
 
 include(
     "apps:mottak",
+    "apps:trekk",
     "apps:lab:backend",
 )
 
