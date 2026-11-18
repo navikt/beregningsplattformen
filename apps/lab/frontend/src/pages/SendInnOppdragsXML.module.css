@@ -1,26 +1,17 @@
 .laboratorium {
   box-sizing: border-box;
-  display: flex;
   min-height: 100vh;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--ax-space-32);
-  padding: var(--ax-space-32);
-}
-
-.laboratorium__panel {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 90rem;
-  padding: var(--ax-space-32);
-  border: 1px solid var(--ax-border-neutral-subtle);
-  border-radius: var(--ax-radius-12);
 }
 
 .laboratorium__panel--xml,
 .laboratorium__tidslinje {
+  box-sizing: border-box;
   background: var(--ax-bg-meta-purple-moderateA);
+}
+
+.laboratorium__tidslinje {
+  border: 1px solid var(--ax-border-neutral-subtle);
+  border-radius: var(--ax-radius-12);
 }
 
 .laboratorium__intro,
@@ -29,91 +20,22 @@
 }
 
 .laboratorium__xmlvalg {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--ax-space-8);
-  margin-block-end: var(--ax-space-16);
-  margin-inline: 0;
+  margin: 0;
   padding: 0;
   border: 0;
 }
 
-.laboratorium__leggtil {
-  display: flex;
-  justify-content: flex-end;
-  margin-block-start: var(--ax-space-16);
-}
-
-.laboratorium__resultat {
-  margin: 0;
-}
-
-.laboratorium__tidslinje {
-  display: grid;
-  gap: var(--ax-space-16);
-  min-width: 0;
-}
-
 .laboratorium__kjede {
-  min-width: 0;
-  padding: var(--ax-space-16);
-  border: 2px solid var(--ax-border-neutral);
-  border-radius: var(--ax-radius-12);
   background: var(--ax-bg-meta-purple-soft);
-}
-
-.laboratorium__tidslinjenavigasjon {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--ax-space-8);
-  min-width: 0;
-}
-
-.laboratorium__tidslinjekontroller {
-  display: flex;
-  align-items: center;
-  gap: var(--ax-space-8);
-  margin-inline-start: auto;
-}
-
-.laboratorium__tidslinjepaginering {
-  display: flex;
-  flex-shrink: 0;
-  gap: var(--ax-space-4);
-}
-
-.laboratorium__tidslinjeetikett {
-  display: flex;
-  align-items: center;
-  gap: var(--ax-space-8);
-}
-
-.laboratorium__tidslinjeetikettinnhold {
-  display: grid;
-  min-width: 0;
 }
 
 .laboratorium__tidslinjemetadata {
   max-width: 12rem;
-  color: var(--ax-text-subtle);
-  font-size: var(--ax-font-size-small);
   overflow-wrap: anywhere;
 }
 
-.laboratorium__fagsystemid {
-  display: flex;
-  align-items: center;
-  gap: var(--ax-space-4);
-}
-
 .laboratorium__historikketikett {
-  display: inline-block;
   margin-inline-start: var(--ax-space-24);
-  color: var(--ax-text-subtle);
-  font-size: var(--ax-font-size-small);
 }
 
 .laboratorium__historikkperiode {
@@ -121,9 +43,7 @@
 }
 
 .laboratorium__periodedetaljer {
-  padding: var(--ax-space-24);
-  border: 2px solid var(--ax-border-meta-purple);
-  border-radius: var(--ax-radius-12);
+  border-color: var(--ax-border-meta-purple);
   background: var(--ax-bg-meta-purple-soft);
 }
 
@@ -137,43 +57,24 @@
   background-color: var(--ax-bg-meta-purple-soft);
 }
 
-.laboratorium__periodedetaljer-liste {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: var(--ax-space-12);
-  margin: var(--ax-space-20) 0 0;
-}
-
-.laboratorium__periodedetaljer-liste > div {
+.laboratorium__detaljkort {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ax-space-4);
   padding: var(--ax-space-12) var(--ax-space-16);
   border: 1px solid var(--ax-border-subtle);
   border-radius: var(--ax-radius-8);
   background: var(--ax-bg-default);
 }
 
-.laboratorium__periodedetaljer-liste dt {
-  color: var(--ax-text-subtle);
-  font-size: var(--ax-font-size-small);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.laboratorium__detaljkort dt {
   padding-right: var(--ax-space-28);
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.laboratorium__periodedetaljer-liste dd {
+.laboratorium__detaljkort dd {
   margin: 0;
   font-weight: 500;
   overflow-wrap: anywhere;
-}
-
-.laboratorium__detaljverdi {
-  display: flex;
-  align-items: center;
-  gap: var(--ax-space-8);
 }
 
 .laboratorium__detaljverditekst {
@@ -181,19 +82,11 @@
 }
 
 .laboratorium__saksbehandlerikon {
-  position: absolute;
-  top: var(--ax-space-12);
-  right: var(--ax-space-12);
-  display: inline-flex;
-  align-items: center;
   color: var(--ax-text-subtle);
   cursor: help;
 }
 
 .laboratorium__kjedeid {
   margin: var(--ax-space-16) 0 0;
-  color: var(--ax-text-subtle);
-  font-size: var(--ax-font-size-small);
-  text-align: right;
   overflow-wrap: anywhere;
 }

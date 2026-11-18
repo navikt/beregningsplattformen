@@ -56,9 +56,9 @@ function asyncHandler(
 
 server.use(express.json());
 
-server.post("/api/v1/tolk-oppdrag", asyncHandler(async (request, response) => {
+server.post("/api/v1/beregn", asyncHandler(async (request, response) => {
   const backendUrl = new URL(
-    "/api/v1/tolk-oppdrag",
+    "/api/v1/beregn",
     config.backendUrl,
   ).toString();
   await sendRequest(

@@ -16,17 +16,23 @@ import {
 	Button,
 	CopyButton,
 	Heading,
+	HGrid,
+	HStack,
+	Label,
 	LocalAlert,
 	Timeline,
 	ToggleGroup,
 	Tooltip,
+	VStack,
 } from "@navikt/ds-react";
 import { isAxiosError } from "axios";
 import { type SubmitEvent, useRef, useState } from "react";
-import { postTolkOppdrag } from "../api/apiService";
+import { postBeregn } from "../api/apiService";
+import { Beregningsresultater } from "../components/Beregningsresultater";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
 import { HttpStatusCodeError } from "../types/Error";
+import type { BeregningResponse } from "../types/BeregningResponse";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
 import { fillTypedTemplate, templateFields } from "../util/template";
 import styles from "./SendInnOppdragsXML.module.css";
@@ -130,11 +136,24 @@ function Detaljkort({
 	saksbehandlerId?: string;
 }) {
 	return (
-		<div className={styles.laboratorium__detaljkort}>
-			<dt>{label}</dt>
+		<VStack
+			as="div"
+			gap="space-4"
+			className={styles.laboratorium__detaljkort}
+		>
+			<dt>
+				<Label as="span" size="small" textColor="subtle">
+					{label}
+				</Label>
+			</dt>
 			{saksbehandlerId && (
 				<Tooltip content={`Saksbehandler: ${saksbehandlerId}`}>
-					<span
+					<HStack
+						as="span"
+						align="center"
+						position="absolute"
+						top="space-12"
+						right="space-12"
 						className={styles.laboratorium__saksbehandlerikon}
 						// biome-ignore lint/a11y/noNoninteractiveTabindex: Gjør saksbehandler-tooltipet tilgjengelig for tastatur.
 						tabIndex={0}
@@ -142,20 +161,25 @@ function Detaljkort({
 						aria-label={`Saksbehandler: ${saksbehandlerId}`}
 					>
 						<PersonIcon aria-hidden />
-					</span>
+					</HStack>
 				</Tooltip>
 			)}
 			<dd>
-				<span className={styles.laboratorium__detaljverdi}>
+				<HStack
+					as="span"
+					align="center"
+					gap="space-8"
+					className={styles.laboratorium__detaljverdi}
+				>
 					<span className={styles.laboratorium__detaljverditekst}>{verdi}</span>
 					<CopyButton
 						size="xsmall"
 						copyText={verdi}
 						aria-label={`Kopier ${label}`}
 					/>
-				</span>
+				</HStack>
 			</dd>
-		</div>
+		</VStack>
 	);
 }
 
@@ -169,7 +193,7 @@ export default function SendInnOppdragsXML() {
 	const [sender, settSender] = useState(false);
 	const [resultat, settResultat] = useState<string | null>(null);
 	const [feilmelding, settFeilmelding] = useState<string | null>(null);
-	const [respons, settRespons] = useState<OppdragstidslinjeDTO | null>(null);
+	const [respons, settRespons] = useState<BeregningResponse | null>(null);
 	const [xmlFeilId, settXmlFeilId] = useState<number | null>(null);
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
 		() => new Set(),
@@ -185,7 +209,7 @@ export default function SendInnOppdragsXML() {
 		historisk: boolean;
 	} | null>(null);
 	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(4);
-	const kjeder = respons?.kjeder ?? [];
+	const kjeder = respons?.oppdragstidslinje.kjeder ?? [];
 	const allePerioder = kjeder.flatMap((kjede) =>
 		kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 	);
@@ -289,9 +313,9 @@ export default function SendInnOppdragsXML() {
 		senderRef.current = true;
 		settSender(true);
 		try {
-			const response = await postTolkOppdrag({ xml: xmlPerUtkast });
+			const response = await postBeregn({ xml: xmlPerUtkast });
 			settRespons(response);
-			const perioder = response.kjeder.flatMap((kjede) =>
+			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
 				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 			);
 			if (perioder.length === 0) {
@@ -324,15 +348,28 @@ export default function SendInnOppdragsXML() {
 	};
 
 	return (
-		<main className={styles.laboratorium}>
-			<section
-				className={`${styles.laboratorium__panel} ${styles["laboratorium__panel--xml"]}`}
+		<VStack
+			as="main"
+			align="center"
+			gap="space-32"
+			padding="space-32"
+			className={styles.laboratorium}
+		>
+			<Box
+				as="section"
+				className={styles["laboratorium__panel--xml"]}
+				width="100%"
+				maxWidth="90rem"
+				padding="space-32"
+				borderWidth="1"
+				borderColor="neutral-subtle"
+				borderRadius="12"
 				aria-labelledby="lab-heading"
 			>
-				<p className={styles.laboratorium__intro}>
+				<BodyShort className={styles.laboratorium__intro}>
 					Fyll ut feltene for å bygge et XML-oppdrag, forhåndsvis resultatet og
 					behandle det.
-				</p>
+				</BodyShort>
 				<LocalAlert className={styles.laboratorium__advarsel} status="warning">
 					<LocalAlert.Header>
 						<LocalAlert.Title>Bruk bare syntetiske XML-data</LocalAlert.Title>
@@ -342,7 +379,14 @@ export default function SendInnOppdragsXML() {
 					</LocalAlert.Content>
 				</LocalAlert>
 				<form onSubmit={handterInnsending} aria-busy={sender}>
-					<fieldset className={styles.laboratorium__xmlvalg}>
+					<HStack
+						as="fieldset"
+						align="center"
+						gap="space-8"
+						wrap
+						marginBlock="space-0 space-16"
+						className={styles.laboratorium__xmlvalg}
+					>
 						<legend className="aksel-sr-only">Velg XML-utkast</legend>
 						{xmlUtkast.map(({ id }) => (
 							<Button
@@ -355,7 +399,7 @@ export default function SendInnOppdragsXML() {
 								XML {id}
 							</Button>
 						))}
-					</fieldset>
+					</HStack>
 					{xmlUtkast.map((draft) => (
 						<div key={draft.id} hidden={valgtXmlId !== draft.id}>
 							<OppdragsXmlSkjema
@@ -373,7 +417,7 @@ export default function SendInnOppdragsXML() {
 							/>
 						</div>
 					))}
-					<div className={styles.laboratorium__leggtil}>
+					<HStack justify="end" marginBlock="space-16 space-0">
 						<Button
 							type="button"
 							variant="secondary"
@@ -396,25 +440,29 @@ export default function SendInnOppdragsXML() {
 						>
 							Legg til XML
 						</Button>
-					</div>
-					<div className={styles.laboratorium__leggtil}>
+					</HStack>
+					<HStack justify="end" marginBlock="space-16 space-0">
 						<Button type="submit" loading={sender} disabled={sender}>
 							Behandle alle XML
 						</Button>
-					</div>
+					</HStack>
 					{resultat && (
-						<p
-							className={styles.laboratorium__resultat}
+						<BodyShort
 							role="status"
 							aria-live="polite"
 						>
 							{resultat}
-						</p>
+						</BodyShort>
 					)}
 				</form>
-			</section>
-			<section
-				className={`${styles.laboratorium__panel} ${styles.laboratorium__tidslinje}`}
+			</Box>
+			<VStack
+				as="section"
+				gap="space-16"
+				className={styles.laboratorium__tidslinje}
+				width="100%"
+				maxWidth="90rem"
+				padding="space-32"
 				aria-labelledby="tidslinje-heading"
 			>
 				<Heading id="tidslinje-heading" level="2" size="medium">
@@ -423,7 +471,9 @@ export default function SendInnOppdragsXML() {
 				{feilmelding ? (
 					<LocalAlert status="error">
 						<LocalAlert.Header>
-							<LocalAlert.Title>Kunne ikke behandle innsendingen</LocalAlert.Title>
+							<LocalAlert.Title>
+								Kunne ikke behandle innsendingen
+							</LocalAlert.Title>
 						</LocalAlert.Header>
 						<LocalAlert.Content className={styles.laboratorium__feilmelding}>
 							{feilmelding}
@@ -435,214 +485,247 @@ export default function SendInnOppdragsXML() {
 					tidslinjeStart &&
 					tidslinjeSlutt && (
 						<>
-							<div className={styles.laboratorium__tidslinjenavigasjon}>
-								<div className={styles.laboratorium__tidslinjekontroller}>
-									<ToggleGroup
-										aria-label="Antall måneder i perioden"
+							<HStack justify="end" align="center" gap="space-8">
+								<ToggleGroup
+									aria-label="Antall måneder i perioden"
+									data-color="neutral"
+									size="small"
+									value={String(tidslinjeMåneder)}
+									onChange={(value) => settTidslinjeMåneder(Number(value))}
+								>
+									<ToggleGroup.Item value="2" label="2 måneder" />
+									<ToggleGroup.Item value="4" label="4 måneder" />
+									<ToggleGroup.Item value="8" label="8 måneder" />
+								</ToggleGroup>
+								<HStack gap="space-4" wrap={false}>
+									<Button
+										type="button"
 										data-color="neutral"
+										variant="secondary"
 										size="small"
-										value={String(tidslinjeMåneder)}
-										onChange={(value) => settTidslinjeMåneder(Number(value))}
-									>
-										<ToggleGroup.Item value="2" label="2 måneder" />
-										<ToggleGroup.Item value="4" label="4 måneder" />
-										<ToggleGroup.Item value="8" label="8 måneder" />
-									</ToggleGroup>
-									<div className={styles.laboratorium__tidslinjepaginering}>
-										<Button
-											type="button"
-											data-color="neutral"
-											variant="secondary"
-											size="small"
-											icon={<ChevronLeftIcon aria-hidden />}
-											aria-label="Forrige periode"
-											onClick={() => flyttTidslinje(-tidslinjeMåneder)}
-										/>
-										<Button
-											type="button"
-											data-color="neutral"
-											variant="secondary"
-											size="small"
-											icon={<ChevronRightIcon aria-hidden />}
-											aria-label="Neste periode"
-											onClick={() => flyttTidslinje(tidslinjeMåneder)}
-										/>
-									</div>
-								</div>
-							</div>
-							<section className={styles.laboratorium__kjede}>
+										icon={<ChevronLeftIcon aria-hidden />}
+										aria-label="Forrige periode"
+										onClick={() => flyttTidslinje(-tidslinjeMåneder)}
+									/>
+									<Button
+										type="button"
+										data-color="neutral"
+										variant="secondary"
+										size="small"
+										icon={<ChevronRightIcon aria-hidden />}
+										aria-label="Neste periode"
+										onClick={() => flyttTidslinje(tidslinjeMåneder)}
+									/>
+								</HStack>
+							</HStack>
+							<Box
+								as="section"
+								minWidth="0"
+								padding="space-16"
+								borderWidth="2"
+								borderColor="neutral"
+								borderRadius="12"
+								className={styles.laboratorium__kjede}
+							>
 								<Timeline startDate={tidslinjeStart} endDate={tidslinjeSlutt}>
-								{kjeder.flatMap((kjede) => {
-									const aktivVersjon = kjede.kjedeVersjoner[0];
-									if (!aktivVersjon) return [];
+									{kjeder.flatMap((kjede) => {
+										const aktivVersjon = kjede.kjedeVersjoner[0];
+										if (!aktivVersjon) return [];
 
-									const harHistorikk = kjede.kjedeVersjoner.length > 1;
-									const erUtvidet = utvidedeKjeder.has(kjede.id);
-									const kjedeId = encodeURIComponent(kjede.id);
+										const harHistorikk = kjede.kjedeVersjoner.length > 1;
+										const erUtvidet = utvidedeKjeder.has(kjede.id);
+										const kjedeId = encodeURIComponent(kjede.id);
 
-									const lagPeriode = (
-										periode: (typeof aktivVersjon.kjedePerioder)[number],
-										versjonsindeks: number,
-										periodeindeks: number,
-										historisk: boolean,
-									) => {
-										const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
-										const periodeStatus = visualiseringForStatus(
-											statusFraPeriode(periode),
-										);
-										const periodeIkon = historisk ? (
-											<ClockDashedIcon aria-hidden />
-										) : (
-											periodeStatus.icon
-										);
-										const periodeTekst = formaterPeriodeTekst(periode);
-										const statusTekst = statusFraPeriode(periode);
+										const lagPeriode = (
+											periode: (typeof aktivVersjon.kjedePerioder)[number],
+											versjonsindeks: number,
+											periodeindeks: number,
+											historisk: boolean,
+										) => {
+											const periodeId = `periode-kjede-${kjedeId}-${versjonsindeks}-${periodeindeks}`;
+											const periodeStatus = visualiseringForStatus(
+												statusFraPeriode(periode),
+											);
+											const periodeIkon = historisk ? (
+												<ClockDashedIcon aria-hidden />
+											) : (
+												periodeStatus.icon
+											);
+											const periodeTekst = formaterPeriodeTekst(periode);
+											const statusTekst = statusFraPeriode(periode);
 
-										return (
-											<Timeline.Period
-												key={periodeId}
-												id={periodeId}
-												aria-controls="periodedetaljer"
-												isActive={valgtPeriode?.id === periodeId}
-												onSelectPeriod={() =>
-													settValgtPeriode((previous) =>
-														previous?.id === periodeId
-															? null
-															: {
-																	id: periodeId,
-																	kjedeId: kjede.id,
-																	versjonsindeks,
-																	periodeindeks,
-																	fagområde: kjede.fagområde,
-																	fagsystemId: kjede.fagsystemId,
-																	periode,
-																	historisk,
-																},
-													)
-												}
-												start={new Date(periode.fraDato)}
-												end={periode.tilDato ? new Date(periode.tilDato) : new Date()}
-												status={periodeStatus.status}
-												icon={periodeIkon}
-												statusLabel={periodeStatus.statusLabel}
-												title={periodeTekst}
-												className={
-													historisk ? styles.laboratorium__historikkperiode : undefined
+											return (
+												<Timeline.Period
+													key={periodeId}
+													id={periodeId}
+													aria-controls="periodedetaljer"
+													isActive={valgtPeriode?.id === periodeId}
+													onSelectPeriod={() =>
+														settValgtPeriode((previous) =>
+															previous?.id === periodeId
+																? null
+																: {
+																		id: periodeId,
+																		kjedeId: kjede.id,
+																		versjonsindeks,
+																		periodeindeks,
+																		fagområde: kjede.fagområde,
+																		fagsystemId: kjede.fagsystemId,
+																		periode,
+																		historisk,
+																	},
+														)
+													}
+													start={new Date(periode.fraDato)}
+													end={
+														periode.tilDato
+															? new Date(periode.tilDato)
+															: new Date()
+													}
+													status={periodeStatus.status}
+													icon={periodeIkon}
+													statusLabel={periodeStatus.statusLabel}
+													title={periodeTekst}
+													className={
+														historisk
+															? styles.laboratorium__historikkperiode
+															: undefined
+													}
+												>
+													<p>{periodeTekst}</p>
+													{statusTekst && <p>Status: {statusTekst}</p>}
+												</Timeline.Period>
+											);
+										};
+
+										const historikkRader =
+											harHistorikk && erUtvidet
+												? kjede.kjedeVersjoner
+														.slice(1)
+														.map((versjon, indeks) => {
+															const versjonsindeks = indeks + 1;
+
+															return (
+																<Timeline.Row
+																	key={`rad-kjede-${kjedeId}-${versjonsindeks}`}
+																	id={`rad-kjede-${kjedeId}-${versjonsindeks}`}
+																	label={
+																		<BodyShort
+																			as="span"
+																			size="small"
+																			textColor="subtle"
+																			className={
+																				styles.laboratorium__historikketikett
+																			}
+																		>
+																			Etter innsending {versjon.innsending}
+																		</BodyShort>
+																	}
+																>
+																	{versjon.kjedePerioder.map(
+																		(periode, periodeindeks) =>
+																			lagPeriode(
+																				periode,
+																				versjonsindeks,
+																				periodeindeks,
+																				true,
+																			),
+																	)}
+																</Timeline.Row>
+															);
+														})
+												: [];
+
+										return [
+											<Timeline.Row
+												key={`rad-kjede-${kjedeId}-0`}
+												id={`rad-kjede-${kjedeId}-0`}
+												label={
+													<HStack as="div" align="center" gap="space-8">
+														<VStack as="div" gap="space-4">
+															<div
+																className={
+																	styles.laboratorium__tidslinjemetadata
+																}
+															>
+																<BodyShort
+																	as="h3"
+																	size="small"
+																	weight="semibold"
+																>
+																	{kjede.fagområde}
+																</BodyShort>
+																<HStack as="div" align="center" gap="space-4">
+																	<Tooltip
+																		content={`Fagsystem-ID: ${kjede.fagsystemId}`}
+																		maxChar={Number.MAX_SAFE_INTEGER}
+																	>
+																		<span
+																			role="note"
+																			// biome-ignore lint/a11y/noNoninteractiveTabindex: Keeps the full-ID tooltip available to keyboard users.
+																			tabIndex={0}
+																			aria-label={`Fagsystem-ID: ${kjede.fagsystemId}`}
+																		>
+																			{formaterKortFagsystemId(
+																				kjede.fagsystemId,
+																			)}
+																		</span>
+																	</Tooltip>
+																	<CopyButton
+																		size="small"
+																		copyText={kjede.fagsystemId}
+																		aria-label="Kopier full fagsystem-ID"
+																	/>
+																	{harHistorikk && (
+																		<Button
+																			type="button"
+																			size="xsmall"
+																			variant="tertiary"
+																			icon={
+																				erUtvidet ? (
+																					<ChevronDownIcon aria-hidden />
+																				) : (
+																					<ChevronRightIcon aria-hidden />
+																				)
+																			}
+																			aria-label={`${erUtvidet ? "Skjul" : "Vis"} historikk for ${kjede.fagområde}`}
+																			aria-expanded={erUtvidet}
+																			onClick={() => {
+																				if (
+																					erUtvidet &&
+																					valgtPeriode?.kjedeId === kjede.id &&
+																					valgtPeriode.historisk
+																				) {
+																					settValgtPeriode(null);
+																				}
+																				settUtvidedeKjeder((utvidede) => {
+																					const nyeUtvidede = new Set(utvidede);
+																					if (nyeUtvidede.has(kjede.id)) {
+																						nyeUtvidede.delete(kjede.id);
+																					} else {
+																						nyeUtvidede.add(kjede.id);
+																					}
+																					return nyeUtvidede;
+																				});
+																			}}
+																		/>
+																	)}
+																</HStack>
+															</div>
+														</VStack>
+													</HStack>
 												}
 											>
-												<p>{periodeTekst}</p>
-												{statusTekst && <p>Status: {statusTekst}</p>}
-											</Timeline.Period>
-										);
-									};
-
-									const historikkRader =
-										harHistorikk && erUtvidet
-											? kjede.kjedeVersjoner.slice(1).map((versjon, indeks) => {
-													const versjonsindeks = indeks + 1;
-
-													return (
-														<Timeline.Row
-															key={`rad-kjede-${kjedeId}-${versjonsindeks}`}
-															id={`rad-kjede-${kjedeId}-${versjonsindeks}`}
-															label={
-																<span className={styles.laboratorium__historikketikett}>
-																	Etter innsending {versjon.innsending}
-																</span>
-															}
-														>
-															{versjon.kjedePerioder.map((periode, periodeindeks) =>
-																lagPeriode(
-																	periode,
-																	versjonsindeks,
-																	periodeindeks,
-																	true,
-																),
-															)}
-														</Timeline.Row>
-													);
-												})
-											: [];
-
-									return [
-										<Timeline.Row
-											key={`rad-kjede-${kjedeId}-0`}
-											id={`rad-kjede-${kjedeId}-0`}
-											label={
-												<div className={styles.laboratorium__tidslinjeetikett}>
-													<div className={styles.laboratorium__tidslinjeetikettinnhold}>
-														<div className={styles.laboratorium__tidslinjemetadata}>
-															<BodyShort as="h3" size="small" weight="semibold">
-																{kjede.fagområde}
-															</BodyShort>
-															<div className={styles.laboratorium__fagsystemid}>
-																<Tooltip
-																	content={`Fagsystem-ID: ${kjede.fagsystemId}`}
-																	maxChar={Number.MAX_SAFE_INTEGER}
-																>
-																	<span
-																		role="note"
-																		// biome-ignore lint/a11y/noNoninteractiveTabindex: Keeps the full-ID tooltip available to keyboard users.
-																		tabIndex={0}
-																		aria-label={`Fagsystem-ID: ${kjede.fagsystemId}`}
-																	>
-																		{formaterKortFagsystemId(kjede.fagsystemId)}
-																	</span>
-																</Tooltip>
-																<CopyButton
-																	size="small"
-																	copyText={kjede.fagsystemId}
-																	aria-label="Kopier full fagsystem-ID"
-																/>
-																{harHistorikk && (
-																	<Button
-																		type="button"
-																		size="xsmall"
-																		variant="tertiary"
-																		icon={
-																			erUtvidet ? (
-																				<ChevronDownIcon aria-hidden />
-																			) : (
-																				<ChevronRightIcon aria-hidden />
-																			)
-																		}
-																		aria-label={`${erUtvidet ? "Skjul" : "Vis"} historikk for ${kjede.fagområde}`}
-																		aria-expanded={erUtvidet}
-																		onClick={() => {
-																			if (
-																				erUtvidet &&
-																				valgtPeriode?.kjedeId === kjede.id &&
-																				valgtPeriode.historisk
-																			) {
-																				settValgtPeriode(null);
-																			}
-																			settUtvidedeKjeder((utvidede) => {
-																				const nyeUtvidede = new Set(utvidede);
-																				if (nyeUtvidede.has(kjede.id)) {
-																					nyeUtvidede.delete(kjede.id);
-																				} else {
-																					nyeUtvidede.add(kjede.id);
-																				}
-																				return nyeUtvidede;
-																			});
-																		}}
-																	/>
-																)}
-															</div>
-														</div>
-													</div>
-												</div>
-											}
-										>
-											{aktivVersjon.kjedePerioder.map((periode, periodeindeks) =>
-												lagPeriode(periode, 0, periodeindeks, false),
-											)}
-										</Timeline.Row>,
-										...historikkRader,
-									];
-								})}
+												{aktivVersjon.kjedePerioder.map(
+													(periode, periodeindeks) =>
+														lagPeriode(periode, 0, periodeindeks, false),
+												)}
+											</Timeline.Row>,
+											...historikkRader,
+										];
+									})}
 								</Timeline>
-							</section>
+							</Box>
 						</>
 					)
 				)}
@@ -652,14 +735,23 @@ export default function SendInnOppdragsXML() {
 					aria-live="polite"
 				>
 					{valgtPeriode && (
-						<section
+						<Box
+							as="section"
+							padding="space-24"
+							borderWidth="2"
+							borderRadius="12"
 							className={styles.laboratorium__periodedetaljer}
 							aria-labelledby="periodedetaljer-heading"
 						>
 							<Heading id="periodedetaljer-heading" level="3" size="small">
 								Detaljer for valgt periode
 							</Heading>
-							<dl className={styles["laboratorium__periodedetaljer-liste"]}>
+							<HGrid
+								as="dl"
+								columns="repeat(auto-fit, minmax(min(100%, 14rem), 1fr))"
+								gap="space-12"
+								marginBlock="space-20 space-0"
+							>
 								<Detaljkort label="Fagområde" verdi={valgtPeriode.fagområde} />
 								<Detaljkort
 									label="Fagsystem-ID"
@@ -669,41 +761,53 @@ export default function SendInnOppdragsXML() {
 									label="Periode"
 									verdi={formaterPeriodeTekst(valgtPeriode.periode)}
 								/>
-								{Object.entries(valgtPeriode.periode).map(([feltnavn, verdi]) => {
-									if (
-										feltnavn === "fraDato" ||
-										feltnavn === "tilDato" ||
-										feltnavn === "status" ||
-										verdi === null
-									) {
-										return null;
-									}
-									const erOpplysningsverdi = erOpplysning(verdi);
-									const visningsverdi = erOpplysningsverdi
-										? verdi.opplysning
-										: typeof verdi === "string"
-											? verdi
-											: null;
-									if (visningsverdi === null) return null;
-									return (
-										<Detaljkort
-											key={feltnavn}
-											label={formaterFeltnavn(feltnavn)}
-											verdi={visningsverdi}
-											saksbehandlerId={
-												erOpplysningsverdi ? verdi.saksbehandlerId : undefined
-											}
-										/>
-									);
-								})}
-							</dl>
-							<p className={styles.laboratorium__kjedeid}>
+								{Object.entries(valgtPeriode.periode).map(
+									([feltnavn, verdi]) => {
+										if (
+											feltnavn === "fraDato" ||
+											feltnavn === "tilDato" ||
+											feltnavn === "status" ||
+											verdi === null
+										) {
+											return null;
+										}
+										const erOpplysningsverdi = erOpplysning(verdi);
+										const visningsverdi = erOpplysningsverdi
+											? verdi.opplysning
+											: typeof verdi === "string"
+												? verdi
+												: null;
+										if (visningsverdi === null) return null;
+										return (
+											<Detaljkort
+												key={feltnavn}
+												label={formaterFeltnavn(feltnavn)}
+												verdi={visningsverdi}
+												saksbehandlerId={
+													erOpplysningsverdi ? verdi.saksbehandlerId : undefined
+												}
+											/>
+										);
+									},
+								)}
+							</HGrid>
+							<BodyShort
+								size="small"
+								textColor="subtle"
+								align="end"
+								className={styles.laboratorium__kjedeid}
+							>
 								Kjede-ID: {valgtPeriode.kjedeId}
-							</p>
-						</section>
+							</BodyShort>
+						</Box>
 					)}
 				</Box>
-			</section>
-		</main>
+			</VStack>
+			{respons?.beregningstidslinje && (
+				<Beregningsresultater
+					beregninger={respons.beregningstidslinje.beregninger}
+				/>
+			)}
+		</VStack>
 	);
 }

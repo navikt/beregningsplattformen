@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.lab.api
+package no.nav.utbetaling.beregning.lab.beregning
 
 import java.time.LocalDate
 
