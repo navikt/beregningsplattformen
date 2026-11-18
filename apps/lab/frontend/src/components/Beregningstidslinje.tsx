@@ -25,14 +25,14 @@ import type {
 	LinjetypeDTO,
 } from "../types/BeregningstidslinjeDTO";
 
-interface Linjepølse {
+interface Linjepoelse {
 	id: string;
 	beregning: BeregningDTO;
 	delberegning: DelberegningDTO;
 	linje: LinjeDTO;
 }
 
-const linjetypeRekkefølge: Record<LinjetypeDTO, number> = {
+const linjetypeRekkefoelge: Record<LinjetypeDTO, number> = {
 	YTELSE: 0,
 	SKATT: 1,
 	TREKK: 2,
@@ -64,24 +64,24 @@ const visualiseringForLinjetype: Record<
 };
 
 function formaterNorskDato(dato: string) {
-	const [år, måned, dag] = dato.split("-");
-	return `${dag}.${måned}.${år}`;
+	const [aar, maaned, dag] = dato.split("-");
+	return `${dag}.${maaned}.${aar}`;
 }
 
 function formaterPeriode(delberegning: DelberegningDTO) {
 	return `${formaterNorskDato(delberegning.fom)} - ${formaterNorskDato(delberegning.tom)}`;
 }
 
-function formaterBeløp(beløp: string) {
-	const tall = Number(beløp);
+function formaterBeloep(beloep: string) {
+	const tall = Number(beloep);
 	return Number.isNaN(tall)
-		? beløp
+		? beloep
 		: `${tall.toLocaleString("nb-NO", { maximumFractionDigits: 2 })} kr`;
 }
 
 // Fordeler linjene på rader slik at overlappende linjer havner under hverandre.
-function fordelPåRader(beregning: BeregningDTO): Linjepølse[][] {
-	const pølser = beregning.delberegninger
+function fordelPaaRader(beregning: BeregningDTO): Linjepoelse[][] {
+	const poelser = beregning.delberegninger
 		.flatMap((delberegning) =>
 			delberegning.linjer.map((linje) => ({
 				id: `beregning-${beregning.id}-${delberegning.id}-${linje.id}`,
@@ -93,18 +93,18 @@ function fordelPåRader(beregning: BeregningDTO): Linjepølse[][] {
 		.sort(
 			(a, b) =>
 				a.delberegning.fom.localeCompare(b.delberegning.fom) ||
-				linjetypeRekkefølge[a.linje.type] - linjetypeRekkefølge[b.linje.type],
+				linjetypeRekkefoelge[a.linje.type] - linjetypeRekkefoelge[b.linje.type],
 		);
 
-	const rader: Linjepølse[][] = [];
-	for (const pølse of pølser) {
+	const rader: Linjepoelse[][] = [];
+	for (const poelse of poelser) {
 		const ledigRad = rader.find(
-			(rad) => rad[rad.length - 1].delberegning.tom < pølse.delberegning.fom,
+			(rad) => rad[rad.length - 1].delberegning.tom < poelse.delberegning.fom,
 		);
 		if (ledigRad) {
-			ledigRad.push(pølse);
+			ledigRad.push(poelse);
 		} else {
-			rader.push([pølse]);
+			rader.push([poelse]);
 		}
 	}
 	return rader;
@@ -147,7 +147,7 @@ function Detalj({ label, verdi }: { label: string; verdi: string }) {
 	);
 }
 
-function førsteDagIMåneden(dato: Date) {
+function foersteDagIMaaneden(dato: Date) {
 	return new Date(dato.getFullYear(), dato.getMonth(), 1);
 }
 
@@ -155,8 +155,8 @@ function tidligsteFom(beregninger: BeregningDTO[]) {
 	const fomDatoer = beregninger.flatMap((beregning) =>
 		beregning.delberegninger.map((delberegning) => delberegning.fom),
 	);
-	if (fomDatoer.length === 0) return førsteDagIMåneden(new Date());
-	return førsteDagIMåneden(new Date(fomDatoer.sort()[0]));
+	if (fomDatoer.length === 0) return foersteDagIMaaneden(new Date());
+	return foersteDagIMaaneden(new Date(fomDatoer.sort()[0]));
 }
 
 export function Beregningstidslinje({
@@ -165,17 +165,17 @@ export function Beregningstidslinje({
 	beregningstidslinje: BeregningstidslinjeDTO;
 }) {
 	const { beregninger } = beregningstidslinje;
-	const [valgtPølse, settValgtPølse] = useState<Linjepølse | null>(null);
-	const [antallMåneder, settAntallMåneder] = useState(4);
+	const [valgtPoelse, settValgtPoelse] = useState<Linjepoelse | null>(null);
+	const [antallMaaneder, settAntallMaaneder] = useState(4);
 	const [startDato, settStartDato] = useState(() => tidligsteFom(beregninger));
 	const sluttDato = new Date(
 		startDato.getFullYear(),
-		startDato.getMonth() + antallMåneder,
+		startDato.getMonth() + antallMaaneder,
 		0,
 	);
-	const flyttTidslinje = (måneder: number) =>
+	const flyttTidslinje = (maaneder: number) =>
 		settStartDato(
-			(start) => new Date(start.getFullYear(), start.getMonth() + måneder, 1),
+			(start) => new Date(start.getFullYear(), start.getMonth() + maaneder, 1),
 		);
 
 	if (beregninger.length === 0) {
@@ -190,8 +190,8 @@ export function Beregningstidslinje({
 						aria-label="Antall måneder i beregningsperioden"
 						data-color="neutral"
 						size="small"
-						value={String(antallMåneder)}
-						onChange={(value) => settAntallMåneder(Number(value))}
+						value={String(antallMaaneder)}
+						onChange={(value) => settAntallMaaneder(Number(value))}
 					>
 						<ToggleGroup.Item value="2" label="2 måneder" />
 						<ToggleGroup.Item value="4" label="4 måneder" />
@@ -205,7 +205,7 @@ export function Beregningstidslinje({
 							size="small"
 							icon={<ChevronLeftIcon aria-hidden />}
 							aria-label="Forrige beregningsperiode"
-							onClick={() => flyttTidslinje(-antallMåneder)}
+							onClick={() => flyttTidslinje(-antallMaaneder)}
 						/>
 						<Button
 							type="button"
@@ -214,7 +214,7 @@ export function Beregningstidslinje({
 							size="small"
 							icon={<ChevronRightIcon aria-hidden />}
 							aria-label="Neste beregningsperiode"
-							onClick={() => flyttTidslinje(antallMåneder)}
+							onClick={() => flyttTidslinje(antallMaaneder)}
 						/>
 					</div>
 				</div>
@@ -225,7 +225,7 @@ export function Beregningstidslinje({
 			>
 				<Timeline startDate={startDato} endDate={sluttDato}>
 					{beregninger.flatMap((beregning) =>
-						fordelPåRader(beregning).map((rad, radindeks) => {
+						fordelPaaRader(beregning).map((rad, radindeks) => {
 							const radId = `rad-beregning-${beregning.id}-${radindeks}`;
 							return (
 								<Timeline.Row
@@ -246,19 +246,19 @@ export function Beregningstidslinje({
 										)
 									}
 								>
-									{rad.map((pølse) => {
-										const { delberegning, linje } = pølse;
+									{rad.map((poelse) => {
+										const { delberegning, linje } = poelse;
 										const visualisering = visualiseringForLinjetype[linje.type];
 										const periodeTekst = formaterPeriode(delberegning);
 										return (
 											<Timeline.Period
-												key={pølse.id}
-												id={pølse.id}
+												key={poelse.id}
+												id={poelse.id}
 												aria-controls="beregningsdetaljer"
-												isActive={valgtPølse?.id === pølse.id}
+												isActive={valgtPoelse?.id === poelse.id}
 												onSelectPeriod={() =>
-													settValgtPølse((forrige) =>
-														forrige?.id === pølse.id ? null : pølse,
+													settValgtPoelse((forrige) =>
+														forrige?.id === poelse.id ? null : poelse,
 													)
 												}
 												start={new Date(delberegning.fom)}
@@ -270,7 +270,7 @@ export function Beregningstidslinje({
 											>
 												<p>
 													{visualisering.statusLabel}:{" "}
-													{formaterBeløp(linje.beloep)}
+													{formaterBeloep(linje.beloep)}
 												</p>
 												<p>{periodeTekst}</p>
 											</Timeline.Period>
@@ -283,51 +283,55 @@ export function Beregningstidslinje({
 				</Timeline>
 			</section>
 			<Box id="beregningsdetaljer" aria-live="polite">
-				{valgtPølse && (
+				{valgtPoelse && (
 					<section
 						className={styles.laboratorium__periodedetaljer}
 						aria-label="Detaljer for valgt linje"
 					>
 						<VStack gap="space-24">
-							<Detaljgruppe tittel={`Linje #${valgtPølse.linje.id}`}>
+							<Detaljgruppe tittel={`Linje #${valgtPoelse.linje.id}`}>
 								<Detalj
 									label="Type"
 									verdi={
-										visualiseringForLinjetype[valgtPølse.linje.type].statusLabel
+										visualiseringForLinjetype[valgtPoelse.linje.type]
+											.statusLabel
 									}
 								/>
-								<Detalj label="Sats" verdi={valgtPølse.linje.sats ?? "Ingen"} />
+								<Detalj
+									label="Sats"
+									verdi={valgtPoelse.linje.sats ?? "Ingen"}
+								/>
 								<Detalj
 									label="Beløp"
-									verdi={formaterBeløp(valgtPølse.linje.beloep)}
+									verdi={formaterBeloep(valgtPoelse.linje.beloep)}
 								/>
 							</Detaljgruppe>
 							<Detaljgruppe
-								tittel={`Delberegning #${valgtPølse.delberegning.id}`}
+								tittel={`Delberegning #${valgtPoelse.delberegning.id}`}
 							>
 								<Detalj
 									label="Periode"
-									verdi={formaterPeriode(valgtPølse.delberegning)}
+									verdi={formaterPeriode(valgtPoelse.delberegning)}
 								/>
 								<Detalj
 									label="Fagområde"
-									verdi={valgtPølse.delberegning.fagomraade}
+									verdi={valgtPoelse.delberegning.fagomraade}
 								/>
 								<Detalj
 									label="Beløp"
-									verdi={formaterBeløp(valgtPølse.delberegning.beloep)}
+									verdi={formaterBeloep(valgtPoelse.delberegning.beloep)}
 								/>
 							</Detaljgruppe>
-							<Detaljgruppe tittel={`Beregning #${valgtPølse.beregning.id}`}>
-								<Detalj label="Status" verdi={valgtPølse.beregning.status} />
-								<Detalj label="Gjelder" verdi={valgtPølse.beregning.gjelder} />
+							<Detaljgruppe tittel={`Beregning #${valgtPoelse.beregning.id}`}>
+								<Detalj label="Status" verdi={valgtPoelse.beregning.status} />
+								<Detalj label="Gjelder" verdi={valgtPoelse.beregning.gjelder} />
 								<Detalj
 									label="Utbetales til"
-									verdi={valgtPølse.beregning.utbetalesTil}
+									verdi={valgtPoelse.beregning.utbetalesTil}
 								/>
 								<Detalj
 									label="Kidnummer"
-									verdi={valgtPølse.beregning.kidnummer ?? "Ingen"}
+									verdi={valgtPoelse.beregning.kidnummer ?? "Ingen"}
 								/>
 							</Detaljgruppe>
 						</VStack>
