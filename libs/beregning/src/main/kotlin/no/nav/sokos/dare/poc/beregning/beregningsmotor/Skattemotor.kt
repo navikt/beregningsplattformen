@@ -616,8 +616,6 @@ class Skattemotor {
                 dagsbeloep = emptyList(),
                 beloep = forbruktFrikort,
                 ekstra = ekstraInfo,
-                satsType = Satstype.PROSENT,
-                sats = ZERO,
             )
 
         scratchpad.beregninger

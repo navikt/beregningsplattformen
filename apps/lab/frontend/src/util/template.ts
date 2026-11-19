@@ -77,6 +77,27 @@ export function fillTypedTemplate(
 	);
 }
 
+export function xmlMedGjelderId(
+	xml: string,
+	gjelderId: string,
+): { gyldig: true; xml: string } | { gyldig: false; feil: string } {
+	const dokument = new DOMParser().parseFromString(xml, "application/xml");
+	if (dokument.getElementsByTagNameNS("*", "parsererror").length > 0) {
+		return { gyldig: false, feil: "XML-innholdet er ikke gyldig XML." };
+	}
+	const gjelderFelter = dokument.getElementsByTagNameNS("*", "oppdragGjelderId");
+	if (gjelderFelter.length === 0) {
+		return { gyldig: false, feil: "XML-oppdraget mangler oppdragGjelderId." };
+	}
+	for (const felt of Array.from(gjelderFelter)) {
+		felt.textContent = gjelderId;
+	}
+	return {
+		gyldig: true,
+		xml: new XMLSerializer().serializeToString(dokument),
+	};
+}
+
 function escapeXml(value: string): string {
 	return value
 		.replaceAll("&", "&amp;")

@@ -2,12 +2,14 @@
 
 ![img](beregningsplattformen.png)
 
-# Structure
+## Struktur
+
 ```
 .
 ├── apps/
-│   ├── mottak            # mottak av oppdragsmeldinger
-│   ├── lab               # testverktøy for funksjonelle tester
+│   ├── beregningsplattform # hovedapp som samler API-er og meldingsbehandling
+│   │   └── skattekort     # egen Gradle-modul som kjøres i hovedappen
+│   ├── lab                # testverktøy for funksjonelle tester
 │   │   ├── backend
 │   │   └── frontend
 │

@@ -37,7 +37,10 @@ export function OppdragsXmlSkjema({
 	onTilbakestillMal,
 }: OppdragsXmlSkjemaProps) {
 	const [xmlMalOpen, settXmlMalOpen] = useState(false);
-	const felter = useMemo(() => templateFields(xmlMal), [xmlMal]);
+	const felter = useMemo(
+		() => templateFields(xmlMal).filter((felt) => felt.name !== "oppdragGjelderId"),
+		[xmlMal],
+	);
 	const globaleFelter = felter.filter(
 		(felt) => felt.oppdragslinje === undefined,
 	);
@@ -53,7 +56,6 @@ export function OppdragsXmlSkjema({
 		datoVedtakFom: "Fra dato",
 		datoVedtakTom: "Til dato",
 		sats: "Sats",
-		oppdragGjelderId: "Gjelder",
 		utbetalesTilId: "Utbetales til",
 		vedtakssats: "Vedtakssats",
 	};

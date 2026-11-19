@@ -16,6 +16,7 @@ import no.nav.utbetaling.beregning.trekk.config.DatabaseConfig
 import no.nav.utbetaling.beregning.trekk.config.PropertiesConfig
 import no.nav.utbetaling.beregning.trekk.config.applicationLifecycleConfig
 import no.nav.utbetaling.beregning.trekk.config.commonConfig
+import no.nav.utbetaling.beregning.trekk.config.databaseHealthy
 import no.nav.utbetaling.beregning.trekk.config.internalNaisRoutes
 import no.nav.utbetaling.beregning.trekk.config.loadEnv
 import no.nav.utbetaling.beregning.trekk.config.securityConfig
@@ -28,12 +29,16 @@ fun main() {
 private fun Application.trekk() {
     PropertiesConfig.load(environment.config.loadEnv())
     val applicationState = ApplicationState()
+    val dataSource = DatabaseConfig.dataSource
 
     applicationLifecycleConfig(applicationState)
     commonConfig()
     securityConfig(PropertiesConfig.azureAdProperties)
     routing {
-        internalNaisRoutes(applicationState)
+        internalNaisRoutes(
+            applicationState,
+            readynessCheck = { applicationState.ready && databaseHealthy(dataSource) },
+        )
     }
 
     Log.info("=== Running database migrations ===")
