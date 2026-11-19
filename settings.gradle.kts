@@ -5,7 +5,8 @@ pluginManagement {
 rootProject.name = "beregningsplattformen"
 
 include(
-    "apps:mottak",
+    "apps:beregningsplattform",
+    "apps:beregningsplattform:skattekort",
     "apps:trekk",
     "apps:lab:backend",
 )

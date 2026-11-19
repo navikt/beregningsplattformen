@@ -20,46 +20,46 @@ class AppTest :
         val kataloger =
             mapOf(
                 ":apps:backend" to "apps/backend",
-                ":apps:mottak" to "apps/mottak",
+                ":apps:beregningsplattform" to "apps/beregningsplattform",
                 ":libs:beregning" to "libs/beregning",
             )
 
         test("clustere som starter med prod blir prodmiljøer, de andre testmiljøer, underkataloger ignoreres") {
-            fil("apps/mottak/.nais/app_prod-gcp.yaml")
-            fil("apps/mottak/.nais/app_prod-fss.yaml")
-            fil("apps/mottak/.nais/app_dev-gcp.yaml")
-            fil("apps/mottak/.nais/test/app_test-gcp.yaml")
-            fil("apps/mottak/.nais/app_dev-fss.json")
+            fil("apps/beregningsplattform/.nais/app_prod-gcp.yaml")
+            fil("apps/beregningsplattform/.nais/app_prod-fss.yaml")
+            fil("apps/beregningsplattform/.nais/app_dev-gcp.yaml")
+            fil("apps/beregningsplattform/.nais/test/app_test-gcp.yaml")
+            fil("apps/beregningsplattform/.nais/app_dev-fss.json")
 
-            setOf(":apps:mottak").apper(rot, kataloger) shouldBe
+            setOf(":apps:beregningsplattform").apper(rot, kataloger) shouldBe
                 listOf(
                     App(
-                        ":apps:mottak",
-                        "apps/mottak",
-                        "mottak",
-                        testmiljøer = listOf(Miljø("dev-gcp", "apps/mottak/.nais/app_dev-gcp.yaml")),
+                        ":apps:beregningsplattform",
+                        "apps/beregningsplattform",
+                        "beregningsplattform",
+                        testmiljøer = listOf(Miljø("dev-gcp", "apps/beregningsplattform/.nais/app_dev-gcp.yaml")),
                         prodmiljøer =
                             listOf(
-                                Miljø("prod-fss", "apps/mottak/.nais/app_prod-fss.yaml"),
-                                Miljø("prod-gcp", "apps/mottak/.nais/app_prod-gcp.yaml"),
+                                Miljø("prod-fss", "apps/beregningsplattform/.nais/app_prod-fss.yaml"),
+                                Miljø("prod-gcp", "apps/beregningsplattform/.nais/app_prod-gcp.yaml"),
                             ),
                     ),
                 )
         }
 
         test("bare filer med nøyaktig én _ og ikke-blanke deler er naiserator-filer") {
-            fil("apps/mottak/.nais/q1_dev-fss.yaml")
-            fil("apps/mottak/.nais/q2_dev-fss.yaml")
-            fil("apps/mottak/.nais/naiserator-dev.yaml")
-            fil("apps/mottak/.nais/a_b_dev-gcp.yaml")
-            fil("apps/mottak/.nais/_dev-gcp.yaml")
-            fil("apps/mottak/.nais/app_.yaml")
-            fil("apps/mottak/.nais/ _dev-gcp.yaml")
+            fil("apps/beregningsplattform/.nais/q1_dev-fss.yaml")
+            fil("apps/beregningsplattform/.nais/q2_dev-fss.yaml")
+            fil("apps/beregningsplattform/.nais/naiserator-dev.yaml")
+            fil("apps/beregningsplattform/.nais/a_b_dev-gcp.yaml")
+            fil("apps/beregningsplattform/.nais/_dev-gcp.yaml")
+            fil("apps/beregningsplattform/.nais/app_.yaml")
+            fil("apps/beregningsplattform/.nais/ _dev-gcp.yaml")
 
-            setOf(":apps:mottak").apper(rot, kataloger).single().testmiljøer shouldBe
+            setOf(":apps:beregningsplattform").apper(rot, kataloger).single().testmiljøer shouldBe
                 listOf(
-                    Miljø("dev-fss", "apps/mottak/.nais/q1_dev-fss.yaml"),
-                    Miljø("dev-fss", "apps/mottak/.nais/q2_dev-fss.yaml"),
+                    Miljø("dev-fss", "apps/beregningsplattform/.nais/q1_dev-fss.yaml"),
+                    Miljø("dev-fss", "apps/beregningsplattform/.nais/q2_dev-fss.yaml"),
                 )
         }
 
@@ -93,38 +93,38 @@ class AppTest :
         }
 
         context("app") {
-            val moduler = setOf(":apps:backend", ":apps:mottak", ":apps:lab:backend")
+            val moduler = setOf(":apps:backend", ":apps:beregningsplattform", ":apps:lab:backend")
             val alleKataloger = kataloger + (":apps:lab:backend" to "apps/lab/backend")
 
             fun naisFiler() {
-                fil("apps/mottak/.nais/q1_dev-fss.yaml")
-                fil("apps/mottak/.nais/q2_dev-fss.yaml")
-                fil("apps/mottak/.nais/app_prod-fss.yaml")
+                fil("apps/beregningsplattform/.nais/q1_dev-fss.yaml")
+                fil("apps/beregningsplattform/.nais/q2_dev-fss.yaml")
+                fil("apps/beregningsplattform/.nais/app_prod-fss.yaml")
                 fil("apps/backend/.nais/app_dev-gcp.yaml")
                 fil("apps/lab/backend/.nais/app_dev-gcp.yaml")
             }
 
             test("gir appen med bare testmiljøet som matcher") {
                 naisFiler()
-                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "q1") shouldBe
+                moduler.app(rot, alleKataloger, navn = "beregningsplattform", miljø = "q1") shouldBe
                     App(
-                        ":apps:mottak",
-                        "apps/mottak",
-                        "mottak",
-                        testmiljøer = listOf(Miljø("dev-fss", "apps/mottak/.nais/q1_dev-fss.yaml")),
+                        ":apps:beregningsplattform",
+                        "apps/beregningsplattform",
+                        "beregningsplattform",
+                        testmiljøer = listOf(Miljø("dev-fss", "apps/beregningsplattform/.nais/q1_dev-fss.yaml")),
                         prodmiljøer = emptyList(),
                     )
             }
 
             test("gir appen med bare prodmiljøet som matcher") {
                 naisFiler()
-                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "prod") shouldBe
+                moduler.app(rot, alleKataloger, navn = "beregningsplattform", miljø = "prod") shouldBe
                     App(
-                        ":apps:mottak",
-                        "apps/mottak",
-                        "mottak",
+                        ":apps:beregningsplattform",
+                        "apps/beregningsplattform",
+                        "beregningsplattform",
                         testmiljøer = emptyList(),
-                        prodmiljøer = listOf(Miljø("prod-fss", "apps/mottak/.nais/app_prod-fss.yaml")),
+                        prodmiljøer = listOf(Miljø("prod-fss", "apps/beregningsplattform/.nais/app_prod-fss.yaml")),
                     )
             }
 
@@ -152,27 +152,27 @@ class AppTest :
 
             test("null når miljøet ikke finnes") {
                 naisFiler()
-                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "dev-gcp").shouldBeNull()
+                moduler.app(rot, alleKataloger, navn = "beregningsplattform", miljø = "dev-gcp").shouldBeNull()
             }
 
             test("null når miljøet matcher flere testmiljøer") {
                 naisFiler()
-                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "dev-fss").shouldBeNull()
+                moduler.app(rot, alleKataloger, navn = "beregningsplattform", miljø = "dev-fss").shouldBeNull()
             }
 
             test("eksakt filnavn velges selv om det også er en del av et annet filnavn") {
                 naisFiler()
-                fil("apps/mottak/.nais/q1_dev-fss-2.yaml")
+                fil("apps/beregningsplattform/.nais/q1_dev-fss-2.yaml")
 
-                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "q1_dev-fss")?.testmiljøer shouldBe
-                    listOf(Miljø("dev-fss", "apps/mottak/.nais/q1_dev-fss.yaml"))
+                moduler.app(rot, alleKataloger, navn = "beregningsplattform", miljø = "q1_dev-fss")?.testmiljøer shouldBe
+                    listOf(Miljø("dev-fss", "apps/beregningsplattform/.nais/q1_dev-fss.yaml"))
             }
 
             test("null når miljøet matcher både et testmiljø og et prodmiljø") {
                 naisFiler()
-                fil("apps/mottak/.nais/q1_prod-fss.yaml")
+                fil("apps/beregningsplattform/.nais/q1_prod-fss.yaml")
 
-                moduler.app(rot, alleKataloger, navn = "mottak", miljø = "q1").shouldBeNull()
+                moduler.app(rot, alleKataloger, navn = "beregningsplattform", miljø = "q1").shouldBeNull()
             }
         }
 
