@@ -69,8 +69,8 @@ internal fun Route.beregningApi() {
     }
 }
 
-private fun SkattekortDTO.skatteKontekst(): SkatteKontekst {
-    return SkatteKontekst(
+private fun SkattekortDTO.skatteKontekst(): SkatteKontekst =
+    SkatteKontekst(
         skattekort =
             Skattekort(
                 aktoerId = AktoerId(0L),
@@ -90,11 +90,11 @@ private fun SkattekortDTO.skatteKontekst(): SkatteKontekst {
                     },
             ),
         allokeringer =
-            forskuddstrekk.mapNotNull { trekk ->
-                trekk.faggruppe?.let { trekk.trekkode to it }
-            }.toMap(),
+            forskuddstrekk
+                .mapNotNull { trekk ->
+                    trekk.faggruppe?.let { trekk.trekkode to it }
+                }.toMap(),
     )
-}
 
 // Motoren har én saldo for hele beregningen, ikke én saldo per forskuddstrekk.
 private fun SkattekortDTO.tilgjengeligFrikortbeloep(): BigDecimal =
