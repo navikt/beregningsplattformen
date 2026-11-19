@@ -75,7 +75,7 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 									}
 								/>
 								<Fieldset legend="Forskuddstrekk">
-									<HGrid columns={{ xs: 1, md: 2 }} gap="space-16">
+									<HGrid columns={{ xs: 1, md: 2 }} gap="space-16" align="end">
 										<Select
 											id={`skattekort-${felt("trekkode")}`}
 											label="Trekkode"
