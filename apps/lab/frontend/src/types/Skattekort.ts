@@ -185,7 +185,7 @@ function lesTall(verdi: string, desimaler = false) {
 
 export function lesSkattekort(utkast: SkattekortUtkast) {
 	const trekk = utkast.forskuddstrekk;
-	return skattekortSchema.safeParse({
+	return skattekortSchema.parse({
 		inntektsaar: lesTall(utkast.inntektsaar),
 		forskuddstrekk: [
 			{

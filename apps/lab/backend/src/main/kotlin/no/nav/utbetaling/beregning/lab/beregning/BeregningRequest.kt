@@ -12,4 +12,5 @@ class BeregningRequest(
     @Contextual
     val tom: LocalDate? = null,
     val xml: List<String>,
+    val skattekort: SkattekortDTO? = null,
 )

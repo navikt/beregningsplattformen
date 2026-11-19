@@ -29,12 +29,23 @@ import { isAxiosError } from "axios";
 import { type SubmitEvent, useRef, useState } from "react";
 import { postBeregn } from "../api/apiService";
 import { Beregningsresultater } from "../components/Beregningsresultater";
+import {
+	FellesBeregningsfelt,
+	type FellesFeltfeil,
+	type FellesOpplysninger,
+} from "../components/FellesBeregningsfelt";
 import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
+import { SkattekortSkjema } from "../components/SkattekortSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
 import { HttpStatusCodeError } from "../types/Error";
 import type { BeregningResponse } from "../types/BeregningResponse";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
-import { fillTypedTemplate, templateFields } from "../util/template";
+import { type SkattekortUtkast, lesSkattekort, nyttForskuddstrekk } from "../types/Skattekort";
+import {
+	fillTypedTemplate,
+	templateFields,
+	xmlMedGjelderId,
+} from "../util/template";
 import styles from "./SendInnOppdragsXML.module.css";
 
 interface XmlUtkast {
@@ -184,6 +195,24 @@ function Detaljkort({
 }
 
 export default function SendInnOppdragsXML() {
+	const [fellesOpplysninger, settFellesOpplysninger] = useState<FellesOpplysninger>(
+		() => ({
+			gjelderId:
+				templateFields(oppdragsXmlTypedTemplate).find(
+					(felt) => felt.name === "oppdragGjelderId",
+				)?.value ?? "",
+			fom: "",
+			tom: "",
+			fomGyldig: true,
+			tomGyldig: true,
+		}),
+	);
+	const [fellesfeil, settFellesfeil] = useState<FellesFeltfeil[]>([]);
+	const [skattekortUtkast, settSkattekortUtkast] = useState<SkattekortUtkast>({
+		aktiv: false,
+		inntektsaar: String(new Date().getFullYear()),
+		forskuddstrekk: nyttForskuddstrekk(),
+	});
 	const [xmlUtkast, settXmlUtkast] = useState<XmlUtkast[]>([
 		{ id: 1, xmlMal: oppdragsXmlTypedTemplate, feltverdier: {} },
 	]);
@@ -294,26 +323,58 @@ export default function SendInnOppdragsXML() {
 		if (senderRef.current) return;
 
 		fjernResultat();
-		const xmlPerUtkast = xmlUtkast.map((draft) =>
-			fillTypedTemplate(
+		const { gjelderId, fom, tom, fomGyldig, tomGyldig } = fellesOpplysninger;
+		const feltfeil: FellesFeltfeil[] = [];
+		if (!/^\d{11}$/.test(gjelderId.trim())) {
+			feltfeil.push({
+				felt: "gjelderId",
+				melding: "Oppgi en syntetisk gjelder-ID med 11 sifre.",
+			});
+		}
+		if (!fomGyldig) {
+			feltfeil.push({ felt: "fom", melding: "Oppgi en gyldig fra-dato." });
+		}
+		if (!tomGyldig) {
+			feltfeil.push({ felt: "tom", melding: "Oppgi en gyldig til-dato." });
+		} else if (fom && tom && fom > tom) {
+			feltfeil.push({
+				felt: "tom",
+				melding: "Til-datoen må være lik eller etter fra-datoen.",
+			});
+		}
+		settFellesfeil(feltfeil);
+		if (feltfeil.length > 0) return;
+
+		const xmlPerUtkast: string[] = [];
+		for (const draft of xmlUtkast) {
+			const xml = fillTypedTemplate(
 				draft.xmlMal,
 				templateFields(draft.xmlMal),
 				draft.feltverdier,
-			),
-		);
-		const tomtUtkastIndeks = xmlPerUtkast.findIndex((xml) => !xml.trim());
-		if (tomtUtkastIndeks !== -1) {
-			const tomtUtkastId = xmlUtkast[tomtUtkastIndeks].id;
-			settValgtXmlId(tomtUtkastId);
-			settXmlFeilId(tomtUtkastId);
-			settResultat(`XML-utkast ${tomtUtkastId} mangler XML-innhold.`);
-			return;
+			);
+			const oppdragXml = xmlMedGjelderId(xml, gjelderId.trim());
+			if (!oppdragXml.gyldig) {
+				settValgtXmlId(draft.id);
+				settXmlFeilId(draft.id);
+				settResultat(
+					`XML-utkast ${draft.id}: ${xml.trim() ? oppdragXml.feil : "Mangler XML-innhold."}`,
+				);
+				return;
+			}
+			xmlPerUtkast.push(oppdragXml.xml);
 		}
 
 		senderRef.current = true;
 		settSender(true);
 		try {
-			const response = await postBeregn({ xml: xmlPerUtkast });
+			const response = await postBeregn({
+				xml: xmlPerUtkast,
+				...(fom ? { fom } : {}),
+				...(tom ? { tom } : {}),
+				...(skattekortUtkast.aktiv
+					? { skattekort: lesSkattekort(skattekortUtkast) }
+					: {}),
+			});
 			settRespons(response);
 			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
 				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
@@ -379,6 +440,16 @@ export default function SendInnOppdragsXML() {
 					</LocalAlert.Content>
 				</LocalAlert>
 				<form onSubmit={handterInnsending} aria-busy={sender}>
+					<FellesBeregningsfelt
+						verdi={fellesOpplysninger}
+						feil={fellesfeil}
+						sender={sender}
+						onChange={(endringer) => {
+							fjernResultat();
+							settFellesfeil([]);
+							settFellesOpplysninger((verdi) => ({ ...verdi, ...endringer }));
+						}}
+					/>
 					<HStack
 						as="fieldset"
 						align="center"
@@ -441,6 +512,14 @@ export default function SendInnOppdragsXML() {
 							Legg til XML
 						</Button>
 					</HStack>
+					<SkattekortSkjema
+						utkast={skattekortUtkast}
+						sender={sender}
+						onChange={(utkast) => {
+							fjernResultat();
+							settSkattekortUtkast(utkast);
+						}}
+					/>
 					<HStack justify="end" marginBlock="space-16 space-0">
 						<Button type="submit" loading={sender} disabled={sender}>
 							Behandle alle XML

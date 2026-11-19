@@ -1,11 +1,16 @@
 import { DatePicker, useDatepicker } from "@navikt/ds-react";
 import { useEffect } from "react";
 
+/* TODO: Bjørn mener denne finnes bare fordi aksel7 hadde issue med tømming av datovelger kanskje hele denne komponenten kan fjernes */
+
 interface OppdragDatoFeltProps {
+	id?: string;
 	label: string;
 	value: string;
 	readOnly: boolean;
 	onChange: (value: string) => void;
+	error?: string;
+	onValidityChange?: (gyldig: boolean) => void;
 }
 
 function parseDato(value: string): Date | undefined {
@@ -46,16 +51,21 @@ function sammeDato(left?: Date, right?: Date): boolean {
 }
 
 export function OppdragDatoFelt({
+	id,
 	label,
 	value,
 	readOnly,
 	onChange,
+	error,
+	onValidityChange,
 }: OppdragDatoFeltProps) {
 	const { datepickerProps, inputProps, selectedDay, setSelected } =
 		useDatepicker({
 			defaultSelected: parseDato(value),
 			inputFormat: "dd.MM.yyyy",
 			onDateChange: (date) => onChange(date ? formatDato(date) : ""),
+			onValidate: ({ isValidDate, isEmpty }) =>
+				onValidityChange?.(isValidDate || isEmpty),
 		});
 
 	useEffect(() => {
@@ -67,7 +77,13 @@ export function OppdragDatoFelt({
 
 	return (
 		<DatePicker {...datepickerProps}>
-			<DatePicker.Input {...inputProps} label={label} readOnly={readOnly} />
+			<DatePicker.Input
+				{...inputProps}
+				id={id}
+				label={label}
+				readOnly={readOnly}
+				error={error}
+			/>
 		</DatePicker>
 	);
 }

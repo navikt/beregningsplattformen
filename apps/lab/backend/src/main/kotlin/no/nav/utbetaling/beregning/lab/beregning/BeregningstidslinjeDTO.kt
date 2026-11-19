@@ -1,17 +1,13 @@
 package no.nav.utbetaling.beregning.lab.beregning
 
-import java.math.BigDecimal
 import java.time.LocalDate
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
+import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DelberegningType
-import no.nav.sokos.dare.poc.beregning.fordeler.SkatteKontekst
-import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
-import no.nav.utbetaling.beregning.tid.Periode
-import no.nav.utbetaling.beregningsflyt.Beregningsflyt
-import no.nav.utbetaling.beregningsflyt.Beregningsgrunnlag
+import no.nav.sokos.dare.poc.beregning.dataklasser.Satstype
 
 @Serializable
 data class BeregningDTO(
@@ -39,6 +35,7 @@ enum class LinjetypeDTO {
     YTELSE,
     SKATT,
     TREKK,
+    FRIKORT_BRUK,
 }
 
 @Serializable
@@ -54,32 +51,7 @@ data class BeregningstidslinjeDTO(
     val beregninger: List<BeregningDTO>,
 ) {
     companion object {
-        fun fra(
-            oppdragstidslinje: Oppdragstidslinje,
-            fom: LocalDate?,
-            tom: LocalDate?,
-        ): BeregningstidslinjeDTO {
-            val beregningFom = fom ?: oppdragstidslinje.firstOrNull()?.first?.fom ?: error("Oppdragstidslinje er tom, da må beregningsperiode settes")
-            val beregningTom =
-                tom ?: oppdragstidslinje
-                    .lastOrNull()
-                    ?.first
-                    ?.let { it as? Periode.LukketPeriode }
-                    ?.tom ?: error("Oppdragstidslinje er tom/ åpen ende, da må beregningsperiode settes")
-
-            val grunnlag =
-                Beregningsgrunnlag(
-                    beregningsperiode = Periode.LukketPeriode(beregningFom, beregningTom),
-                    oppdragstidslinje = oppdragstidslinje,
-                    skatteKontekst = SkatteKontekst(null, emptyMap()),
-                    trekkVedtak = emptyList(),
-                    overføres = LocalDate.now(),
-                    relaterteBeregninger = emptyList(),
-                    tilgjengeligFrikortbeløp = BigDecimal.ZERO,
-                )
-
-            val (_, beregninger) = Beregningsflyt().beregn(grunnlag)
-
+        fun fra(beregninger: List<Beregning>): BeregningstidslinjeDTO {
             val beregningerDTO =
                 beregninger.mapIndexed { beregningIndex, beregning ->
                     BeregningDTO(
@@ -88,12 +60,13 @@ data class BeregningstidslinjeDTO(
                         utbetalesTil = "${beregning.utbetalesTil?.id ?: beregning.gjelder?.id}", // TODO: Rart den kunnskapen ligger her
                         kidnummer = beregning.kid,
                         status = beregning.status.name,
+                        // TODO: Her må det gjøres ting.
                         delberegninger =
                             beregning.delberegning.mapIndexed { delberegningIndex, delberegning ->
                                 DelberegningDTO(
                                     id = delberegningIndex + 1,
                                     fom = delberegning.datoIntervall.fom,
-                                    tom = delberegning.datoIntervall.tom ?: error("Delberegning skal ha lukket periode"),
+                                    tom = delberegning.datoIntervall.tom ?: error("Delberegning skal ha lukket periode"),  //TODO: Dette er en ferdig beregning. har vi ikke tom her har det skjedd noe rart.
                                     beloep = delberegning.sum.toPlainString(),
                                     fagomraade = beregning.fagomraade.name, // TODO: Burde ligge på delberegningnivå i modellen også,
                                     linjer =
@@ -101,15 +74,19 @@ data class BeregningstidslinjeDTO(
                                             LinjeDTO(
                                                 id = linjeIndex + 1,
                                                 beloep = delberegningslinje.sum.toPlainString(),
-                                                sats = delberegningslinje.sats?.let { "${it.toPlainString()} ${delberegningslinje.satsType!!.name}" },
+                                                sats =
+                                                    when (delberegningslinje.satsType) {
+                                                        Satstype.TABELL -> Satstype.TABELL.name
+                                                        else -> delberegningslinje.sats?.let { "${it.toPlainString()} ${delberegningslinje.satsType!!.name}" }
+                                                    },
                                                 type =
                                                     when (delberegningslinje.type) {
                                                         DelberegningType.YTELSE -> LinjetypeDTO.YTELSE
                                                         DelberegningType.SKATT -> LinjetypeDTO.SKATT
                                                         DelberegningType.TREKK -> LinjetypeDTO.TREKK
+                                                        DelberegningType.FRIKORT_BRUK -> LinjetypeDTO.FRIKORT_BRUK
                                                         DelberegningType.SUM,
                                                         DelberegningType.TIDLIGERE_UTBETALT,
-                                                        DelberegningType.FRIKORT_BRUK,
                                                         -> error("Hva er linjetype ${delberegningslinje.type.name} ?")
                                                     },
                                             )

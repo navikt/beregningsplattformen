@@ -3,7 +3,7 @@ import { oppdragstidslinjeSchema } from "./OppdragstidslinjeDTO";
 
 const linjeSchema = z.object({
 	id: z.number(),
-	type: z.enum(["YTELSE", "SKATT", "TREKK"]),
+	type: z.enum(["YTELSE", "SKATT", "TREKK", "FRIKORT_BRUK"]),
 	sats: z.string().nullable(),
 	beloep: z.string(),
 });
