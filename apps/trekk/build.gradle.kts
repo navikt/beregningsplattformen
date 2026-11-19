@@ -29,6 +29,10 @@ dependencies {
 
     // Micrometer
     implementation(libs.micrometer.registry.prometheus)
+
+    // Tests
+    testImplementation("io.ktor:ktor-server-test-host-jvm:${libs.versions.ktorVersion.get()}")
+    testImplementation("io.mockk:mockk:1.14.6")
 }
 
 application {

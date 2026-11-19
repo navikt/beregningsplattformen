@@ -1,6 +1,10 @@
 package no.nav.utbetaling.beregning.trekk.config
 
+import java.sql.SQLException
 import javax.sql.DataSource
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -60,11 +64,15 @@ object DatabaseConfig {
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
             connectionTimeout =
                 java.time.Duration
-                    .ofSeconds(30)
+                    .ofSeconds(2)
+                    .toMillis()
+            validationTimeout =
+                java.time.Duration
+                    .ofSeconds(1)
                     .toMillis()
             initializationFailTimeout =
                 java.time.Duration
-                    .ofMinutes(10)
+                    .ofSeconds(30)
                     .toMillis()
             idleTimeout =
                 java.time.Duration
@@ -97,3 +105,17 @@ object DatabaseConfig {
         }
     }
 }
+
+internal suspend fun databaseHealthy(dataSource: DataSource): Boolean =
+    withContext(Dispatchers.IO) {
+        try {
+            val isValid = dataSource.connection.use { it.isValid(1) }
+            if (!isValid) {
+                Log.warn("Database health check failed")
+            }
+            isValid
+        } catch (exception: SQLException) {
+            Log.warn("Database health check failed (SQLState: ${exception.sqlState})")
+            false
+        }
+    }

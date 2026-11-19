@@ -36,7 +36,7 @@ fun Application.commonConfig() {
 
 fun Routing.internalNaisRoutes(
     applicationState: ApplicationState,
-    readynessCheck: () -> Boolean = { applicationState.ready },
+    readynessCheck: suspend () -> Boolean = { applicationState.ready },
     alivenessCheck: () -> Boolean = { applicationState.alive },
 ) {
     route("internal") {
@@ -56,7 +56,7 @@ fun Routing.internalNaisRoutes(
             } else {
                 call.respondText(
                     text = "Not ready",
-                    status = HttpStatusCode.InternalServerError,
+                    status = HttpStatusCode.ServiceUnavailable,
                 )
             }
         }
