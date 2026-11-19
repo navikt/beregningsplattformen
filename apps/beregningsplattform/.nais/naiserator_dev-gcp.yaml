@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: beregningsplattform
+  name: beregningsplattformen-beregningsplattform
   namespace: beregningsplattform
   annotations:
     github.com/repository: "navikt/beregningsplattformen"
@@ -9,6 +9,7 @@ metadata:
   labels:
     team: beregningsplattform
     app.kubernetes.io/part-of: beregningsplattformen
+    app.kubernetes.io/component: beregningsplattform
 spec:
   image: "{{{ image }}}"
   port: 8080
