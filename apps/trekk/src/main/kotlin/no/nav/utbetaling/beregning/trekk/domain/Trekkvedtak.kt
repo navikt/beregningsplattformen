@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import kotlinx.serialization.Serializable
 
 import no.nav.utbetaling.beregning.tid.Periode
-import no.nav.utbetaling.beregning.trekk.IdValueClass
+import no.nav.utbetaling.beregning.trekk.utils.IdValueClass
 
 data class Trekkvedtak(
     val id: TrekkvedtakId? = null,

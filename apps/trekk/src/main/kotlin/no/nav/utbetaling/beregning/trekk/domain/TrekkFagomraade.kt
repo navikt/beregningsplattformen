@@ -2,7 +2,7 @@ package no.nav.utbetaling.beregning.trekk.domain
 
 import java.time.LocalDateTime
 
-import no.nav.utbetaling.beregning.trekk.IdValueClass
+import no.nav.utbetaling.beregning.trekk.utils.IdValueClass
 
 data class TrekkFagomraade(
     val id: TrekkFagomraadeId? = null,

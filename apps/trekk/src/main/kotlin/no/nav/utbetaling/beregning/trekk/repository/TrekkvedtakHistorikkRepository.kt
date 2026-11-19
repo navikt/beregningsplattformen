@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.trekk.persistence
+package no.nav.utbetaling.beregning.trekk.repository
 
 import kotliquery.TransactionalSession
 import kotliquery.queryOf

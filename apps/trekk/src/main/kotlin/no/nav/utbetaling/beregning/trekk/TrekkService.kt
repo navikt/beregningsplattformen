@@ -7,10 +7,10 @@ import kotliquery.TransactionalSession
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.trekk.config.DatabaseConfig
 import no.nav.utbetaling.beregning.trekk.dto.Trekk
-import no.nav.utbetaling.beregning.trekk.persistence.TrekkFagomraadeRepository
-import no.nav.utbetaling.beregning.trekk.persistence.TrekkperiodeRepository
-import no.nav.utbetaling.beregning.trekk.persistence.TrekkvedtakHistorikkRepository
-import no.nav.utbetaling.beregning.trekk.persistence.TrekkvedtakRepository
+import no.nav.utbetaling.beregning.trekk.repository.TrekkFagomraadeRepository
+import no.nav.utbetaling.beregning.trekk.repository.TrekkperiodeRepository
+import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakHistorikkRepository
+import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakRepository
 import no.nav.utbetaling.beregning.trekk.utils.SqlUtils.transaction
 
 class TrekkService(

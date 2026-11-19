@@ -32,3 +32,7 @@ object SqlUtils {
             }
         }
 }
+
+interface IdValueClass {
+    val id: Long
+}

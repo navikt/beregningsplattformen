@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 import no.nav.utbetaling.beregning.tid.Periode
-import no.nav.utbetaling.beregning.trekk.IdValueClass
+import no.nav.utbetaling.beregning.trekk.utils.IdValueClass
 
 data class Trekkperiode(
     val id: TrekkperiodeId? = null,
