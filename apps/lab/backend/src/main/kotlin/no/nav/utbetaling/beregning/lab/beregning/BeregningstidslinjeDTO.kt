@@ -18,7 +18,7 @@ data class BeregningDTO(
     val kidnummer: String?,
     val status: String,
     val delberegninger: List<DelberegningDTO>,
-    val ekstraInfo: Set<EkstraInfo>
+    val ekstraInfo: Set<EkstraInfo>,
 )
 
 @Serializable
@@ -29,7 +29,7 @@ data class DelberegningDTO(
     val linjer: List<LinjeDTO>,
     val fagomraade: String,
     val beloep: String,
-    val ekstraInfo: Set<EkstraInfo>
+    val ekstraInfo: Set<EkstraInfo>,
     // TODO: fagsystemId
 )
 
@@ -47,7 +47,7 @@ data class LinjeDTO(
     val type: LinjetypeDTO,
     val sats: String?,
     val beloep: String,
-    val ekstraInfo: Set<EkstraInfo>?
+    val ekstraInfo: Set<EkstraInfo>?,
 )
 
 @Serializable
@@ -97,7 +97,7 @@ data class BeregningstidslinjeDTO(
                                                 ekstraInfo = delberegningslinje.ekstra,
                                             )
                                         },
-                                    ekstraInfo = delberegning.ekstraInfo
+                                    ekstraInfo = delberegning.ekstraInfo,
                                 )
                             },
                     )
