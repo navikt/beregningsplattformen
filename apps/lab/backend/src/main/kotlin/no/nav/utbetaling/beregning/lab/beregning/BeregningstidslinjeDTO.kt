@@ -66,7 +66,7 @@ data class BeregningstidslinjeDTO(
                                 DelberegningDTO(
                                     id = delberegningIndex + 1,
                                     fom = delberegning.datoIntervall.fom,
-                                    tom = delberegning.datoIntervall.tom ?: error("Delberegning skal ha lukket periode"), // TODO: Dette er en ferdig beregning. har vi ikke tom her har det skjedd noe rart.
+                                    tom = requireNotNull(delberegning.datoIntervall.tom) { "Delberegning skal ha lukket periode" },
                                     beloep = delberegning.sum.toPlainString(),
                                     fagomraade = beregning.fagomraade.name, // TODO: Burde ligge på delberegningnivå i modellen også,
                                     linjer =
