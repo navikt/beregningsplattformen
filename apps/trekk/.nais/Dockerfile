@@ -6,4 +6,4 @@ ENV TZ="Europe/Oslo"
 # --enable-native-access=ALL-UNNAMED fjernes når ingen avhengigheter kaster WARNING etterhvert som Java 25 kommer med flere oppdateringer
 ENV JDK_JAVA_OPTIONS="-XX:MaxRAMPercentage=75 --enable-native-access=ALL-UNNAMED"
 
-ENTRYPOINT ["java", "-cp", "/lib/*", "no.nav.utbetaling.beregning.trekk.TrekkKt"]
+ENTRYPOINT ["java", "-cp", "/lib/*", "no.nav.utbetaling.beregning.trekk.ApplicationKt"]
