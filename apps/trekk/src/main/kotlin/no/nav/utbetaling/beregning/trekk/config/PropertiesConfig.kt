@@ -69,26 +69,13 @@ object PropertiesConfig {
 
     @Serializable
     data class PostgresProperties(
-        val hostname: String,
+        val jdbcUrl: String,
+        val name: String,
+        val host: String,
         val port: Int,
-        val database: String,
         val username: String,
         val password: String,
-        val jdbcUrl: String,
     )
-
-   /* fun getApplicationProperties(): ApplicationProperties =
-        ApplicationProperties(
-            naisAppName = getOrEmpty("NAIS_APP_NAME"),
-            environment = Environment.valueOf(getOrEmpty("ENVIRONMENT")),
-        )
-
-    enum class Environment {
-        LOCAL,
-        TEST,
-        DEV,
-        PROD,
-    }*/
 }
 
 fun ApplicationConfig.loadEnv(): ApplicationConfig {

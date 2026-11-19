@@ -87,8 +87,8 @@ object DatabaseConfig {
                         PGSimpleDataSource().apply {
                             user = postgresProperties.username
                             password = postgresProperties.password
-                            serverNames = arrayOf(postgresProperties.hostname)
-                            databaseName = postgresProperties.database
+                            serverNames = arrayOf(postgresProperties.host)
+                            databaseName = postgresProperties.name
                             portNumbers = intArrayOf(postgresProperties.port)
                         }
                 }
