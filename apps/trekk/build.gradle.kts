@@ -32,7 +32,7 @@ dependencies {
 
     // Tests
     testImplementation("io.ktor:ktor-server-test-host-jvm:${libs.versions.ktorVersion.get()}")
-    testImplementation("io.mockk:mockk:1.14.6")
+    testImplementation("io.mockk:mockk:1.14.12")
 }
 
 application {

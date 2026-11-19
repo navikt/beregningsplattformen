@@ -6,7 +6,7 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
-private const val NAMESPACE = "beregningsplattform"
+private const val NAMESPACE = "beregningsplattformen_beregningsplattform"
 
 object Metrics {
     val prometheusMeterRegistry =

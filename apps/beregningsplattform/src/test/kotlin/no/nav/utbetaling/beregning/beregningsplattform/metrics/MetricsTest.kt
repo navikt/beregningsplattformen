@@ -54,7 +54,7 @@ class MetricsTest :
             metrikker.forEach { antall(it) shouldBe 1.0 }
             metrikker.forEach { metrikk ->
                 Metrics.prometheusMeterRegistry
-                    .get("beregningsplattform_${metrikk.felt}")
+                    .get("beregningsplattformen_beregningsplattform_${metrikk.felt}")
                     .counter()
                     .id.tags
                     .associate { it.key to it.value } shouldBe (metrikk.tags + ("oppdragstype" to "utbetaling"))
@@ -133,7 +133,7 @@ private fun antall(
     metrikk: Oppdrag.Metrikk,
     type: String = "utbetaling",
 ) = Metrics.prometheusMeterRegistry
-    .get("beregningsplattform_${metrikk.felt}")
+    .get("beregningsplattformen_beregningsplattform_${metrikk.felt}")
     .tags((metrikk.tags + ("oppdragstype" to type)).map { (navn, verdi) -> Tag.of(navn, verdi) })
     .counter()
     .count()
