@@ -4,12 +4,16 @@ import {
 	Detail,
 	Heading,
 	HGrid,
+	HStack,
+	Switch,
 	Table,
 	VStack,
 } from "@navikt/ds-react";
 import { DataGrid } from "@navikt/ds-react/PREVIEW/DataGrid";
+import { Fragment, useState } from "react";
 import type { BeregningResponse } from "../types/BeregningResponse";
 import styles from "./Beregningsresultater.module.css";
+import { EkstraInfoDetaljer } from "./EkstraInfoDetaljer";
 
 type Beregninger = NonNullable<
 	BeregningResponse["beregningstidslinje"]
@@ -97,7 +101,13 @@ function Summeringer({ beregning }: { beregning: Beregning }) {
 	);
 }
 
-function Linjedetaljer({ delberegning }: { delberegning: Delberegning }) {
+function Linjedetaljer({
+	delberegning,
+	visEkstraInfo,
+}: {
+	delberegning: Delberegning;
+	visEkstraInfo: boolean;
+}) {
 	if (delberegning.linjer.length === 0) {
 		return (
 			<BodyShort>Ingen linjer i delberegning {delberegning.id}.</BodyShort>
@@ -121,12 +131,21 @@ function Linjedetaljer({ delberegning }: { delberegning: Delberegning }) {
 			</Table.Header>
 			<Table.Body>
 				{delberegning.linjer.map((linje) => (
-					<Table.Row key={linje.id}>
-						<Table.HeaderCell scope="row">{linje.id}</Table.HeaderCell>
-						<Table.DataCell>{linje.type}</Table.DataCell>
-						<Table.DataCell>{linje.sats ?? "Ikke oppgitt"}</Table.DataCell>
-						<Table.DataCell align="right">{linje.beloep}</Table.DataCell>
-					</Table.Row>
+					<Fragment key={linje.id}>
+						<Table.Row>
+							<Table.HeaderCell scope="row">{linje.id}</Table.HeaderCell>
+							<Table.DataCell>{linje.type}</Table.DataCell>
+							<Table.DataCell>{linje.sats ?? "Ikke oppgitt"}</Table.DataCell>
+							<Table.DataCell align="right">{linje.beloep}</Table.DataCell>
+						</Table.Row>
+						{visEkstraInfo && (linje.ekstraInfo?.length ?? 0) > 0 && (
+							<Table.Row>
+								<Table.DataCell colSpan={4}>
+									<EkstraInfoDetaljer ekstraInfo={linje.ekstraInfo} />
+								</Table.DataCell>
+							</Table.Row>
+						)}
+					</Fragment>
 				))}
 			</Table.Body>
 			<tfoot>
@@ -143,7 +162,13 @@ function Linjedetaljer({ delberegning }: { delberegning: Delberegning }) {
 	);
 }
 
-function Beregningsgruppe({ beregning }: { beregning: Beregning }) {
+function Beregningsgruppe({
+	beregning,
+	visEkstraInfo,
+}: {
+	beregning: Beregning;
+	visEkstraInfo: boolean;
+}) {
 	const kolonner: DataGrid.Columns<Delberegning> = [
 		{
 			id: "id",
@@ -176,9 +201,18 @@ function Beregningsgruppe({ beregning }: { beregning: Beregning }) {
 				gap="space-12"
 				minWidth="0"
 				padding="space-16"
-				aria-label={`Linjer for delberegning ${delberegning.id}`}
+				aria-label={`Detaljer for delberegning ${delberegning.id}`}
 			>
-				<Linjedetaljer delberegning={delberegning} />
+				{visEkstraInfo && (
+					<EkstraInfoDetaljer
+						ekstraInfo={delberegning.ekstraInfo}
+						tittel="Ekstrainfo for delberegningen"
+					/>
+				)}
+				<Linjedetaljer
+					delberegning={delberegning}
+					visEkstraInfo={visEkstraInfo}
+				/>
 			</VStack>
 		),
 	};
@@ -203,6 +237,12 @@ function Beregningsgruppe({ beregning }: { beregning: Beregning }) {
 					Beregning {beregning.id}
 				</Heading>
 				<Metadata beregning={beregning} />
+				{visEkstraInfo && (
+					<EkstraInfoDetaljer
+						ekstraInfo={beregning.ekstraInfo}
+						tittel="Ekstrainfo for beregningen"
+					/>
+				)}
 				{beregning.delberegninger.length === 0 ? (
 					<BodyShort>Beregningen inneholder ingen delberegninger.</BodyShort>
 				) : (
@@ -233,6 +273,8 @@ export function Beregningsresultater({
 }: {
 	beregninger: Beregninger;
 }) {
+	const [visEkstraInfo, settVisEkstraInfo] = useState(false);
+
 	return (
 		<Box
 			as="section"
@@ -246,15 +288,27 @@ export function Beregningsresultater({
 			aria-labelledby="beregningsresultater-heading"
 		>
 			<VStack gap="space-16">
-				<Heading id="beregningsresultater-heading" level="2" size="medium">
-					Beregningsresultater
-				</Heading>
+				<HStack align="center" justify="space-between" gap="space-16" wrap>
+					<Heading id="beregningsresultater-heading" level="2" size="medium">
+						Beregningsresultater
+					</Heading>
+					<Switch
+						checked={visEkstraInfo}
+						onChange={(event) => settVisEkstraInfo(event.target.checked)}
+					>
+						Vis ekstrainfo
+					</Switch>
+				</HStack>
 				{beregninger.length === 0 ? (
 					<BodyShort>Responsen inneholder ingen beregninger.</BodyShort>
 				) : (
 					<VStack gap="space-16">
 						{beregninger.map((beregning) => (
-							<Beregningsgruppe key={beregning.id} beregning={beregning} />
+							<Beregningsgruppe
+								key={beregning.id}
+								beregning={beregning}
+								visEkstraInfo={visEkstraInfo}
+							/>
 						))}
 					</VStack>
 				)}
