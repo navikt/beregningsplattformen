@@ -1,18 +1,25 @@
 package no.nav.utbetaling.beregning.kotlinx
 
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.IntArraySerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonUnquotedLiteral
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.modules.SerializersModule
@@ -28,6 +35,7 @@ val KotlinxJson =
                 contextual(LocalDateTime::class, LocalDateTimeSerializer)
                 contextual(UUID::class, UUIDSerializer)
                 contextual(Instant::class, InstantSerializer)
+                contextual(BigDecimal::class, BigDecimalSerializer)
             }
     }
 
@@ -107,3 +115,40 @@ object InstantSerializer : KSerializer<Instant> {
 
     override fun deserialize(decoder: Decoder): Instant = Instant.parse(decoder.decodeString())
 }
+
+object BigDecimalSerializer : KSerializer<BigDecimal> {
+    @OptIn(ExperimentalSerializationApi::class)
+    override fun serialize(
+        encoder: Encoder,
+        value: BigDecimal,
+    ) = when (encoder) {
+        // use JsonUnquotedLiteral() to encode the BigDecimal literally
+        is JsonEncoder -> encoder.encodeJsonElement(JsonUnquotedLiteral(value.toPlainString()))
+        else -> encoder.encodeString(value.toPlainString())
+    }
+
+    override val descriptor: SerialDescriptor = SerialDescriptor("CustomType", IntArraySerializer().descriptor)
+
+    override fun deserialize(decoder: Decoder): BigDecimal =
+        when (decoder) {
+            // must use decodeJsonElement() to get the value, and then convert it to a BigDecimal
+            is JsonDecoder ->
+                decoder
+                    .decodeJsonElement()
+                    .jsonPrimitive.content
+                    .toBigDecimal()
+            else -> decoder.decodeString().toBigDecimal()
+        }
+}
+
+typealias BigDecimalJson =
+    @Serializable(with = BigDecimalSerializer::class)
+    BigDecimal
+
+typealias LocalDateJson =
+    @Serializable(with = LocalDateSerializer::class)
+    LocalDate
+
+typealias LocalDateTimeJson =
+    @Serializable(with = LocalDateTimeSerializer::class)
+    LocalDateTime
