@@ -44,8 +44,8 @@ function Felt({ label, verdi }: { label: string; verdi: string }) {
 	);
 }
 
-function totalsum(delberegninger: Beregning["delberegninger"]) {
-	const beløp = delberegninger.map((del) => del.beloep);
+function totalsum(poster: { beloep: string }[]) {
+	const beløp = poster.map((post) => post.beloep);
 	if (beløp.some((verdi) => !/^-?\d+(?:\.\d+)?$/.test(verdi))) {
 		return "Kan ikke summeres";
 	}
@@ -67,16 +67,32 @@ function Metadata({ beregning }: { beregning: Beregning }) {
 	return (
 		<HGrid
 			as="dl"
-			columns={{ xs: 1, sm: 2, lg: 3 }}
+			columns={{ xs: 1, sm: 2, lg: 4 }}
 			gap="space-8"
 			margin="space-0"
 		>
-			<Felt label="ID" verdi={String(beregning.id)} />
 			<Felt label="Gjelder" verdi={beregning.gjelder} />
 			<Felt label="Status" verdi={beregning.status} />
 			<Felt label="KID" verdi={beregning.kidnummer ?? "Ikke oppgitt"} />
 			<Felt label="Mottaker" verdi={beregning.utbetalesTil} />
+		</HGrid>
+	);
+}
+
+function Summeringer({ beregning }: { beregning: Beregning }) {
+	const skattelinjer = beregning.delberegninger.flatMap((del) =>
+		del.linjer.filter((linje) => linje.type === "SKATT"),
+	);
+
+	return (
+		<HGrid
+			as="dl"
+			columns={{ xs: 1, sm: 2 }}
+			gap="space-8"
+			margin="space-0"
+		>
 			<Felt label="Totalsum" verdi={totalsum(beregning.delberegninger)} />
+			<Felt label="Samlet skattetrekk" verdi={totalsum(skattelinjer)} />
 		</HGrid>
 	);
 }
@@ -206,6 +222,7 @@ function Beregningsgruppe({ beregning }: { beregning: Beregning }) {
 						</DataGrid>
 					</Box>
 				)}
+				<Summeringer beregning={beregning} />
 			</VStack>
 		</Box>
 	);
