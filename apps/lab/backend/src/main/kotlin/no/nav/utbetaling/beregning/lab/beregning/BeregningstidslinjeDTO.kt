@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 
 import no.nav.sokos.dare.poc.beregning.Beregning
 import no.nav.sokos.dare.poc.beregning.DelberegningType
+import no.nav.sokos.dare.poc.beregning.EkstraInfo
 import no.nav.sokos.dare.poc.beregning.dataklasser.Satstype
 
 @Serializable
@@ -17,6 +18,7 @@ data class BeregningDTO(
     val kidnummer: String?,
     val status: String,
     val delberegninger: List<DelberegningDTO>,
+    val ekstraInfo: Set<EkstraInfo>
 )
 
 @Serializable
@@ -27,6 +29,7 @@ data class DelberegningDTO(
     val linjer: List<LinjeDTO>,
     val fagomraade: String,
     val beloep: String,
+    val ekstraInfo: Set<EkstraInfo>
     // TODO: fagsystemId
 )
 
@@ -44,6 +47,7 @@ data class LinjeDTO(
     val type: LinjetypeDTO,
     val sats: String?,
     val beloep: String,
+    val ekstraInfo: Set<EkstraInfo>?
 )
 
 @Serializable
@@ -60,6 +64,7 @@ data class BeregningstidslinjeDTO(
                         utbetalesTil = "${beregning.utbetalesTil?.id ?: beregning.gjelder?.id}", // TODO: Rart den kunnskapen ligger her
                         kidnummer = beregning.kid,
                         status = beregning.status.name,
+                        ekstraInfo = beregning.ekstraInfo,
                         // TODO: Her må det gjøres ting.
                         delberegninger =
                             beregning.delberegning.mapIndexed { delberegningIndex, delberegning ->
@@ -89,8 +94,10 @@ data class BeregningstidslinjeDTO(
                                                         DelberegningType.TIDLIGERE_UTBETALT,
                                                         -> error("Hva er linjetype ${delberegningslinje.type.name} ?")
                                                     },
+                                                ekstraInfo = delberegningslinje.ekstra,
                                             )
                                         },
+                                    ekstraInfo = delberegning.ekstraInfo
                                 )
                             },
                     )
