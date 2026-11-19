@@ -1,3 +1,4 @@
-.beregningsresultater__felt {
+.beregningsresultater__felt,
+.beregningsresultater__ekstrainfo {
   overflow-wrap: anywhere;
 }

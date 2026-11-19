@@ -124,8 +124,8 @@
                             "columnValues": [],
                             "rowValue": 500,
                             "ekstra": [],
-                            "satstype": "PROSENT",
-                            "sats": 0
+                          "satstype": null,
+                          "sats": null
                         }
                     ],
                     "datoIntervall": {

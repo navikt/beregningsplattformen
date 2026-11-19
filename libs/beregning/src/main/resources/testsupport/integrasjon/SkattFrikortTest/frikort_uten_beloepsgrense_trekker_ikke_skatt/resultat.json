@@ -121,8 +121,8 @@
                             "columnValues": [],
                             "rowValue": 9740,
                             "ekstra": [],
-                            "satstype": "PROSENT",
-                            "sats": 0
+                            "satstype": null,
+                            "sats": null
                         },
                         {
                             "type": "TREKK",
