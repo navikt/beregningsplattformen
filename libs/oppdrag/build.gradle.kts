@@ -3,7 +3,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
 }
 
-val jacksonVersion = "3.2.4"
+val jacksonVersion = "3.3.0"
 
 dependencies {
     api(project(":libs:tid"))
