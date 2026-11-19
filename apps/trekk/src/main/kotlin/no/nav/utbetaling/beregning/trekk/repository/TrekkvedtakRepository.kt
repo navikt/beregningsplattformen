@@ -7,11 +7,9 @@ import kotliquery.queryOf
 import no.nav.utbetaling.beregning.trekk.domain.SatsType
 import no.nav.utbetaling.beregning.trekk.domain.TrekkFagomraade
 import no.nav.utbetaling.beregning.trekk.domain.TrekkFagomraadeId
-import no.nav.utbetaling.beregning.trekk.domain.Trekkberegningstype
 import no.nav.utbetaling.beregning.trekk.domain.Trekkperiode
 import no.nav.utbetaling.beregning.trekk.domain.TrekkperiodeId
 import no.nav.utbetaling.beregning.trekk.domain.Trekkstatus
-import no.nav.utbetaling.beregning.trekk.domain.Trekktype
 import no.nav.utbetaling.beregning.trekk.domain.Trekkvedtak
 import no.nav.utbetaling.beregning.trekk.domain.TrekkvedtakId
 
@@ -49,7 +47,6 @@ class TrekkvedtakRepository {
                 val trekkvedtakId = requireNotNull(id)
                 fagomraader = findFagomraadeByTrekkvedtakId(trekkvedtakId, session)
                 trekkperioder = findTrekkperioderByTrekkvedtakId(trekkvedtakId, session)
-                trekktype = findTrekktypeByKode(row.string("trekktype"), session)
             }
         }
 
@@ -82,37 +79,6 @@ class TrekkvedtakRepository {
                 mapOf("trekkvedtakId" to trekkId.id),
             ),
         ) { row -> row.tilTrekkperiode() }
-
-    fun findTrekktypeByKode(
-        trekktypeKode: String,
-        session: TransactionalSession,
-    ): Trekktype? =
-        session.single(
-            queryOf(
-                """
-                SELECT *
-                FROM trekktype
-                WHERE kode_trekktype = :trekktypeKode
-                """.trimIndent(),
-                mapOf("trekktypeKode" to trekktypeKode),
-            ),
-        ) { row -> row.tilTrekktype() }
-
-    private fun Row.tilTrekktype(): Trekktype =
-        Trekktype(
-            kodeTrekktype = string("kode_trekktype"),
-            beskrivelse = string("beskrivelse"),
-            prioritet = string("prioritet"), // TODO: integer
-            kodeKlasseTrekk = string("kode_klasse_trekk"),
-            kodeTrekkategori = string("kode_trekkategori"),
-            reduserSkattegr = boolean("reduser_skattegr"),
-            kodeOppgjoerstype = string("kode_oppgjorstype"),
-            kodeKlasseOppgj = string("kode_klasse_oppgj"),
-            belopsgrense = long("belopsgrense"),
-            bruker = string("brukerid"),
-            tidspktEndret = localDateTime("tidspkt_endret"),
-            trekkberegningstype = Trekkberegningstype.valueOf(string("trekkberegningstype")),
-        )
 
     private fun Row.tilTrekkperiode(): Trekkperiode =
         Trekkperiode(
@@ -148,12 +114,12 @@ class TrekkvedtakRepository {
             kreditorKid = stringOrNull("kreditor_kid"),
             gyldigTom = localDateOrNull("gyldig_tom"),
             ansvarligEnhet = string("ansv_enhet"),
-            debitorId = long("debitor_id"),
+            debitorId = string("debitor_id"),
             datoPriFom = localDateOrNull("dato_pri_fom"),
             kilde = stringOrNull("kilde"),
             trekkstatus = Trekkstatus.fromString(string("trekkstatus")),
             bruker = string("bruker"),
             tidspktReg = localDateTime("tidspkt_reg"),
-            mottatt = localDateTimeOrNull("mottatt"),
+            mottatt = localDateTime("mottatt"),
         )
 }

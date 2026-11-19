@@ -20,16 +20,15 @@ data class Trekkvedtak(
     val kreditorKid: String? = null,
     val gyldigTom: LocalDate? = null,
     val ansvarligEnhet: String,
-    val debitorId: Long,
+    val debitorId: String,
     val datoPriFom: LocalDate? = null,
     val kilde: String? = null,
     val trekkstatus: Trekkstatus,
     var trekkperioder: List<Trekkperiode> = emptyList(),
     var fagomraader: List<TrekkFagomraade> = emptyList(),
-    var trekktype: Trekktype? = null,
     val bruker: String,
     val tidspktReg: LocalDateTime,
-    val mottatt: LocalDateTime? = null,
+    val mottatt: LocalDateTime = LocalDateTime.now(),
 ) {
     fun isTrekkRelevantForDatoIntervall(overlappendePeriode: Periode): Boolean = trekkperioder.any { it.periode.overlapperMed(overlappendePeriode) }
 

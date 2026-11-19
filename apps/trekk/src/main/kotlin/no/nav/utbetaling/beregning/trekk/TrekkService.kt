@@ -37,7 +37,7 @@ class TrekkService(
         newTrekkvedtak: Trekk,
         tx: TransactionalSession,
     ) {
-        Log.debug("Oppretter nytt trekkvedtak for OS-trekkId: ${newTrekkvedtak.trekkvedtakId}")
+        Log.info("Oppretter nytt trekkvedtak for OS-trekkId: ${newTrekkvedtak.trekkvedtakId}")
         /*val aktoerId = aktoerService.findOrCreateByOffNr(tx, newTrekkvedtak.debitorId, "Person med trekk fra OS")
         val trekkId =
             trekkvedtakRepository.insertTrekkvedtak(newTrekkvedtak.toTrekkVedtak(), aktoerId.first.id, tx)
@@ -63,6 +63,7 @@ class TrekkService(
         changedTrekkvedtak: Trekk,
         tx: TransactionalSession,
     ): Trekk? {
+        Log.info("Oppdaterer trekkvedtak for OS-trekkId: ${changedTrekkvedtak.trekkvedtakId}")
         val existingTrekkvedtak =
             trekkvedtakRepository.findByEksternTrekkId(changedTrekkvedtak.trekkvedtakId!!, tx)
                 ?: throw IllegalStateException("Kunne ikke finne trekkvedtak for eksternTrekkId ${changedTrekkvedtak.trekkvedtakId} og debitorId ${changedTrekkvedtak.debitorId}")
