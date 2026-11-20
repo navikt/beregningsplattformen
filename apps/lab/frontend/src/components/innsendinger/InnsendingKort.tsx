@@ -30,6 +30,7 @@ import {
 	type KjedeSkjema,
 	nyKjede,
 } from "./skjema";
+import { XmlVisning } from "./XmlVisning";
 
 export function InnsendingKort({
 	nummer,
@@ -284,7 +285,7 @@ export function InnsendingKort({
 								<Box asChild margin="space-0">
 									{/* Aksel har ingen fontstørrelse under --ax-font-size-small (14px), som er større enn standard for pre */}
 									<pre style={{ fontSize: "0.8125rem" }}>
-										{formaterXml(resultat.xml ?? "")}
+										<XmlVisning xml={formaterXml(resultat.xml ?? "")} />
 									</pre>
 								</Box>
 							</Box>
