@@ -37,8 +37,11 @@ server.use(
     }),
 );
 
-server.get("/send-inn-oppdrags-xml", (request, response, next) => {
-	if (request.path !== "/send-inn-oppdrags-xml") {
+// Klientsider i React Router må få index.html ved refresh, ellers gir de 404 i miljø
+const KLIENTSIDER = ["/send-inn-oppdrags-xml", "/innsendinger-test"];
+
+server.get(KLIENTSIDER, (request, response, next) => {
+	if (!KLIENTSIDER.includes(request.path)) {
 		next();
 		return;
 	}
