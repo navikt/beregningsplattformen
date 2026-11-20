@@ -186,7 +186,9 @@ export class LinjeBuilder {
 
 	private graderXml(): string {
 		return listeXml(
-			this.grader,
+			this.grader.filter((grad) =>
+				[grad.typeGrad, grad.grad].some((v) => v != null),
+			),
 			(grad) => `
             <grad-170>
                 ${valgfriTag("typeGrad", grad.typeGrad)}
@@ -207,7 +209,11 @@ export class LinjeBuilder {
 
 	private attestanterXml(): string {
 		return listeXml(
-			this.attestanter,
+			this.attestanter.filter((attestant) =>
+				[attestant.attestantId, attestant.datoUgyldigFom].some(
+					(v) => v != null,
+				),
+			),
 			(attestant) => `
             <attestant-180>
                 ${valgfriTag("attestantId", attestant.attestantId)}

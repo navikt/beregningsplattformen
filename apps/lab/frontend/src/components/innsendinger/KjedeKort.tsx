@@ -58,7 +58,7 @@ function LinjeKort({
 				/>
 				<Accordion size="small">
 					<Accordion.Item>
-						<Accordion.Header>refusjonsinfo-156 (maks én)</Accordion.Header>
+						<Accordion.Header>refusjonsinfo-156</Accordion.Header>
 						<Accordion.Content>
 							<FeltGruppe
 								definisjoner={refusjonsinfofelter}

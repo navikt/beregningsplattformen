@@ -6,6 +6,7 @@
 		"dev": "vite --mode mock",
 		"dev:backend": "vite --mode backend",
 		"build": "tsc && vite build",
+        "test": "vitest",
 		"biome:check": "biome check --files-ignore-unknown=true",
 		"biome:fix": "biome check --write --no-errors-on-unmatched",
 		"stylelint:check": "stylelint '**/*.css'",

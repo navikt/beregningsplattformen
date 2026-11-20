@@ -199,7 +199,7 @@ export function ListeFelter<T extends Verdier>({
 									onEndring(elementer.filter((e) => e !== element))
 								}
 							>
-								Fjern {elementnavn} {index + 1}
+								Fjern {elementnavn}
 							</Button>
 						</HStack>
 						<FeltGruppe
