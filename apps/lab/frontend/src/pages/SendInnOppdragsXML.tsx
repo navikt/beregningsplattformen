@@ -6,7 +6,6 @@ import {
 	PadlockLockedFillIcon,
 	PauseFillIcon,
 	PersonIcon,
-	PlusIcon,
 	ClockDashedIcon,
 	XMarkOctagonFillIcon,
 } from "@navikt/aksel-icons";
@@ -25,7 +24,6 @@ import {
 	Tooltip,
 	VStack,
 } from "@navikt/ds-react";
-import { isAxiosError } from "axios";
 import { type SubmitEvent, useRef, useState } from "react";
 import { postBeregn } from "../api/apiService";
 import { Beregningsresultater } from "../components/Beregningsresultater";
@@ -34,25 +32,23 @@ import {
 	type FellesFeltfeil,
 	type FellesOpplysninger,
 } from "../components/FellesBeregningsfelt";
-import { OppdragsXmlSkjema } from "../components/OppdragsXmlSkjema";
+import {
+	InnsendingerProvider,
+	useInnsendinger,
+} from "../components/innsendinger/InnsendingerContext";
+import { InnsendingerSkjema } from "../components/innsendinger/InnsendingerSkjema";
 import { SkattekortSkjema } from "../components/SkattekortSkjema";
 import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
-import { HttpStatusCodeError } from "../types/Error";
 import type { BeregningResponse } from "../types/BeregningResponse";
+import { HttpStatusCodeError } from "../types/Error";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
-import { type SkattekortUtkast, lesSkattekort, nyttForskuddstrekk } from "../types/Skattekort";
 import {
-	fillTypedTemplate,
-	templateFields,
-	xmlMedGjelderId,
-} from "../util/template";
+	type SkattekortUtkast,
+	lesSkattekort,
+	nyttForskuddstrekk,
+} from "../types/Skattekort";
+import { templateFields } from "../util/template";
 import styles from "./SendInnOppdragsXML.module.css";
-
-interface XmlUtkast {
-	id: number;
-	xmlMal: string;
-	feltverdier: Record<string, string>;
-}
 
 type KjedePeriodeDTO =
 	OppdragstidslinjeDTO["kjeder"][number]["kjedeVersjoner"][number]["kjedePerioder"][number];
@@ -147,11 +143,7 @@ function Detaljkort({
 	saksbehandlerId?: string;
 }) {
 	return (
-		<VStack
-			as="div"
-			gap="space-4"
-			className={styles.laboratorium__detaljkort}
-		>
+		<VStack as="div" gap="space-4" className={styles.laboratorium__detaljkort}>
 			<dt>
 				<Label as="span" size="small" textColor="subtle">
 					{label}
@@ -195,8 +187,16 @@ function Detaljkort({
 }
 
 export default function SendInnOppdragsXML() {
-	const [fellesOpplysninger, settFellesOpplysninger] = useState<FellesOpplysninger>(
-		() => ({
+	return (
+		<InnsendingerProvider>
+			<SendInnOppdragsXMLInnhold />
+		</InnsendingerProvider>
+	);
+}
+
+function SendInnOppdragsXMLInnhold() {
+	const [fellesOpplysninger, settFellesOpplysninger] =
+		useState<FellesOpplysninger>(() => ({
 			gjelderId:
 				templateFields(oppdragsXmlTypedTemplate).find(
 					(felt) => felt.name === "oppdragGjelderId",
@@ -205,25 +205,18 @@ export default function SendInnOppdragsXML() {
 			tom: "",
 			fomGyldig: true,
 			tomGyldig: true,
-		}),
-	);
+		}));
 	const [fellesfeil, settFellesfeil] = useState<FellesFeltfeil[]>([]);
 	const [skattekortUtkast, settSkattekortUtkast] = useState<SkattekortUtkast>({
 		aktiv: false,
 		inntektsaar: String(new Date().getFullYear()),
 		forskuddstrekk: nyttForskuddstrekk(),
 	});
-	const [xmlUtkast, settXmlUtkast] = useState<XmlUtkast[]>([
-		{ id: 1, xmlMal: oppdragsXmlTypedTemplate, feltverdier: {} },
-	]);
-	const [valgtXmlId, settValgtXmlId] = useState(1);
-	const nesteXmlId = useRef(2);
 	const senderRef = useRef(false);
 	const [sender, settSender] = useState(false);
-	const [resultat, settResultat] = useState<string | null>(null);
+	const { resultat } = useInnsendinger();
 	const [feilmelding, settFeilmelding] = useState<string | null>(null);
 	const [respons, settRespons] = useState<BeregningResponse | null>(null);
-	const [xmlFeilId, settXmlFeilId] = useState<number | null>(null);
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
 		() => new Set(),
 	);
@@ -258,66 +251,13 @@ export default function SendInnOppdragsXML() {
 		);
 	};
 	const fjernResultat = () => {
-		settResultat(null);
 		settFeilmelding(null);
 		settRespons(null);
 		settValgtPeriode(null);
 		settUtvidedeKjeder(new Set());
 		settTidslinjeStart(null);
-		settXmlFeilId(null);
 	};
-	const endreMal = (id: number, xmlMal: string) => {
-		fjernResultat();
-		const felter = templateFields(xmlMal);
-		settXmlUtkast((utkast) =>
-			utkast.map((draft) =>
-				draft.id === id
-					? {
-							...draft,
-							xmlMal,
-							feltverdier: Object.fromEntries(
-								felter.map((felt) => [
-									felt.key,
-									draft.feltverdier[felt.key] ?? felt.value,
-								]),
-							),
-						}
-					: draft,
-			),
-		);
-	};
-	const endreFeltverdi = (id: number, key: string, value: string) => {
-		fjernResultat();
-		settXmlUtkast((utkast) =>
-			utkast.map((draft) =>
-				draft.id === id
-					? { ...draft, feltverdier: { ...draft.feltverdier, [key]: value } }
-					: draft,
-			),
-		);
-	};
-	const nullstillFelter = (id: number) => {
-		fjernResultat();
-		settXmlUtkast((utkast) =>
-			utkast.map((draft) =>
-				draft.id === id ? { ...draft, feltverdier: {} } : draft,
-			),
-		);
-	};
-	const tilbakestillMal = (id: number) => {
-		fjernResultat();
-		settXmlUtkast((utkast) =>
-			utkast.map((draft) =>
-				draft.id === id
-					? {
-							...draft,
-							xmlMal: oppdragsXmlTypedTemplate,
-							feltverdier: {},
-						}
-					: draft,
-			),
-		);
-	};
+
 	const handterInnsending = async (hendelse: SubmitEvent<HTMLFormElement>) => {
 		hendelse.preventDefault();
 		if (senderRef.current) return;
@@ -345,30 +285,11 @@ export default function SendInnOppdragsXML() {
 		settFellesfeil(feltfeil);
 		if (feltfeil.length > 0) return;
 
-		const xmlPerUtkast: string[] = [];
-		for (const draft of xmlUtkast) {
-			const xml = fillTypedTemplate(
-				draft.xmlMal,
-				templateFields(draft.xmlMal),
-				draft.feltverdier,
-			);
-			const oppdragXml = xmlMedGjelderId(xml, gjelderId.trim());
-			if (!oppdragXml.gyldig) {
-				settValgtXmlId(draft.id);
-				settXmlFeilId(draft.id);
-				settResultat(
-					`XML-utkast ${draft.id}: ${xml.trim() ? oppdragXml.feil : "Mangler XML-innhold."}`,
-				);
-				return;
-			}
-			xmlPerUtkast.push(oppdragXml.xml);
-		}
-
 		senderRef.current = true;
 		settSender(true);
 		try {
 			const response = await postBeregn({
-				xml: xmlPerUtkast,
+				xml: resultat.innsendinger.map((i) => i.xml),
 				...(fom ? { fom } : {}),
 				...(tom ? { tom } : {}),
 				...(skattekortUtkast.aktiv
@@ -391,17 +312,10 @@ export default function SendInnOppdragsXML() {
 					new Date(tidligsteDato.getFullYear(), tidligsteDato.getMonth(), 1),
 				);
 			}
-			settResultat("XML-ene er behandlet.");
 		} catch (error) {
 			if (error instanceof HttpStatusCodeError && error.apiMessage) {
 				settFeilmelding(error.apiMessage);
 			}
-			settResultat(
-				error instanceof HttpStatusCodeError ||
-					(isAxiosError(error) && error.response)
-					? "Kunne ikke behandle XML-ene. Kontroller innholdet og prøv igjen."
-					: "Kunne ikke behandle XML-ene. Prøv igjen.",
-			);
 		} finally {
 			senderRef.current = false;
 			settSender(false);
@@ -439,101 +353,37 @@ export default function SendInnOppdragsXML() {
 						Ikke lim inn personopplysninger eller reelle ID-er.
 					</LocalAlert.Content>
 				</LocalAlert>
-				<form onSubmit={handterInnsending} aria-busy={sender}>
-					<FellesBeregningsfelt
-						verdi={fellesOpplysninger}
-						feil={fellesfeil}
-						sender={sender}
-						onChange={(endringer) => {
-							fjernResultat();
-							settFellesfeil([]);
-							settFellesOpplysninger((verdi) => ({ ...verdi, ...endringer }));
-						}}
-					/>
-					<HStack
-						as="fieldset"
-						align="center"
-						gap="space-8"
-						wrap
-						marginBlock="space-0 space-16"
-						className={styles.laboratorium__xmlvalg}
-					>
-						<legend className="aksel-sr-only">Velg XML-utkast</legend>
-						{xmlUtkast.map(({ id }) => (
-							<Button
-								key={id}
-								type="button"
-								variant={valgtXmlId === id ? "primary" : "secondary"}
-								aria-pressed={valgtXmlId === id}
-								onClick={() => settValgtXmlId(id)}
-							>
-								XML {id}
-							</Button>
-						))}
-					</HStack>
-					{xmlUtkast.map((draft) => (
-						<div key={draft.id} hidden={valgtXmlId !== draft.id}>
-							<OppdragsXmlSkjema
-								nummer={draft.id}
-								xmlMal={draft.xmlMal}
-								feltverdier={draft.feltverdier}
-								xmlFeil={xmlFeilId === draft.id}
-								sender={sender}
-								onXmlMalChange={(xmlMal) => endreMal(draft.id, xmlMal)}
-								onFeltverdiChange={(key, value) =>
-									endreFeltverdi(draft.id, key, value)
-								}
-								onNullstillFelter={() => nullstillFelter(draft.id)}
-								onTilbakestillMal={() => tilbakestillMal(draft.id)}
-							/>
-						</div>
-					))}
-					<HStack justify="end" marginBlock="space-16 space-0">
-						<Button
-							type="button"
-							variant="secondary"
-							icon={<PlusIcon aria-hidden />}
-							disabled={sender}
-							onClick={() => {
+				<VStack gap="space-24" asChild>
+					<form onSubmit={handterInnsending} aria-busy={sender}>
+						<FellesBeregningsfelt
+							verdi={fellesOpplysninger}
+							feil={fellesfeil}
+							sender={sender}
+							onChange={(endringer) => {
 								fjernResultat();
-								const nyttXmlId = nesteXmlId.current;
-								nesteXmlId.current += 1;
-								settXmlUtkast((utkast) => [
-									...utkast,
-									{
-										id: nyttXmlId,
-										xmlMal: oppdragsXmlTypedTemplate,
-										feltverdier: {},
-									},
-								]);
-								settValgtXmlId(nyttXmlId);
+								settFellesfeil([]);
+								settFellesOpplysninger((verdi) => ({ ...verdi, ...endringer }));
 							}}
-						>
-							Legg til XML
-						</Button>
-					</HStack>
-					<SkattekortSkjema
-						utkast={skattekortUtkast}
-						sender={sender}
-						onChange={(utkast) => {
-							fjernResultat();
-							settSkattekortUtkast(utkast);
-						}}
-					/>
-					<HStack justify="end" marginBlock="space-16 space-0">
-						<Button type="submit" loading={sender} disabled={sender}>
-							Behandle alle XML
-						</Button>
-					</HStack>
-					{resultat && (
-						<BodyShort
-							role="status"
-							aria-live="polite"
-						>
-							{resultat}
-						</BodyShort>
-					)}
-				</form>
+						/>
+
+						<InnsendingerSkjema />
+
+						<SkattekortSkjema
+							utkast={skattekortUtkast}
+							sender={sender}
+							onChange={(utkast) => {
+								fjernResultat();
+								settSkattekortUtkast(utkast);
+							}}
+						/>
+
+						<HStack justify="end">
+							<Button type="submit" variant="primary" size="medium">
+								Send inn
+							</Button>
+						</HStack>
+					</form>
+				</VStack>
 			</Box>
 			<VStack
 				as="section"

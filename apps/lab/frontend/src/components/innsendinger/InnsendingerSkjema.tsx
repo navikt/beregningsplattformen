@@ -8,24 +8,20 @@ import {
 	Tabs,
 	VStack,
 } from "@navikt/ds-react";
-import { useId, useMemo, useRef, useState } from "react";
-import { standardInnsending } from "./fraXml";
+import { useId, useRef, useState } from "react";
+import { useInnsendinger } from "./InnsendingerContext";
 import { InnsendingKort } from "./InnsendingKort";
 import {
-	bygg,
 	type InnsendingSkjema,
 	kopierInnsending,
 	nyInnsending,
 } from "./skjema";
 
 export function InnsendingerSkjema() {
-	const [innsendinger, setInnsendinger] = useState<InnsendingSkjema[]>(() => [
-		standardInnsending(),
-	]);
+	const { innsendinger, setInnsendinger, resultat } = useInnsendinger();
 	const [aapen, setAapen] = useState<string>();
 	const nyInnsendingRef = useRef<HTMLButtonElement>(null);
 	const tittelId = useId();
-	const resultat = useMemo(() => bygg(innsendinger), [innsendinger]);
 
 	// Faller tilbake til siste innsending når den åpne er fjernet
 	const aapenNokkel = innsendinger.some((i) => i.nokkel === aapen)
