@@ -18,6 +18,9 @@ import org.postgresql.ds.PGSimpleDataSource
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.trekk.Metrics.prometheusMeterRegistry
+import no.nav.utbetaling.beregning.trekk.repository.mapper.TrekkFagomraadeMapper
+import no.nav.utbetaling.beregning.trekk.repository.mapper.TrekkperiodeMapper
+import no.nav.utbetaling.beregning.trekk.repository.mapper.TrekkvedtakMapper
 
 object DatabaseConfig {
     val jdbi: Jdbi by lazy {
@@ -119,6 +122,9 @@ internal fun createJdbi(dataSource: DataSource): Jdbi =
         // Hikari disables autocommit, but Jdbi must still own commit and rollback.
         setTransactionHandler(LocalTransactionHandler.managed())
         installPlugin(KotlinPlugin())
+        registerRowMapper(TrekkvedtakMapper())
+        registerRowMapper(TrekkperiodeMapper())
+        registerRowMapper(TrekkFagomraadeMapper())
         // Exclude bound values from Jdbi's JFR events.
         getConfig(SqlStatements::class.java).setIncludeBindingsInTelemetry(false)
     }

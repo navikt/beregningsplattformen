@@ -187,6 +187,16 @@ class TrekkRepositoryTest :
                         TrekkFagomraade(TrekkFagomraadeId(1L), 1L, "TEST", true, registered),
                         TrekkFagomraade(TrekkFagomraadeId(2L), 1L, "INACTIVE", false, registered),
                     )
+
+                tx.createQuery("SELECT * FROM trekkvedtak WHERE id = 1")
+                    .mapTo(Trekkvedtak::class.java)
+                    .one() shouldBe result.copy(trekkperioder = emptyList(), fagomraader = emptyList())
+                tx.createQuery("SELECT * FROM trekkperiode WHERE trekkvedtak_id = 1 ORDER BY id")
+                    .mapTo(Trekkperiode::class.java)
+                    .list() shouldBe result.trekkperioder.sortedBy { it.id?.id }
+                tx.createQuery("SELECT * FROM trekk_i_fagomraade WHERE trekkvedtak_id = 1 ORDER BY id")
+                    .mapTo(TrekkFagomraade::class.java)
+                    .list() shouldBe result.fagomraader.sortedBy { it.id?.id }
             }
         }
 
