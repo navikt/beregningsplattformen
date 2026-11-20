@@ -120,8 +120,7 @@ function LabMenu() {
 							</LinkCard.Anchor>
 						</LinkCard.Title>
 						<LinkCard.Description>
-							Testside for InnsendingerBuilder: flere innsendinger med kjeder og
-							linjer, med XML for hver innsending.
+							Testside for ny innsendinger-komponent. Bygg og send inn flere oppdrag i XML-format.
 						</LinkCard.Description>
 					</LinkCard>
 				</div>

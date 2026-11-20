@@ -4,6 +4,7 @@ import {
 	ActionMenu,
 	Box,
 	Button,
+	CopyButton,
 	Heading,
 	HGrid,
 	HStack,
@@ -242,9 +243,19 @@ export function InnsendingKort({
 					</VStack>
 
 					<VStack gap="space-8" className={styles.forhandsvisning}>
-						<Heading level="3" size="xsmall">
-							XML
-						</Heading>
+						<HStack justify="space-between" align="center">
+							<Heading level="3" size="xsmall">
+								XML
+							</Heading>
+							{!resultat.feil && (
+								<CopyButton
+									size="small"
+									copyText={formaterXml(resultat.xml ?? "")}
+									text="Kopier XML"
+									activeText="Kopiert"
+								/>
+							)}
+						</HStack>
 						{resultat.feil ? (
 							<InlineMessage status="error">{resultat.feil}</InlineMessage>
 						) : (

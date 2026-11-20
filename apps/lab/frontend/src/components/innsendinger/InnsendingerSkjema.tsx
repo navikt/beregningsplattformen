@@ -8,6 +8,7 @@ import {
 	VStack,
 } from "@navikt/ds-react";
 import { useMemo, useState } from "react";
+import { standardInnsending } from "./fraXml";
 import styles from "./InnsendingerSkjema.module.css";
 import { InnsendingKort } from "./InnsendingKort";
 import {
@@ -19,7 +20,7 @@ import {
 
 export function InnsendingerSkjema() {
 	const [innsendinger, setInnsendinger] = useState<InnsendingSkjema[]>(() => [
-		nyInnsending(),
+		standardInnsending(),
 	]);
 	const [aapen, setAapen] = useState<string>();
 	const resultat = useMemo(() => bygg(innsendinger), [innsendinger]);
