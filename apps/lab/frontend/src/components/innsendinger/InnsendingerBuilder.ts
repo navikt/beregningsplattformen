@@ -170,7 +170,16 @@ export class LinjeBuilder {
 
 	private linjeTeksterXml(): string {
 		return listeXml(
-			this.linjeTekster,
+			this.linjeTekster.filter((linjeTekst) =>
+				[
+					linjeTekst.tekstLnr,
+					linjeTekst.tekstKode,
+					linjeTekst.tekst,
+					linjeTekst.datoTekstFom,
+					linjeTekst.datoTekstTom,
+					linjeTekst.feilreg,
+				].some((v) => v != null),
+			),
 			(linjeTekst) => `
             <linje-tekst-158>
                 ${valgfriTag("tekstLnr", linjeTekst.tekstLnr)}
