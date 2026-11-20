@@ -1,5 +1,6 @@
 import { PlusIcon, TrashIcon } from "@navikt/aksel-icons";
 import {
+	BodyShort,
 	Box,
 	Button,
 	DatePicker,
@@ -119,54 +120,72 @@ export function FeltGruppe<T extends Verdier>({
 	const sett = (navn: keyof T, verdi?: string) =>
 		onEndring({ ...verdier, [navn]: verdi });
 
+	const tegnFelt = (felt: FeltDefinisjon<T>) =>
+		felt.tidspunkt ? (
+			<TidspunktFelt
+				key={felt.navn}
+				label={felt.label}
+				verdi={verdier[felt.navn]}
+				onEndring={(verdi) => sett(felt.navn, verdi)}
+			/>
+		) : felt.dato ? (
+			<DatoFelt
+				key={felt.navn}
+				label={felt.label}
+				verdi={verdier[felt.navn]}
+				onEndring={(verdi) => sett(felt.navn, verdi)}
+			/>
+		) : felt.forslag ? (
+			<UNSAFE_Combobox
+				key={felt.navn}
+				label={felt.label}
+				description={felt.beskrivelse}
+				size="small"
+				options={felt.forslag}
+				allowNewValues
+				selectedOptions={valgtForslag(felt.forslag, verdier[felt.navn])}
+				onToggleSelected={(verdi, valgt) =>
+					sett(felt.navn, valgt ? verdi : undefined)
+				}
+			/>
+		) : (
+			<TextField
+				key={felt.navn}
+				label={felt.label}
+				description={felt.beskrivelse}
+				size="small"
+				value={verdier[felt.navn] ?? ""}
+				onChange={(e) => sett(felt.navn, e.target.value)}
+			/>
+		);
+
+	const pakrevde = definisjoner.filter((felt) => felt.pakrevd);
+	const valgfrie = definisjoner.filter((felt) => !felt.pakrevd);
+	const rutenett = (felter: FeltDefinisjon<T>[]) => (
+		// paddingBlock gir plass til fokusrammen, Accordion.Content klipper alt utenfor
+		<HGrid columns={{ xs: 1, sm: 2 }} gap="space-12" paddingBlock="space-8">
+			{felter.map(tegnFelt)}
+		</HGrid>
+	);
+
 	return (
 		<Fieldset legend={legend} hideLegend={hideLegend} size="small">
-			{/* paddingBlock gir plass til fokusrammen, Accordion.Content klipper alt utenfor */}
-			<HGrid
-				columns={{ xs: 1, sm: 2, md: 3 }}
-				gap="space-12"
-				paddingBlock="space-8"
-			>
-				{definisjoner.map((felt) =>
-					felt.tidspunkt ? (
-						<TidspunktFelt
-							key={felt.navn}
-							label={felt.label}
-							verdi={verdier[felt.navn]}
-							onEndring={(verdi) => sett(felt.navn, verdi)}
-						/>
-					) : felt.dato ? (
-						<DatoFelt
-							key={felt.navn}
-							label={felt.label}
-							verdi={verdier[felt.navn]}
-							onEndring={(verdi) => sett(felt.navn, verdi)}
-						/>
-					) : felt.forslag ? (
-						<UNSAFE_Combobox
-							key={felt.navn}
-							label={felt.label}
-							description={felt.beskrivelse}
-							size="small"
-							options={felt.forslag}
-							allowNewValues
-							selectedOptions={valgtForslag(felt.forslag, verdier[felt.navn])}
-							onToggleSelected={(verdi, valgt) =>
-								sett(felt.navn, valgt ? verdi : undefined)
-							}
-						/>
-					) : (
-						<TextField
-							key={felt.navn}
-							label={felt.label}
-							description={felt.beskrivelse}
-							size="small"
-							value={verdier[felt.navn] ?? ""}
-							onChange={(e) => sett(felt.navn, e.target.value)}
-						/>
-					),
-				)}
-			</HGrid>
+			{/* Påkrevde felt først, så en skillestrek med tekst, så de valgfrie */}
+			{pakrevde.length > 0 && rutenett(pakrevde)}
+			{pakrevde.length > 0 && valgfrie.length > 0 && (
+				<HStack align="center" gap="space-12" marginBlock="space-4">
+					<BodyShort as="span" size="small" textColor="subtle">
+						Valgfrie felt
+					</BodyShort>
+					<Box
+						flexGrow="1"
+						borderWidth="1 0 0 0"
+						borderColor="neutral-subtle"
+						aria-hidden
+					/>
+				</HStack>
+			)}
+			{valgfrie.length > 0 && rutenett(valgfrie)}
 		</Fieldset>
 	);
 }

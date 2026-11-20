@@ -61,7 +61,7 @@ export const nyNokkel = (): string => crypto.randomUUID();
 export function nyInnsending(): InnsendingSkjema {
 	return {
 		nokkel: nyNokkel(),
-		felter: {},
+		felter: { datoOppdragGjelderFom: "1970-01-01" },
 		enheter: [],
 		avventer: [],
 		tekster: [],

@@ -21,6 +21,8 @@ export type FeltDefinisjon<T> = {
 	beskrivelse?: string;
 	// Gir nedtrekksliste, men brukeren kan fortsatt skrive en egen verdi
 	forslag?: Forslag[];
+	// Må fylles ut for en gyldig innsending. Vises først i gruppen, uten at skjemaet krever det.
+	pakrevd?: boolean;
 };
 
 // label vises i nedtrekkslista, value havner i XML-en
@@ -98,16 +100,31 @@ const kodeAksjon: Forslag[] = [
 ];
 
 export const oppdragsfelter: FeltDefinisjon<OppdragsnivaaFelter>[] = [
-	{ navn: "kodeAksjon", label: "kodeAksjon", forslag: kodeAksjon },
-	{ navn: "kodeEndring", label: "kodeEndring", forslag: kodeEndring },
+	{
+		navn: "kodeAksjon",
+		label: "kodeAksjon",
+		forslag: kodeAksjon,
+		pakrevd: true,
+	},
+	{
+		navn: "kodeEndring",
+		label: "kodeEndring",
+		forslag: kodeEndring,
+		pakrevd: true,
+	},
 	{ navn: "kodeStatus", label: "kodeStatus", forslag: kodeStatus },
 	{ navn: "datoStatusFom", label: "datoStatusFom", dato: true },
 	{ navn: "utbetFrekvens", label: "utbetFrekvens", forslag: utbetFrekvens },
 	{ navn: "datoForfall", label: "datoForfall", dato: true },
 	{ navn: "stonadId", label: "stonadId" },
-	{ navn: "oppdragGjelderId", label: "oppdragGjelderId" },
-	{ navn: "datoOppdragGjelderFom", label: "datoOppdragGjelderFom", dato: true },
-	{ navn: "saksbehId", label: "saksbehId" },
+	{ navn: "oppdragGjelderId", label: "oppdragGjelderId", pakrevd: true },
+	{
+		navn: "datoOppdragGjelderFom",
+		label: "datoOppdragGjelderFom",
+		dato: true,
+		pakrevd: true,
+	},
+	{ navn: "saksbehId", label: "saksbehId", pakrevd: true },
 	{ navn: "bilagsType", label: "bilagsType (bilagstype-113)" },
 ];
 
@@ -149,36 +166,42 @@ export const tekstfelter: FeltDefinisjon<Tekst>[] = [
 ];
 
 export const linjefelter: FeltDefinisjon<LinjeSkjema["felter"]>[] = [
+	{ navn: "fom", label: "datoVedtakFom", dato: true, pakrevd: true },
+	{ navn: "kodeKlassifik", label: "kodeKlassifik", pakrevd: true },
+	{ navn: "sats", label: "sats", pakrevd: true },
+	{ navn: "typeSats", label: "typeSats", forslag: typeSats, pakrevd: true },
 	{
 		navn: "kodeEndringLinje",
 		label: "kodeEndringLinje",
 		forslag: kodeEndringLinje,
+		pakrevd: true,
 	},
+	{
+		navn: "fradragTillegg",
+		label: "fradragTillegg",
+		forslag: fradragTillegg,
+		pakrevd: true,
+	},
+	{ navn: "saksbehId", label: "saksbehId", pakrevd: true },
+	{ navn: "tom", label: "datoVedtakTom", dato: true },
+	{ navn: "vedtakssats", label: "vedtakssats (vedtakssats-157)" },
+	{ navn: "utbetalesTilId", label: "utbetalesTilId" },
+	{ navn: "datoUtbetalesTilIdFom", label: "datoUtbetalesTilIdFom", dato: true },
 	{
 		navn: "kodeStatusLinje",
 		label: "kodeStatusLinje",
 		forslag: kodeStatusLinje,
 	},
 	{ navn: "datoStatusFom", label: "datoStatusFom", dato: true },
-	{ navn: "vedtakId", label: "vedtakId" },
-	{ navn: "kodeKlassifik", label: "kodeKlassifik" },
-	{ navn: "fom", label: "datoVedtakFom", dato: true },
-	{ navn: "tom", label: "datoVedtakTom", dato: true },
-	{ navn: "sats", label: "sats" },
-	{ navn: "fradragTillegg", label: "fradragTillegg", forslag: fradragTillegg },
-	{ navn: "typeSats", label: "typeSats", forslag: typeSats },
 	{ navn: "skyldnerId", label: "skyldnerId" },
 	{ navn: "datoSkyldnerFom", label: "datoSkyldnerFom", dato: true },
 	{ navn: "kid", label: "kid" },
 	{ navn: "datoKidFom", label: "datoKidFom", dato: true },
+	{ navn: "vedtakId", label: "vedtakId" },
 	{ navn: "brukKjoreplan", label: "brukKjoreplan", forslag: jaNei },
-	{ navn: "saksbehId", label: "saksbehId" },
-	{ navn: "utbetalesTilId", label: "utbetalesTilId" },
-	{ navn: "datoUtbetalesTilIdFom", label: "datoUtbetalesTilIdFom", dato: true },
 	{ navn: "henvisning", label: "henvisning" },
 	{ navn: "typeSoknad", label: "typeSoknad" },
 	{ navn: "refFagsystemId", label: "refFagsystemId" },
-	{ navn: "vedtakssats", label: "vedtakssats (vedtakssats-157)" },
 ];
 
 export const refusjonsinfofelter: FeltDefinisjon<Refusjonsinfo>[] = [

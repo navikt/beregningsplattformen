@@ -96,6 +96,7 @@ export function InnsendingKort({
 						<HGrid columns={{ xs: 1, sm: 2 }} gap="space-12">
 							<TextField
 								label="kodeFagomraade"
+								description="Må fylles ut"
 								size="small"
 								value={innsending.felter.kodeFagomraade ?? ""}
 								onChange={(e) =>
@@ -109,6 +110,7 @@ export function InnsendingKort({
 							/>
 							<TextField
 								label="fagsystemId"
+								description="Genereres automatisk"
 								size="small"
 								readOnly
 								value={resultat.fagsystemId ?? ""}
