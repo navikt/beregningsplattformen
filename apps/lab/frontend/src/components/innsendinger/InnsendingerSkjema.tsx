@@ -3,27 +3,25 @@ import {
 	ActionMenu,
 	Box,
 	Button,
+	ExpansionCard,
 	HStack,
 	Tabs,
 	VStack,
 } from "@navikt/ds-react";
-import { useMemo, useState } from "react";
-import { standardInnsending } from "./fraXml";
-import styles from "./InnsendingerSkjema.module.css";
+import { useId, useRef, useState } from "react";
+import { useInnsendinger } from "./InnsendingerContext";
 import { InnsendingKort } from "./InnsendingKort";
 import {
-	bygg,
 	type InnsendingSkjema,
 	kopierInnsending,
 	nyInnsending,
 } from "./skjema";
 
 export function InnsendingerSkjema() {
-	const [innsendinger, setInnsendinger] = useState<InnsendingSkjema[]>(() => [
-		standardInnsending(),
-	]);
+	const { innsendinger, setInnsendinger, resultat } = useInnsendinger();
 	const [aapen, setAapen] = useState<string>();
-	const resultat = useMemo(() => bygg(innsendinger), [innsendinger]);
+	const nyInnsendingRef = useRef<HTMLButtonElement>(null);
+	const tittelId = useId();
 
 	// Faller tilbake til siste innsending når den åpne er fjernet
 	const aapenNokkel = innsendinger.some((i) => i.nokkel === aapen)
@@ -60,80 +58,101 @@ export function InnsendingerSkjema() {
 		);
 
 	return (
-		<VStack gap="space-24">
-			<Tabs value={aapenNokkel ?? ""} onChange={setAapen}>
-				<HStack gap="space-16" align="end" wrap={false}>
-					<div className={styles.faner}>
-						<Tabs.List>
-							{innsendinger.map((innsending, index) => (
-								<Tabs.Tab
-									key={innsending.nokkel}
-									value={innsending.nokkel}
-									label={fanenavn(navn, index)}
-								/>
-							))}
-						</Tabs.List>
-					</div>
-					<div>
-						<ActionMenu>
-							<ActionMenu.Trigger>
-								<Button
-									variant="primary"
-									icon={<ChevronDownIcon aria-hidden />}
-									iconPosition="right"
-								>
-									Ny innsending
-								</Button>
-							</ActionMenu.Trigger>
-							<ActionMenu.Content>
-								<ActionMenu.Item onSelect={() => leggTil(nyInnsending())}>
-									Nytt oppdrag
-								</ActionMenu.Item>
-								{resultat.oppdragsforslag.length > 0 && (
-									<>
-										<ActionMenu.Divider />
-										<ActionMenu.Group label="Eksisterende oppdrag">
-											{eksisterendeOppdrag.map(({ oppdragId, index }) => (
-												<ActionMenu.Item
-													key={oppdragId}
-													onSelect={() => fortsettOppdrag(oppdragId, index)}
-												>
-													{navn[index]}
-												</ActionMenu.Item>
-											))}
-										</ActionMenu.Group>
-									</>
-								)}
-							</ActionMenu.Content>
-						</ActionMenu>
-					</div>
-				</HStack>
-				{innsendinger.map((innsending, index) => (
-					<Tabs.Panel key={innsending.nokkel} value={innsending.nokkel}>
-						<Box paddingBlock="space-16 space-0">
-							<InnsendingKort
-								nummer={index + 1}
-								innsending={innsending}
-								resultat={resultat.innsendinger[index]}
-								onEndring={(ny) =>
-									setInnsendinger((forrige) =>
-										forrige.map((i) => (i.nokkel === ny.nokkel ? ny : i)),
-									)
-								}
-								onFjern={
-									innsendinger.length > 1
-										? () =>
-												setInnsendinger((forrige) =>
-													forrige.filter((i) => i.nokkel !== innsending.nokkel),
-												)
-										: undefined
-								}
-							/>
-						</Box>
-					</Tabs.Panel>
-				))}
-			</Tabs>
-		</VStack>
+		<ExpansionCard size="small" defaultOpen aria-labelledby={tittelId}>
+			<ExpansionCard.Header>
+				<ExpansionCard.Title id={tittelId} as="h2" size="medium">
+					Innsendinger
+				</ExpansionCard.Title>
+				<ExpansionCard.Description>
+					{innsendinger.length === 1
+						? "1 innsending"
+						: `${innsendinger.length} innsendinger`}
+				</ExpansionCard.Description>
+			</ExpansionCard.Header>
+			<ExpansionCard.Content>
+				<VStack gap="space-24">
+					<Tabs value={aapenNokkel ?? ""} onChange={setAapen}>
+						<HStack gap="space-16" align="end" wrap={false}>
+							{/* Lar fanelista krympe ved siden av knappen, så Aksel kan scrolle fanene */}
+							<Box flexGrow="1" minWidth="0">
+								<Tabs.List>
+									{innsendinger.map((innsending, index) => (
+										<Tabs.Tab
+											key={innsending.nokkel}
+											value={innsending.nokkel}
+											label={fanenavn(navn, index)}
+										/>
+									))}
+								</Tabs.List>
+							</Box>
+							<Box flexShrink="0">
+								<ActionMenu>
+									<ActionMenu.Trigger>
+										<Button
+											ref={nyInnsendingRef}
+											variant="primary"
+											icon={<ChevronDownIcon aria-hidden />}
+											iconPosition="right"
+										>
+											Ny innsending
+										</Button>
+									</ActionMenu.Trigger>
+									<ActionMenu.Content>
+										<ActionMenu.Item onSelect={() => leggTil(nyInnsending())}>
+											Nytt oppdrag
+										</ActionMenu.Item>
+										{resultat.oppdragsforslag.length > 0 && (
+											<>
+												<ActionMenu.Divider />
+												<ActionMenu.Group label="Eksisterende oppdrag">
+													{eksisterendeOppdrag.map(({ oppdragId, index }) => (
+														<ActionMenu.Item
+															key={oppdragId}
+															onSelect={() => fortsettOppdrag(oppdragId, index)}
+														>
+															{navn[index]}
+														</ActionMenu.Item>
+													))}
+												</ActionMenu.Group>
+											</>
+										)}
+									</ActionMenu.Content>
+								</ActionMenu>
+							</Box>
+						</HStack>
+						{innsendinger.map((innsending, index) => (
+							<Tabs.Panel key={innsending.nokkel} value={innsending.nokkel}>
+								<Box paddingBlock="space-16 space-0">
+									<InnsendingKort
+										nummer={index + 1}
+										innsending={innsending}
+										resultat={resultat.innsendinger[index]}
+										onEndring={(ny) =>
+											setInnsendinger((forrige) =>
+												forrige.map((i) => (i.nokkel === ny.nokkel ? ny : i)),
+											)
+										}
+										onFjern={
+											innsendinger.length > 1
+												? () => {
+														setInnsendinger((forrige) =>
+															forrige.filter(
+																(i) => i.nokkel !== innsending.nokkel,
+															),
+														);
+														// Knappen forsvinner med fanen, så fokus må flyttes til noe som blir stående
+														nyInnsendingRef.current?.focus();
+													}
+												: undefined
+										}
+									/>
+								</Box>
+							</Tabs.Panel>
+						))}
+					</Tabs>
+				</VStack>
+			</ExpansionCard.Content>
+		</ExpansionCard>
 	);
 }
 

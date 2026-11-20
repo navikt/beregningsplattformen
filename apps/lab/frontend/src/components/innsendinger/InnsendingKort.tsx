@@ -12,6 +12,7 @@ import {
 	TextField,
 	VStack,
 } from "@navikt/ds-react";
+import { useRef, useState } from "react";
 import {
 	avstemmingsfelter,
 	avventfelter,
@@ -21,7 +22,6 @@ import {
 	tekstfelter,
 } from "./feltdefinisjoner";
 import { formaterXml } from "./formaterXml";
-import styles from "./InnsendingerSkjema.module.css";
 import { KjedeKort } from "./KjedeKort";
 import { FeltGruppe, ListeFelter } from "./Skjemafelter";
 import {
@@ -30,6 +30,7 @@ import {
 	type KjedeSkjema,
 	nyKjede,
 } from "./skjema";
+import { XmlVisning } from "./XmlVisning";
 
 export function InnsendingKort({
 	nummer,
@@ -49,6 +50,13 @@ export function InnsendingKort({
 		onEndring({ ...innsending, ...endring });
 	const settKjeder = (kjeder: KjedeSkjema[]) => sett({ kjeder });
 	const headingId = `innsending-${innsending.nokkel}`;
+	const xmlHeadingId = `${headingId}-xml`;
+	const nyKjedeRef = useRef<HTMLButtonElement>(null);
+	const [nyKjedeNokkel, setNyKjedeNokkel] = useState<string>();
+	const leggTilKjede = (kjede: KjedeSkjema) => {
+		setNyKjedeNokkel(kjede.nokkel);
+		settKjeder([...innsending.kjeder, kjede]);
+	};
 
 	// En kjede kan bare fortsettes én gang per innsending
 	const ledigeKjeder = resultat.kjedeforslag.filter(
@@ -64,10 +72,11 @@ export function InnsendingKort({
 			borderColor="neutral"
 			borderRadius="12"
 			padding="space-24"
+			background="default"
 		>
 			<VStack gap="space-16">
 				<HStack justify="space-between" align="center">
-					<Heading id={headingId} level="2" size="medium">
+					<Heading id={headingId} level="3" size="medium">
 						Innsending {nummer}
 					</Heading>
 					{onFjern && (
@@ -77,7 +86,7 @@ export function InnsendingKort({
 							icon={<TrashIcon aria-hidden />}
 							onClick={onFjern}
 						>
-							Fjern innsending
+							Fjern innsending {nummer}
 						</Button>
 					)}
 				</HStack>
@@ -111,6 +120,8 @@ export function InnsendingKort({
 								<Accordion.Header>oppdrag-110</Accordion.Header>
 								<Accordion.Content>
 									<FeltGruppe
+										legend="oppdrag-110"
+										hideLegend
 										definisjoner={oppdragsfelter}
 										verdier={innsending.felter}
 										onEndring={(felter) => sett({ felter })}
@@ -121,6 +132,8 @@ export function InnsendingKort({
 								<Accordion.Header>avstemming-115</Accordion.Header>
 								<Accordion.Content>
 									<FeltGruppe
+										legend="avstemming-115"
+										hideLegend
 										definisjoner={avstemmingsfelter}
 										verdier={innsending.felter}
 										onEndring={(felter) => sett({ felter })}
@@ -131,6 +144,8 @@ export function InnsendingKort({
 								<Accordion.Header>ompostering-116</Accordion.Header>
 								<Accordion.Content>
 									<FeltGruppe
+										legend="ompostering-116"
+										hideLegend
 										definisjoner={omposteringsfelter}
 										verdier={innsending.ompostering}
 										onEndring={(ompostering) => sett({ ompostering })}
@@ -186,21 +201,24 @@ export function InnsendingKort({
 								key={kjede.nokkel}
 								kjede={kjede}
 								kjedeId={resultat.kjedeIder[index]}
+								fokuser={kjede.nokkel === nyKjedeNokkel}
 								onEndring={(ny) =>
 									settKjeder(
 										innsending.kjeder.map((k) => (k === kjede ? ny : k)),
 									)
 								}
-								onFjern={() =>
-									settKjeder(innsending.kjeder.filter((k) => k !== kjede))
-								}
+								onFjern={() => {
+									settKjeder(innsending.kjeder.filter((k) => k !== kjede));
+									nyKjedeRef.current?.focus();
+								}}
 							/>
 						))}
 
-						<div>
+						<HStack>
 							<ActionMenu>
 								<ActionMenu.Trigger>
 									<Button
+										ref={nyKjedeRef}
 										size="small"
 										variant="secondary"
 										icon={<ChevronDownIcon aria-hidden />}
@@ -210,11 +228,7 @@ export function InnsendingKort({
 									</Button>
 								</ActionMenu.Trigger>
 								<ActionMenu.Content>
-									<ActionMenu.Item
-										onSelect={() =>
-											settKjeder([...innsending.kjeder, nyKjede()])
-										}
-									>
+									<ActionMenu.Item onSelect={() => leggTilKjede(nyKjede())}>
 										Ny kjede
 									</ActionMenu.Item>
 									{ledigeKjeder.length > 0 && (
@@ -224,12 +238,7 @@ export function InnsendingKort({
 												{ledigeKjeder.map((forslag) => (
 													<ActionMenu.Item
 														key={forslag.id}
-														onSelect={() =>
-															settKjeder([
-																...innsending.kjeder,
-																nyKjede(forslag.id),
-															])
-														}
+														onSelect={() => leggTilKjede(nyKjede(forslag.id))}
 													>
 														Kjede {forslag.id}
 													</ActionMenu.Item>
@@ -239,12 +248,12 @@ export function InnsendingKort({
 									)}
 								</ActionMenu.Content>
 							</ActionMenu>
-						</div>
+						</HStack>
 					</VStack>
 
-					<VStack gap="space-8" className={styles.forhandsvisning}>
+					<VStack gap="space-8" position="sticky" top="space-16" minWidth="0">
 						<HStack justify="space-between" align="center">
-							<Heading level="3" size="xsmall">
+							<Heading id={xmlHeadingId} level="4" size="xsmall">
 								XML
 							</Heading>
 							{!resultat.feil && (
@@ -256,18 +265,29 @@ export function InnsendingKort({
 								/>
 							)}
 						</HStack>
-						{resultat.feil ? (
-							<InlineMessage status="error">{resultat.feil}</InlineMessage>
-						) : (
+						{/* Live-region som alltid finnes, så skjermlesere får med seg feil som dukker opp mens man skriver */}
+						<Box aria-live="polite">
+							{resultat.feil && (
+								<InlineMessage status="error">{resultat.feil}</InlineMessage>
+							)}
+						</Box>
+						{!resultat.feil && (
 							<Box
+								as="section"
+								aria-labelledby={xmlHeadingId}
+								// Kan scrolles sidelengs, så tastaturbrukere må kunne nå den (WCAG 2.1.1)
+								tabIndex={0}
 								background="neutral-soft"
 								borderRadius="8"
 								padding="space-12"
 								overflowX="auto"
 							>
-								<pre className={styles.xml}>
-									{formaterXml(resultat.xml ?? "")}
-								</pre>
+								<Box asChild margin="space-0">
+									{/* Aksel har ingen fontstørrelse under --ax-font-size-small (14px), som er større enn standard for pre */}
+									<pre style={{ fontSize: "0.8125rem" }}>
+										<XmlVisning xml={formaterXml(resultat.xml ?? "")} />
+									</pre>
+								</Box>
 							</Box>
 						)}
 					</VStack>

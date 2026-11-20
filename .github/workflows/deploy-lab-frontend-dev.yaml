@@ -30,6 +30,7 @@ jobs:
       server-prune-dev-deps: pnpm run prune:production
       image-tag: ${{ github.sha }}
       image-suffix: lab-frontend
+      has-vitest: true
     secrets: inherit # zizmor: ignore[secrets-inherit] trusted SHA-pinned workflow within navikt; requires inherited READER_TOKEN
 
   deploy-frontend:

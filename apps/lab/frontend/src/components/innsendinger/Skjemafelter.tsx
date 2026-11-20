@@ -3,9 +3,9 @@ import {
 	Box,
 	Button,
 	DatePicker,
+	Fieldset,
 	HGrid,
 	HStack,
-	Label,
 	TextField,
 	UNSAFE_Combobox,
 	useDatepicker,
@@ -13,6 +13,7 @@ import {
 } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import type { FeltDefinisjon, Forslag } from "./feltdefinisjoner";
+import { useFokusVedVisning } from "./fokus";
 import { type MedNokkel, nyNokkel } from "./skjema";
 
 type Verdier = Partial<Record<string, string>>;
@@ -102,10 +103,15 @@ function valgtForslag(forslag: Forslag[], verdi?: string): Forslag[] {
 }
 
 export function FeltGruppe<T extends Verdier>({
+	legend,
+	hideLegend,
 	definisjoner,
 	verdier,
 	onEndring,
 }: {
+	legend: string;
+	/** Skjul legend når en synlig overskrift rett over allerede navngir gruppen */
+	hideLegend?: boolean;
 	definisjoner: FeltDefinisjon<T>[];
 	verdier: T;
 	onEndring: (verdier: T) => void;
@@ -114,52 +120,102 @@ export function FeltGruppe<T extends Verdier>({
 		onEndring({ ...verdier, [navn]: verdi });
 
 	return (
-		// paddingBlock gir plass til fokusrammen, Accordion.Content klipper alt utenfor
-		<HGrid
-			columns={{ xs: 1, sm: 2, md: 3 }}
-			gap="space-12"
-			paddingBlock="space-8"
+		<Fieldset legend={legend} hideLegend={hideLegend} size="small">
+			{/* paddingBlock gir plass til fokusrammen, Accordion.Content klipper alt utenfor */}
+			<HGrid
+				columns={{ xs: 1, sm: 2, md: 3 }}
+				gap="space-12"
+				paddingBlock="space-8"
+			>
+				{definisjoner.map((felt) =>
+					felt.tidspunkt ? (
+						<TidspunktFelt
+							key={felt.navn}
+							label={felt.label}
+							verdi={verdier[felt.navn]}
+							onEndring={(verdi) => sett(felt.navn, verdi)}
+						/>
+					) : felt.dato ? (
+						<DatoFelt
+							key={felt.navn}
+							label={felt.label}
+							verdi={verdier[felt.navn]}
+							onEndring={(verdi) => sett(felt.navn, verdi)}
+						/>
+					) : felt.forslag ? (
+						<UNSAFE_Combobox
+							key={felt.navn}
+							label={felt.label}
+							description={felt.beskrivelse}
+							size="small"
+							options={felt.forslag}
+							allowNewValues
+							selectedOptions={valgtForslag(felt.forslag, verdier[felt.navn])}
+							onToggleSelected={(verdi, valgt) =>
+								sett(felt.navn, valgt ? verdi : undefined)
+							}
+						/>
+					) : (
+						<TextField
+							key={felt.navn}
+							label={felt.label}
+							description={felt.beskrivelse}
+							size="small"
+							value={verdier[felt.navn] ?? ""}
+							onChange={(e) => sett(felt.navn, e.target.value)}
+						/>
+					),
+				)}
+			</HGrid>
+		</Fieldset>
+	);
+}
+
+function ListeElement<T extends Verdier>({
+	legend,
+	fjernTekst,
+	definisjoner,
+	element,
+	fokuser,
+	onEndring,
+	onFjern,
+}: {
+	legend: string;
+	fjernTekst: string;
+	definisjoner: FeltDefinisjon<T>[];
+	element: MedNokkel<T>;
+	fokuser: boolean;
+	onEndring: (element: MedNokkel<T>) => void;
+	onFjern: () => void;
+}) {
+	const ref = useFokusVedVisning<HTMLDivElement>(fokuser);
+	return (
+		<Box
+			ref={ref}
+			borderWidth="1"
+			borderColor="neutral"
+			borderRadius="8"
+			padding="space-12"
 		>
-			{definisjoner.map((felt) =>
-				felt.tidspunkt ? (
-					<TidspunktFelt
-						key={felt.navn}
-						label={felt.label}
-						verdi={verdier[felt.navn]}
-						onEndring={(verdi) => sett(felt.navn, verdi)}
-					/>
-				) : felt.dato ? (
-					<DatoFelt
-						key={felt.navn}
-						label={felt.label}
-						verdi={verdier[felt.navn]}
-						onEndring={(verdi) => sett(felt.navn, verdi)}
-					/>
-				) : felt.forslag ? (
-					<UNSAFE_Combobox
-						key={felt.navn}
-						label={felt.label}
-						description={felt.beskrivelse}
-						size="small"
-						options={felt.forslag}
-						allowNewValues
-						selectedOptions={valgtForslag(felt.forslag, verdier[felt.navn])}
-						onToggleSelected={(verdi, valgt) =>
-							sett(felt.navn, valgt ? verdi : undefined)
-						}
-					/>
-				) : (
-					<TextField
-						key={felt.navn}
-						label={felt.label}
-						description={felt.beskrivelse}
-						size="small"
-						value={verdier[felt.navn] ?? ""}
-						onChange={(e) => sett(felt.navn, e.target.value)}
-					/>
-				),
-			)}
-		</HGrid>
+			<VStack gap="space-8">
+				<FeltGruppe
+					legend={legend}
+					definisjoner={definisjoner}
+					verdier={element}
+					onEndring={(ny) => onEndring({ ...element, ...ny })}
+				/>
+				<HStack justify="end">
+					<Button
+						size="xsmall"
+						variant="tertiary"
+						icon={<TrashIcon aria-hidden />}
+						onClick={onFjern}
+					>
+						{fjernTekst}
+					</Button>
+				</HStack>
+			</VStack>
+		</Box>
 	);
 }
 
@@ -176,54 +232,43 @@ export function ListeFelter<T extends Verdier>({
 	elementer: MedNokkel<T>[];
 	onEndring: (elementer: MedNokkel<T>[]) => void;
 }) {
+	const leggTilRef = useRef<HTMLButtonElement>(null);
+	const [nyNokkelVerdi, setNyNokkelVerdi] = useState<string>();
+
 	return (
 		<VStack gap="space-12" paddingBlock="space-8">
 			{elementer.map((element, index) => (
-				<Box
+				<ListeElement
 					key={element.nokkel}
-					borderWidth="1"
-					borderColor="neutral"
-					borderRadius="8"
-					padding="space-12"
-				>
-					<VStack gap="space-8">
-						<HStack justify="space-between" align="center">
-							<Label size="small" as="p">
-								{tittel} {index + 1}
-							</Label>
-							<Button
-								size="xsmall"
-								variant="tertiary"
-								icon={<TrashIcon aria-hidden />}
-								onClick={() =>
-									onEndring(elementer.filter((e) => e !== element))
-								}
-							>
-								Fjern {elementnavn}
-							</Button>
-						</HStack>
-						<FeltGruppe
-							definisjoner={definisjoner}
-							verdier={element}
-							onEndring={(ny) =>
-								onEndring(elementer.map((e) => (e === element ? ny : e)))
-							}
-						/>
-					</VStack>
-				</Box>
+					legend={`${tittel} ${index + 1}`}
+					fjernTekst={`Fjern ${elementnavn} ${index + 1}`}
+					definisjoner={definisjoner}
+					element={element}
+					fokuser={element.nokkel === nyNokkelVerdi}
+					onEndring={(ny) =>
+						onEndring(elementer.map((e) => (e === element ? ny : e)))
+					}
+					onFjern={() => {
+						onEndring(elementer.filter((e) => e !== element));
+						leggTilRef.current?.focus();
+					}}
+				/>
 			))}
-			<div>
+			<HStack>
 				<Button
+					ref={leggTilRef}
 					size="small"
 					variant="secondary"
 					icon={<PlusIcon aria-hidden />}
-					onClick={() =>
-						onEndring([...elementer, { nokkel: nyNokkel() } as MedNokkel<T>])
-					}
+					onClick={() => {
+						const nytt = { nokkel: nyNokkel() } as MedNokkel<T>;
+						setNyNokkelVerdi(nytt.nokkel);
+						onEndring([...elementer, nytt]);
+					}}
 				>
 					Legg til {elementnavn}
 				</Button>
-			</div>
+			</HStack>
 		</VStack>
 	);
 }

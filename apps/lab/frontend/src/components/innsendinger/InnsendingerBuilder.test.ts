@@ -186,7 +186,6 @@ describe("InnsendingerBuilder", () => {
 			})
 			.med({
 				kodeKomponent: "iml-komponent",
-				tidspktMelding: "2025-04-22",
 				nokkelAvstemming: "impl-nokkel",
 			})
 			.medEnhet({
@@ -323,7 +322,6 @@ describe("InnsendingerBuilder", () => {
         <avstemming-115>
             <kodeKomponent>iml-komponent</kodeKomponent>
             <nokkelAvstemming>impl-nokkel</nokkelAvstemming>
-            <tidspktMelding>2025-04-22-02.00.00.000000</tidspktMelding>
         </avstemming-115>
         <ompostering-116>
             <omPostering>impl-J</omPostering>

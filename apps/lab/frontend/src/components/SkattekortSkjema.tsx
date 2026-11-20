@@ -35,8 +35,8 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 	return (
 		<Box
 			as="section"
-			marginBlock="space-24 space-0"
 			padding="space-24"
+			background="default"
 			borderWidth="1"
 			borderColor="neutral-subtle"
 			borderRadius="12"
@@ -61,7 +61,11 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 							Bruk bare syntetiske skattekortdata. Alle XML-ene må gjelde samme
 							person. Opplysningene gjelder hele innsendingen.
 						</BodyShort>
-						<Fieldset legend="Skattekortopplysninger" hideLegend disabled={sender}>
+						<Fieldset
+							legend="Skattekortopplysninger"
+							hideLegend
+							disabled={sender}
+						>
 							<VStack gap="space-24">
 								<TextField
 									id="skattekort-inntektsaar"
@@ -148,11 +152,13 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 													}
 												>
 													<option value="">Velg faggruppe</option>
-													{faggrupperForTrekkode(trekk.trekkode).map((gruppe) => (
-														<option key={gruppe} value={gruppe}>
-															{gruppe}
-														</option>
-													))}
+													{faggrupperForTrekkode(trekk.trekkode).map(
+														(gruppe) => (
+															<option key={gruppe} value={gruppe}>
+																{gruppe}
+															</option>
+														),
+													)}
 												</Select>
 											</>
 										)}
