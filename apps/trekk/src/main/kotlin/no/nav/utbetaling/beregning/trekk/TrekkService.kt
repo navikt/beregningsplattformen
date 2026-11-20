@@ -6,12 +6,16 @@ import kotliquery.TransactionalSession
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.trekk.config.DatabaseConfig
+import no.nav.utbetaling.beregning.trekk.domain.SatsType
 import no.nav.utbetaling.beregning.trekk.dto.Trekk
 import no.nav.utbetaling.beregning.trekk.repository.TrekkFagomraadeRepository
 import no.nav.utbetaling.beregning.trekk.repository.TrekkperiodeRepository
 import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakHistorikkRepository
 import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakRepository
 import no.nav.utbetaling.beregning.trekk.utils.SqlUtils.transaction
+import no.nav.utbetaling.beregning.trekk.utils.TrekkConverter.toTrekkFagomraade
+import no.nav.utbetaling.beregning.trekk.utils.TrekkConverter.toTrekkVedtak
+import no.nav.utbetaling.beregning.trekk.utils.TrekkConverter.toTrekkperiode
 
 class TrekkService(
     private val dataSource: DataSource = DatabaseConfig.dataSource,
@@ -20,6 +24,8 @@ class TrekkService(
     private val trekkperiodeRepository: TrekkperiodeRepository = TrekkperiodeRepository(),
     private val trekkFagomraadeRepository: TrekkFagomraadeRepository = TrekkFagomraadeRepository(),
 ) {
+    private val endringsplanlegger = TrekkvedtakEndringsplanlegger()
+
     fun createOrUpdateTrekkvedtakFromOs(
         message: String,
         trekk: Trekk,
@@ -38,9 +44,8 @@ class TrekkService(
         tx: TransactionalSession,
     ) {
         Log.info("Oppretter nytt trekkvedtak for OS-trekkId: ${newTrekkvedtak.trekkvedtakId}")
-        /*val aktoerId = aktoerService.findOrCreateByOffNr(tx, newTrekkvedtak.debitorId, "Person med trekk fra OS")
         val trekkId =
-            trekkvedtakRepository.insertTrekkvedtak(newTrekkvedtak.toTrekkVedtak(), aktoerId.first.id, tx)
+            trekkvedtakRepository.insertTrekkvedtak(newTrekkvedtak.toTrekkVedtak(), tx)
                 ?: throw IllegalStateException("Kunne ikke opprette trekkvedtak for debitorId: ${newTrekkvedtak.debitorId}")
 
         val endringsplan = endringsplanlegger.planlegg(newTrekkvedtak)
@@ -56,7 +61,7 @@ class TrekkService(
                 session = tx,
             )
         }
-        Log.debug("Trekkvedtak opprettet med id: $trekkId")*/
+        Log.info("Trekkvedtak opprettet med id: $trekkId")
     }
 
     fun updateTrekkvedtak(
@@ -68,7 +73,6 @@ class TrekkService(
             trekkvedtakRepository.findByEksternTrekkId(changedTrekkvedtak.trekkvedtakId!!, tx)
                 ?: throw IllegalStateException("Kunne ikke finne trekkvedtak for eksternTrekkId ${changedTrekkvedtak.trekkvedtakId} og debitorId ${changedTrekkvedtak.debitorId}")
         // TODO: endre trekkvedtak basert på mottatt endringsgrunnlag fra Oppdrag Z
-        // return createUpdatedTrekkvedtakFromOs(existingTrekkvedtak, changedTrekkvedtak, tx)
         return null
     }
 }
