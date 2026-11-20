@@ -1,26 +1,25 @@
 package no.nav.utbetaling.beregning.trekk.repository
 
-import kotliquery.TransactionalSession
-import kotliquery.queryOf
+import org.jdbi.v3.core.Handle
 
 class TrekkvedtakHistorikkRepository {
     fun insertTrekkvedtak(
         trekkvedtak: String,
-        session: TransactionalSession,
-    ): Long? {
-        val id =
-            session.updateAndReturnGeneratedKey(
-                queryOf(
-                    """
-                    INSERT INTO trekkvedtak_historikk (
-                        trekkvedtak,
-                        tidspkt_reg
-                    ) 
-                    VALUES (:trekkvedtak, CURRENT_TIMESTAMP)
-                    """.trimIndent(),
-                    mapOf("trekkvedtak" to trekkvedtak),
-                ),
+        tx: Handle,
+    ): Long? =
+        tx
+            .createUpdate(
+                """
+                INSERT INTO trekkvedtak_historikk (
+                    trekkvedtak,
+                    tidspkt_reg
+                )
+                VALUES (:trekkvedtak, CURRENT_TIMESTAMP)
+                """.trimIndent(),
             )
-        return id
-    }
+            .bind("trekkvedtak", trekkvedtak)
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo(Long::class.javaObjectType)
+            .findOne()
+            .orElse(null)
 }

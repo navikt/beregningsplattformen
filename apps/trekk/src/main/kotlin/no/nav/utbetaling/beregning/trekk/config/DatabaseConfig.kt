@@ -10,12 +10,20 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory
 import org.flywaydb.core.Flyway
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.KotlinPlugin
+import org.jdbi.v3.core.statement.SqlStatements
+import org.jdbi.v3.core.transaction.LocalTransactionHandler
 import org.postgresql.ds.PGSimpleDataSource
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.trekk.Metrics.prometheusMeterRegistry
 
 object DatabaseConfig {
+    val jdbi: Jdbi by lazy {
+        createJdbi(dataSource)
+    }
+
     val dataSource: DataSource by lazy {
         HikariDataSource(initHikariConfig())
     }
@@ -105,6 +113,15 @@ object DatabaseConfig {
         }
     }
 }
+
+internal fun createJdbi(dataSource: DataSource): Jdbi =
+    Jdbi.create(dataSource).apply {
+        // Hikari disables autocommit, but Jdbi must still own commit and rollback.
+        setTransactionHandler(LocalTransactionHandler.managed())
+        installPlugin(KotlinPlugin())
+        // Exclude bound values from Jdbi's JFR events.
+        getConfig(SqlStatements::class.java).setIncludeBindingsInTelemetry(false)
+    }
 
 internal suspend fun databaseHealthy(dataSource: DataSource): Boolean =
     withContext(Dispatchers.IO) {

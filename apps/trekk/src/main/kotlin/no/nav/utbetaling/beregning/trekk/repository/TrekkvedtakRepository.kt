@@ -1,8 +1,9 @@
 package no.nav.utbetaling.beregning.trekk.repository
 
-import kotliquery.Row
-import kotliquery.TransactionalSession
-import kotliquery.queryOf
+import java.sql.ResultSet
+import java.time.LocalDate
+
+import org.jdbi.v3.core.Handle
 
 import no.nav.utbetaling.beregning.trekk.domain.SatsType
 import no.nav.utbetaling.beregning.trekk.domain.TrekkFagomraade
@@ -16,110 +17,115 @@ import no.nav.utbetaling.beregning.trekk.domain.TrekkvedtakId
 class TrekkvedtakRepository {
     fun existsByOsId(
         eksternTrekkId: Long,
-        session: TransactionalSession,
+        tx: Handle,
     ): Boolean =
-        session.single(
-            queryOf(
+        tx
+            .createQuery(
                 """
                 SELECT 1
                 FROM trekkvedtak
                 WHERE ekstern_trekk_id = :eksternTrekkId
                 """.trimIndent(),
-                mapOf("eksternTrekkId" to eksternTrekkId),
-            ),
-        ) { 1 } != null
+            )
+            .bind("eksternTrekkId", eksternTrekkId)
+            .mapTo(Int::class.javaObjectType)
+            .findOne()
+            .isPresent
 
     fun findByEksternTrekkId(
         eksternTrekkId: Long,
-        session: TransactionalSession,
+        tx: Handle,
     ): Trekkvedtak? =
-        session.single(
-            queryOf(
+        tx
+            .createQuery(
                 """
                 SELECT *
                 FROM trekkvedtak
                 WHERE ekstern_trekk_id = :eksternTrekkId
                 """.trimIndent(),
-                mapOf("eksternTrekkId" to eksternTrekkId),
-            ),
-        ) { row ->
-            row.tilTrekkvedtak().apply {
+            )
+            .bind("eksternTrekkId", eksternTrekkId)
+            .map { row, _ -> row.tilTrekkvedtak() }
+            .findOne()
+            .orElse(null)
+            ?.apply {
                 val trekkvedtakId = requireNotNull(id)
-                fagomraader = findFagomraadeByTrekkvedtakId(trekkvedtakId, session)
-                trekkperioder = findTrekkperioderByTrekkvedtakId(trekkvedtakId, session)
+                fagomraader = findFagomraadeByTrekkvedtakId(trekkvedtakId, tx)
+                trekkperioder = findTrekkperioderByTrekkvedtakId(trekkvedtakId, tx)
             }
-        }
 
     private fun findFagomraadeByTrekkvedtakId(
         trekkId: TrekkvedtakId,
-        session: TransactionalSession,
+        tx: Handle,
     ): List<TrekkFagomraade> =
-        session.list(
-            queryOf(
+        tx
+            .createQuery(
                 """
                 SELECT *
                 FROM trekk_i_fagomraade
                 WHERE trekkvedtak_id = :trekkvedtakId
                 """.trimIndent(),
-                mapOf("trekkvedtakId" to trekkId.id),
-            ),
-        ) { row -> row.tilTrekkFagomraade() }
+            )
+            .bind("trekkvedtakId", trekkId.id)
+            .map { row, _ -> row.tilTrekkFagomraade() }
+            .list()
 
     private fun findTrekkperioderByTrekkvedtakId(
         trekkId: TrekkvedtakId,
-        session: TransactionalSession,
+        tx: Handle,
     ): List<Trekkperiode> =
-        session.list(
-            queryOf(
+        tx
+            .createQuery(
                 """
                 SELECT *
                 FROM trekkperiode
                 WHERE trekkvedtak_id = :trekkvedtakId
                 """.trimIndent(),
-                mapOf("trekkvedtakId" to trekkId.id),
-            ),
-        ) { row -> row.tilTrekkperiode() }
+            )
+            .bind("trekkvedtakId", trekkId.id)
+            .map { row, _ -> row.tilTrekkperiode() }
+            .list()
 
-    private fun Row.tilTrekkperiode(): Trekkperiode =
+    private fun ResultSet.tilTrekkperiode(): Trekkperiode =
         Trekkperiode(
-            id = TrekkperiodeId(long("id")),
-            trekkvedtakId = long("trekkvedtak_id"),
-            datoFom = localDate("dato_fom"),
-            datoTom = localDateOrNull("dato_tom"),
-            sats = bigDecimal("sats"),
-            satstype = SatsType.valueOf(string("satstype")),
-            feilReg = boolean("feil_reg"),
-            bruker = string("bruker"),
-            tidspktReg = localDateTime("tidspkt_reg"),
+            id = TrekkperiodeId(getLong("id")),
+            trekkvedtakId = getLong("trekkvedtak_id"),
+            datoFom = getObject("dato_fom", LocalDate::class.java),
+            datoTom = getObject("dato_tom", LocalDate::class.java),
+            sats = getBigDecimal("sats"),
+            satstype = SatsType.valueOf(getString("satstype")),
+            feilReg = getBoolean("feil_reg"),
+            bruker = getString("bruker"),
+            tidspktReg = getTimestamp("tidspkt_reg").toLocalDateTime(),
         )
 
-    private fun Row.tilTrekkFagomraade(): TrekkFagomraade =
+    private fun ResultSet.tilTrekkFagomraade(): TrekkFagomraade =
         TrekkFagomraade(
-            id = TrekkFagomraadeId(long("id")),
-            trekkvedtakId = long("trekkvedtak_id"),
-            fagomraadeKode = string("fagomraade_kode"),
-            aktiv = boolean("aktiv"),
-            tidspktReg = localDateTime("tidspkt_reg"),
+            id = TrekkFagomraadeId(getLong("id")),
+            trekkvedtakId = getLong("trekkvedtak_id"),
+            fagomraadeKode = getString("fagomraade_kode"),
+            aktiv = getBoolean("aktiv"),
+            tidspktReg = getTimestamp("tidspkt_reg").toLocalDateTime(),
         )
 
-    private fun Row.tilTrekkvedtak(): Trekkvedtak =
+    private fun ResultSet.tilTrekkvedtak(): Trekkvedtak =
         Trekkvedtak(
-            id = TrekkvedtakId(long("id")),
-            eksternTrekkId = longOrNull("ekstern_trekk_id"),
-            trekktypeKode = string("trekktype"),
-            kreditorIdTss = stringOrNull("kreditor_tss_id"),
-            kreditorTrekkId = stringOrNull("kreditor_trekk_id"),
-            kreditorRef = stringOrNull("kreditor_ref"),
-            belopSaldo = bigDecimalOrNull("belop_saldo"),
-            kreditorKid = stringOrNull("kreditor_kid"),
-            gyldigTom = localDateOrNull("gyldig_tom"),
-            ansvarligEnhet = string("ansv_enhet"),
-            debitorId = string("debitor_id"),
-            datoPriFom = localDateOrNull("dato_pri_fom"),
-            kilde = stringOrNull("kilde"),
-            trekkstatus = Trekkstatus.fromString(string("trekkstatus")),
-            bruker = string("bruker"),
-            tidspktReg = localDateTime("tidspkt_reg"),
-            mottatt = localDateTime("mottatt"),
+            id = TrekkvedtakId(getLong("id")),
+            eksternTrekkId = getObject("ekstern_trekk_id", Long::class.javaObjectType),
+            trekktypeKode = getString("trekktype"),
+            kreditorIdTss = getString("kreditor_tss_id"),
+            kreditorTrekkId = getString("kreditor_trekk_id"),
+            kreditorRef = getString("kreditor_ref"),
+            belopSaldo = getBigDecimal("belop_saldo"),
+            kreditorKid = getString("kreditor_kid"),
+            gyldigTom = getObject("gyldig_tom", LocalDate::class.java),
+            ansvarligEnhet = getString("ansv_enhet"),
+            debitorId = getString("debitor_id"),
+            datoPriFom = getObject("dato_pri_fom", LocalDate::class.java),
+            kilde = getString("kilde"),
+            trekkstatus = Trekkstatus.fromString(getString("trekkstatus")),
+            bruker = getString("bruker"),
+            tidspktReg = getTimestamp("tidspkt_reg").toLocalDateTime(),
+            mottatt = getTimestamp("mottatt").toLocalDateTime(),
         )
 }

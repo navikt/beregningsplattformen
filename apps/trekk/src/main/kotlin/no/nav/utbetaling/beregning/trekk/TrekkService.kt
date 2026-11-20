@@ -1,8 +1,7 @@
 package no.nav.utbetaling.beregning.trekk
 
-import javax.sql.DataSource
-
-import kotliquery.TransactionalSession
+import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.Jdbi
 
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.trekk.config.DatabaseConfig
@@ -11,10 +10,9 @@ import no.nav.utbetaling.beregning.trekk.repository.TrekkFagomraadeRepository
 import no.nav.utbetaling.beregning.trekk.repository.TrekkperiodeRepository
 import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakHistorikkRepository
 import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakRepository
-import no.nav.utbetaling.beregning.trekk.utils.SqlUtils.transaction
 
 class TrekkService(
-    private val dataSource: DataSource = DatabaseConfig.dataSource,
+    private val jdbi: Jdbi = DatabaseConfig.jdbi,
     private val trekkvedtakHistorikkRepository: TrekkvedtakHistorikkRepository = TrekkvedtakHistorikkRepository(),
     private val trekkvedtakRepository: TrekkvedtakRepository = TrekkvedtakRepository(),
     private val trekkperiodeRepository: TrekkperiodeRepository = TrekkperiodeRepository(),
@@ -24,18 +22,18 @@ class TrekkService(
         message: String,
         trekk: Trekk,
     ) {
-        dataSource.transaction { session ->
-            trekkvedtakHistorikkRepository.insertTrekkvedtak(message, session)
-            when (trekkvedtakRepository.existsByOsId(trekk.trekkvedtakId!!, session)) {
-                true -> updateTrekkvedtak(trekk, session)
-                false -> createTrekkvedtak(trekk, session)
+        jdbi.useTransaction<Exception> { tx ->
+            trekkvedtakHistorikkRepository.insertTrekkvedtak(message, tx)
+            when (trekkvedtakRepository.existsByOsId(trekk.trekkvedtakId!!, tx)) {
+                true -> updateTrekkvedtak(trekk, tx)
+                false -> createTrekkvedtak(trekk, tx)
             }
         }
     }
 
     fun createTrekkvedtak(
         newTrekkvedtak: Trekk,
-        tx: TransactionalSession,
+        tx: Handle,
     ) {
         Log.info("Oppretter nytt trekkvedtak for OS-trekkId: ${newTrekkvedtak.trekkvedtakId}")
         /*val aktoerId = aktoerService.findOrCreateByOffNr(tx, newTrekkvedtak.debitorId, "Person med trekk fra OS")
@@ -61,7 +59,7 @@ class TrekkService(
 
     fun updateTrekkvedtak(
         changedTrekkvedtak: Trekk,
-        tx: TransactionalSession,
+        tx: Handle,
     ): Trekk? {
         Log.info("Oppdaterer trekkvedtak for OS-trekkId: ${changedTrekkvedtak.trekkvedtakId}")
         val existingTrekkvedtak =

@@ -23,7 +23,8 @@ dependencies {
     // Database
     implementation(libs.hikaricp)
     implementation(libs.postgresql)
-    implementation(libs.kotliquery)
+    implementation(libs.jdbi.core)
+    implementation(libs.jdbi.kotlin)
     implementation(libs.flyway.core)
     runtimeOnly(libs.flyway.postgresql)
 
@@ -33,6 +34,7 @@ dependencies {
     // Tests
     testImplementation("io.ktor:ktor-server-test-host-jvm:${libs.versions.ktorVersion.get()}")
     testImplementation("io.mockk:mockk:1.14.12")
+    testImplementation(libs.testcontainers.postgresql)
 }
 
 application {

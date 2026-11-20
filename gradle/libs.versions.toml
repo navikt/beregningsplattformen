@@ -15,7 +15,7 @@ trekkrutine2026 = "1.0_20260113090201_5cbf08a"
 # Database
 flyway = "13.12.1"
 hikaricp = "7.1.0"
-kotliquery = "2.1.2"
+jdbi = "3.55.0"
 postgresql = "42.7.14"
 
 # Serialization
@@ -28,6 +28,7 @@ logback = "1.6.6"
 
 # Test
 kotest = "6.2.7"
+testcontainers = "2.0.5"
 
 # Plugins
 kover-plugin = "0.9.11"
@@ -47,7 +48,8 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 # Database
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
-kotliquery = { module = "no.nav:kotliquery", version.ref = "kotliquery" }
+jdbi-core = { module = "org.jdbi:jdbi3-core", version.ref = "jdbi" }
+jdbi-kotlin = { module = "org.jdbi:jdbi3-kotlin", version.ref = "jdbi" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 
@@ -73,6 +75,7 @@ jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-dat
 # Test
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktorVersion" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 
 [bundles]
 jackson = [
