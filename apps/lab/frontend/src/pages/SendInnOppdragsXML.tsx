@@ -289,7 +289,9 @@ function SendInnOppdragsXMLInnhold() {
 		settSender(true);
 		try {
 			const response = await postBeregn({
-				xml: resultat.innsendinger.map((i) => i.xml),
+				xml: resultat.innsendinger
+					.map((innsending) => innsending.xml)
+					.filter((xml) => xml !== undefined),
 				...(fom ? { fom } : {}),
 				...(tom ? { tom } : {}),
 				...(skattekortUtkast.aktiv
