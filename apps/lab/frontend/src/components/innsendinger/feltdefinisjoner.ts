@@ -69,6 +69,15 @@ const fradragTillegg: Forslag[] = [
 	{ label: "T (Tillegg)", value: "T" },
 ];
 
+const typeSats: Forslag[] = [
+	{ label: "DAG (Dagsats)", value: "DAG" },
+	{ label: "UKE (Ukessats)", value: "UKE" },
+	{ label: "MND (Månedssats)", value: "MND" },
+	{ label: "14D (14 dagers sats)", value: "14D" },
+	{ label: "AAR (Årlig sats)", value: "AAR" },
+	{ label: "ENG (Engangssats)", value: "ENG" },
+];
+
 const kodeEndringLinje: Forslag[] = [
 	{ label: "NY", value: "NY" },
 	{ label: "ENDR (Endring)", value: "ENDR" },
@@ -157,7 +166,7 @@ export const linjefelter: FeltDefinisjon<LinjeSkjema["felter"]>[] = [
 	{ navn: "tom", label: "datoVedtakTom", dato: true },
 	{ navn: "sats", label: "sats" },
 	{ navn: "fradragTillegg", label: "fradragTillegg", forslag: fradragTillegg },
-	{ navn: "typeSats", label: "typeSats" },
+	{ navn: "typeSats", label: "typeSats", forslag: typeSats },
 	{ navn: "skyldnerId", label: "skyldnerId" },
 	{ navn: "datoSkyldnerFom", label: "datoSkyldnerFom", dato: true },
 	{ navn: "kid", label: "kid" },
