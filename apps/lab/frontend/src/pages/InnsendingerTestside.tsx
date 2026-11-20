@@ -1,5 +1,6 @@
 import { BodyShort, Box, Heading, LocalAlert, VStack } from "@navikt/ds-react";
 import Breadcrumbs from "../components/Breadcrumbs";
+import { InnsendingerProvider } from "../components/innsendinger/InnsendingerContext";
 import { InnsendingerSkjema } from "../components/innsendinger/InnsendingerSkjema";
 
 const tittelId = "innsendinger-tittel";
@@ -7,7 +8,7 @@ const tittelId = "innsendinger-tittel";
 // Samme oppbygging som «Send inn oppdrags-XML», men med overskrift og brødsmuler i et header-landemerke
 export default function InnsendingerTestside() {
 	return (
-		<>
+		<InnsendingerProvider>
 			<Box as="header" width="100%">
 				<Box asChild marginBlock="space-24">
 					<Heading id={tittelId} level="1" size="large" align="center">
@@ -49,6 +50,6 @@ export default function InnsendingerTestside() {
 					</VStack>
 				</Box>
 			</VStack>
-		</>
+		</InnsendingerProvider>
 	);
 }

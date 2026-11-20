@@ -43,12 +43,12 @@ export type InnsendingSkjema = MedNokkel<{
 }>;
 
 export type InnsendingResultat = {
-	oppdragId?: number;
-	fagsystemId?: string;
-	xml?: string;
-	feil?: string;
-	kjedeforslag: Kjedeidentifikator[];
-	kjedeIder: number[];
+    oppdragId?: number;
+    fagsystemId?: string;
+    xml: string;
+    feil?: string;
+    kjedeforslag: Kjedeidentifikator[];
+    kjedeIder: number[];
 };
 
 export type ByggResultat = {
