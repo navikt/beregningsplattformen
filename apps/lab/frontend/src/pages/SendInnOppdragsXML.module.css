@@ -14,11 +14,6 @@
   border-radius: var(--ax-radius-12);
 }
 
-.laboratorium__intro,
-.laboratorium__advarsel {
-  margin-block: 0 var(--ax-space-16);
-}
-
 .laboratorium__xmlvalg {
   margin: 0;
   padding: 0;

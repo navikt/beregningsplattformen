@@ -89,12 +89,7 @@ function Summeringer({ beregning }: { beregning: Beregning }) {
 	);
 
 	return (
-		<HGrid
-			as="dl"
-			columns={{ xs: 1, sm: 2 }}
-			gap="space-8"
-			margin="space-0"
-		>
+		<HGrid as="dl" columns={{ xs: 1, sm: 2 }} gap="space-8" margin="space-0">
 			<Felt label="Totalsum" verdi={totalsum(beregning.delberegninger)} />
 			<Felt label="Samlet skattetrekk" verdi={totalsum(skattelinjer)} />
 		</HGrid>
@@ -292,15 +287,17 @@ export function Beregningsresultater({
 					<Heading id="beregningsresultater-heading" level="2" size="medium">
 						Beregningsresultater
 					</Heading>
-					<Switch
-						checked={visEkstraInfo}
-						onChange={(event) => settVisEkstraInfo(event.target.checked)}
-					>
-						Vis ekstrainfo
-					</Switch>
+					{beregninger.length > 0 && (
+						<Switch
+							checked={visEkstraInfo}
+							onChange={(event) => settVisEkstraInfo(event.target.checked)}
+						>
+							Vis ekstrainfo
+						</Switch>
+					)}
 				</HStack>
 				{beregninger.length === 0 ? (
-					<BodyShort>Responsen inneholder ingen beregninger.</BodyShort>
+					<BodyShort>Ingen beregninger å vise.</BodyShort>
 				) : (
 					<VStack gap="space-16">
 						{beregninger.map((beregning) => (
