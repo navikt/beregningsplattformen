@@ -102,6 +102,7 @@ private fun kjedeVersjon(status: String) =
                     refunderesTil = null,
                     maksdato = null,
                     typeSøknad = null,
+                    vedtakssats = null
                 ),
             ),
     )

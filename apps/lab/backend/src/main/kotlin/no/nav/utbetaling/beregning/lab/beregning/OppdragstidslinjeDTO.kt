@@ -86,6 +86,7 @@ data class KjedePerioderDTO(
     val brukKjøreplan: OpplysningDTO,
     val ompostering: OpplysningDTO?,
     val ytelseKlassekode: OpplysningDTO,
+    val vedtakssats: OpplysningDTO?
 )
 
 private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
@@ -176,6 +177,7 @@ fun Oppdragstidslinje.toDTO(innsending: Int): OppdragstidslinjeDTO {
                                         brukKjøreplan = opplysning.brukKjøreplan.toDto { it.name },
                                         ompostering = opplysning.ompostering?.toDto { "Registrert ${TIDSPUNKT_FORMAT.format(it.registrert)}" },
                                         ytelseKlassekode = opplysning.ytelseKlassekode.toDto { it.kode },
+                                        vedtakssats = opplysning.vedtakssats?.toDto { it.verdi.toPlainString() },
                                     )
                                 },
                         ),
