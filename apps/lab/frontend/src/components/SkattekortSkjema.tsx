@@ -44,7 +44,7 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 		>
 			<VStack gap="space-16">
 				<Heading id="skattekort-heading" level="2" size="medium">
-					Syntetisk skattekort
+					Skattekort
 				</Heading>
 				<Switch
 					checked={utkast.aktiv}
@@ -57,10 +57,6 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 				</Switch>
 				{utkast.aktiv && (
 					<>
-						<BodyShort>
-							Bruk bare syntetiske skattekortdata. Alle XML-ene må gjelde samme
-							person. Opplysningene gjelder hele innsendingen.
-						</BodyShort>
 						<Fieldset
 							legend="Skattekortopplysninger"
 							hideLegend
