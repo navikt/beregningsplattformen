@@ -23,10 +23,10 @@ import no.nav.utbetaling.beregning.trekk.config.securityConfig
 import no.nav.utbetaling.beregning.trekk.mq.TrekkConsumer
 
 fun main() {
-    embeddedServer(Netty, port = 8080, module = Application::trekk).start(true)
+    embeddedServer(Netty, port = 8080, module = Application::lagTrekk).start(true)
 }
 
-private fun Application.trekk() {
+private fun Application.lagTrekk() {
     PropertiesConfig.load(environment.config.loadEnv())
     val applicationState = ApplicationState()
     val dataSource = DatabaseConfig.dataSource

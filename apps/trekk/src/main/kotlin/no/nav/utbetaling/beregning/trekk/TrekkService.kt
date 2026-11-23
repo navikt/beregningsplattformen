@@ -27,11 +27,11 @@ class TrekkService(
     private val endringsplanlegger = TrekkvedtakEndringsplanlegger()
 
     fun createOrUpdateTrekkvedtakFromOs(
-        message: String,
+        trekkJson: String,
         trekk: Trekk,
     ) {
         dataSource.transaction { session ->
-            trekkvedtakHistorikkRepository.insertTrekkvedtak(message, session)
+            trekkvedtakHistorikkRepository.insertTrekkvedtak(trekkJson, session)
             when (trekkvedtakRepository.existsByOsId(trekk.trekkvedtakId!!, session)) {
                 true -> updateTrekkvedtak(trekk, session)
                 false -> createTrekkvedtak(trekk, session)
