@@ -1,6 +1,6 @@
 package no.nav.utbetaling.beregning.oppdrag
 
-internal class UgyldigInnsendingException private constructor(
+class UgyldigInnsendingException private constructor(
     melding: String,
     throwable: Throwable? = null,
 ) : RuntimeException(melding, throwable) {

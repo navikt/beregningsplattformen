@@ -3,13 +3,16 @@ package no.nav.utbetaling.beregning.oppdrag.intern
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import tools.jackson.core.JacksonException
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.exc.InvalidFormatException
 import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.module.SimpleModule
 import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.KotlinInvalidNullException
 import tools.jackson.module.kotlin.kotlinModule
 
 import no.nav.utbetaling.beregning.oppdrag.Bilagstype
@@ -24,6 +27,7 @@ import no.nav.utbetaling.beregning.oppdrag.SaksbehandlerId
 import no.nav.utbetaling.beregning.oppdrag.Sats
 import no.nav.utbetaling.beregning.oppdrag.StønadId
 import no.nav.utbetaling.beregning.oppdrag.Søknadstype
+import no.nav.utbetaling.beregning.oppdrag.UgyldigInnsendingException.Companion.ugyldigInnsending
 import no.nav.utbetaling.beregning.oppdrag.Utbetalingsfrekvens
 import no.nav.utbetaling.beregning.oppdrag.VedtakId
 import no.nav.utbetaling.beregning.oppdrag.YtelseKlassekode
@@ -120,13 +124,13 @@ internal object FraXmlFormat {
             json.flatMapIndexed { index, enJson ->
                 val node =
                     runCatching { jsonMapper.readTree(enJson) }.getOrElse { feil ->
-                        throw IllegalArgumentException("Ugyldig JSON!", feil)
+                        throw IllegalArgumentException("JSON nummer ${index + 1} er ikke en gyldig JSON!", feil)
                     }
 
                 when {
                     node.isArray -> node
                     node.isObject -> listOf(node)
-                    else -> throw IllegalArgumentException("Feil på json nummer ${index + 1}: Må være JSON Objekt eller Array, var ${node.nodeType.name}")
+                    else -> throw IllegalArgumentException("Feil på JSON nummer ${index + 1}: Må være JSON Objekt eller Array, var ${node.nodeType.name}")
                 }
             }
 
@@ -134,7 +138,7 @@ internal object FraXmlFormat {
             .mapIndexed { index, node ->
                 node to
                     runCatching { jsonMapper.convertValue(node, Oppdrag110::class.java) }.getOrElse { feil ->
-                        throw IllegalArgumentException("Ugyldig på json nummer ${index + 1}", feil)
+                        feil.håndterDeserialiseringsfeil("Ugyldig innhold i JSON nummer ${index + 1}")
                     }
             }.toMap()
     }
@@ -144,12 +148,11 @@ internal object FraXmlFormat {
             .mapIndexedNotNull { index, enXml ->
                 val node =
                     runCatching { xmlMapper.readTree(enXml) }.getOrElse { feil ->
-                        throw IllegalArgumentException("Ugyldig xml nummer ${index + 1}", feil)
+                        throw IllegalArgumentException("XML nummer ${index + 1} er ikke en gyldig XML!", feil)
                     }
-
                 val xmlOppdrag =
                     runCatching { xmlMapper.readValue(enXml, XmlOppdrag::class.java) }.getOrElse { feil ->
-                        throw IllegalArgumentException("Ugyldig på xml nummer ${index + 1}", feil)
+                        feil.håndterDeserialiseringsfeil("Ugyldig innhold i XML nummer ${index + 1}")
                     }
                 when (val oppdrag110 = xmlOppdrag.oppdrag110) {
                     null -> null
@@ -217,4 +220,44 @@ internal object FraXmlFormat {
             .addModule(kotlinModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
             .build()
+
+    private fun Throwable.håndterDeserialiseringsfeil(prefix: String): Nothing {
+        val jacksonException =
+            generateSequence(this) { it.cause }
+                .filterIsInstance<JacksonException>()
+                .firstOrNull() ?: throw IllegalArgumentException(prefix, this)
+
+        val felt =
+            jacksonException.path
+                .joinToString(".") { it.propertyName ?: "[${it.index}]" }
+                .takeUnless { it.isBlank() } ?: throw IllegalArgumentException(prefix, this)
+
+        if (jacksonException is KotlinInvalidNullException) ugyldigInnsending("$prefix: $felt må settes", this)
+
+        if (jacksonException is InvalidFormatException) {
+            val gyldige =
+                jacksonException.targetType
+                    ?.takeIf { it.isEnum }
+                    ?.enumConstants
+                    ?.mapNotNull { (it as? Enum<*>)?.name }
+                    ?: emptyList()
+
+            if (gyldige.isNotEmpty()) {
+                ugyldigInnsending("$prefix: $felt var satt til ${jacksonException.value}, men må være enten ${gyldige.listAlternativer()}", this)
+            }
+
+            if (jacksonException.targetType == LocalDate::class.java) {
+                ugyldigInnsending("$prefix: $felt var satt til ${jacksonException.value}, men må være en gyldig dato", this)
+            }
+        }
+
+        throw IllegalArgumentException(prefix, this)
+    }
+
+    private fun List<String>.listAlternativer() =
+        when (size) {
+            0 -> ""
+            1 -> first()
+            else -> dropLast(1).joinToString(", ") + " eller " + last()
+        }
 }
