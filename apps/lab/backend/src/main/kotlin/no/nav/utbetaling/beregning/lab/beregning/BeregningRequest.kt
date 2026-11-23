@@ -13,4 +13,5 @@ class BeregningRequest(
     val tom: LocalDate? = null,
     val xml: List<String>,
     val skattekort: SkattekortDTO? = null,
+    val trekk: List<TrekkDTO> = emptyList(),
 )

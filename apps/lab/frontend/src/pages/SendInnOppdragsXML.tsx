@@ -38,7 +38,7 @@ import {
 } from "../components/innsendinger/InnsendingerContext";
 import { InnsendingerSkjema } from "../components/innsendinger/InnsendingerSkjema";
 import { SkattekortSkjema } from "../components/SkattekortSkjema";
-import { oppdragsXmlTypedTemplate } from "../data/oppdragsXmlTypedTemplate";
+import { TrekkSkjema } from "../components/TrekkSkjema";
 import type { BeregningResponse } from "../types/BeregningResponse";
 import { HttpStatusCodeError } from "../types/Error";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
@@ -47,7 +47,7 @@ import {
 	lesSkattekort,
 	nyttForskuddstrekk,
 } from "../types/Skattekort";
-import { templateFields } from "../util/template";
+import { lesTrekk, type TrekkFeil, type TrekkUtkast } from "../types/Trekk";
 import styles from "./SendInnOppdragsXML.module.css";
 
 type KjedePeriodeDTO =
@@ -197,10 +197,6 @@ export default function SendInnOppdragsXML() {
 function SendInnOppdragsXMLInnhold() {
 	const [fellesOpplysninger, settFellesOpplysninger] =
 		useState<FellesOpplysninger>(() => ({
-			gjelderId:
-				templateFields(oppdragsXmlTypedTemplate).find(
-					(felt) => felt.name === "oppdragGjelderId",
-				)?.value ?? "",
 			fom: "",
 			tom: "",
 			fomGyldig: true,
@@ -212,6 +208,8 @@ function SendInnOppdragsXMLInnhold() {
 		inntektsaar: String(new Date().getFullYear()),
 		forskuddstrekk: nyttForskuddstrekk(),
 	});
+	const [trekkUtkast, settTrekkUtkast] = useState<TrekkUtkast[]>([]);
+	const [trekkfeil, settTrekkfeil] = useState<TrekkFeil[]>([]);
 	const senderRef = useRef(false);
 	const [sender, settSender] = useState(false);
 	const { resultat } = useInnsendinger();
@@ -263,14 +261,8 @@ function SendInnOppdragsXMLInnhold() {
 		if (senderRef.current) return;
 
 		fjernResultat();
-		const { gjelderId, fom, tom, fomGyldig, tomGyldig } = fellesOpplysninger;
+		const { fom, tom, fomGyldig, tomGyldig } = fellesOpplysninger;
 		const feltfeil: FellesFeltfeil[] = [];
-		if (!/^\d{11}$/.test(gjelderId.trim())) {
-			feltfeil.push({
-				felt: "gjelderId",
-				melding: "Oppgi en syntetisk gjelder-ID med 11 sifre.",
-			});
-		}
 		if (!fomGyldig) {
 			feltfeil.push({ felt: "fom", melding: "Oppgi en gyldig fra-dato." });
 		}
@@ -283,18 +275,23 @@ function SendInnOppdragsXMLInnhold() {
 			});
 		}
 		settFellesfeil(feltfeil);
-		if (feltfeil.length > 0) return;
+		const trekkResultat = lesTrekk(trekkUtkast);
+		settTrekkfeil(trekkResultat.ok ? [] : trekkResultat.feil);
+		if (feltfeil.length > 0 || !trekkResultat.ok) return;
 
 		senderRef.current = true;
 		settSender(true);
 		try {
 			const response = await postBeregn({
-				xml: resultat.innsendinger.map((i) => i.xml),
+				xml: resultat.innsendinger
+					.map((innsending) => innsending.xml)
+					.filter((xml) => xml !== undefined),
 				...(fom ? { fom } : {}),
 				...(tom ? { tom } : {}),
 				...(skattekortUtkast.aktiv
 					? { skattekort: lesSkattekort(skattekortUtkast) }
 					: {}),
+				trekk: trekkResultat.trekk,
 			});
 			settRespons(response);
 			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
@@ -341,20 +338,10 @@ function SendInnOppdragsXMLInnhold() {
 				borderRadius="12"
 				aria-labelledby="lab-heading"
 			>
-				<BodyShort className={styles.laboratorium__intro}>
-					Fyll ut feltene for å bygge et XML-oppdrag, forhåndsvis resultatet og
-					behandle det.
-				</BodyShort>
-				<LocalAlert className={styles.laboratorium__advarsel} status="warning">
-					<LocalAlert.Header>
-						<LocalAlert.Title>Bruk bare syntetiske XML-data</LocalAlert.Title>
-					</LocalAlert.Header>
-					<LocalAlert.Content>
-						Ikke lim inn personopplysninger eller reelle ID-er.
-					</LocalAlert.Content>
-				</LocalAlert>
 				<VStack gap="space-24" asChild>
 					<form onSubmit={handterInnsending} aria-busy={sender}>
+						<InnsendingerSkjema />
+
 						<FellesBeregningsfelt
 							verdi={fellesOpplysninger}
 							feil={fellesfeil}
@@ -366,14 +353,23 @@ function SendInnOppdragsXMLInnhold() {
 							}}
 						/>
 
-						<InnsendingerSkjema />
-
 						<SkattekortSkjema
 							utkast={skattekortUtkast}
 							sender={sender}
 							onChange={(utkast) => {
 								fjernResultat();
 								settSkattekortUtkast(utkast);
+							}}
+						/>
+
+						<TrekkSkjema
+							utkast={trekkUtkast}
+							feil={trekkfeil}
+							sender={sender}
+							onChange={(oppdater) => {
+								fjernResultat();
+								settTrekkfeil([]);
+								settTrekkUtkast(oppdater);
 							}}
 						/>
 
@@ -395,7 +391,7 @@ function SendInnOppdragsXMLInnhold() {
 				aria-labelledby="tidslinje-heading"
 			>
 				<Heading id="tidslinje-heading" level="2" size="medium">
-					Tidslinjer
+					Innsendingstidslinje
 				</Heading>
 				{feilmelding ? (
 					<LocalAlert status="error">
@@ -409,7 +405,7 @@ function SendInnOppdragsXMLInnhold() {
 						</LocalAlert.Content>
 					</LocalAlert>
 				) : allePerioder.length === 0 ? (
-					<BodyShort>Ingen tidslinjer å vise.</BodyShort>
+					<BodyShort>Ingen innsendingstidslinje å vise.</BodyShort>
 				) : (
 					tidslinjeStart &&
 					tidslinjeSlutt && (
@@ -732,11 +728,9 @@ function SendInnOppdragsXMLInnhold() {
 					)}
 				</Box>
 			</VStack>
-			{respons?.beregningstidslinje && (
-				<Beregningsresultater
-					beregninger={respons.beregningstidslinje.beregninger}
-				/>
-			)}
+			<Beregningsresultater
+				beregninger={respons?.beregningstidslinje?.beregninger ?? []}
+			/>
 		</VStack>
 	);
 }

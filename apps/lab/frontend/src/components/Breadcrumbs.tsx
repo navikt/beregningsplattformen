@@ -3,11 +3,7 @@ import { Link } from "@navikt/ds-react";
 import { Link as RouterLink } from "react-router-dom";
 import styles from "./Breadcrumbs.module.css";
 
-export default function Breadcrumbs({
-	gjeldendeSide = "Send inn oppdrags-XML",
-}: {
-	gjeldendeSide?: string;
-}) {
+export default function Breadcrumbs() {
 	return (
 		<nav className={styles.breadcrumbs} aria-label="Brødsmulesti">
 			<div className={styles.breadcrumbs__bar}>
@@ -19,7 +15,7 @@ export default function Breadcrumbs({
 					</li>
 					<li className={styles.breadcrumbs__current}>
 						<ChevronRightDoubleIcon aria-hidden />
-						<span aria-current="page">{gjeldendeSide}</span>
+						<span aria-current="page">Send inn oppdrags-XML</span>
 					</li>
 				</ol>
 			</div>

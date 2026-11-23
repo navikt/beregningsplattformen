@@ -45,7 +45,7 @@ export type InnsendingSkjema = MedNokkel<{
 export type InnsendingResultat = {
     oppdragId?: number;
     fagsystemId?: string;
-    xml: string;
+    xml?: string;
     feil?: string;
     kjedeforslag: Kjedeidentifikator[];
     kjedeIder: number[];
@@ -61,7 +61,7 @@ export const nyNokkel = (): string => crypto.randomUUID();
 export function nyInnsending(): InnsendingSkjema {
 	return {
 		nokkel: nyNokkel(),
-		felter: {},
+		felter: { datoOppdragGjelderFom: "1970-01-01" },
 		enheter: [],
 		avventer: [],
 		tekster: [],
@@ -199,7 +199,7 @@ export function bygg(skjemaer: InnsendingSkjema[]): ByggResultat {
 					: innsendinger.fortsettOppdrag({ id: skjema.fortsetterOppdragId });
 		} catch (feil) {
 			xmlIndekser.push(undefined);
-			return { kjedeforslag: [], kjedeIder: [], feil: feilmelding(feil) };
+			return { kjedeforslag: [], kjedeIder: [], feil: feilmelding(feil)};
 		}
 		const oppdragId = innsending.oppdragsidentifikator.id;
 		const { fagsystemId } = innsending;
