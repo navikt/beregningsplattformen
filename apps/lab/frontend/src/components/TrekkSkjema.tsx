@@ -89,16 +89,12 @@ export function TrekkSkjema({utkast, feil, sender, onChange}: Props) {
         >
             <VStack gap="space-16">
                 <Heading id="trekk-heading" level="2" size="medium">
-                    Syntetiske trekkoppgaver
+                    Trekkvedtak
                 </Heading>
-                <BodyShort>
-                    Bruk bare syntetiske data. Trekkene gjelder hele innsendingen. Uten
-                    trekk beregnes ingen trekk.
-                </BodyShort>
                 {feil.length > 0 && (
                     <ErrorSummary
                         ref={oppsummering}
-                        heading="Rett feilene i trekkoppgavene"
+                        heading="Rett feilene i trekkvedtakene"
                         headingTag="h3"
                     >
                         {feil.map(({felt, melding}) => (
@@ -108,7 +104,7 @@ export function TrekkSkjema({utkast, feil, sender, onChange}: Props) {
                         ))}
                     </ErrorSummary>
                 )}
-                <Fieldset legend="Trekkoppgaver" hideLegend disabled={sender}>
+                <Fieldset legend="Trekkvedtak" hideLegend disabled={sender}>
                     <VStack gap="space-24">
                         {utkast.map((trekk, trekkIndeks) => {
                             const felt = (navn: string) => trekkTrekkFeltId(trekk.id, navn);
