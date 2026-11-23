@@ -23,8 +23,8 @@ export const oppdragsXmlTypedTemplate = `<oppdrag>
             <vedtakId>2025-04-16</vedtakId>
             <delytelseId>lZGWmiVzR0q4W52S++5nPQ==</delytelseId>
             <kodeKlassifik>AAPUAA</kodeKlassifik>
-            <datoVedtakFom>2026-04-15{dato}</datoVedtakFom>
-            <datoVedtakTom>2026-05-20{dato}</datoVedtakTom>
+            <datoVedtakFom>2026-04-06{dato}</datoVedtakFom>
+            <datoVedtakTom>2026-04-19{dato}</datoVedtakTom>
             <sats>500{number}</sats>
             <fradragTillegg>T</fradragTillegg>
             <typeSats>DAG</typeSats>
@@ -45,8 +45,8 @@ export const oppdragsXmlTypedTemplate = `<oppdrag>
             <vedtakId>2025-04-16</vedtakId>
             <delytelseId>l+Zwfa15Q52nLauwP2CI1Q==</delytelseId>
             <kodeKlassifik>AAPUAA</kodeKlassifik>
-            <datoVedtakFom>2026-06-01{dato}</datoVedtakFom>
-            <datoVedtakTom>2026-06-14{dato}</datoVedtakTom>
+            <datoVedtakFom>2026-04-20{dato}</datoVedtakFom>
+            <datoVedtakTom>2026-05-03{dato}</datoVedtakTom>
             <sats>300{number}</sats>
             <fradragTillegg>T</fradragTillegg>
             <typeSats>DAG</typeSats>
