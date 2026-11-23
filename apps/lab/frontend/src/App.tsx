@@ -1,6 +1,6 @@
 import "@navikt/ds-css";
 import { FileCodeIcon } from "@navikt/aksel-icons";
-import { Box, Heading, LinkCard } from "@navikt/ds-react";
+import { Box, Heading, HStack, LinkCard, Theme } from "@navikt/ds-react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {
@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import styles from "./App.module.css";
 import Breadcrumbs from "./components/Breadcrumbs";
+import { TemaBryter, useTema } from "./components/TemaBryter";
 import InnsendingerTestside from "./pages/InnsendingerTestside";
 import SendInnOppdragsXML from "./pages/SendInnOppdragsXML";
 import { initApm } from "./util/apm";
@@ -18,9 +19,13 @@ import { initApm } from "./util/apm";
 initApm();
 
 function App() {
+	const { valg, tema, settValg } = useTema();
 	return (
 		<BrowserRouter>
-			<div className={styles["app__page-wrapper"]}>
+			<Theme theme={tema} className={styles["app__page-wrapper"]}>
+				<HStack justify="end" padding="space-8">
+					<TemaBryter valg={valg} onVelg={settValg} />
+				</HStack>
 				<div className={styles["app__page-layout"]}>
 					<Routes>
 						<Route path="/" element={<LabMenu />} />
@@ -58,7 +63,7 @@ function App() {
 						/>
 					</Routes>
 				</div>
-			</div>
+			</Theme>
 		</BrowserRouter>
 	);
 }
