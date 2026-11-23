@@ -6,7 +6,12 @@ import {
 	ThemeIcon,
 } from "@navikt/aksel-icons";
 import { ActionMenu, Button, HStack, Tooltip } from "@navikt/ds-react";
-import { type ReactNode, useState, useSyncExternalStore } from "react";
+import {
+	type ReactNode,
+	useEffect,
+	useState,
+	useSyncExternalStore,
+} from "react";
 
 export type Temavalg = "light" | "dark" | "system";
 export type Tema = "light" | "dark";
@@ -27,6 +32,14 @@ export function useTema() {
 	);
 	const tema: Tema =
 		valg === "system" ? (systemErMork ? "dark" : "light") : valg;
+
+	// body ligger utenfor Theme, så roten må ha temaklassen for at bakgrunnen bak siden skal følge med
+	useEffect(() => {
+		const rot = document.documentElement;
+		rot.classList.toggle("dark", tema === "dark");
+		return () => rot.classList.remove("dark");
+	}, [tema]);
+
 	return { valg, tema, settValg };
 }
 
