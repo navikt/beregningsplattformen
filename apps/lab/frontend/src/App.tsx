@@ -11,7 +11,6 @@ import {
 } from "react-router-dom";
 import styles from "./App.module.css";
 import Breadcrumbs from "./components/Breadcrumbs";
-import InnsendingerTestside from "./pages/InnsendingerTestside";
 import SendInnOppdragsXML from "./pages/SendInnOppdragsXML";
 import { initApm } from "./util/apm";
 
@@ -40,10 +39,6 @@ function App() {
 									<SendInnOppdragsXML />
 								</>
 							}
-						/>
-						<Route
-							path="/innsendinger-test"
-							element={<InnsendingerTestside />}
 						/>
 						<Route
 							path="*"
@@ -96,31 +91,6 @@ function LabMenu() {
 						</LinkCard.Title>
 						<LinkCard.Description>
 							Bygg og send inn et oppdrag i XML-format.
-						</LinkCard.Description>
-					</LinkCard>
-					<LinkCard>
-						<Box
-							asChild
-							borderRadius="12"
-							padding="space-8"
-							className={styles["menu__icon-box"]}
-						>
-							<LinkCard.Icon>
-								<FileCodeIcon
-									className={styles.menu__icon}
-									aria-hidden="true"
-								/>
-							</LinkCard.Icon>
-						</Box>
-						<LinkCard.Title as="h2">
-							<LinkCard.Anchor asChild>
-								<RouterLink to="/innsendinger-test">
-									Bygg innsendinger
-								</RouterLink>
-							</LinkCard.Anchor>
-						</LinkCard.Title>
-						<LinkCard.Description>
-							Testside for ny innsendinger-komponent. Bygg og send inn flere oppdrag i XML-format.
 						</LinkCard.Description>
 					</LinkCard>
 				</div>
