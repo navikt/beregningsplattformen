@@ -38,6 +38,7 @@ import {
 } from "../components/innsendinger/InnsendingerContext";
 import { InnsendingerSkjema } from "../components/innsendinger/InnsendingerSkjema";
 import { SkattekortSkjema } from "../components/SkattekortSkjema";
+import { TrekkSkjema } from "../components/TrekkSkjema";
 import type { BeregningResponse } from "../types/BeregningResponse";
 import { HttpStatusCodeError } from "../types/Error";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
@@ -46,6 +47,7 @@ import {
 	lesSkattekort,
 	nyttForskuddstrekk,
 } from "../types/Skattekort";
+import { lesTrekk, type TrekkFeil, type TrekkUtkast } from "../types/Trekk";
 import styles from "./SendInnOppdragsXML.module.css";
 
 type KjedePeriodeDTO =
@@ -206,6 +208,8 @@ function SendInnOppdragsXMLInnhold() {
 		inntektsaar: String(new Date().getFullYear()),
 		forskuddstrekk: nyttForskuddstrekk(),
 	});
+	const [trekkUtkast, settTrekkUtkast] = useState<TrekkUtkast[]>([]);
+	const [trekkfeil, settTrekkfeil] = useState<TrekkFeil[]>([]);
 	const senderRef = useRef(false);
 	const [sender, settSender] = useState(false);
 	const { resultat } = useInnsendinger();
@@ -271,7 +275,9 @@ function SendInnOppdragsXMLInnhold() {
 			});
 		}
 		settFellesfeil(feltfeil);
-		if (feltfeil.length > 0) return;
+		const trekkResultat = lesTrekk(trekkUtkast);
+		settTrekkfeil(trekkResultat.ok ? [] : trekkResultat.feil);
+		if (feltfeil.length > 0 || !trekkResultat.ok) return;
 
 		senderRef.current = true;
 		settSender(true);
@@ -285,6 +291,7 @@ function SendInnOppdragsXMLInnhold() {
 				...(skattekortUtkast.aktiv
 					? { skattekort: lesSkattekort(skattekortUtkast) }
 					: {}),
+				trekk: trekkResultat.trekk,
 			});
 			settRespons(response);
 			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
@@ -352,6 +359,17 @@ function SendInnOppdragsXMLInnhold() {
 							onChange={(utkast) => {
 								fjernResultat();
 								settSkattekortUtkast(utkast);
+							}}
+						/>
+
+						<TrekkSkjema
+							utkast={trekkUtkast}
+							feil={trekkfeil}
+							sender={sender}
+							onChange={(oppdater) => {
+								fjernResultat();
+								settTrekkfeil([]);
+								settTrekkUtkast(oppdater);
 							}}
 						/>
 

@@ -28,6 +28,7 @@ internal fun Route.beregningApi() {
         post("beregn") {
             val beregningsRequest = call.receive<BeregningRequest>()
             val skattekort = beregningsRequest.skattekort
+            val trekkvedtak = beregningsRequest.trekk.tilTrekkvedtak()
 
             val (oppdragstidslinjeDTO, oppdragstidslinje) =
                 when (val oppdragstidslinjeresultat = Oppdragstidslinjer.fra(beregningsRequest.xml)) {
@@ -51,7 +52,7 @@ internal fun Route.beregningApi() {
                     beregningsperiode = Periode.LukketPeriode(beregningFom, beregningTom),
                     oppdragstidslinje = oppdragstidslinje,
                     skatteKontekst = skattekort?.skatteKontekst() ?: SkatteKontekst(null, emptyMap()),
-                    trekkVedtak = emptyList(),
+                    trekkVedtak = trekkvedtak,
                     overføres = LocalDate.now(),
                     relaterteBeregninger = emptyList(),
                     tilgjengeligFrikortbeløp = skattekort?.tilgjengeligFrikortbeloep() ?: BigDecimal.ZERO,
