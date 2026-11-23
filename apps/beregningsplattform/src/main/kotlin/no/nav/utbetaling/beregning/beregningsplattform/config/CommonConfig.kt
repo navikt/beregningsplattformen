@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.beregningsplattform
+package no.nav.utbetaling.beregning.beregningsplattform.config
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -36,7 +36,7 @@ fun Application.commonConfig() {
 
 fun Routing.internalNaisRoutes(
     applicationState: ApplicationState,
-    readynessCheck: () -> Boolean = { applicationState.ready },
+    readynessCheck: suspend () -> Boolean = { applicationState.ready },
     alivenessCheck: () -> Boolean = { applicationState.alive },
 ) {
     route("internal") {

@@ -57,5 +57,23 @@ spec:
         - host: mqls02.preprod.local
           ports:
             - port: 1413
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_18
+        diskAutoresize: true
+        pointInTimeRecovery: true
+        tier: db-f1-micro
+        databases:
+          - name: beregningsplattformen-beregningsplattform
+            envVarPrefix: DB
+        flags:
+          - name: "cloudsql.enable_pgaudit"
+            value: "off"
+          - name: "pgaudit.log"
+            value: "write,ddl,role"
+          - name: "pgaudit.log_parameter"
+            value: "off"
+          - name: "cloudsql.logical_decoding"
+            value: "on"
   envFrom:
     - secret: beregningsplattformen-mottak-secrets
