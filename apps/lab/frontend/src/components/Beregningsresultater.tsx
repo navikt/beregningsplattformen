@@ -9,7 +9,6 @@ import {
 	Table,
 	VStack,
 } from "@navikt/ds-react";
-import { DataGrid } from "@navikt/ds-react/PREVIEW/DataGrid";
 import { Fragment, useState } from "react";
 import type { BeregningResponse } from "../types/BeregningResponse";
 import styles from "./Beregningsresultater.module.css";
@@ -84,14 +83,18 @@ function Metadata({ beregning }: { beregning: Beregning }) {
 }
 
 function Summeringer({ beregning }: { beregning: Beregning }) {
+	const ytelseslinjer = beregning.delberegninger.flatMap((del) =>
+		del.linjer.filter((linje) => linje.type === "YTELSE"),
+	);
 	const skattelinjer = beregning.delberegninger.flatMap((del) =>
 		del.linjer.filter((linje) => linje.type === "SKATT"),
 	);
 
 	return (
-		<HGrid as="dl" columns={{ xs: 1, sm: 2 }} gap="space-8" margin="space-0">
-			<Felt label="Totalsum" verdi={totalsum(beregning.delberegninger)} />
+		<HGrid as="dl" columns={{ xs: 1, sm: 3 }} gap="space-8" margin="space-0">
+			<Felt label="Brutto" verdi={totalsum(ytelseslinjer)} />
 			<Felt label="Samlet skattetrekk" verdi={totalsum(skattelinjer)} />
+			<Felt label="Netto" verdi={totalsum(beregning.delberegninger)} />
 		</HGrid>
 	);
 }
@@ -111,6 +114,7 @@ function Linjedetaljer({
 
 	return (
 		<Table
+			className={styles.beregningsresultater__linjer}
 			size="small"
 			aria-label={`Linjer for delberegning ${delberegning.id}`}
 		>
@@ -164,54 +168,6 @@ function Beregningsgruppe({
 	beregning: Beregning;
 	visEkstraInfo: boolean;
 }) {
-	const kolonner: DataGrid.Columns<Delberegning> = [
-		{
-			id: "id",
-			header: "Delberegning",
-			isRowHeader: true,
-			bodyCell: (delberegning) => delberegning.id,
-		},
-		{
-			id: "periode",
-			header: "Periode",
-			bodyCell: (delberegning) =>
-				`${formaterDato(delberegning.fom)} – ${formaterDato(delberegning.tom)}`,
-		},
-		{
-			id: "fagomraade",
-			header: "Fagområde",
-			bodyCell: (delberegning) => delberegning.fagomraade,
-		},
-		{
-			id: "beloep",
-			header: "Beløp",
-			align: "right",
-			bodyCell: (delberegning) => delberegning.beloep,
-		},
-	];
-	const detaljpanel: DataGrid.Table.DetailsPanel<Delberegning> = {
-		getContent: (delberegning) => (
-			<VStack
-				as="section"
-				gap="space-12"
-				minWidth="0"
-				padding="space-16"
-				aria-label={`Detaljer for delberegning ${delberegning.id}`}
-			>
-				{visEkstraInfo && (
-					<EkstraInfoDetaljer
-						ekstraInfo={delberegning.ekstraInfo}
-						tittel="Ekstrainfo for delberegningen"
-					/>
-				)}
-				<Linjedetaljer
-					delberegning={delberegning}
-					visEkstraInfo={visEkstraInfo}
-				/>
-			</VStack>
-		),
-	};
-
 	return (
 		<Box
 			as="article"
@@ -220,7 +176,7 @@ function Beregningsgruppe({
 			borderColor="neutral"
 			borderWidth="1"
 			borderRadius="12"
-			background="meta-purple-soft"
+			background="info-soft"
 			aria-labelledby={`beregning-heading-${beregning.id}`}
 		>
 			<VStack gap="space-12">
@@ -242,19 +198,64 @@ function Beregningsgruppe({
 					<BodyShort>Beregningen inneholder ingen delberegninger.</BodyShort>
 				) : (
 					<Box minWidth="0" overflowX="auto">
-						<DataGrid
-							columns={kolonner}
-							data={beregning.delberegninger}
-							getRowId={(delberegning) => String(delberegning.id)}
-							defaultSettings={{ columnDividers: false }}
+						<Table
+							className={styles.beregningsresultater__delberegninger}
+							zebraStripes
+							aria-labelledby={`beregning-heading-${beregning.id}`}
 						>
-							<DataGrid.Table
-								layout="auto"
-								stickyHeader={false}
-								emptyContent={<BodyShort>Ingen delberegninger.</BodyShort>}
-								detailsPanel={detaljpanel}
-							/>
-						</DataGrid>
+							<Table.Header>
+								<Table.Row>
+									<Table.HeaderCell scope="col" />
+									<Table.HeaderCell scope="col">Delberegning</Table.HeaderCell>
+									<Table.HeaderCell scope="col">Periode</Table.HeaderCell>
+									<Table.HeaderCell scope="col">Fagområde</Table.HeaderCell>
+									<Table.HeaderCell scope="col" align="right">
+										Beløp
+									</Table.HeaderCell>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{beregning.delberegninger.map((delberegning) => (
+									<Table.ExpandableRow
+										key={delberegning.id}
+										colSpan={5}
+										contentGutter="none"
+										content={
+											<VStack
+												as="section"
+												gap="space-12"
+												minWidth="0"
+												padding="space-16"
+												aria-label={`Detaljer for delberegning ${delberegning.id}`}
+											>
+												{visEkstraInfo && (
+													<EkstraInfoDetaljer
+														ekstraInfo={delberegning.ekstraInfo}
+														tittel="Ekstrainfo for delberegningen"
+													/>
+												)}
+												<Linjedetaljer
+													delberegning={delberegning}
+													visEkstraInfo={visEkstraInfo}
+												/>
+											</VStack>
+										}
+									>
+										<Table.HeaderCell scope="row">
+											{delberegning.id}
+										</Table.HeaderCell>
+										<Table.DataCell>
+											{formaterDato(delberegning.fom)} –{" "}
+											{formaterDato(delberegning.tom)}
+										</Table.DataCell>
+										<Table.DataCell>{delberegning.fagomraade}</Table.DataCell>
+										<Table.DataCell align="right">
+											{delberegning.beloep}
+										</Table.DataCell>
+									</Table.ExpandableRow>
+								))}
+							</Table.Body>
+						</Table>
 					</Box>
 				)}
 				<Summeringer beregning={beregning} />
@@ -279,7 +280,7 @@ export function Beregningsresultater({
 			borderColor="neutral-subtle"
 			borderWidth="1"
 			borderRadius="12"
-			background="meta-purple-moderateA"
+			background="info-moderateA"
 			aria-labelledby="beregningsresultater-heading"
 		>
 			<VStack gap="space-16">
