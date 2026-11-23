@@ -47,6 +47,7 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 					Skattekort
 				</Heading>
 				<Switch
+					size="small"
 					checked={utkast.aktiv}
 					disabled={sender}
 					onChange={(event) =>
@@ -61,6 +62,7 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 							legend="Skattekortopplysninger"
 							hideLegend
 							disabled={sender}
+							size="small"
 						>
 							<VStack gap="space-24">
 								<TextField

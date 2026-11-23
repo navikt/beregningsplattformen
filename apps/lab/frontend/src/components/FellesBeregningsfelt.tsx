@@ -63,7 +63,7 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 						))}
 					</ErrorSummary>
 				)}
-				<Fieldset legend="Beregningsopplysninger" hideLegend disabled={sender}>
+				<Fieldset legend="Beregningsopplysninger" hideLegend disabled={sender} size="small">
 					<HStack gap="space-16" align="start" wrap>
 						<OppdragDatoFelt
 							id="felles-fom"
