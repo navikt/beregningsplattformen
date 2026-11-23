@@ -86,7 +86,7 @@ data class KjedePerioderDTO(
     val brukKjøreplan: OpplysningDTO,
     val ompostering: OpplysningDTO?,
     val ytelseKlassekode: OpplysningDTO,
-    val vedtakssats: OpplysningDTO?
+    val vedtakssats: OpplysningDTO?,
 )
 
 private fun <T> Opplysning<T>.toDto(stringverdi: (T) -> String) =
