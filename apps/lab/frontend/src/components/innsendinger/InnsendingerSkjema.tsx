@@ -70,7 +70,7 @@ export function InnsendingerSkjema() {
 				</ExpansionCard.Description>
 			</ExpansionCard.Header>
 			<ExpansionCard.Content>
-				<VStack gap="space-24">
+				<VStack gap="space-24" position="relative">
 					<Tabs value={aapenNokkel ?? ""} onChange={setAapen}>
 						<HStack gap="space-16" align="end" wrap={false}>
 							{/* Lar fanelista krympe ved siden av knappen, så Aksel kan scrolle fanene */}
