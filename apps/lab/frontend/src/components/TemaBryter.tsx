@@ -17,6 +17,19 @@ export type Temavalg = "light" | "dark" | "system";
 export type Tema = "light" | "dark";
 
 const mork = "(prefers-color-scheme: dark)";
+const lagringsnokkel = "temavalg";
+
+function lesLagretValg(): Temavalg {
+	try {
+		const lagret = localStorage.getItem(lagringsnokkel);
+		if (lagret === "light" || lagret === "dark" || lagret === "system") {
+			return lagret;
+		}
+	} catch {
+		// localStorage kan være utilgjengelig
+	}
+	return "system";
+}
 
 function abonnerPaSystemtema(onEndring: () => void) {
 	const sporring = window.matchMedia(mork);
@@ -25,7 +38,15 @@ function abonnerPaSystemtema(onEndring: () => void) {
 }
 
 export function useTema() {
-	const [valg, settValg] = useState<Temavalg>("system");
+	const [valg, settValgState] = useState<Temavalg>(lesLagretValg);
+	const settValg = (nytt: Temavalg) => {
+		settValgState(nytt);
+		try {
+			localStorage.setItem(lagringsnokkel, nytt);
+		} catch {
+			// localStorage kan være utilgjengelig
+		}
+	};
 	const systemErMork = useSyncExternalStore(
 		abonnerPaSystemtema,
 		() => window.matchMedia(mork).matches,
