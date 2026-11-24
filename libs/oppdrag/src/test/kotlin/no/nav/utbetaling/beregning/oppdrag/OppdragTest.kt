@@ -17,7 +17,7 @@ class OppdragTest :
             val resultat = Oppdrag.fraJson("dette er ikke json")
 
             resultat.shouldBeInstanceOf<Oppdrag.UgyldigOppdrag>()
-            resultat.feil.message shouldBe "Ugyldig JSON!"
+            resultat.feil.message shouldBe "JSON nummer 1 er ikke en gyldig JSON!"
         }
 
         test("Oppdrag som ikke kan tolkes gir UgyldigOppdrag") {

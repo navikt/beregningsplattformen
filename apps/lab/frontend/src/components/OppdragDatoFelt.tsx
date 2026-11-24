@@ -1,5 +1,5 @@
 import { DatePicker, useDatepicker } from "@navikt/ds-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /* TODO: Bjørn mener denne finnes bare fordi aksel7 hadde issue med tømming av datovelger kanskje hele denne komponenten kan fjernes */
 
@@ -65,11 +65,15 @@ export function OppdragDatoFelt({
 	error,
 	onValidityChange,
 }: OppdragDatoFeltProps) {
+	const skrevetTekst = useRef(parseDato(value) ? "" : value);
 	const { datepickerProps, inputProps, selectedDay, setSelected } =
 		useDatepicker({
 			defaultSelected: parseDato(value),
 			inputFormat: "dd.MM.yyyy",
-			onDateChange: (date) => onChange(date ? formatDato(date) : ""),
+			onDateChange: (date) => {
+				if (date) skrevetTekst.current = "";
+				onChange(date ? formatDato(date) : skrevetTekst.current);
+			},
 			onValidate: ({ isValidDate, isEmpty }) =>
 				onValidityChange?.(isValidDate || isEmpty),
 		});
@@ -85,6 +89,11 @@ export function OppdragDatoFelt({
 		<DatePicker {...datepickerProps} strategy={strategy}>
 			<DatePicker.Input
 				{...inputProps}
+				value={inputProps.value || (parseDato(value) ? "" : value)}
+				onChange={(event) => {
+					skrevetTekst.current = event.target.value;
+					inputProps.onChange?.(event);
+				}}
 				id={id}
 				label={label}
 				hideLabel={hideLabel}
