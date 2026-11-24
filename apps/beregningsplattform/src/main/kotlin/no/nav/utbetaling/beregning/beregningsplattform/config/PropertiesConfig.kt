@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.beregningsplattform
+package no.nav.utbetaling.beregning.beregningsplattform.config
 
 import kotlinx.serialization.Serializable
 
@@ -8,9 +8,12 @@ import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.config.getAs
 import io.ktor.server.config.withFallback
 
+import no.nav.utbetaling.beregning.jdbc.JdbcConfig
+
 private const val APPLICATION_CONF = "application"
 private const val AZUREAD_CONF = "azureAd"
 private const val MQ_CONF = "mq"
+private const val POSTGRES_CONF = "postgres"
 
 object PropertiesConfig {
     lateinit var config: ApplicationConfig
@@ -32,6 +35,10 @@ object PropertiesConfig {
 
     val mqProperties by lazy {
         config.property(MQ_CONF).getAs<MQProperties>()
+    }
+
+    val postgresProperties by lazy {
+        config.property(POSTGRES_CONF).getAs<PostgresProperties>()
     }
 
     @Serializable
@@ -60,6 +67,23 @@ object PropertiesConfig {
         val username: String,
         val password: String,
     )
+
+    @Serializable
+    data class PostgresProperties(
+        val jdbcUrl: String? = null,
+        val name: String,
+        val host: String,
+        val port: Int,
+        val username: String,
+        val password: String,
+    ) {
+        internal fun toJdbcConfig(): JdbcConfig =
+            JdbcConfig(
+                jdbcUrl = jdbcUrl ?: "jdbc:postgresql://$host:$port/$name",
+                username = username,
+                password = password,
+            )
+    }
 }
 
 fun ApplicationConfig.loadEnv(): ApplicationConfig {

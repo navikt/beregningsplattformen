@@ -95,7 +95,7 @@ const kodeStatusLinje: Forslag[] = [
 const kodeAksjon: Forslag[] = [
 	{ label: "1 (Utbetaling)", value: "1" },
 	{ label: "O (Utbetaling)", value: "O" },
-	{ label: "2 (Simulering)", value: "2" },
+	{ label: "3 (Simulering)", value: "3" },
 	{ label: "S (Simulering)", value: "S" },
 ];
 

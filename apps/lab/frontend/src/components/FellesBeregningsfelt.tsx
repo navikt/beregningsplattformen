@@ -1,18 +1,15 @@
 import {
-	BodyShort,
 	Box,
 	ErrorSummary,
 	Fieldset,
 	Heading,
-	HGrid,
-	TextField,
+	HStack,
 	VStack,
 } from "@navikt/ds-react";
 import { useEffect, useRef } from "react";
 import { OppdragDatoFelt } from "./OppdragDatoFelt";
 
 export interface FellesOpplysninger {
-	gjelderId: string;
 	fom: string;
 	tom: string;
 	fomGyldig: boolean;
@@ -20,7 +17,7 @@ export interface FellesOpplysninger {
 }
 
 export interface FellesFeltfeil {
-	felt: "gjelderId" | "fom" | "tom";
+	felt: "fom" | "tom";
 	melding: string;
 }
 
@@ -42,21 +39,21 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 	return (
 		<Box
 			as="section"
-			marginBlock="space-0 space-24"
+			padding="space-24"
+			background="default"
+			borderWidth="1"
+			borderColor="neutral-subtle"
+			borderRadius="12"
 			aria-labelledby="felles-heading"
 		>
 			<VStack gap="space-16">
-				<Heading id="felles-heading" level="2" size="small">
-					Felles opplysninger
+				<Heading id="felles-heading" level="2" size="medium">
+					Beregningsopplysninger
 				</Heading>
-				<BodyShort>
-					Gjelder alle oppdrag på siden. Bruk en syntetisk gjelder-ID med 11 sifre.
-					Tomme datoer utledes fra oppdragene.
-				</BodyShort>
 				{feil.length > 0 && (
 					<ErrorSummary
 						ref={oppsummering}
-						heading="Rett feilene i fellesopplysningene"
+						heading="Rett feilene i beregningsopplysningene"
 						headingTag="h3"
 					>
 						{feil.map(({ felt, melding }) => (
@@ -66,18 +63,8 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 						))}
 					</ErrorSummary>
 				)}
-				<Fieldset legend="Felles opplysninger" hideLegend disabled={sender}>
-					<HGrid columns={{ xs: 1, lg: 3 }} gap="space-16" align="start">
-						<TextField
-							id="felles-gjelderId"
-							label="Gjelder-ID"
-							autoComplete="off"
-							inputMode="numeric"
-							value={verdi.gjelderId}
-							readOnly={sender}
-							error={feltfeil("gjelderId")}
-							onChange={(event) => onChange({ gjelderId: event.target.value })}
-						/>
+				<Fieldset legend="Beregningsopplysninger" hideLegend disabled={sender} size="small">
+					<HStack gap="space-16" align="start" wrap>
 						<OppdragDatoFelt
 							id="felles-fom"
 							label="Beregning fra"
@@ -96,7 +83,7 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 							onChange={(tom) => onChange({ tom })}
 							onValidityChange={(tomGyldig) => onChange({ tomGyldig })}
 						/>
-					</HGrid>
+					</HStack>
 				</Fieldset>
 			</VStack>
 		</Box>
