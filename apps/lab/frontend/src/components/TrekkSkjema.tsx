@@ -11,6 +11,7 @@ import {
     Radio,
     RadioGroup,
     Select,
+    Table,
     TextField,
     VStack,
 } from "@navikt/ds-react";
@@ -104,7 +105,7 @@ export function TrekkSkjema({utkast, feil, sender, onChange}: Props) {
                         ))}
                     </ErrorSummary>
                 )}
-                <Fieldset legend="Trekkvedtak" hideLegend disabled={sender}>
+                <Fieldset legend="Trekkvedtak" hideLegend disabled={sender} size="small">
                     <VStack gap="space-24">
                         {utkast.map((trekk, trekkIndeks) => {
                             const felt = (navn: string) => trekkTrekkFeltId(trekk.id, navn);
@@ -165,8 +166,7 @@ export function TrekkSkjema({utkast, feil, sender, onChange}: Props) {
                                                 </RadioGroup>
                                                 <TextField
                                                     id={felt("saldo")}
-                                                    label="Saldo (kroner, valgfri)"
-                                                    description="La stå tomt for ingen begrensning. 0 betyr at saldoen er brukt opp."
+                                                    label="Saldo"
                                                     inputMode="decimal"
                                                     value={trekk.saldo}
                                                     error={feltfeil(felt("saldo"))}
@@ -193,98 +193,124 @@ export function TrekkSkjema({utkast, feil, sender, onChange}: Props) {
                                                 error={feltfeil(felt("perioder"))}
                                             >
                                                 <VStack gap="space-16">
-                                                    {trekk.trekkPerioder.map((periode, periodeIndeks) => {
-                                                        const periodeFelt = (navn: string) =>
-                                                            trekkPeriodeFeltId(trekk.id, periode.id, navn);
-                                                        return (
-                                                            <HStack
-                                                                key={periode.id}
-                                                                role="group"
-                                                                aria-label={`Trekk ${nummer}, periode ${periodeIndeks + 1}`}
-                                                                gap="space-16"
-                                                                align="start"
-                                                                wrap
-                                                            >
-                                                                <TextField
-                                                                    id={periodeFelt("sats")}
-                                                                    label={`Sats, periode ${periodeIndeks + 1}`}
-                                                                    inputMode="decimal"
-                                                                    htmlSize={10}
-                                                                    value={periode.sats}
-                                                                    error={feltfeil(periodeFelt("sats"))}
-                                                                    onChange={(event) =>
-                                                                        endrePeriode(trekk.id, periode.id, {
-                                                                            sats: event.target.value,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                <Select
-                                                                    id={periodeFelt("satsType")}
-                                                                    label={`Satstype, periode ${periodeIndeks + 1}`}
-                                                                    value={periode.satsType}
-                                                                    error={feltfeil(periodeFelt("satsType"))}
-                                                                    onChange={(event) =>
-                                                                        endrePeriode(trekk.id, periode.id, {
-                                                                            satsType: event.target.value,
-                                                                        })
-                                                                    }
-                                                                >
-                                                                    <option value="D">Dagsats (D)</option>
-                                                                    <option value="M">Månedssats (M)</option>
-                                                                </Select>
-                                                                <OppdragDatoFelt
-                                                                    id={periodeFelt("fom")}
-                                                                    label={`Fra og med, periode ${periodeIndeks + 1}`}
-                                                                    value={periode.fom}
-                                                                    readOnly={sender}
-                                                                    error={feltfeil(periodeFelt("fom"))}
-                                                                    onChange={(fom) =>
-                                                                        endrePeriode(trekk.id, periode.id, {fom})
-                                                                    }
-                                                                    onValidityChange={(fomGyldig) =>
-                                                                        endrePeriode(trekk.id, periode.id, {
-                                                                            fomGyldig,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                <OppdragDatoFelt
-                                                                    id={periodeFelt("tom")}
-                                                                    label={`Til og med, periode ${periodeIndeks + 1}`}
-                                                                    value={periode.tom}
-                                                                    readOnly={sender}
-                                                                    error={feltfeil(periodeFelt("tom"))}
-                                                                    onChange={(tom) =>
-                                                                        endrePeriode(trekk.id, periode.id, {tom})
-                                                                    }
-                                                                    onValidityChange={(tomGyldig) =>
-                                                                        endrePeriode(trekk.id, periode.id, {
-                                                                            tomGyldig,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                {trekk.trekkPerioder.length > 1 && (
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="tertiary"
-                                                                        size="small"
-                                                                        icon={<TrashIcon aria-hidden/>}
-                                                                        disabled={sender}
-                                                                        onClick={() => {
-                                                                            endreTrekk(trekk.id, {
-                                                                                trekkPerioder:
-                                                                                    trekk.trekkPerioder.filter(
-                                                                                        (denne) => denne.id !== periode.id,
-                                                                                    ),
-                                                                            });
-                                                                            settFokusId(felt("leggTilPeriode"));
-                                                                        }}
-                                                                    >
-                                                                        {`Fjern periode ${periodeIndeks + 1} fra trekk ${nummer}`}
-                                                                    </Button>
-                                                                )}
-                                                            </HStack>
-                                                        );
-                                                    })}
+                                                    <Box overflowX="auto">
+                                                        <Table size="small" aria-label={`Perioder for trekk ${nummer}`}>
+                                                            <Table.Header>
+                                                                <Table.Row>
+                                                                    <Table.HeaderCell scope="col">Sats</Table.HeaderCell>
+                                                                    <Table.HeaderCell scope="col">Satstype</Table.HeaderCell>
+                                                                    <Table.HeaderCell scope="col">Fra og med</Table.HeaderCell>
+                                                                    <Table.HeaderCell scope="col">Til og med</Table.HeaderCell>
+                                                                    <Table.HeaderCell scope="col" aria-label="Handlinger" />
+                                                                </Table.Row>
+                                                            </Table.Header>
+                                                            <Table.Body>
+                                                                {trekk.trekkPerioder.map((periode, periodeIndeks) => {
+                                                                    const periodeFelt = (navn: string) =>
+                                                                        trekkPeriodeFeltId(trekk.id, periode.id, navn);
+                                                                    return (
+                                                                        <Table.Row key={periode.id}>
+                                                                            <Table.DataCell>
+                                                                                <TextField
+                                                                                    id={periodeFelt("sats")}
+                                                                                    label={`Sats, periode ${periodeIndeks + 1}`}
+                                                                                    hideLabel
+                                                                                    size="small"
+                                                                                    inputMode="decimal"
+                                                                                    htmlSize={10}
+                                                                                    value={periode.sats}
+                                                                                    error={feltfeil(periodeFelt("sats"))}
+                                                                                    onChange={(event) =>
+                                                                                        endrePeriode(trekk.id, periode.id, {
+                                                                                            sats: event.target.value,
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                            </Table.DataCell>
+                                                                            <Table.DataCell>
+                                                                                <Select
+                                                                                    id={periodeFelt("satsType")}
+                                                                                    label={`Satstype, periode ${periodeIndeks + 1}`}
+                                                                                    hideLabel
+                                                                                    size="small"
+                                                                                    value={periode.satsType}
+                                                                                    error={feltfeil(periodeFelt("satsType"))}
+                                                                                    onChange={(event) =>
+                                                                                        endrePeriode(trekk.id, periode.id, {
+                                                                                            satsType: event.target.value,
+                                                                                        })
+                                                                                    }
+                                                                                >
+                                                                                    <option value="D">Dagsats (D)</option>
+                                                                                    <option value="M">Månedssats (M)</option>
+                                                                                </Select>
+                                                                            </Table.DataCell>
+                                                                            <Table.DataCell>
+                                                                                <OppdragDatoFelt
+                                                                                    id={periodeFelt("fom")}
+                                                                                    label={`Fra og med, periode ${periodeIndeks + 1}`}
+                                                                                    hideLabel
+                                                                                    size="small"
+                                                                                    strategy="fixed"
+                                                                                    value={periode.fom}
+                                                                                    readOnly={sender}
+                                                                                    error={feltfeil(periodeFelt("fom"))}
+                                                                                    onChange={(fom) =>
+                                                                                        endrePeriode(trekk.id, periode.id, {fom})
+                                                                                    }
+                                                                                    onValidityChange={(fomGyldig) =>
+                                                                                        endrePeriode(trekk.id, periode.id, {
+                                                                                            fomGyldig,
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                            </Table.DataCell>
+                                                                            <Table.DataCell>
+                                                                                <OppdragDatoFelt
+                                                                                    id={periodeFelt("tom")}
+                                                                                    label={`Til og med, periode ${periodeIndeks + 1}`}
+                                                                                    hideLabel
+                                                                                    size="small"
+                                                                                    strategy="fixed"
+                                                                                    value={periode.tom}
+                                                                                    readOnly={sender}
+                                                                                    error={feltfeil(periodeFelt("tom"))}
+                                                                                    onChange={(tom) =>
+                                                                                        endrePeriode(trekk.id, periode.id, {tom})
+                                                                                    }
+                                                                                    onValidityChange={(tomGyldig) =>
+                                                                                        endrePeriode(trekk.id, periode.id, {
+                                                                                            tomGyldig,
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                            </Table.DataCell>
+                                                                            <Table.DataCell>
+                                                                                {trekk.trekkPerioder.length > 1 && (
+                                                                                    <Button
+                                                                                        type="button"
+                                                                                        variant="tertiary"
+                                                                                        size="small"
+                                                                                        icon={<TrashIcon title={`Fjern periode ${periodeIndeks + 1} fra trekk ${nummer}`}/>}
+                                                                                        disabled={sender}
+                                                                                        onClick={() => {
+                                                                                            endreTrekk(trekk.id, {
+                                                                                                trekkPerioder:
+                                                                                                    trekk.trekkPerioder.filter(
+                                                                                                        (denne) => denne.id !== periode.id,
+                                                                                                    ),
+                                                                                            });
+                                                                                            settFokusId(felt("leggTilPeriode"));
+                                                                                        }}
+                                                                                    />
+                                                                                )}
+                                                                            </Table.DataCell>
+                                                                        </Table.Row>
+                                                                    );
+                                                                })}
+                                                            </Table.Body>
+                                                        </Table>
+                                                    </Box>
                                                     <HStack>
                                                         <Button
                                                             id={felt("leggTilPeriode")}

@@ -6,6 +6,9 @@ import { useEffect } from "react";
 interface OppdragDatoFeltProps {
 	id?: string;
 	label: string;
+	hideLabel?: boolean;
+	size?: "medium" | "small";
+	strategy?: "absolute" | "fixed";
 	value: string;
 	readOnly: boolean;
 	onChange: (value: string) => void;
@@ -53,6 +56,9 @@ function sammeDato(left?: Date, right?: Date): boolean {
 export function OppdragDatoFelt({
 	id,
 	label,
+	hideLabel,
+	size,
+	strategy,
 	value,
 	readOnly,
 	onChange,
@@ -76,11 +82,13 @@ export function OppdragDatoFelt({
 	}, [selectedDay, setSelected, value]);
 
 	return (
-		<DatePicker {...datepickerProps}>
+		<DatePicker {...datepickerProps} strategy={strategy}>
 			<DatePicker.Input
 				{...inputProps}
 				id={id}
 				label={label}
+				hideLabel={hideLabel}
+				size={size}
 				readOnly={readOnly}
 				error={error}
 			/>

@@ -36,7 +36,7 @@
 	width: min(100%, 52rem);
 	margin-inline: auto;
 	padding: clamp(var(--ax-space-24), 5vw, var(--ax-space-40));
-	background-color: var(--ax-bg-meta-purple-moderateA);
+	background-color: var(--ax-bg-info-moderateA);
 }
 
 .menu__header {

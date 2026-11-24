@@ -2,3 +2,7 @@
 .beregningsresultater__ekstrainfo {
   overflow-wrap: anywhere;
 }
+
+.beregningsresultater__delberegninger .beregningsresultater__linjer tr {
+  background-color: transparent;
+}

@@ -6,7 +6,7 @@
 .laboratorium__panel--xml,
 .laboratorium__tidslinje {
   box-sizing: border-box;
-  background: var(--ax-bg-meta-purple-moderateA);
+  background: var(--ax-bg-info-moderateA);
 }
 
 .laboratorium__tidslinje {
@@ -21,7 +21,7 @@
 }
 
 .laboratorium__kjede {
-  background: var(--ax-bg-meta-purple-soft);
+  background: var(--ax-bg-info-soft);
 }
 
 .laboratorium__tidslinjemetadata {
@@ -38,8 +38,8 @@
 }
 
 .laboratorium__periodedetaljer {
-  border-color: var(--ax-border-meta-purple);
-  background: var(--ax-bg-meta-purple-soft);
+  border-color: var(--ax-border-info);
+  background: var(--ax-bg-info-soft);
 }
 
 .laboratorium__feilmelding {
@@ -48,8 +48,8 @@
 }
 
 .laboratorium__tidslinje [data-timeline-popover] {
-  border-color: var(--ax-border-meta-purple);
-  background-color: var(--ax-bg-meta-purple-soft);
+  border-color: var(--ax-border-info);
+  background-color: var(--ax-bg-info-soft);
 }
 
 .laboratorium__detaljkort {
