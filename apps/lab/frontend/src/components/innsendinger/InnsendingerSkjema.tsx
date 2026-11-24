@@ -3,6 +3,7 @@ import {
 	ActionMenu,
 	Box,
 	Button,
+	Dialog,
 	ExpansionCard,
 	HStack,
 	Tabs,
@@ -73,7 +74,7 @@ export function InnsendingerSkjema() {
 			<ExpansionCard.Content>
 				<VStack gap="space-24" position="relative">
 					<Tabs value={aapenNokkel ?? ""} onChange={setAapen}>
-						<HStack gap="space-16" align="end" wrap={false}>
+						<HStack gap="space-12" align="end" wrap={false}>
 							{/* Lar fanelista krympe ved siden av knappen, så Aksel kan scrolle fanene */}
 							<Box flexGrow="1" minWidth="0">
 								<Tabs.List>
@@ -86,6 +87,34 @@ export function InnsendingerSkjema() {
 									))}
 								</Tabs.List>
 							</Box>
+							<Dialog>
+								<Dialog.Trigger>
+									<Button
+										type="button"
+										variant="tertiary"
+										data-color="danger"
+										icon={<TrashIcon aria-hidden />}
+									>
+										Slett alt
+									</Button>
+								</Dialog.Trigger>
+								<Dialog.Popup>
+									<Dialog.Header>
+										<Dialog.Title>Bekreft sletting</Dialog.Title>
+									</Dialog.Header>
+									<Dialog.Body>
+										Er du sikker på at du vil slette alle innsendinger?
+									</Dialog.Body>
+									<Dialog.Footer>
+										<Dialog.CloseTrigger>
+											<Button variant="secondary">Avbryt</Button>
+										</Dialog.CloseTrigger>
+										<Button variant="danger" onClick={nullstillSkjema}>
+											Slett alt
+										</Button>
+									</Dialog.Footer>
+								</Dialog.Popup>
+							</Dialog>
 							<Box flexShrink="0">
 								<ActionMenu>
 									<ActionMenu.Trigger>
@@ -120,15 +149,6 @@ export function InnsendingerSkjema() {
 									</ActionMenu.Content>
 								</ActionMenu>
 							</Box>
-							<Button
-								type="button"
-								variant="tertiary"
-								data-color="danger"
-								icon={<TrashIcon aria-hidden />}
-								onClick={nullstillSkjema}
-							>
-								Slett alt
-							</Button>
 						</HStack>
 						{innsendinger.map((innsending, index) => (
 							<Tabs.Panel key={innsending.nokkel} value={innsending.nokkel}>
