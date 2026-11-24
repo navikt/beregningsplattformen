@@ -33,7 +33,7 @@ internal fun Route.beregningApi() {
             val (oppdragstidslinjeDTO, oppdragstidslinje) =
                 when (val oppdragstidslinjeresultat = Oppdragstidslinjer.fra(beregningsRequest.xml)) {
                     is Oppdragstidslinjeresultat.Ugyldig ->
-                        return@post call.feilResponse(oppdragstidslinjeresultat.feil, oppdragstidslinjeresultat.status, oppdragstidslinjeresultat.innsending)
+                        return@post call.feilResponse(oppdragstidslinjeresultat.feil, oppdragstidslinjeresultat.status)
                     is Oppdragstidslinjeresultat.Gyldig -> oppdragstidslinjeresultat.oppdragstidslinjer
                 }
 

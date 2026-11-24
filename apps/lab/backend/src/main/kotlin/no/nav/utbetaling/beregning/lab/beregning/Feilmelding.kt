@@ -8,6 +8,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 
 import no.nav.utbetaling.beregning.lab.config.createApiError
+import no.nav.utbetaling.beregning.oppdrag.UgyldigInnsendingException
 
 internal object Feilmelding {
     private fun fra(throwable: Throwable): String {
@@ -19,6 +20,7 @@ internal object Feilmelding {
         while (gjeldende != null && sette.add(gjeldende)) {
             gjeldende.message?.takeIf { it.isNotBlank() }?.let { melding ->
                 linjer.add("\t".repeat(nivå) + melding)
+                if (gjeldende is UgyldigInnsendingException) return linjer.joinToString("\n")
                 nivå++
             }
             gjeldende = gjeldende.cause
@@ -30,13 +32,12 @@ internal object Feilmelding {
     suspend fun ApplicationCall.feilResponse(
         throwable: Throwable,
         status: HttpStatusCode,
-        innsending: Int,
     ) = respond(
         status = status,
         message =
             createApiError(
                 status = status,
-                message = "Feil på innsending $innsending: ${fra(throwable)}",
+                message = fra(throwable),
                 call = this,
             ),
     )
