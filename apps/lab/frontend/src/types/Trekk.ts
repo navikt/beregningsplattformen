@@ -96,8 +96,7 @@ export const trekkSchema = z
 
 export type TrekkDTO = z.infer<typeof trekkSchema>;
 
-let nesteId = 0;
-const nyId = () => `${++nesteId}`;
+const nyId = () => crypto.randomUUID();
 
 export interface TrekkPeriodeUtkast {
 	id: string;

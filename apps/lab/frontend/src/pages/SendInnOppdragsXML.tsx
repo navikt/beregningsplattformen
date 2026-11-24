@@ -30,7 +30,6 @@ import { Beregningsresultater } from "../components/Beregningsresultater";
 import {
 	FellesBeregningsfelt,
 	type FellesFeltfeil,
-	type FellesOpplysninger,
 } from "../components/FellesBeregningsfelt";
 import {
 	InnsendingerProvider,
@@ -38,16 +37,13 @@ import {
 } from "../components/innsendinger/InnsendingerContext";
 import { InnsendingerSkjema } from "../components/innsendinger/InnsendingerSkjema";
 import { SkattekortSkjema } from "../components/SkattekortSkjema";
+import { SkjemalenkeMeldinger } from "../components/SkjemalenkeMeldinger";
 import { TrekkSkjema } from "../components/TrekkSkjema";
 import type { BeregningResponse } from "../types/BeregningResponse";
 import { HttpStatusCodeError } from "../types/Error";
 import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
-import {
-	type SkattekortUtkast,
-	lesSkattekort,
-	nyttForskuddstrekk,
-} from "../types/Skattekort";
-import { lesTrekk, type TrekkFeil, type TrekkUtkast } from "../types/Trekk";
+import { lesSkattekort } from "../types/Skattekort";
+import { lesTrekk, type TrekkFeil } from "../types/Trekk";
 import styles from "./SendInnOppdragsXML.module.css";
 
 type KjedePeriodeDTO =
@@ -193,24 +189,19 @@ export default function SendInnOppdragsXML() {
 }
 
 function SendInnOppdragsXMLInnhold() {
-	const [fellesOpplysninger, settFellesOpplysninger] =
-		useState<FellesOpplysninger>(() => ({
-			fom: "",
-			tom: "",
-			fomGyldig: true,
-			tomGyldig: true,
-		}));
+	const {
+		skjema,
+		settSkjema,
+		nullstilt,
+		lagringsfeil,
+		bekreftNullstilling,
+		resultat,
+	} = useInnsendinger();
+	const { fellesOpplysninger, skattekortUtkast, trekkUtkast } = skjema;
 	const [fellesfeil, settFellesfeil] = useState<FellesFeltfeil[]>([]);
-	const [skattekortUtkast, settSkattekortUtkast] = useState<SkattekortUtkast>({
-		aktiv: false,
-		inntektsaar: String(new Date().getFullYear()),
-		forskuddstrekk: nyttForskuddstrekk(),
-	});
-	const [trekkUtkast, settTrekkUtkast] = useState<TrekkUtkast[]>([]);
 	const [trekkfeil, settTrekkfeil] = useState<TrekkFeil[]>([]);
 	const senderRef = useRef(false);
 	const [sender, settSender] = useState(false);
-	const { resultat } = useInnsendinger();
 	const [feilmelding, settFeilmelding] = useState<string | null>(null);
 	const [respons, settRespons] = useState<BeregningResponse | null>(null);
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
@@ -324,6 +315,11 @@ function SendInnOppdragsXMLInnhold() {
 			paddingBlock="space-32"
 			className={styles.laboratorium}
 		>
+			<SkjemalenkeMeldinger
+				nullstilt={nullstilt}
+				lagringsfeil={lagringsfeil}
+				bekreftNullstilling={bekreftNullstilling}
+			/>
 			<Box
 				as="section"
 				className={styles["laboratorium__panel--xml"]}
@@ -345,7 +341,13 @@ function SendInnOppdragsXMLInnhold() {
 							onChange={(endringer) => {
 								fjernResultat();
 								settFellesfeil([]);
-								settFellesOpplysninger((verdi) => ({ ...verdi, ...endringer }));
+								settSkjema((verdi) => ({
+									...verdi,
+									fellesOpplysninger: {
+										...verdi.fellesOpplysninger,
+										...endringer,
+									},
+								}));
 							}}
 						/>
 
@@ -354,7 +356,7 @@ function SendInnOppdragsXMLInnhold() {
 							sender={sender}
 							onChange={(utkast) => {
 								fjernResultat();
-								settSkattekortUtkast(utkast);
+								settSkjema((verdi) => ({ ...verdi, skattekortUtkast: utkast }));
 							}}
 						/>
 
@@ -365,7 +367,10 @@ function SendInnOppdragsXMLInnhold() {
 							onChange={(oppdater) => {
 								fjernResultat();
 								settTrekkfeil([]);
-								settTrekkUtkast(oppdater);
+								settSkjema((verdi) => ({
+									...verdi,
+									trekkUtkast: oppdater(verdi.trekkUtkast),
+								}));
 							}}
 						/>
 
