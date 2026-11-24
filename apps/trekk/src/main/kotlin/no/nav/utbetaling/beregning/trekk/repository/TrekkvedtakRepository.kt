@@ -12,6 +12,7 @@ import no.nav.utbetaling.beregning.trekk.domain.TrekkperiodeId
 import no.nav.utbetaling.beregning.trekk.domain.Trekkstatus
 import no.nav.utbetaling.beregning.trekk.domain.Trekkvedtak
 import no.nav.utbetaling.beregning.trekk.domain.TrekkvedtakId
+import no.nav.utbetaling.beregning.trekk.utils.SqlUtils.asMap
 
 class TrekkvedtakRepository {
     fun existsByOsId(
@@ -79,6 +80,40 @@ class TrekkvedtakRepository {
                 mapOf("trekkvedtakId" to trekkId.id),
             ),
         ) { row -> row.tilTrekkperiode() }
+
+    fun insertTrekkvedtak(
+        trekkvedtak: Trekkvedtak,
+        session: TransactionalSession,
+    ): Long? {
+        val params = trekkvedtak.asMap() + ("trekkstatus" to trekkvedtak.trekkstatus.name)
+        val id =
+            session.updateAndReturnGeneratedKey(
+                queryOf(
+                    """
+                    INSERT INTO trekkvedtak (
+                    ekstern_trekk_id,
+                    trekktype,
+                    kreditor_tss_id,
+                    kreditor_trekk_id,
+                    kreditor_ref,
+                    belop_saldo,
+                    kreditor_kid,
+                    gyldig_tom,
+                    ansv_enhet,
+                    debitor_id,
+                    dato_pri_fom,
+                    kilde,
+                    trekkstatus,
+                    bruker,
+                    tidspkt_reg,
+                    mottatt) 
+                    VALUES (:eksternTrekkId, :trekktypeKode, :kreditorIdTss, :kreditorTrekkId, :kreditorRef, :belopSaldo, :kreditorKid, :gyldigTom, :ansvarligEnhet, :debitorId, :datoPriFom, :kilde, :trekkstatus, :bruker, :tidspktReg, CURRENT_TIMESTAMP)
+                    """.trimIndent(),
+                    params,
+                ),
+            )
+        return id
+    }
 
     private fun Row.tilTrekkperiode(): Trekkperiode =
         Trekkperiode(
