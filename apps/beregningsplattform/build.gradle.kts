@@ -14,9 +14,15 @@ dependencies {
     implementation(project(":libs:oppdrag"))
     implementation(project(":libs:log"))
     implementation(project(":libs:http"))
+    implementation(project(":libs:jdbc"))
     implementation(project(":libs:kotlinx"))
     implementation(project(":libs:mq"))
 
+    testImplementation(libs.kotliquery)
+
+    testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.kotest.extensions.testcontainers)
+    testImplementation(libs.testcontainers.postgresql)
     // Ktor
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.auth.jwt)

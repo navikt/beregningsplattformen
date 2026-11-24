@@ -13,6 +13,7 @@ include(
 
 include(
     "libs:http",
+    "libs:jdbc",
     "libs:kotlinx",
     "libs:log",
     "libs:mq",

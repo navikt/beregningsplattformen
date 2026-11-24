@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.beregningsplattform
+package no.nav.utbetaling.beregning.beregningsplattform.config
 
 import java.net.URI
 import java.util.concurrent.TimeUnit
