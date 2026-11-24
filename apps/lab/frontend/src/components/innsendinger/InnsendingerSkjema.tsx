@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "@navikt/aksel-icons";
+import { ChevronDownIcon, TrashIcon } from "@navikt/aksel-icons";
 import {
 	ActionMenu,
 	Box,
@@ -18,7 +18,8 @@ import {
 } from "./skjema";
 
 export function InnsendingerSkjema() {
-	const { innsendinger, setInnsendinger, resultat } = useInnsendinger();
+	const { innsendinger, setInnsendinger, resultat, nullstillSkjema } =
+		useInnsendinger();
 	const [aapen, setAapen] = useState<string>();
 	const nyInnsendingRef = useRef<HTMLButtonElement>(null);
 	const tittelId = useId();
@@ -119,6 +120,15 @@ export function InnsendingerSkjema() {
 									</ActionMenu.Content>
 								</ActionMenu>
 							</Box>
+							<Button
+								type="button"
+								variant="tertiary"
+								data-color="danger"
+								icon={<TrashIcon aria-hidden />}
+								onClick={nullstillSkjema}
+							>
+								Slett alt
+							</Button>
 						</HStack>
 						{innsendinger.map((innsending, index) => (
 							<Tabs.Panel key={innsending.nokkel} value={innsending.nokkel}>

@@ -1,16 +1,17 @@
 import {
 	createContext,
 	type Dispatch,
+	Fragment,
 	type ReactNode,
 	type SetStateAction,
+	useCallback,
 	useContext,
 	useMemo,
-	useState,
 } from "react";
-import { standardInnsending } from "./fraXml";
+import { useBeregningslenke } from "../../util/useBeregningslenke";
 import { type ByggResultat, bygg, type InnsendingSkjema } from "./skjema";
 
-type InnsendingerContextVerdi = {
+type InnsendingerContextVerdi = ReturnType<typeof useBeregningslenke> & {
 	innsendinger: InnsendingSkjema[];
 	setInnsendinger: Dispatch<SetStateAction<InnsendingSkjema[]>>;
 	resultat: ByggResultat;
@@ -21,18 +22,26 @@ const InnsendingerContext = createContext<InnsendingerContextVerdi | undefined>(
 );
 
 export function InnsendingerProvider({ children }: { children: ReactNode }) {
-	const [innsendinger, setInnsendinger] = useState<InnsendingSkjema[]>(() => [
-		standardInnsending(),
-	]);
-	const resultat = useMemo(() => bygg(innsendinger), [innsendinger]);
-	const verdi = useMemo(
-		() => ({ innsendinger, setInnsendinger, resultat }),
-		[innsendinger, resultat],
+	const lenketilstand = useBeregningslenke();
+	const { skjema, settSkjema } = lenketilstand;
+	const { innsendinger } = skjema;
+	const setInnsendinger = useCallback(
+		(oppdater: SetStateAction<InnsendingSkjema[]>) =>
+			settSkjema((forrige) => ({
+				...forrige,
+				innsendinger:
+					typeof oppdater === "function"
+						? oppdater(forrige.innsendinger)
+						: oppdater,
+			})),
+		[settSkjema],
 	);
+	const resultat = useMemo(() => bygg(innsendinger), [innsendinger]);
+	const verdi = { ...lenketilstand, innsendinger, setInnsendinger, resultat };
 
 	return (
 		<InnsendingerContext.Provider value={verdi}>
-			{children}
+			<Fragment key={lenketilstand.gjenoppretting}>{children}</Fragment>
 		</InnsendingerContext.Provider>
 	);
 }
