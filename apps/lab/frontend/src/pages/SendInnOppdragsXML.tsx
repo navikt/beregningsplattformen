@@ -321,17 +321,15 @@ function SendInnOppdragsXMLInnhold() {
 
 	return (
 		<VStack
-			as="main"
 			align="center"
 			gap="space-32"
-			padding="space-32"
+			paddingBlock="space-32"
 			className={styles.laboratorium}
 		>
 			<Box
 				as="section"
 				className={styles["laboratorium__panel--xml"]}
 				width="100%"
-				maxWidth="90rem"
 				padding="space-32"
 				borderWidth="1"
 				borderColor="neutral-subtle"

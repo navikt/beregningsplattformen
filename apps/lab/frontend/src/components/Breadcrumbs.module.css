@@ -1,7 +1,7 @@
 .breadcrumbs {
 	box-sizing: border-box;
 	width: 100%;
-	padding-inline: var(--ax-space-32);
+
 }
 
 .breadcrumbs__bar {
@@ -9,7 +9,6 @@
 	display: flex;
 	align-items: center;
 	width: 100%;
-	max-width: 90rem;
 	min-height: var(--ax-space-64);
 	margin-inline: auto;
 	padding: var(--ax-space-8) var(--ax-space-20);
