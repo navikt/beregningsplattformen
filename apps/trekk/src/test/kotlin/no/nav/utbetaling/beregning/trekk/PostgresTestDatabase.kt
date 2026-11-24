@@ -7,7 +7,7 @@ import io.kotest.core.listeners.BeforeSpecListener
 import io.kotest.core.spec.Spec
 import io.kotest.core.test.TestCase
 import org.flywaydb.core.Flyway
-import org.testcontainers.postgresql.PostgreSQLContainer
+import org.testcontainers.containers.PostgreSQLContainer
 
 object PostgresTestDatabase : BeforeSpecListener, AfterSpecListener, BeforeEachListener {
     private val postgres = PostgreSQLContainer("postgres:18-alpine")
