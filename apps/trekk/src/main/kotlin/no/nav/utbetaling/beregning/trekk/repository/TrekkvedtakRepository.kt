@@ -1,5 +1,7 @@
 package no.nav.utbetaling.beregning.trekk.repository
 
+import kotlin.plus
+
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -113,6 +115,41 @@ class TrekkvedtakRepository {
                 ),
             )
         return id
+    }
+
+    fun updateTrekkvedtak(
+        trekkvedtakId: TrekkvedtakId,
+        endretTrekkvedtak: Trekkvedtak,
+        session: TransactionalSession,
+    ) {
+        val params =
+            endretTrekkvedtak.asMap() + ("trekkstatus" to endretTrekkvedtak.trekkstatus.name) + ("trekkvedtakId" to trekkvedtakId.id)
+        session.update(
+            queryOf(
+                """
+                UPDATE trekkvedtak 
+                SET ekstern_trekk_id = :eksternTrekkId,
+                    trekktype = :trekktypeKode,
+                    kreditor_tss_id = :kreditorIdTss,
+                    kreditor_trekk_id = :kreditorTrekkId,
+                    kreditor_ref = :kreditorRef,
+                    trekkalt = :trekkalt,
+                    belop_saldo = :belopSaldo,
+                    kreditor_kid = :kreditorKid,
+                    gyldig_tom = :gyldigTom,
+                    ansv_enhet = :ansvarligEnhet,
+                    debitor_id = :debitorId,
+                    dato_pri_fom = :datoPriFom,
+                    kilde = :kilde,
+                    trekkstatus = :trekkstatus,
+                    bruker = :bruker,
+                    tidspkt_reg = :tidspktReg,
+                    mottatt = CURRENT_TIMESTAMP
+                WHERE id = :trekkvedtakId
+                """.trimIndent(),
+                params,
+            ),
+        )
     }
 
     private fun Row.tilTrekkperiode(): Trekkperiode =
