@@ -30,10 +30,10 @@ function App() {
 	return (
 		<BrowserRouter>
 			<Theme theme={tema} hasBackground={false}>
-				<HStack justify="end" padding="space-8">
-					<TemaBryter valg={valg} onVelg={settValg} />
-				</HStack>
 				<Page>
+					<HStack justify="end" padding="space-8">
+						<TemaBryter valg={valg} onVelg={settValg} />
+					</HStack>
 					<Routes>
 						<Route path="/" element={<LabMenu />} />
 						<Route

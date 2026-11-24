@@ -154,11 +154,9 @@ function Detaljkort({
 					<HStack
 						as="span"
 						align="center"
-						position="absolute"
 						top="space-12"
 						right="space-12"
 						className={styles.laboratorium__saksbehandlerikon}
-						// biome-ignore lint/a11y/noNoninteractiveTabindex: Gjør saksbehandler-tooltipet tilgjengelig for tastatur.
 						tabIndex={0}
 						role="note"
 						aria-label={`Saksbehandler: ${saksbehandlerId}`}

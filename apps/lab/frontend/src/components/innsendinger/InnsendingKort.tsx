@@ -253,7 +253,7 @@ export function InnsendingKort({
 						</HStack>
 					</VStack>
 
-					<VStack gap="space-8" position="sticky" top="space-16" minWidth="0">
+					<VStack gap="space-8" minWidth="0">
 						<HStack justify="space-between" align="center">
 							<Heading id={xmlHeadingId} level="4" size="xsmall">
 								XML
