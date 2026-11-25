@@ -20,6 +20,7 @@ import no.nav.utbetaling.beregning.beregningsplattform.config.securityConfig
 import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 import no.nav.utbetaling.beregning.beregningsplattform.mq.OppdragXmlConsumer
 import no.nav.utbetaling.beregning.jdbc.Jdbc
+import no.nav.utbetaling.beregning.jdbc.migrate
 import no.nav.utbetaling.beregning.log.Log
 import no.nav.utbetaling.beregning.mq.DefaultMQ
 import no.nav.utbetaling.beregning.mq.MQConfig
@@ -33,6 +34,20 @@ private fun Application.beregningsplattform() {
     val applicationState = ApplicationState()
 
     val dataSource = initializeDatabase(PropertiesConfig.postgresProperties)
+    Log.info("Starter alle databasemigreringer")
+    Log.info("Kjører migreringer for skattekort")
+    dataSource.migrate(schema = "skattekort") {
+        locations("classpath:db/migration/skattekort")
+    }
+    Log.info("Migreringer for skattekort er fullført")
+
+    // Log.info("Kjører migreringer for abc")
+    // dataSource.migrate(schema = "mottak") {
+    //     locations("classpath:db/migration/mo")
+    // }
+    // Log.info("Migreringer for abc er fullført")
+
+    Log.info("Alle databasemigreringer er fullført")
 
     applicationLifecycleConfig(applicationState)
     commonConfig()
@@ -57,14 +72,14 @@ private fun Application.beregningsplattform() {
     val oppdragXmlConsumer = OppdragXmlConsumer(mottakXMLQueue, MQQueue(PropertiesConfig.mqProperties.oppdragXmlQueue))
 
     monitor.subscribe(ApplicationStarted) {
-        Log.info("Using profile: ${PropertiesConfig.applicationProperties.profile}")
+        Log.info("Bruker profil: ${PropertiesConfig.applicationProperties.profile}")
         oppdragXmlConsumer.start()
-        Log.info("Mottak application started and listening for messages on queue: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
+        Log.info("Beregningsplattform applikasjonen startet og lytter på kø: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
     }
     monitor.subscribe(ApplicationStopping) {
-        Log.info("Mottak application stopping")
+        Log.info("Beregningsplattform applikasjonen stopper")
         oppdragXmlConsumer.close()
-        Log.info("MQ consumer closed for queue: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
+        Log.info("MQ-konsument avsluttet lytting på kø: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
     }
 }
 

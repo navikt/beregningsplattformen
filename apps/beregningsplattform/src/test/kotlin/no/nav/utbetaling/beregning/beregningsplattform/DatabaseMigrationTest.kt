@@ -33,7 +33,10 @@ class DatabaseMigrationTest :
         }
 
         test("migrerer et tomt skjema én gang og bevarer data og historikk ved gjentakelse") {
-            val firstResult = PostgresListener.dataSource.migrate(FIRST_SCHEMA)
+            val firstResult =
+                PostgresListener.dataSource.migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
+                }
 
             firstResult.migrationsExecuted shouldBe 2
             val rowsAfterFirstMigration = markerRows(PostgresListener.dataSource, FIRST_SCHEMA)
@@ -41,7 +44,10 @@ class DatabaseMigrationTest :
             rowsAfterFirstMigration shouldBe listOf(MarkerRow("first-marker", "created"))
             versionsAfterFirstMigration shouldBe listOf("1", "2")
 
-            val repeatedResult = PostgresListener.dataSource.migrate(FIRST_SCHEMA)
+            val repeatedResult =
+                PostgresListener.dataSource.migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
+                }
 
             repeatedResult.migrationsExecuted shouldBe 0
             markerRows(PostgresListener.dataSource, FIRST_SCHEMA) shouldBe rowsAfterFirstMigration
@@ -51,11 +57,15 @@ class DatabaseMigrationTest :
         test("oppgraderer et skjema fra V1 til V2 uten å miste eksisterende rader") {
             PostgresListener.dataSource
                 .migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
                     target("1")
                 }.migrationsExecuted shouldBe 1
             insertMarker(PostgresListener.dataSource, FIRST_SCHEMA, "added-before-v2")
 
-            val result = PostgresListener.dataSource.migrate(FIRST_SCHEMA)
+            val result =
+                PostgresListener.dataSource.migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
+                }
 
             result.migrationsExecuted shouldBe 1
             markerRows(PostgresListener.dataSource, FIRST_SCHEMA) shouldBe
@@ -67,8 +77,14 @@ class DatabaseMigrationTest :
         }
 
         test("bruker separate classpath-migreringer og historikk for hvert skjema") {
-            PostgresListener.dataSource.migrate(FIRST_SCHEMA).migrationsExecuted shouldBe 2
-            PostgresListener.dataSource.migrate(SECOND_SCHEMA).migrationsExecuted shouldBe 1
+            PostgresListener.dataSource
+                .migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
+                }.migrationsExecuted shouldBe 2
+            PostgresListener.dataSource
+                .migrate(SECOND_SCHEMA) {
+                    locations("classpath:db/migration/$SECOND_SCHEMA")
+                }.migrationsExecuted shouldBe 1
 
             markerValues(PostgresListener.dataSource, FIRST_SCHEMA) shouldBe listOf("first-marker")
             markerValues(PostgresListener.dataSource, SECOND_SCHEMA) shouldBe listOf("second-marker")
@@ -124,7 +140,10 @@ class DatabaseMigrationTest :
                 Files.readString(moduleBMigration) + "\nTHIS IS NOT VALID SQL;\n",
             )
 
-            PostgresListener.dataSource.migrate(FIRST_SCHEMA).migrationsExecuted shouldBe 2
+            PostgresListener.dataSource
+                .migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
+                }.migrationsExecuted shouldBe 2
             val failure =
                 shouldThrow<Throwable> {
                     PostgresListener.dataSource.migrate(SECOND_SCHEMA) {
@@ -139,7 +158,10 @@ class DatabaseMigrationTest :
             hasTable(PostgresListener.dataSource, SECOND_SCHEMA, MARKER_TABLE) shouldBe false
 
             copyMigrationResource(SECOND_SCHEMA, "V1__create_marker.sql", moduleBMigration)
-            PostgresListener.dataSource.migrate(FIRST_SCHEMA).migrationsExecuted shouldBe 0
+            PostgresListener.dataSource
+                .migrate(FIRST_SCHEMA) {
+                    locations("classpath:db/migration/$FIRST_SCHEMA")
+                }.migrationsExecuted shouldBe 0
             PostgresListener.dataSource
                 .migrate(SECOND_SCHEMA) {
                     locations("filesystem:${migrationDirectory.toAbsolutePath()}")

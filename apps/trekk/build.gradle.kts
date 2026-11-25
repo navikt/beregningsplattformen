@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":libs:http"))
     implementation(project(":libs:kotlinx"))
     implementation(project(":libs:mq"))
+    implementation(project(":libs:jdbc"))
 
     // Ktor
     implementation(libs.ktor.server.netty)
@@ -21,11 +22,8 @@ dependencies {
     implementation(libs.ktor.server.metrics.micrometer)
 
     // Database
-    implementation(libs.hikaricp)
     implementation(libs.postgresql)
     implementation(libs.kotliquery)
-    implementation(libs.flyway.core)
-    runtimeOnly(libs.flyway.postgresql)
 
     // Micrometer
     implementation(libs.micrometer.registry.prometheus)

@@ -16,6 +16,27 @@ import org.flywaydb.core.api.exception.FlywayValidateException
 
 class JdbcMigrationTest :
     FunSpec({
+        test("bruker public og standardmappen når schema ikke oppgis") {
+            migrationDataSource().use { dataSource ->
+                val firstResult = dataSource.migrate()
+                val secondResult = dataSource.migrate()
+
+                firstResult.migrationsExecuted shouldBe 1
+                secondResult.migrationsExecuted shouldBe 0
+                hasTable(dataSource, "public", "jdbc_default_marker") shouldBe true
+                dataSource.connection.use { connection ->
+                    connection.createStatement().use { statement ->
+                        statement.executeQuery("SELECT marker_value FROM \"public\".jdbc_default_marker").use { result ->
+                            result.next() shouldBe true
+                            result.getString(1) shouldBe "default-marker"
+                            result.next() shouldBe false
+                        }
+                    }
+                }
+                migrationVersions(dataSource, "public") shouldBe listOf("1")
+            }
+        }
+
         test("migreringer kjøres én gang og hoppes over ved neste kjøring") {
             migrationDataSource().use { dataSource ->
                 withMigrations(
@@ -51,7 +72,10 @@ class JdbcMigrationTest :
 
         test("kjører migreringer fra hver classpath-mappe med eget schema og egen historikk") {
             migrationDataSource().use { dataSource ->
-                val firstResult = dataSource.migrate("first")
+                val firstResult =
+                    dataSource.migrate("first") {
+                        locations("classpath:db/fixtures/first")
+                    }
 
                 firstResult.migrationsExecuted shouldBe 1
                 hasTable(dataSource, "first", "jdbc_first_marker") shouldBe true
@@ -74,7 +98,10 @@ class JdbcMigrationTest :
                     }
                 }
 
-                val secondResult = dataSource.migrate("second")
+                val secondResult =
+                    dataSource.migrate("second") {
+                        locations("classpath:db/fixtures/second")
+                    }
 
                 secondResult.migrationsExecuted shouldBe 1
                 hasTable(dataSource, "first", "jdbc_first_marker") shouldBe true
@@ -98,15 +125,23 @@ class JdbcMigrationTest :
                     }
                 }
 
-                dataSource.migrate("first").migrationsExecuted shouldBe 0
-                dataSource.migrate("second").migrationsExecuted shouldBe 0
+                dataSource
+                    .migrate("first") {
+                        locations("classpath:db/fixtures/first")
+                    }.migrationsExecuted shouldBe 0
+                dataSource
+                    .migrate("second") {
+                        locations("classpath:db/fixtures/second")
+                    }.migrationsExecuted shouldBe 0
             }
         }
 
         test("manglende classpath-mappe gir feil") {
             migrationDataSource().use { dataSource ->
                 shouldThrow<FlywayException> {
-                    dataSource.migrate("missing")
+                    dataSource.migrate("missing") {
+                        locations("classpath:db/fixtures/missing")
+                    }
                 }
             }
         }

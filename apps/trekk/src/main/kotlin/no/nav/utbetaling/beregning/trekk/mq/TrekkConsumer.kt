@@ -15,7 +15,7 @@ import no.nav.utbetaling.beregning.trekk.TrekkService
 import no.nav.utbetaling.beregning.trekk.dto.TrekkDTO
 
 class TrekkConsumer(
-    private val trekkService: TrekkService = TrekkService(),
+    private val trekkService: TrekkService,
     mq: MQ,
     listenerQueue: MQQueue,
     errorQueue: MQQueue,

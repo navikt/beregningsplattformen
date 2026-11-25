@@ -43,16 +43,27 @@ object PostgresListener : BeforeSpecListener, AfterEachListener {
     }
 
     /*
-     * Når skattekort får migreringsfiler i src/main/resources/db/migration/skattekort/,
-     * legg disse importene øverst i filen:
+     * Skattekort har nå migreringsfiler i modulens src/main/resources/db/migration/skattekort/.
+     * Eksemplet under er ikke aktivt. Når testene trenger dette skjemaet, legg til importene
+     * og aktiver beforeSpec. Flyway sjekker og migrerer da skjemaet før hver testklasse.
+     *
      * import io.kotest.core.spec.Spec
      * import no.nav.utbetaling.beregning.jdbc.migrate
      *
-     * Aktiver deretter denne metoden, slik at migreringene kjører før testene:
      * override suspend fun beforeSpec(spec: Spec) {
-     *     dataSource.migrate(schema = "skattekort")
-     *     // Legg til dataSource.migrate(schema = "abc") når abc får egne migreringsfiler.
+     *     dataSource.migrate(schema = "skattekort") {
+     *         locations("classpath:db/migration/skattekort")
+     *     }
+     *
+     *     // Aktiver først når abc-modulens migreringsmappe finnes på appens classpath:
+     *     // dataSource.migrate(schema = "abc") {
+     *     //     locations("classpath:db/migration/abc")
+     *     // }
      * }
+     *
+     * Bruk eget migrate-kall og egen mappe per modul for å holde migreringene uavhengige.
+     * schema velger skjema og Flyway-historikk, ikke hvilke migreringsfiler som leses.
+     * Utvid også oppryddingen i afterEach når testene bruker flere skjemaer.
      */
 
     fun loadDataSet(script: String) {
@@ -67,14 +78,27 @@ object PostgresListener : BeforeSpecListener, AfterEachListener {
     ) {
         dataSource.transaction { session ->
             val tables = mutableListOf<String>()
-            // Rydder nå bare public og beholder Flyways historikk.
-            // Når moduler får egne skjemaer, erstatt SELECT-spørringen med:
-            // SELECT format('%I.%I', schemaname, tablename) AS table_name
-            // FROM pg_tables
-            // WHERE schemaname IN ('public', 'skattekort', 'abc')
-            //   AND tablename <> 'flyway_schema_history'
-            // Ta bare med skjemaer testene skal rydde. Bytt også til rs.string("table_name") nedenfor.
-            // format('%I.%I', ...) siterer skjema- og tabellnavn, slik at TRUNCATE treffer riktig tabell.
+            /*
+             * Rydder fortsatt bare i public. For flere skjemaer, erstatt hele session.list-kallet
+             * nedenfor med eksemplet. Velg i IN-listen hvilke skjemaer testene skal tømme.
+             * Legg til 'abc' i listen når testene også bruker abc-skjemaet.
+             *
+             * session.list(
+             *     queryOf(
+             *         """
+             *         SELECT format('%I.%I', schemaname, tablename) AS table_name
+             *         FROM pg_tables
+             *         WHERE schemaname IN ('public', 'skattekort')
+             *           AND tablename <> 'flyway_schema_history'
+             *         """.trimIndent(),
+             *     ),
+             * ) { rs -> tables += rs.string("table_name") }
+             *
+             * format('%I.%I', ...) setter anførselstegn rundt navnene ved behov,
+             * slik at TRUNCATE bruker riktig skjema og tabell.
+             * Historikken beholdes i hvert skjema. Data lagt inn av migreringer tømmes også,
+             * og må lastes på nytt ved behov. CASCADE kan tømme avhengige tabeller utenfor listen.
+             */
             session.list(
                 queryOf("SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename <> 'flyway_schema_history'"),
             ) { rs -> tables += rs.string("tablename") }
