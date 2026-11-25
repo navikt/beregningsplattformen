@@ -14,6 +14,7 @@ import {
 	Box,
 	Button,
 	CopyButton,
+	Detail,
 	Heading,
 	HGrid,
 	HStack,
@@ -139,43 +140,32 @@ function Detaljkort({
 	saksbehandlerId?: string;
 }) {
 	return (
-		<VStack as="div" gap="space-4" className={styles.laboratorium__detaljkort}>
-			<dt>
-				<Label as="span" size="small" textColor="subtle">
-					{label}
-				</Label>
-			</dt>
-			{saksbehandlerId && (
-				<Tooltip content={`Saksbehandler: ${saksbehandlerId}`}>
-					<HStack
-						as="span"
-						align="center"
-						top="space-12"
-						right="space-12"
-						className={styles.laboratorium__saksbehandlerikon}
-						tabIndex={0}
-						role="note"
-						aria-label={`Saksbehandler: ${saksbehandlerId}`}
-					>
+		<VStack gap="space-4" className={styles.laboratorium__detaljkort}>
+			<HStack gap="space-4">
+				<Detail uppercase>
+					<Label size="small" textColor="subtle">
+						{label}
+					</Label>
+				</Detail>
+				{saksbehandlerId && (
+					<Tooltip content={`Saksbehandler: ${saksbehandlerId}`}>
 						<PersonIcon aria-hidden />
-					</HStack>
-				</Tooltip>
-			)}
-			<dd>
-				<HStack
-					as="span"
-					align="center"
-					gap="space-8"
-					className={styles.laboratorium__detaljverdi}
-				>
-					<span className={styles.laboratorium__detaljverditekst}>{verdi}</span>
-					<CopyButton
-						size="xsmall"
-						copyText={verdi}
-						aria-label={`Kopier ${label}`}
-					/>
-				</HStack>
-			</dd>
+					</Tooltip>
+				)}
+			</HStack>
+			<HStack
+				as="span"
+				align="center"
+				gap="space-8"
+				className={styles.laboratorium__detaljverdi}
+			>
+				<BodyShort textColor="subtle">{verdi}</BodyShort>
+				<CopyButton
+					size="xsmall"
+					copyText={verdi}
+					aria-label={`Kopier ${label}`}
+				/>
+			</HStack>
 		</VStack>
 	);
 }
@@ -387,7 +377,6 @@ function SendInnOppdragsXMLInnhold() {
 				gap="space-16"
 				className={styles.laboratorium__tidslinje}
 				width="100%"
-				maxWidth="90rem"
 				padding="space-32"
 				aria-labelledby="tidslinje-heading"
 			>
