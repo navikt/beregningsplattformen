@@ -52,7 +52,7 @@ internal fun Route.beregningApi() {
                 Beregningsgrunnlag(
                     beregningsperiode = Periode.LukketPeriode(beregningFom, beregningTom),
                     oppdragstidslinje = oppdragstidslinje,
-                    beregningstidspunkt = beregningsRequest.beregningsTidspunkt?.atTime(12,0) ?: LocalDateTime.now(),
+                    beregningstidspunkt = beregningsRequest.beregningsTidspunkt?.atTime(12, 0) ?: LocalDateTime.now(),
                     skatteKontekst = skattekort?.skatteKontekst() ?: SkatteKontekst(null, emptyMap()),
                     trekkVedtak = trekkvedtak,
                     overføres = LocalDate.now(),
