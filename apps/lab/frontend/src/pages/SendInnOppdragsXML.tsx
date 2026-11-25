@@ -250,7 +250,13 @@ function SendInnOppdragsXMLInnhold() {
 		if (senderRef.current) return;
 
 		fjernResultat();
-		const { fom, tom, fomGyldig, tomGyldig } = fellesOpplysninger;
+		const {
+			fom,
+			tom,
+			fomGyldig,
+			tomGyldig,
+			beregningsTidspunkt,
+		} = fellesOpplysninger;
 		const feltfeil: FellesFeltfeil[] = [];
 		if (!fomGyldig) {
 			feltfeil.push({ felt: "fom", melding: "Oppgi en gyldig fra-dato." });
@@ -270,6 +276,7 @@ function SendInnOppdragsXMLInnhold() {
 
 		senderRef.current = true;
 		settSender(true);
+        console.log("***")
 		try {
 			const response = await postBeregn({
 				xml: resultat.innsendinger
@@ -277,11 +284,13 @@ function SendInnOppdragsXMLInnhold() {
 					.filter((xml) => xml !== undefined),
 				...(fom ? { fom } : {}),
 				...(tom ? { tom } : {}),
+				...(beregningsTidspunkt ? { beregningsTidspunkt } : {}),
 				...(skattekortUtkast.aktiv
 					? { skattekort: lesSkattekort(skattekortUtkast) }
 					: {}),
 				trekk: trekkResultat.trekk,
 			});
+            console.log("*** " , response)
 			settRespons(response);
 			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
 				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
@@ -299,6 +308,7 @@ function SendInnOppdragsXMLInnhold() {
 				);
 			}
 		} catch (error) {
+            console.log("ERROR " ,error)
 			if (error instanceof HttpStatusCodeError && error.apiMessage) {
 				settFeilmelding(error.apiMessage);
 			}
@@ -334,23 +344,6 @@ function SendInnOppdragsXMLInnhold() {
 					<form onSubmit={handterInnsending} aria-busy={sender}>
 						<InnsendingerSkjema />
 
-						<FellesBeregningsfelt
-							verdi={fellesOpplysninger}
-							feil={fellesfeil}
-							sender={sender}
-							onChange={(endringer) => {
-								fjernResultat();
-								settFellesfeil([]);
-								settSkjema((verdi) => ({
-									...verdi,
-									fellesOpplysninger: {
-										...verdi.fellesOpplysninger,
-										...endringer,
-									},
-								}));
-							}}
-						/>
-
 						<SkattekortSkjema
 							utkast={skattekortUtkast}
 							sender={sender}
@@ -370,6 +363,23 @@ function SendInnOppdragsXMLInnhold() {
 								settSkjema((verdi) => ({
 									...verdi,
 									trekkUtkast: oppdater(verdi.trekkUtkast),
+								}));
+							}}
+						/>
+
+						<FellesBeregningsfelt
+							verdi={fellesOpplysninger}
+							feil={fellesfeil}
+							sender={sender}
+							onChange={(endringer) => {
+								fjernResultat();
+								settFellesfeil([]);
+								settSkjema((verdi) => ({
+									...verdi,
+									fellesOpplysninger: {
+										...verdi.fellesOpplysninger,
+										...endringer,
+									},
 								}));
 							}}
 						/>

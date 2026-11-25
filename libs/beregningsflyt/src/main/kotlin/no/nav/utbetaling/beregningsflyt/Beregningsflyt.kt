@@ -41,7 +41,7 @@ import no.nav.utbetaling.beregningsflyt.Avventinger.medAvventing
 
 class Beregningsflyt {
     fun beregn(beregningsgrunnlag: Beregningsgrunnlag): Pair<BeregningsmotorKontekst, List<Beregning>> {
-        val beregningstidspunkt = beregningsgrunnlag.beregningstidspunkt()
+        val beregningstidspunkt = beregningsgrunnlag.beregningstidspunkt
 
         val beregningsegmenter =
             Segmentering.grunnlag(beregningsgrunnlag.oppdragstidslinje).map { segmentgrunnlag ->

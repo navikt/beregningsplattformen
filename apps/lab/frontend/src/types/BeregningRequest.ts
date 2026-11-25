@@ -6,6 +6,7 @@ export const beregningRequestSchema = z.object({
 	xml: z.array(z.string()),
 	fom: z.iso.date().optional(),
 	tom: z.iso.date().optional(),
+	beregningsTidspunkt: z.iso.date().optional(),
 	skattekort: skattekortSchema.optional(),
 	trekk: z.array(trekkSchema).optional(),
 });
