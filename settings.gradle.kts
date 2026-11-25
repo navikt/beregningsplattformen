@@ -21,4 +21,5 @@ include(
     "libs:beregning",
     "libs:beregningsflyt",
     "libs:tid",
+    "libs:task",
 )

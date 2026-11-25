@@ -15,8 +15,10 @@ trekkrutine2026 = "1.0_20260113090201_5cbf08a"
 # Database
 flyway = "13.12.1"
 hikaricp = "7.1.0"
+jdbi = "3.49.0"
 kotliquery = "2.1.2"
 postgresql = "42.7.14"
+opentelemetry = "1.54.0"
 
 # Serialization
 jackson = "2.23.0"
@@ -49,6 +51,8 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 
 # Database
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+jdbi-core = { module = "org.jdbi:jdbi3-core", version.ref = "jdbi" }
+jdbi-kotlin = { module = "org.jdbi:jdbi3-kotlin", version.ref = "jdbi" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 kotliquery = { module = "no.nav:kotliquery", version.ref = "kotliquery" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
@@ -57,6 +61,7 @@ flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", versio
 # Micrometer
 micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometerVersion" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometerVersion" }
+opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version.ref = "opentelemetry" }
 
 # Trekktabeller
 trekkrutine2025 = { module = "no.nav.sokos.trekkrutine:trekkrutine-2025", version.ref = "trekkrutine2025" }
@@ -80,6 +85,7 @@ h2 = { module = "com.h2database:h2", version.ref = "h2" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktorVersion" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 kotest-extensions-testcontainers = { module = "io.kotest:kotest-extensions-testcontainers", version.ref = "kotest" }
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 
 [bundles]

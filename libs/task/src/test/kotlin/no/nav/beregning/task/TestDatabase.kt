@@ -1,11 +1,12 @@
 package no.nav.beregning.task
 
+import javax.sql.DataSource
+
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.flywaydb.core.Flyway
 import org.jdbi.v3.core.Jdbi
 import org.testcontainers.containers.PostgreSQLContainer
-import javax.sql.DataSource
 
 /**
  * 🟢 GRØNN SONE — testinfrastruktur. Ekte Postgres via Testcontainers, fordi
@@ -15,7 +16,9 @@ object TestDatabase {
     private val container =
         PostgreSQLContainer("postgres:16-alpine").apply { start() }
 
-    private val teller = java.util.concurrent.atomic.AtomicInteger()
+    private val teller =
+        java.util.concurrent.atomic
+            .AtomicInteger()
 
     /**
      * Hver test får sitt eget schema i den delte containeren, så parallelle tester ikke
@@ -34,7 +37,8 @@ object TestDatabase {
                     connectionInitSql = "CREATE SCHEMA IF NOT EXISTS $schemaNavn"
                 },
             )
-        Flyway.configure()
+        Flyway
+            .configure()
             .dataSource(ds)
             .schemas(schemaNavn)
             .locations("classpath:no/nav/beregning/task/db/migration")

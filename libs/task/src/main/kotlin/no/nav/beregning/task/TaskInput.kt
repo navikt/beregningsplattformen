@@ -15,8 +15,7 @@ data class TaskInput(
     val nesteKjoring: LocalDateTime = LocalDateTime.now(),
     val parameters: String? = null,
 ) {
-    override fun toString(): String =
-        "TaskInput(type=$type, prioritet=$prioritet)"
+    override fun toString(): String = "TaskInput(type=$type, prioritet=$prioritet)"
 }
 
 /**
@@ -32,9 +31,7 @@ data class TaskRecord(
     val nesteKjoring: LocalDateTime,
     val parameters: String?,
 ) {
-    fun toInput(): TaskInput =
-        TaskInput(type, payload, prioritet, nesteKjoring, parameters)
+    fun toInput(): TaskInput = TaskInput(type, payload, prioritet, nesteKjoring, parameters)
 
-    override fun toString(): String =
-        "TaskRecord(id=$id, type=$type, status=$status, antallForsok=$antallForsok)"
+    override fun toString(): String = "TaskRecord(id=$id, type=$type, status=$status, antallForsok=$antallForsok)"
 }

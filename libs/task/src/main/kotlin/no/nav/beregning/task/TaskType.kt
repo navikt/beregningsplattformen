@@ -1,7 +1,8 @@
 package no.nav.beregning.task
 
-import no.nav.beregning.task.cron.CronExpression
 import java.time.Duration
+
+import no.nav.beregning.task.cron.CronExpression
 
 /**
  * Hva en task gjør når den kjøres. Mottar payload via [TaskInput]. Motor: `JobbUtfører`.

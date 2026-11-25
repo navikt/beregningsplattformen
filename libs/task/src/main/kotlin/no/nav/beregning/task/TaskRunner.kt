@@ -1,12 +1,5 @@
 package no.nav.beregning.task
 
-import mu.KotlinLogging
-import no.nav.beregning.task.arkiv.ArkiverFerdige
-import no.nav.beregning.task.mdc.NoExtraLogInfoProvider
-import no.nav.beregning.task.mdc.TaskLogInfoProvider
-import no.nav.beregning.task.trace.TaskTracer
-import org.jdbi.v3.core.Jdbi
-import org.slf4j.MDC
 import java.io.Closeable
 import java.time.Duration
 import java.time.LocalDateTime
@@ -15,7 +8,17 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
+
 import kotlin.concurrent.thread
+
+import mu.KotlinLogging
+import org.jdbi.v3.core.Jdbi
+import org.slf4j.MDC
+
+import no.nav.beregning.task.arkiv.ArkiverFerdige
+import no.nav.beregning.task.mdc.NoExtraLogInfoProvider
+import no.nav.beregning.task.mdc.TaskLogInfoProvider
+import no.nav.beregning.task.trace.TaskTracer
 
 private val log = KotlinLogging.logger {}
 
@@ -47,7 +50,6 @@ class TaskRunner(
     private val arkiverEldreEnn: Duration = Duration.ofDays(7),
     private val arkivInterval: Duration = Duration.ofHours(1),
 ) : Closeable {
-
     private val jdbi: Jdbi = Jdbi.create(dataSource)
     private val arkiverer = ArkiverFerdige(jdbi, arkiverEldreEnn)
 
@@ -55,7 +57,10 @@ class TaskRunner(
     // så vi aldri plukker flere tasks enn workerne rekker å kjøre.
     private val workers =
         ThreadPoolExecutor(
-            antallWorkere, antallWorkere, 0L, TimeUnit.MILLISECONDS,
+            antallWorkere,
+            antallWorkere,
+            0L,
+            TimeUnit.MILLISECONDS,
             LinkedBlockingQueue(batchStorrelse),
             ThreadPoolExecutor.CallerRunsPolicy(),
         )
@@ -68,10 +73,16 @@ class TaskRunner(
         kjorer = true
         thread(name = "task-poller", isDaemon = true) { pollLoop() }
         reaperExecutor.scheduleWithFixedDelay(
-            ::kjorReaper, reaperInterval.toMillis(), reaperInterval.toMillis(), TimeUnit.MILLISECONDS,
+            ::kjorReaper,
+            reaperInterval.toMillis(),
+            reaperInterval.toMillis(),
+            TimeUnit.MILLISECONDS,
         )
         reaperExecutor.scheduleWithFixedDelay(
-            ::kjorArkivering, arkivInterval.toMillis(), arkivInterval.toMillis(), TimeUnit.MILLISECONDS,
+            ::kjorArkivering,
+            arkivInterval.toMillis(),
+            arkivInterval.toMillis(),
+            TimeUnit.MILLISECONDS,
         )
         log.info { "TaskRunner startet: $antallWorkere workere, batch=$batchStorrelse" }
     }
@@ -140,7 +151,10 @@ class TaskRunner(
         }
     }
 
-    private fun registrerFeil(record: TaskRecord, e: Exception) {
+    private fun registrerFeil(
+        record: TaskRecord,
+        e: Exception,
+    ) {
         val type = registry.parse(record.type)
         // Logg/lagre aldri payload. Kun exception-type og melding.
         val feilmelding = "${e.javaClass.simpleName}: ${e.message}"

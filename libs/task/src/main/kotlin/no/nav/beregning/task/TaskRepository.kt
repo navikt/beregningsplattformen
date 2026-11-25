@@ -1,7 +1,8 @@
 package no.nav.beregning.task
 
-import org.jdbi.v3.core.Handle
 import java.time.LocalDateTime
+
+import org.jdbi.v3.core.Handle
 
 /**
  * 🔴 RØD SONE — samtidighetskritisk kjerne. Les sjekklisten i leveransen.
@@ -13,21 +14,22 @@ import java.time.LocalDateTime
  * Invariant: hver statusendring skriver BÅDE JOBB.status OG en rad i JOBB_HISTORIKK, i samme
  * transaksjon. Kalleren eier transaksjonsgrensen; denne klassen åpner aldri sin egen.
  */
-class TaskRepository(private val handle: Handle) {
-
+class TaskRepository(
+    private val handle: Handle,
+) {
     /**
      * Legg en task i kø. Kjøres typisk i konsumentens transaksjon sammen med forretningsdata,
      * så en rollback der også ruller tilbake tasken (utbox).
      */
     fun leggTil(input: TaskInput): Long {
         val id =
-            handle.createUpdate(
-                """
-                INSERT INTO JOBB (type, status, neste_kjoring, parameters, payload, prioritet)
-                VALUES (:type, 'KLAR', :nesteKjoring, :parameters, :payload, :prioritet)
-                """.trimIndent(),
-            )
-                .bind("type", input.type)
+            handle
+                .createUpdate(
+                    """
+                    INSERT INTO JOBB (type, status, neste_kjoring, parameters, payload, prioritet)
+                    VALUES (:type, 'KLAR', :nesteKjoring, :parameters, :payload, :prioritet)
+                    """.trimIndent(),
+                ).bind("type", input.type)
                 .bind("nesteKjoring", input.nesteKjoring)
                 .bind("parameters", input.parameters)
                 .bind("payload", input.payload)
@@ -56,17 +58,17 @@ class TaskRepository(private val handle: Handle) {
      */
     fun plukkBatch(antall: Int): List<TaskRecord> {
         val records =
-            handle.createQuery(
-                """
-                SELECT id, type, status, payload, prioritet, antall_forsok, neste_kjoring, parameters
-                FROM JOBB
-                WHERE status IN ('KLAR', 'FEILET') AND neste_kjoring <= now()
-                ORDER BY prioritet, neste_kjoring, id
-                FOR UPDATE SKIP LOCKED
-                LIMIT :antall
-                """.trimIndent(),
-            )
-                .bind("antall", antall)
+            handle
+                .createQuery(
+                    """
+                    SELECT id, type, status, payload, prioritet, antall_forsok, neste_kjoring, parameters
+                    FROM JOBB
+                    WHERE status IN ('KLAR', 'FEILET') AND neste_kjoring <= now()
+                    ORDER BY prioritet, neste_kjoring, id
+                    FOR UPDATE SKIP LOCKED
+                    LIMIT :antall
+                    """.trimIndent(),
+                ).bind("antall", antall)
                 .map { rs, _ ->
                     TaskRecord(
                         id = rs.getLong("id"),
@@ -78,17 +80,16 @@ class TaskRepository(private val handle: Handle) {
                         nesteKjoring = rs.getTimestamp("neste_kjoring").toLocalDateTime(),
                         parameters = rs.getString("parameters"),
                     )
-                }
-                .list()
+                }.list()
 
         if (records.isEmpty()) return emptyList()
 
         // Marker alle PLUKKET + sett plukket_tid, i samme transaksjon som utvelgelsen.
         val ids = records.map { it.id }
-        handle.createUpdate(
-            "UPDATE JOBB SET status = 'PLUKKET', plukket_tid = now(), sist_endret = now() WHERE id IN (<ids>)",
-        )
-            .bindList("ids", ids)
+        handle
+            .createUpdate(
+                "UPDATE JOBB SET status = 'PLUKKET', plukket_tid = now(), sist_endret = now() WHERE id IN (<ids>)",
+            ).bindList("ids", ids)
             .execute()
         records.forEach { skrivHistorikk(it.id, TaskStatus.PLUKKET, null) }
 
@@ -106,23 +107,23 @@ class TaskRepository(private val handle: Handle) {
     fun resettHengende(timeout: java.time.Duration): Int {
         val grense = LocalDateTime.now().minus(timeout)
         val resatte =
-            handle.createQuery(
-                """
-                SELECT id FROM JOBB
-                WHERE status = 'PLUKKET' AND plukket_tid < :grense
-                FOR UPDATE SKIP LOCKED
-                """.trimIndent(),
-            )
-                .bind("grense", grense)
+            handle
+                .createQuery(
+                    """
+                    SELECT id FROM JOBB
+                    WHERE status = 'PLUKKET' AND plukket_tid < :grense
+                    FOR UPDATE SKIP LOCKED
+                    """.trimIndent(),
+                ).bind("grense", grense)
                 .mapTo(Long::class.java)
                 .list()
 
         if (resatte.isEmpty()) return 0
 
-        handle.createUpdate(
-            "UPDATE JOBB SET status = 'KLAR', plukket_tid = NULL, sist_endret = now() WHERE id IN (<ids>)",
-        )
-            .bindList("ids", resatte)
+        handle
+            .createUpdate(
+                "UPDATE JOBB SET status = 'KLAR', plukket_tid = NULL, sist_endret = now() WHERE id IN (<ids>)",
+            ).bindList("ids", resatte)
             .execute()
         resatte.forEach { skrivHistorikk(it, TaskStatus.KLAR, "Reaper: resatt fra hengende PLUKKET") }
         return resatte.size
@@ -136,7 +137,10 @@ class TaskRepository(private val handle: Handle) {
      * KLAR task av samme type med neste_kjoring satt til cron-mønsterets neste tidspunkt. Dette
      * speiler motor, der en cron-jobb planlegger neste kjøring av seg selv ved fullføring.
      */
-    fun reskedulerCron(record: TaskRecord, nesteKjoring: LocalDateTime): Long {
+    fun reskedulerCron(
+        record: TaskRecord,
+        nesteKjoring: LocalDateTime,
+    ): Long {
         settStatus(record.id, TaskStatus.FERDIG, null)
         return leggTil(record.toInput().copy(nesteKjoring = nesteKjoring))
     }
@@ -146,9 +150,15 @@ class TaskRepository(private val handle: Handle) {
      * tasken FEILET permanent; ellers settes den tilbake til FEILET med neste_kjoring skjøvet
      * frem (backoff), slik at plukkespørringen tar den igjen når tiden er moden.
      */
-    fun markerFeilet(id: Long, maxRetries: Int, backoff: java.time.Duration, feilmelding: String?) {
+    fun markerFeilet(
+        id: Long,
+        maxRetries: Int,
+        backoff: java.time.Duration,
+        feilmelding: String?,
+    ) {
         val antallForsok =
-            handle.createQuery("SELECT antall_forsok FROM JOBB WHERE id = :id")
+            handle
+                .createQuery("SELECT antall_forsok FROM JOBB WHERE id = :id")
                 .bind("id", id)
                 .mapTo(Int::class.java)
                 .one() + 1
@@ -161,14 +171,14 @@ class TaskRepository(private val handle: Handle) {
                 LocalDateTime.now().plus(backoff)
             }
 
-        handle.createUpdate(
-            """
-            UPDATE JOBB
-            SET status = 'FEILET', antall_forsok = :antallForsok, neste_kjoring = :nesteKjoring, sist_endret = now()
-            WHERE id = :id
-            """.trimIndent(),
-        )
-            .bind("antallForsok", antallForsok)
+        handle
+            .createUpdate(
+                """
+                UPDATE JOBB
+                SET status = 'FEILET', antall_forsok = :antallForsok, neste_kjoring = :nesteKjoring, sist_endret = now()
+                WHERE id = :id
+                """.trimIndent(),
+            ).bind("antallForsok", antallForsok)
             .bind("nesteKjoring", nesteKjoring)
             .bind("id", id)
             .execute()
@@ -176,24 +186,32 @@ class TaskRepository(private val handle: Handle) {
         skrivHistorikk(id, TaskStatus.FEILET, feilmelding)
     }
 
-    private fun settStatus(id: Long, status: TaskStatus, feilmelding: String?) {
-        handle.createUpdate(
-            "UPDATE JOBB SET status = :status, sist_endret = now() WHERE id = :id",
-        )
-            .bind("status", status.name)
+    private fun settStatus(
+        id: Long,
+        status: TaskStatus,
+        feilmelding: String?,
+    ) {
+        handle
+            .createUpdate(
+                "UPDATE JOBB SET status = :status, sist_endret = now() WHERE id = :id",
+            ).bind("status", status.name)
             .bind("id", id)
             .execute()
         skrivHistorikk(id, status, feilmelding)
     }
 
-    private fun skrivHistorikk(jobbId: Long, status: TaskStatus, feilmelding: String?) {
-        handle.createUpdate(
-            """
-            INSERT INTO JOBB_HISTORIKK (jobb_id, status, feilmelding)
-            VALUES (:jobbId, :status, :feilmelding)
-            """.trimIndent(),
-        )
-            .bind("jobbId", jobbId)
+    private fun skrivHistorikk(
+        jobbId: Long,
+        status: TaskStatus,
+        feilmelding: String?,
+    ) {
+        handle
+            .createUpdate(
+                """
+                INSERT INTO JOBB_HISTORIKK (jobb_id, status, feilmelding)
+                VALUES (:jobbId, :status, :feilmelding)
+                """.trimIndent(),
+            ).bind("jobbId", jobbId)
             .bind("status", status.name)
             .bind("feilmelding", feilmelding)
             .execute()

@@ -5,6 +5,7 @@ import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.StatusCode
 import io.opentelemetry.api.trace.Tracer
+
 import no.nav.beregning.task.TaskRecord
 
 /**
@@ -20,9 +21,13 @@ import no.nav.beregning.task.TaskRecord
 object TaskTracer {
     private val tracer: Tracer = GlobalOpenTelemetry.getTracer("beregningsplattformen-task")
 
-    fun <V> span(record: TaskRecord, block: () -> V): V {
+    fun <V> span(
+        record: TaskRecord,
+        block: () -> V,
+    ): V {
         val builder: SpanBuilder =
-            tracer.spanBuilder("task ${record.type}")
+            tracer
+                .spanBuilder("task ${record.type}")
                 .setSpanKind(SpanKind.INTERNAL)
                 .setAttribute("taskId", record.id)
                 .setAttribute("taskType", record.type)
