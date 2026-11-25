@@ -2,18 +2,32 @@
 
 ## Status og formål
 
-Dette er et foreløpig beslutningsgrunnlag, ikke en vedtatt arkitektur. Grunnlaget er
-intervjunotater fra samtale med Steinar og en kapasitetsanalyse av tallene i notatene.
+Dette er et foreløpig beslutningsgrunnlag, ikke en vedtatt arkitektur.
 Responstider og tilgjengelig samtidighet er anslag som må etterprøves.
 
 Formålet er å vurdere hvordan beregningsplattformen kan håndtere store
 beregningskjøringer under normal drift, og hvilken rolle mellomlagring (caching)
 kan ha. Mellomlagring er et mulig virkemiddel, ikke et mål i seg selv.
 
+## Tid som førende beslutningskriterium
+
+Tid til levering er prosjektets primære beslutningskriterium. Dette gjelder
+framdrift og evnen til å få løsningen i produksjon, ikke bare hvor raskt en
+beregningskjøring gjennomføres.
+
+Vi kan derfor måtte ta flere beslutninger i retning av konservative løsninger
+som bevarer leveringsevnen framfor å bruke tiden på en optimal arkitektur.
+Det kan innebære bevisst teknisk gjeld som må håndteres gjennom senere
+refaktorering. Gjelden og begrunnelsen for valgene bør dokumenteres, slik at
+midlertidige kompromisser kan vurderes på nytt.
+
+Tidspresset opphever ikke kravene til korrekte beregninger, sikkerhet eller
+forsvarlig drift. Det påvirker hvilke løsninger vi velger innenfor disse rammene.
+
 ## Behov og foreslått mål
 
 Den største kjøringen er beregning av pensjon ved den årlige G-reguleringen i juni.
-Notatene beskriver omtrent 1,5 millioner personer med skattekort og beregninger for
+Kjøringen omfatter omtrent 1,5 millioner personer med skattekort og beregninger for
 både mai og juni: til sammen 3 millioner beregninger.
 
 I dag er tidsvinduet fra fredag kveld til mandag morgen. Helgekjøring medfører
@@ -22,12 +36,9 @@ der løpende beregninger («onlineberegninger») får prioritet.
 
 Foreslått mål er å beregne skatt for disse 3 millioner beregningene på fire timer.
 Det gir i prinsippet mulighet til å kjøre beregningen på nytt samme arbeidsdag.
-Oppstart, klargjøring, kontroll av resultatene og eventuell feilretting trenger
-også tid; to firetimerskjøringer alene fyller åtte timer.
 
-Målet skal nås uten vesentlig oppskalering av infrastrukturen. En ny database
-eller annen infrastruktur må ikke spise opp besparelsen ved å avvikle dagens
-database og stormaskin. Hva «vesentlig» betyr i kroner og ressursbruk, må avklares.
+Vi bør forsøke å nå målet uten å kjøpe oss ytelse via mer infrastruktur om mulig. 
+Ett av målene ved moderniseringsprosjektet er å bli kvitt en stor kostnad til infrastruktur.
 
 Oppdrag Z, systemet vi skal erstatte, bruker mellomlagring i stort omfang for å
 nå sine ytelsesmål. Dette er relevant erfaring fra dagens løsning, men ikke i
@@ -35,9 +46,15 @@ seg selv et bevis på at beregningsplattformen trenger samme løsning. Vi bør
 kartlegge hvilke data Oppdrag Z mellomlagrer, hvordan endringer håndteres, og
 hvilken ytelsesgevinst dette gir.
 
+Databasen til Oppdrag Z er på ca. 3TB. Vi har ikke fått noen signaler om at vi kan fjerne
+signifikanter mengder data fra denne databasen. Det betyr at vi i utgangspunktet trenger
+en ganske stor og dyr databaserigg. Et vilt gjett på databasemotorstørrelse er at vi trenger
+i klassen for 500GB med RAM for en slik database - vi er antageligvis utenfor det
+vi kan kjøre i Kubernetes med enkelhet?
+
 ## Arbeidsoppgaver i én beregning
 
-Intervjunotatene beskriver følgende overordnede oppgaver:
+En beregning består av følgende overordnede oppgaver:
 
 1. Ta lås.
 2. Hent beregningsordre.
@@ -52,7 +69,8 @@ Intervjunotatene beskriver følgende overordnede oppgaver:
 11. Frigi låsen.
 
 Listen beskriver ansvar, ikke et krav om ett REST-kall eller én SQL-spørring per
-punkt. Noen oppgaver er betingede, og enkelte oppslag kan kanskje samles.
+punkt, og er ment å gjøre det mulig å gjøre tankespinn som dette på baksiden av en serviett. 
+Noen oppgaver er betingede, og enkelte oppslag kan kanskje samles.
 Én beregning er heller ikke nødvendigvis én databasetransaksjon. Transaksjons- og
 låsgrensene må bestemmes ut fra kravene til korrekte beregninger.
 
@@ -71,6 +89,15 @@ Samtidighet gjør at hver beregning kan ta lengre tid.
 
 Ved stabil belastning er gjennomsnittlig antall pågående beregninger omtrent lik
 gjennomstrømningen multiplisert med gjennomsnittlig gjennomløpstid. Med hele
+
+Systemet vil ha en kapasitet for samtidige beregninger før ytelsen begynner å degradere.
+For enkelhets skyld har denne blitt satt til ti som et utgangspunkt.
+
+Vi kan antageligvis stjele mer ytelse ved å segmentere databasen geografisk, og å
+sørge for å dele datagrunnlaget opp i tid slik at de nærmeste månedene har en større
+sannsynlighet for å passe inn i databasens cache. For enkelhets skyld har dette tallet
+forsøksvis blitt satt til femten.
+
 kapasiteten tilgjengelig for bakgrunnskjøringen gir det følgende teoretiske budsjett:
 
 | Samtidige beregninger | Gjennomsnittlig gjennomløpstid ved 208,33 beregninger/s |
@@ -79,29 +106,22 @@ kapasiteten tilgjengelig for bakgrunnskjøringen gir det følgende teoretiske bu
 | 10                    | 48 ms                                                          |
 | 15                    | 72 ms                                                          |
 
-Notatene antar at databasen kan håndtere ti samtidige beregninger uten merkbar
-ytelsesreduksjon. Geografisk segmentering og tidsoppdelte indekser nevnes som
-mulige tiltak for å øke dette til femten. Dette er hypoteser, ikke dokumentert
+Dette er hypoteser, ikke dokumentert
 kapasitet eller en anbefaling om partisjonering. Effekten avhenger blant annet av
 datamodell, spørringer, indekser, låskonflikter og fordeling av belastningen.
 
 Tallene over gir ingen reserve for løpende beregninger, variasjon i behandlingstid,
 feil eller nye forsøk. Gjennomsnittlig gjennomløpstid omfatter også eventuell
-køventing. Antall aktive databaseforbindelser er ikke det samme som antall
-pågående beregninger, særlig når beregningene venter på eksterne tjenester.
+køventing.
 
 ## Kostnaden ved fjernkall
 
-Intervjunotatene bruker følgende anslag:
+Vi bruker følgende foreløpige anslag:
 
 | Operasjon | Anslått tid |
 |-----------|-------------|
 | Ett REST-kall | 30 ms |
 | Ett databasekall | 50–500 mikrosekunder (0,05–0,5 ms) |
-
-Det er ikke avklart om databaseanslaget omfatter nettverk, venting på forbindelse,
-resultatoverføring og bekreftelse av transaksjonen. Tallene må måles fra
-beregningsapplikasjonen under representativ belastning før de sammenlignes.
 
 Som regneeksempel gir ti sekvensielle REST-kall à 30 ms omtrent 300 ms per
 beregning, før lokal beregningslogikk og eventuell behandling utover det som
@@ -115,14 +135,9 @@ beregninger ved denne gjennomløpstiden, uten reserve til annen trafikk.
 
 Til sammenligning gir ti databasekall med de oppgitte anslagene 0,5–5 ms samlet
 kalltid. Det er heller ikke hele beregningstiden: låser, beregningslogikk,
-transaksjoner og øvrig venting kommer i tillegg dersom de ikke inngår i anslaget.
+transaksjoner og øvrig venting kommer i tillegg.
 
-Dette taler for å begrense sekvensielle fjernkall i den hyppigst brukte
-beregningsflyten. Det beviser ikke at alle data bør ligge i én database, eller at
-REST-grensesnitt er feil. Slike grensesnitt kan ivareta tjenesteansvar og
-tilgangskontroll. Alternativer er blant annet samlede oppslag, lokale
-lesemodeller og mellomlagring. Parallelle kall kan redusere ventetid når oppslagene
-er uavhengige, men øker belastningen på tjenestene som mottar kallene.
+Dette taler for å begrense sekvensielle fjernkall i beregningsflyten.
 
 ## To arkitektoniske ytterpunkter
 
@@ -140,7 +155,8 @@ ikke at alt lastes inn i applikasjonens minne.
 
 Dette ytterpunktet unngår nettverkskall mellom komponentene i beregningsflyten.
 Med anslaget på 50–500 mikrosekunder per databasekall gir ti oppslag omtrent
-0,5–5 ms samlet kalltid. Hele beregningen må fortsatt måles, og vi må avklare
+0,5–5 ms samlet kalltid, som gir et hyggelig rom til å gjøre den faktiske beregningen. 
+Hele beregningen må fortsatt måles, og vi må avklare
 hvordan mellomlagrede data oppdateres og hvordan komponentene deler
 databasekapasitet og håndterer transaksjoner og låser.
 
@@ -160,6 +176,10 @@ av responstid og tilgjengelighet i flere tjenester. Ved 300 ms per beregning
 krever firetimersmålet minst 63 samtidige beregninger, mot et foreløpig anslag
 på ti til femten samtidige beregninger mot databasen.
 
+En slik løsning vil gi problemer med transaksjonalitet - vi vil gjerne at dataene på
+tvers av tjenestene skal reflektere en riktig tilstand, også når en mikrotjeneste
+feiler underveis i en beregning. Vi ønsker ikke å ta i bruk tofase-commits.
+
 Ytterpunktene viser avveiningen mellom lokale oppslag med felles
 databasekapasitet og selvstendige tjenester med kostnaden ved fjernkall.
 Separate skjemaer alene gir ikke uavhengig skalering eller feilisolasjon.
@@ -176,38 +196,20 @@ databasearbeid, låser og beregningslogikk, samtidig som løpende beregninger sk
 ha prioritet. Dette er en foreløpig dimensjoneringsregel for sekvensielle kall,
 ikke en målt kapasitetsgrense.
 
-Undersøk først om én database med separate skjemaer og lokale tjenestekall kan
-oppfylle firetimersmålet innen kostnadsrammen. Sammenlign dette med ytterpunktet
-der komponentkallene går over nettverket, under samme representative belastning.
-Anslagene taler for lokale oppslag i beregningsflyten, men dokumenterer ikke
-kapasiteten til noen av løsningene.
+På grunn av tidsmålet i prosjektet bør vi først undersøke om én database med 
+separate skjemaer og lokale tjenestekall kan
+oppfylle firetimersmålet uten å gi annet trøbbel for arkitektur eller teamsamarbeide. 
+Sammenlign dette med ytterpunktet der komponentkallene går over nettverket, under 
+samme representative belastning. Anslagene taler for lokale oppslag i beregningsflyten, 
+men dokumenterer ikke kapasiteten til noen av løsningene.
 
 Reduser unødvendige sekvensielle fjernkall, men behold avklarte tjenestegrenser.
+
 Prioriter løpende beregninger ved å begrense og kunne bremse bakgrunnskjøringen.
 Separate køer er ikke nok hvis begge køene konkurrerer om de samme
 databaseforbindelsene, låsene eller eksterne tjenestene.
 
-Anbefalingen gjelder hva vi bør undersøke først. Den er ikke et valg av
-bibliotek, mellomlagringsteknologi, database eller partisjoneringsmodell.
+## Hva kan vi gjøre for å redusere risiko ved å velge denne veien?
 
-## Hva må dokumenteres før en beslutning?
-
-Vi trenger en representativ belastningsprøve med både bakgrunnskjøring og løpende
-beregninger, realistiske datamengder og variasjon i beregningsgrunnlaget.
-Prøven må omfatte betingede oppslag og korrigeringer, ikke bare den enkleste flyten.
-
-Følgende må måles og avklares:
-
-- Antall korrekt ferdigstilte beregninger per sekund og samlet tid for 3 millioner.
-- Gjennomløpstid og køventing, inkludert høye persentiler, for begge trafikktypene.
-- Antall REST- og databasekall per beregning, kalltid, låsventing og transaksjonstid.
-- Ressursbruk og kostnad: prosessor, minne, databasekapasitet, forbindelser og nettverk.
-- Treffandel, minnebehov og belastning ved tom mellomlagring, omstart og samtidige oppslag på samme manglende verdi.
-- Korrekthet når grunnlaget endres under kjøring, ved nye forsøk og ved konkurrerende beregninger for samme person.
-- Krav til responstid for løpende beregninger og hvilken kapasitet de skal ha reservert.
-- Kostnadsramme og hvor mye reserve firetimersmålet skal ha.
-
-En løsning kan anbefales endelig når den gir korrekte resultater innen
-firetimersmålet, samtidig som løpende beregninger oppfyller avtalte responstidskrav
-og ressursbruken holder seg innen en avtalt kostnadsramme. Inntil dette er målt,
-er både kapasiteten og gevinsten ved mellomlagring uavklart.
+Dersom vi kommer i produksjon fortere vil vi få mer relevante tall. Det vil redusere risikoen
+for at dette overslaget leder oss i feil retning.
