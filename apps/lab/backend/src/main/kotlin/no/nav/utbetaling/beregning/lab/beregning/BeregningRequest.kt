@@ -11,6 +11,8 @@ class BeregningRequest(
     val fom: LocalDate? = null,
     @Contextual
     val tom: LocalDate? = null,
+    @Contextual
+    val beregningsTidspunkt: LocalDate? = null,
     val xml: List<String>,
     val skattekort: SkattekortDTO? = null,
     val trekk: List<TrekkDTO> = emptyList(),
