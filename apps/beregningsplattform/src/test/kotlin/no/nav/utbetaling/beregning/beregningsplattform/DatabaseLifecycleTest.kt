@@ -61,7 +61,9 @@ class DatabaseLifecycleTest :
                     testApplication {
                         application {
                             applicationDataSource = initializeDatabase(testPostgresProperties())
-                            applicationDataSource.migrate(BROKEN_SCHEMA)
+                            applicationDataSource.migrate(BROKEN_SCHEMA) {
+                                locations("classpath:db/migration/$BROKEN_SCHEMA")
+                            }
                         }
                         startApplication()
                     }

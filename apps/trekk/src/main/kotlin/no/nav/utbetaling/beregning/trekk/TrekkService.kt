@@ -5,7 +5,6 @@ import javax.sql.DataSource
 import kotliquery.TransactionalSession
 
 import no.nav.utbetaling.beregning.log.Log
-import no.nav.utbetaling.beregning.trekk.config.DatabaseConfig
 import no.nav.utbetaling.beregning.trekk.domain.SatsType
 import no.nav.utbetaling.beregning.trekk.dto.Trekk
 import no.nav.utbetaling.beregning.trekk.repository.TrekkFagomraadeRepository
@@ -18,7 +17,7 @@ import no.nav.utbetaling.beregning.trekk.utils.TrekkConverter.toTrekkVedtak
 import no.nav.utbetaling.beregning.trekk.utils.TrekkConverter.toTrekkperiode
 
 class TrekkService(
-    private val dataSource: DataSource = DatabaseConfig.dataSource,
+    private val dataSource: DataSource,
     private val trekkvedtakHistorikkRepository: TrekkvedtakHistorikkRepository = TrekkvedtakHistorikkRepository(),
     private val trekkvedtakRepository: TrekkvedtakRepository = TrekkvedtakRepository(),
     private val trekkperiodeRepository: TrekkperiodeRepository = TrekkperiodeRepository(),

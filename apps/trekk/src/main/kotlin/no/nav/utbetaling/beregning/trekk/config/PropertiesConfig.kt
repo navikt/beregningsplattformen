@@ -8,6 +8,8 @@ import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.config.getAs
 import io.ktor.server.config.withFallback
 
+import no.nav.utbetaling.beregning.jdbc.JdbcConfig
+
 private const val APPLICATION_CONF = "application"
 private const val AZUREAD_CONF = "azureAd"
 private const val MQ_CONF = "mq"
@@ -69,13 +71,20 @@ object PropertiesConfig {
 
     @Serializable
     data class PostgresProperties(
-        val jdbcUrl: String,
+        val jdbcUrl: String? = null,
         val name: String,
         val host: String,
         val port: Int,
         val username: String,
         val password: String,
-    )
+    ) {
+        internal fun toJdbcConfig(): JdbcConfig =
+            JdbcConfig(
+                jdbcUrl = jdbcUrl ?: "jdbc:postgresql://$host:$port/$name",
+                username = username,
+                password = password,
+            )
+    }
 }
 
 fun ApplicationConfig.loadEnv(): ApplicationConfig {

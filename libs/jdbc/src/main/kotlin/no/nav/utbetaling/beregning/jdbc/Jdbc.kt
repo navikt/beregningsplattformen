@@ -52,12 +52,12 @@ fun DataSource.isHealthy(): Boolean =
     }
 
 fun DataSource.migrate(
-    schema: String,
+    schema: String = "public",
     configure: FluentConfiguration.() -> Unit = {},
 ): MigrateResult =
     Flyway
         .configure()
-        .locations("classpath:db/migration/$schema")
+        .locations("classpath:db/migration")
         .failOnMissingLocations(true)
         .validateMigrationNaming(true)
         .apply(configure)

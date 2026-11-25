@@ -20,14 +20,15 @@ import no.nav.utbetaling.beregning.trekk.dto.Fagomraader
 import no.nav.utbetaling.beregning.trekk.dto.Periode
 import no.nav.utbetaling.beregning.trekk.dto.Perioder
 import no.nav.utbetaling.beregning.trekk.dto.Trekk
+import no.nav.utbetaling.beregning.trekk.listener.PostgresListener
 import no.nav.utbetaling.beregning.trekk.repository.TrekkvedtakRepository
 import no.nav.utbetaling.beregning.trekk.utils.SqlUtils.transaction
 
 internal class TrekkServiceTest :
     FunSpec({
-        extensions(PostgresTestDatabase)
+        extensions(PostgresListener)
 
-        val dataSource = PostgresTestDatabase.dataSource
+        val dataSource = PostgresListener.dataSource
         val repository = TrekkvedtakRepository()
         val service = TrekkService(dataSource = dataSource)
 
