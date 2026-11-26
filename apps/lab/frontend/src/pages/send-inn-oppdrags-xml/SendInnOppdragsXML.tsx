@@ -1,7 +1,7 @@
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { type SubmitEvent, useRef, useState } from "react";
 import { postBeregn } from "../../api/apiService";
-import { Beregningsresultater } from "./components/Beregningsresultater";
+import { LaStaaResultater } from "./components/LaStaaResultater";
 import {
 	FellesBeregningsfelt,
 	type FellesFeltfeil,
@@ -160,8 +160,12 @@ function SendInnOppdragsXMLInnhold() {
 
 			<Innsendingstidslinje feilmelding={feilmelding} respons={respons} />
 
-			<Beregningsresultater
-				beregninger={respons?.beregningstidslinje?.beregninger ?? []}
+			<LaStaaResultater
+				gjeldende={respons?.beregningstidslinje?.beregninger ?? []}
+				lagret={skjema.lagretResultat}
+				onChange={(lagretResultat) =>
+					settSkjema((verdi) => ({ ...verdi, lagretResultat }))
+				}
 			/>
 		</VStack>
 	);

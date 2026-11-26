@@ -11,7 +11,7 @@ import {
 	Table,
 	VStack,
 } from "@navikt/ds-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import type {
 	BeregningResponse,
 	EkstraInfo,
@@ -264,8 +264,10 @@ function Beregningsgruppe({
 
 export function Beregningsresultater({
 	beregninger,
+	kontroller,
 }: {
 	beregninger: Beregninger;
+	kontroller?: ReactNode;
 }) {
 	const [visEkstraInfo, settVisEkstraInfo] = useState(false);
 	const [åpneRader, settÅpneRader] = useState<Set<string>>(new Set());
@@ -296,9 +298,16 @@ export function Beregningsresultater({
 		>
 			<VStack gap="space-16">
 				<HStack align="center" justify="space-between" gap="space-16">
-					<Heading level="2" size="medium">
-						Beregningsresultater
-					</Heading>
+					<HStack align="center" gap="space-16">
+						<Heading level="2" size="medium">
+							Beregningsresultater
+						</Heading>
+						{beregninger.length > 0 && kontroller && (
+							<Box style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
+								{kontroller}
+							</Box>
+						)}
+					</HStack>
 					{beregninger.length > 0 && (
 						<HStack align="center" gap="space-16">
 							{alleRader.length > 0 && (
