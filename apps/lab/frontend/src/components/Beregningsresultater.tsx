@@ -12,7 +12,7 @@ import {
 	VStack,
 } from "@navikt/ds-react";
 import { useState } from "react";
-import type { BeregningResponse } from "../types/BeregningResponse";
+import type { BeregningResponse, EkstraInfo } from "../types/BeregningResponse";
 import { ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
 
 type Beregninger = NonNullable<
