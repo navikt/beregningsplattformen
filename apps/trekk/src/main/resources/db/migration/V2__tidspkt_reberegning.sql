@@ -1,0 +1,3 @@
+SET lock_timeout = '5s';
+
+ALTER TABLE trekkvedtak ADD COLUMN IF NOT EXISTS tidspkt_reberegning TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;

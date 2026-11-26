@@ -83,6 +83,7 @@ class TrekkService(
         if (recalculateNecessary) {
             Log.info("Reberegning av trekkvedtak med OS-trekkId ${changedTrekkvedtak.trekkvedtakId} er nødvendig.")
         }
+        trekkvedtakRepository.updateTrekkvedtakReberegningstidspkt(trekkvedtakId, tx)
         Log.info("Trekkvedtak med OS-trekkId ${changedTrekkvedtak.trekkvedtakId} endret")
         return changedTrekkvedtak.apply { id = trekkvedtakId.id }
     }

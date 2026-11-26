@@ -2,6 +2,7 @@ package no.nav.utbetaling.beregning.trekk.repository
 
 import kotlin.plus
 
+import io.ktor.server.auth.session
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -148,6 +149,22 @@ class TrekkvedtakRepository {
                 WHERE id = :trekkvedtakId
                 """.trimIndent(),
                 params,
+            ),
+        )
+    }
+
+    fun updateTrekkvedtakReberegningstidspkt(
+        trekkvedtakId: TrekkvedtakId,
+        session: TransactionalSession,
+    ) {
+        session.update(
+            queryOf(
+                """
+                UPDATE trekkvedtak
+                SET tidspkt_reberegning = CURRENT_TIMESTAMP
+                WHERE id = :trekkvedtakId
+                """.trimIndent(),
+                mapOf("trekkvedtakId" to trekkvedtakId.id),
             ),
         )
     }

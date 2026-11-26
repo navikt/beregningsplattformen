@@ -29,6 +29,7 @@ data class Trekkvedtak(
     val bruker: String,
     val tidspktReg: LocalDateTime,
     val mottatt: LocalDateTime = LocalDateTime.now(),
+    val reberegningstidspkt: LocalDateTime = LocalDateTime.now(),
 ) {
     fun isTrekkRelevantForDatoIntervall(overlappendePeriode: Periode): Boolean = trekkperioder.any { it.periode.overlapperMed(overlappendePeriode) }
 
