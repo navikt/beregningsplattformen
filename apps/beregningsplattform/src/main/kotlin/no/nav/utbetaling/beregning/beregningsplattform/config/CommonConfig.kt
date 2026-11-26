@@ -18,6 +18,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
 
+import no.nav.utbetaling.beregning.mottak.metrics.Metrics as MottakMetrics
 import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 
 fun Application.commonConfig() {
@@ -61,7 +62,10 @@ fun Routing.internalNaisRoutes(
             }
         }
         get("metrics") {
-            call.respondText(Metrics.prometheusMeterRegistry.scrape())
+            call.respondText(
+                Metrics.prometheusMeterRegistry.scrape() +
+                    MottakMetrics.prometheusMeterRegistryMottak.scrape(),
+            )
         }
     }
 }

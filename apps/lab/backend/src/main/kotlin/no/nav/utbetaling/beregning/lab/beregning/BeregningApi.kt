@@ -2,6 +2,7 @@ package no.nav.utbetaling.beregning.lab.beregning
 
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
@@ -51,6 +52,7 @@ internal fun Route.beregningApi() {
                 Beregningsgrunnlag(
                     beregningsperiode = Periode.LukketPeriode(beregningFom, beregningTom),
                     oppdragstidslinje = oppdragstidslinje,
+                    beregningstidspunkt = beregningsRequest.beregningsTidspunkt?.atTime(12, 0) ?: LocalDateTime.now(),
                     skatteKontekst = skattekort?.skatteKontekst() ?: SkatteKontekst(null, emptyMap()),
                     trekkVedtak = trekkvedtak,
                     overføres = LocalDate.now(),

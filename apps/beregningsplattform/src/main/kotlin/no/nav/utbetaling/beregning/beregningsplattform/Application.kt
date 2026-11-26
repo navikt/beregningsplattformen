@@ -1,6 +1,5 @@
 package no.nav.utbetaling.beregning.beregningsplattform
 
-import com.ibm.mq.jakarta.jms.MQQueue
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory
 import io.ktor.server.application.Application
@@ -18,11 +17,10 @@ import no.nav.utbetaling.beregning.beregningsplattform.config.loadEnv
 import no.nav.utbetaling.beregning.beregningsplattform.config.routingConfig
 import no.nav.utbetaling.beregning.beregningsplattform.config.securityConfig
 import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
-import no.nav.utbetaling.beregning.beregningsplattform.mq.OppdragXmlConsumer
 import no.nav.utbetaling.beregning.jdbc.Jdbc
 import no.nav.utbetaling.beregning.jdbc.migrate
 import no.nav.utbetaling.beregning.log.Log
-import no.nav.utbetaling.beregning.mq.DefaultMQ
+import no.nav.utbetaling.beregning.mottak.OppdragXmlConsumer
 import no.nav.utbetaling.beregning.mq.MQConfig
 
 fun main() {
@@ -57,19 +55,19 @@ private fun Application.beregningsplattform() {
         dataSource = dataSource,
     )
 
-    val mottakXMLQueue =
-        DefaultMQ(
-            MQConfig(
-                host = PropertiesConfig.mqProperties.hostname,
-                port = PropertiesConfig.mqProperties.port,
-                channel = PropertiesConfig.mqProperties.channel,
-                manager = PropertiesConfig.mqProperties.manager,
-                username = PropertiesConfig.mqProperties.username,
-                password = PropertiesConfig.mqProperties.password,
-            ),
+    val oppdragXmlConsumer =
+        OppdragXmlConsumer(
+            mqConfig =
+                MQConfig(
+                    host = PropertiesConfig.mqProperties.hostname,
+                    port = PropertiesConfig.mqProperties.port,
+                    channel = PropertiesConfig.mqProperties.channel,
+                    manager = PropertiesConfig.mqProperties.manager,
+                    username = PropertiesConfig.mqProperties.username,
+                    password = PropertiesConfig.mqProperties.password,
+                ),
+            queueName = PropertiesConfig.mqProperties.oppdragXmlQueue,
         )
-
-    val oppdragXmlConsumer = OppdragXmlConsumer(mottakXMLQueue, MQQueue(PropertiesConfig.mqProperties.oppdragXmlQueue))
 
     monitor.subscribe(ApplicationStarted) {
         Log.info("Bruker profil: ${PropertiesConfig.applicationProperties.profile}")

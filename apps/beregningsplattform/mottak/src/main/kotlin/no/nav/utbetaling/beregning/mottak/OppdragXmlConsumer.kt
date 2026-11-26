@@ -1,19 +1,20 @@
-package no.nav.utbetaling.beregning.beregningsplattform.mq
+package no.nav.utbetaling.beregning.mottak
 
 import com.ibm.mq.jakarta.jms.MQQueue
 import jakarta.jms.TextMessage
 
-import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 import no.nav.utbetaling.beregning.log.secureLog
+import no.nav.utbetaling.beregning.mottak.metrics.Metrics
+import no.nav.utbetaling.beregning.mq.DefaultMQ
 import no.nav.utbetaling.beregning.mq.DefaultMQConsumer
-import no.nav.utbetaling.beregning.mq.MQ
+import no.nav.utbetaling.beregning.mq.MQConfig
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
 class OppdragXmlConsumer(
-    mq: MQ,
-    queue: MQQueue,
+    mqConfig: MQConfig,
+    queueName: String,
 ) : AutoCloseable {
-    private val consumer = DefaultMQConsumer(mq, queue, ::onMessage)
+    private val consumer = DefaultMQConsumer(DefaultMQ(mqConfig), MQQueue(queueName), ::onMessage)
 
     fun start() {
         consumer.start()

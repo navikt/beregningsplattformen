@@ -60,7 +60,7 @@ export function InnsendingerSkjema() {
 		);
 
 	return (
-		<ExpansionCard size="small" defaultOpen aria-labelledby={tittelId}>
+		<ExpansionCard defaultOpen aria-labelledby={tittelId}>
 			<ExpansionCard.Header>
 				<ExpansionCard.Title id={tittelId} as="h2" size="medium">
 					Innsendinger
@@ -71,18 +71,20 @@ export function InnsendingerSkjema() {
 						: `${innsendinger.length} innsendinger`}
 				</ExpansionCard.Description>
 			</ExpansionCard.Header>
-			<ExpansionCard.Content>
+			{/* Innholdet er et grid med auto-kolonne, som ellers vokser med de scrollbare fanene og klippes av kortet */}
+			<ExpansionCard.Content style={{ gridTemplateColumns: "minmax(0, 1fr)" }}>
 				<VStack gap="space-24" position="relative">
 					<Tabs value={aapenNokkel ?? ""} onChange={setAapen}>
 						<HStack gap="space-12" align="end" wrap={false}>
 							{/* Lar fanelista krympe ved siden av knappen, så Aksel kan scrolle fanene */}
-							<Box flexGrow="1" minWidth="0">
+							<Box minWidth="0" flexGrow="1">
 								<Tabs.List>
 									{innsendinger.map((innsending, index) => (
 										<Tabs.Tab
 											key={innsending.nokkel}
 											value={innsending.nokkel}
 											label={fanenavn(navn, index)}
+											style={{ flexShrink: 0, whiteSpace: "nowrap" }}
 										/>
 									))}
 								</Tabs.List>
@@ -94,6 +96,7 @@ export function InnsendingerSkjema() {
 										variant="tertiary"
 										data-color="danger"
 										icon={<TrashIcon aria-hidden />}
+										style={{ flexShrink: 0 }}
 									>
 										Slett alt
 									</Button>

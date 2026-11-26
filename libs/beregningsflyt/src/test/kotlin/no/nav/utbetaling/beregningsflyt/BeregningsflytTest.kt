@@ -49,7 +49,7 @@ class BeregningsflytTest :
                             skatteKontekst = skatteKontekst,
                             trekkVedtak = trekkvedtak,
                             relaterteBeregninger = relaterteBeregninger,
-                            beregningstidspunkt = { LocalDateTime.parse(scenario.kontekst.beregnet) },
+                            beregningstidspunkt = LocalDateTime.parse(scenario.kontekst.beregnet),
                             tilgjengeligFrikortbeløp = scenario.kontekst.ledigFrikortBeloep?.toBigDecimal(),
                             overføres = LocalDate.parse(scenario.kontekst.overfoeringsdato),
                         )

@@ -15,7 +15,7 @@ data class Beregningsgrunnlag(
     val oppdragstidslinje: Oppdragstidslinje,
     val skatteKontekst: SkatteKontekst,
     val trekkVedtak: List<Trekkvedtak>,
-    val beregningstidspunkt: () -> LocalDateTime = { LocalDateTime.now() },
+    val beregningstidspunkt: LocalDateTime = LocalDateTime.now(),
     val overføres: LocalDate,
     val relaterteBeregninger: List<Beregning>,
     val tilgjengeligFrikortbeløp: BigDecimal?, // TODO: Lage en beløpsklasse istedenfor å bruke BigDecimal direkte - og hvorfor er det ikke en del av skatteKonteksten?

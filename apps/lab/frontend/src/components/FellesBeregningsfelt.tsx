@@ -14,6 +14,7 @@ export interface FellesOpplysninger {
 	tom: string;
 	fomGyldig: boolean;
 	tomGyldig: boolean;
+	beregningsTidspunkt?: string;
 }
 
 export interface FellesFeltfeil {
@@ -82,6 +83,15 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 							error={feltfeil("tom")}
 							onChange={(tom) => onChange({ tom })}
 							onValidityChange={(tomGyldig) => onChange({ tomGyldig })}
+						/>
+						<OppdragDatoFelt
+							id="felles-beregningsTidspunkt"
+							label="Beregningstidspunkt"
+							value={verdi.beregningsTidspunkt ?? ""}
+							readOnly={sender}
+							onChange={(beregningsTidspunkt) =>
+								onChange({ beregningsTidspunkt })
+							}
 						/>
 					</HStack>
 				</Fieldset>

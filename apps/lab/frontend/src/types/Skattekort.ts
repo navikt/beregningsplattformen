@@ -223,18 +223,6 @@ export const skattekortSchema = z
 		forskuddstrekk: z.tuple([forskuddstrekkSchema]),
 	})
 	.superRefine((kort, ctx) => {
-		const naa = new Date();
-		if (
-			kort.inntektsaar !== naa.getFullYear() &&
-			!(kort.inntektsaar === naa.getFullYear() - 1 && naa.getMonth() === 0)
-		) {
-			ctx.addIssue({
-				code: "custom",
-				path: ["inntektsaar"],
-				message:
-					"Bruk årets skattekort, eller fjorårets i januar. Beregningen bruker dagens dato.",
-			});
-		}
 		const trekk = kort.forskuddstrekk[0];
 		if (
 			trekk.type === "TABELLKORT" &&

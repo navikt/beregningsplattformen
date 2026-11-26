@@ -68,7 +68,6 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 								<TextField
 									id="skattekort-inntektsaar"
 									label="Inntektsår"
-									description="Bruk årets skattekort, eller fjorårets i januar. Beregningen bruker dagens dato."
 									inputMode="numeric"
 									htmlSize={6}
 									value={utkast.inntektsaar}

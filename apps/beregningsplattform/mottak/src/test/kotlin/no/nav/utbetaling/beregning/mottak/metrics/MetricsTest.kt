@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.beregningsplattform.metrics
+package no.nav.utbetaling.beregning.mottak.metrics
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -33,7 +33,7 @@ class MetricsTest :
 
                 antallFelt() shouldBe 1.0
                 antall(metrikk, type) shouldBe 1.0
-                Metrics.prometheusMeterRegistry.meters
+                Metrics.prometheusMeterRegistryMottak.meters
                     .single()
                     .id.tags
                     .associate { it.key to it.value } shouldBe
@@ -50,11 +50,11 @@ class MetricsTest :
 
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker))
 
-            Metrics.prometheusMeterRegistry.meters.size shouldBe 2
+            Metrics.prometheusMeterRegistryMottak.meters.size shouldBe 2
             metrikker.forEach { antall(it) shouldBe 1.0 }
             metrikker.forEach { metrikk ->
-                Metrics.prometheusMeterRegistry
-                    .get("beregningsplattformen_beregningsplattform_${metrikk.felt}")
+                Metrics.prometheusMeterRegistryMottak
+                    .get("${MOTTAK_METRICS_NAMESPACE}_${metrikk.felt}")
                     .counter()
                     .id.tags
                     .associate { it.key to it.value } shouldBe (metrikk.tags + ("oppdragstype" to "utbetaling"))
@@ -79,7 +79,7 @@ class MetricsTest :
 
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker))
 
-            Metrics.prometheusMeterRegistry.meters.size shouldBe 2
+            Metrics.prometheusMeterRegistryMottak.meters.size shouldBe 2
             metrikker.forEach { antall(it) shouldBe 1.0 }
         }
 
@@ -117,12 +117,12 @@ private fun metrikk(
 ) = Oppdrag.Metrikk(felt, tags)
 
 private fun resettCounters() {
-    Metrics.prometheusMeterRegistry.meters.forEach { Metrics.prometheusMeterRegistry.remove(it) }
+    Metrics.prometheusMeterRegistryMottak.meters.forEach { Metrics.prometheusMeterRegistryMottak.remove(it) }
 }
 
 private fun antallFelt() =
-    Metrics.prometheusMeterRegistry.meters.sumOf {
-        Metrics.prometheusMeterRegistry
+    Metrics.prometheusMeterRegistryMottak.meters.sumOf {
+        Metrics.prometheusMeterRegistryMottak
             .get(it.id.name)
             .tags(it.id.tags)
             .counter()
@@ -132,8 +132,8 @@ private fun antallFelt() =
 private fun antall(
     metrikk: Oppdrag.Metrikk,
     type: String = "utbetaling",
-) = Metrics.prometheusMeterRegistry
-    .get("beregningsplattformen_beregningsplattform_${metrikk.felt}")
+) = Metrics.prometheusMeterRegistryMottak
+    .get("${MOTTAK_METRICS_NAMESPACE}_${metrikk.felt}")
     .tags((metrikk.tags + ("oppdragstype" to type)).map { (navn, verdi) -> Tag.of(navn, verdi) })
     .counter()
     .count()

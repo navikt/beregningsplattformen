@@ -14,7 +14,13 @@ export interface Beregningsskjema {
 export function nyttBeregningsskjema(): Beregningsskjema {
 	return {
 		innsendinger: [standardInnsending()],
-		fellesOpplysninger: { fom: "", tom: "", fomGyldig: true, tomGyldig: true },
+		fellesOpplysninger: {
+			fom: "",
+			tom: "",
+			fomGyldig: true,
+			tomGyldig: true,
+			beregningsTidspunkt: "",
+		},
 		skattekortUtkast: {
 			aktiv: false,
 			inntektsaar: String(new Date().getFullYear()),

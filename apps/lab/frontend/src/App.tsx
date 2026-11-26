@@ -19,7 +19,7 @@ import {
 } from "react-router-dom";
 import Breadcrumbs from "./components/Breadcrumbs";
 import { TemaBryter, useTema } from "./components/TemaBryter";
-import SendInnOppdragsXML from "./pages/SendInnOppdragsXML";
+import SendInnOppdragsXML from "./pages/send-inn-oppdrags-xml/SendInnOppdragsXML";
 import { initApm } from "./util/apm";
 import "./App.css";
 
@@ -39,7 +39,7 @@ function App() {
 						<Route
 							path="/send-inn-oppdrags-xml"
 							element={
-								<Page.Block width="2xl">
+								<Page.Block style={{ maxWidth: "1760px" }} gutters>
 									<Heading
 										id="lab-heading"
 										level="1"

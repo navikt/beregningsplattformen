@@ -8,6 +8,7 @@ plugins {
 group = "no.nav.utbetaling.beregning"
 
 dependencies {
+    implementation(project(":apps:beregningsplattform:mottak"))
     implementation(project(":apps:beregningsplattform:skattekort"))
 
     // Libs
@@ -16,7 +17,6 @@ dependencies {
     implementation(project(":libs:http"))
     implementation(project(":libs:jdbc"))
     implementation(project(":libs:kotlinx"))
-    implementation(project(":libs:mq"))
 
     testImplementation(libs.kotliquery)
 
