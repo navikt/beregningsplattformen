@@ -1,4 +1,4 @@
-import { Button, HStack, VStack } from "@navikt/ds-react";
+import { Box, Button, HStack, VStack } from "@navikt/ds-react";
 import { type SubmitEvent, useRef, useState } from "react";
 import { postBeregn } from "../../api/apiService";
 import { LaStaaResultater } from "./components/LaStaaResultater";
@@ -100,63 +100,72 @@ function SendInnOppdragsXMLInnhold() {
 	};
 
 	return (
-		<VStack align="center" gap="space-32" paddingBlock="space-32">
+		<VStack align="center" gap="space-32" marginBlock="space-32">
 			<SkjemalenkeMeldinger
 				nullstilt={nullstilt}
 				lagringsfeil={lagringsfeil}
 				bekreftNullstilling={bekreftNullstilling}
 			/>
-			<VStack gap="space-24" width="100%" asChild>
-				<form onSubmit={handterInnsending} aria-busy={sender}>
-					<InnsendingerSkjema />
+			<Box
+				background="default"
+				borderRadius="12"
+				borderWidth="1"
+				borderColor="neutral-subtle"
+				padding="space-16"
+				asChild
+			>
+				<VStack gap="space-24" width="100%" asChild>
+					<form onSubmit={handterInnsending} aria-busy={sender}>
+						<InnsendingerSkjema />
 
-					<SkattekortSkjema
-						utkast={skattekortUtkast}
-						sender={sender}
-						onChange={(utkast) => {
-							fjernResultat();
-							settSkjema((verdi) => ({ ...verdi, skattekortUtkast: utkast }));
-						}}
-					/>
+						<SkattekortSkjema
+							utkast={skattekortUtkast}
+							sender={sender}
+							onChange={(utkast) => {
+								fjernResultat();
+								settSkjema((verdi) => ({ ...verdi, skattekortUtkast: utkast }));
+							}}
+						/>
 
-					<TrekkSkjema
-						utkast={trekkUtkast}
-						feil={trekkfeil}
-						sender={sender}
-						onChange={(oppdater) => {
-							fjernResultat();
-							settTrekkfeil([]);
-							settSkjema((verdi) => ({
-								...verdi,
-								trekkUtkast: oppdater(verdi.trekkUtkast),
-							}));
-						}}
-					/>
+						<TrekkSkjema
+							utkast={trekkUtkast}
+							feil={trekkfeil}
+							sender={sender}
+							onChange={(oppdater) => {
+								fjernResultat();
+								settTrekkfeil([]);
+								settSkjema((verdi) => ({
+									...verdi,
+									trekkUtkast: oppdater(verdi.trekkUtkast),
+								}));
+							}}
+						/>
 
-					<FellesBeregningsfelt
-						verdi={fellesOpplysninger}
-						feil={fellesfeil}
-						sender={sender}
-						onChange={(endringer) => {
-							fjernResultat();
-							settFellesfeil([]);
-							settSkjema((verdi) => ({
-								...verdi,
-								fellesOpplysninger: {
-									...verdi.fellesOpplysninger,
-									...endringer,
-								},
-							}));
-						}}
-					/>
+						<FellesBeregningsfelt
+							verdi={fellesOpplysninger}
+							feil={fellesfeil}
+							sender={sender}
+							onChange={(endringer) => {
+								fjernResultat();
+								settFellesfeil([]);
+								settSkjema((verdi) => ({
+									...verdi,
+									fellesOpplysninger: {
+										...verdi.fellesOpplysninger,
+										...endringer,
+									},
+								}));
+							}}
+						/>
 
-					<HStack justify="end">
-						<Button type="submit" variant="primary" size="medium">
-							Send inn
-						</Button>
-					</HStack>
-				</form>
-			</VStack>
+						<HStack justify="end">
+							<Button type="submit" variant="primary" size="medium">
+								Send inn
+							</Button>
+						</HStack>
+					</form>
+				</VStack>
+			</Box>
 
 			<Innsendingstidslinje feilmelding={feilmelding} respons={respons} />
 

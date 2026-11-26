@@ -41,7 +41,7 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 		<Box
 			as="section"
 			padding="space-24"
-			background="default"
+			background="raised"
 			borderWidth="1"
 			borderColor="neutral-subtle"
 			borderRadius="12"
@@ -64,7 +64,12 @@ export function FellesBeregningsfelt({ verdi, feil, sender, onChange }: Props) {
 						))}
 					</ErrorSummary>
 				)}
-				<Fieldset legend="Beregningsopplysninger" hideLegend disabled={sender} size="small">
+				<Fieldset
+					legend="Beregningsopplysninger"
+					hideLegend
+					disabled={sender}
+					size="small"
+				>
 					<HStack gap="space-16" align="start" wrap>
 						<OppdragDatoFelt
 							id="felles-fom"

@@ -1,19 +1,18 @@
 import {PlusIcon, TrashIcon} from "@navikt/aksel-icons";
 import {
-    BodyShort,
-    Box,
-    Button,
-    ErrorSummary,
-    Fieldset,
-    Heading,
-    HGrid,
-    HStack,
-    Radio,
-    RadioGroup,
-    Select,
-    Table,
-    TextField,
-    VStack,
+	Box,
+	Button,
+	ErrorSummary,
+	Fieldset,
+	Heading,
+	HGrid,
+	HStack,
+	Radio,
+	RadioGroup,
+	Select,
+	Table,
+	TextField,
+	VStack,
 } from "@navikt/ds-react";
 import {useEffect, useRef, useState} from "react";
 import {
@@ -82,7 +81,7 @@ export function TrekkSkjema({utkast, feil, sender, onChange}: Props) {
         <Box
             as="section"
             padding="space-24"
-            background="default"
+            background="raised"
             borderWidth="1"
             borderColor="neutral-subtle"
             borderRadius="12"

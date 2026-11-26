@@ -36,7 +36,7 @@ export function SkattekortSkjema({ utkast, sender, onChange }: Props) {
 		<Box
 			as="section"
 			padding="space-24"
-			background="default"
+			background="raised"
 			borderWidth="1"
 			borderColor="neutral-subtle"
 			borderRadius="12"
