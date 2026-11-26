@@ -66,13 +66,12 @@ export function InnsendingKort({
 
 	return (
 		<Box
-			as="section"
-			aria-labelledby={headingId}
 			borderWidth="1"
-			borderColor="neutral"
+			borderColor="neutral-subtle"
 			borderRadius="12"
 			padding="space-24"
 			background="default"
+			asChild
 		>
 			<VStack gap="space-16">
 				<HStack justify="space-between" align="center">
@@ -275,21 +274,20 @@ export function InnsendingKort({
 						</Box>
 						{!resultat.feil && (
 							<Box
-								as="section"
-								aria-labelledby={xmlHeadingId}
-								// Kan scrolles sidelengs, så tastaturbrukere må kunne nå den (WCAG 2.1.1)
-								tabIndex={0}
 								background="neutral-soft"
 								borderRadius="8"
-								padding="space-12"
+								borderWidth="1"
+								borderColor="neutral-subtle"
+								paddingInline="space-16 space-0"
+								paddingBlock="space-12"
 								overflowX="auto"
+								margin="space-0"
+								asChild
 							>
-								<Box asChild margin="space-0">
-									{/* Aksel har ingen fontstørrelse under --ax-font-size-small (14px), som er større enn standard for pre */}
-									<pre style={{ fontSize: "0.8125rem" }}>
-										<XmlVisning xml={formaterXml(resultat.xml ?? "")} />
-									</pre>
-								</Box>
+								{/* Aksel har ingen fontstørrelse under --ax-font-size-small (14px), som er større enn standard for pre */}
+								<pre style={{ fontSize: "0.8125rem" }}>
+									<XmlVisning xml={formaterXml(resultat.xml ?? "")} />
+								</pre>
 							</Box>
 						)}
 					</VStack>
