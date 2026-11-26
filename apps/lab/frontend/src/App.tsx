@@ -39,7 +39,7 @@ function App() {
 						<Route
 							path="/send-inn-oppdrags-xml"
 							element={
-								<Page.Block width="2xl">
+								<Page.Block style={{ maxWidth: "1760px" }} gutters>
 									<Heading
 										id="lab-heading"
 										level="1"
