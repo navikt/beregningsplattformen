@@ -3,10 +3,10 @@ import {
 	ChevronDownIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	ClockDashedIcon,
 	PadlockLockedFillIcon,
 	PauseFillIcon,
 	PersonIcon,
-	ClockDashedIcon,
 	XMarkOctagonFillIcon,
 } from "@navikt/aksel-icons";
 import {
@@ -25,27 +25,10 @@ import {
 	Tooltip,
 	VStack,
 } from "@navikt/ds-react";
-import { type SubmitEvent, useRef, useState } from "react";
-import { postBeregn } from "../api/apiService";
-import { Beregningsresultater } from "../components/Beregningsresultater";
-import {
-	FellesBeregningsfelt,
-	type FellesFeltfeil,
-} from "../components/FellesBeregningsfelt";
-import {
-	InnsendingerProvider,
-	useInnsendinger,
-} from "../components/innsendinger/InnsendingerContext";
-import { InnsendingerSkjema } from "../components/innsendinger/InnsendingerSkjema";
-import { SkattekortSkjema } from "../components/SkattekortSkjema";
-import { SkjemalenkeMeldinger } from "../components/SkjemalenkeMeldinger";
-import { TrekkSkjema } from "../components/TrekkSkjema";
-import type { BeregningResponse } from "../types/BeregningResponse";
-import { HttpStatusCodeError } from "../types/Error";
-import type { OppdragstidslinjeDTO } from "../types/OppdragstidslinjeDTO";
-import { lesSkattekort } from "../types/Skattekort";
-import { lesTrekk, type TrekkFeil } from "../types/Trekk";
-import styles from "./SendInnOppdragsXML.module.css";
+import { useState } from "react";
+import type { BeregningResponse } from "../../../types/BeregningResponse";
+import type { OppdragstidslinjeDTO } from "../../../types/OppdragstidslinjeDTO";
+import styles from "./Innsendingstidslinje.module.css";
 
 type KjedePeriodeDTO =
 	OppdragstidslinjeDTO["kjeder"][number]["kjedeVersjoner"][number]["kjedePerioder"][number];
@@ -130,6 +113,14 @@ function statusFraPeriode(periode: KjedePeriodeDTO) {
 	return "";
 }
 
+function tidligsteMåned(perioder: KjedePeriodeDTO[]) {
+	if (perioder.length === 0) return null;
+	const tidligsteDato = new Date(
+		Math.min(...perioder.map((periode) => new Date(periode.fraDato).getTime())),
+	);
+	return new Date(tidligsteDato.getFullYear(), tidligsteDato.getMonth(), 1);
+}
+
 function Detaljkort({
 	label,
 	verdi,
@@ -140,60 +131,45 @@ function Detaljkort({
 	saksbehandlerId?: string;
 }) {
 	return (
-		<VStack gap="space-4" className={styles.laboratorium__detaljkort}>
-			<HStack gap="space-4">
-				<Detail uppercase>
-					<Label size="small" textColor="subtle">
-						{label}
-					</Label>
-				</Detail>
-				{saksbehandlerId && (
-					<Tooltip content={`Saksbehandler: ${saksbehandlerId}`}>
-						<PersonIcon aria-hidden />
-					</Tooltip>
-				)}
-			</HStack>
-			<HStack
-				as="span"
-				align="center"
-				gap="space-8"
-				className={styles.laboratorium__detaljverdi}
-			>
-				<BodyShort textColor="subtle">{verdi}</BodyShort>
-				<CopyButton
-					size="xsmall"
-					copyText={verdi}
-					aria-label={`Kopier ${label}`}
-				/>
-			</HStack>
-		</VStack>
+		<Box
+			background="raised"
+			borderRadius="12"
+			borderWidth="1"
+			borderColor="neutral-subtle"
+			padding="space-16"
+		>
+			<VStack gap="space-4">
+				<HStack gap="space-4">
+					<Detail uppercase>
+						<Label size="small" textColor="subtle">
+							{label}
+						</Label>
+					</Detail>
+					{saksbehandlerId && (
+						<Tooltip content={`Saksbehandler: ${saksbehandlerId}`}>
+							<PersonIcon aria-hidden />
+						</Tooltip>
+					)}
+				</HStack>
+				<HStack align="center" gap="space-8">
+					<BodyShort textColor="subtle">{verdi}</BodyShort>
+					<CopyButton
+						size="xsmall"
+						copyText={verdi}
+						aria-label={`Kopier ${label}`}
+					/>
+				</HStack>
+			</VStack>
+		</Box>
 	);
 }
 
-export default function SendInnOppdragsXML() {
-	return (
-		<InnsendingerProvider>
-			<SendInnOppdragsXMLInnhold />
-		</InnsendingerProvider>
-	);
-}
+type Props = {
+	feilmelding: string | null;
+	respons: BeregningResponse | null;
+};
 
-function SendInnOppdragsXMLInnhold() {
-	const {
-		skjema,
-		settSkjema,
-		nullstilt,
-		lagringsfeil,
-		bekreftNullstilling,
-		resultat,
-	} = useInnsendinger();
-	const { fellesOpplysninger, skattekortUtkast, trekkUtkast } = skjema;
-	const [fellesfeil, settFellesfeil] = useState<FellesFeltfeil[]>([]);
-	const [trekkfeil, settTrekkfeil] = useState<TrekkFeil[]>([]);
-	const senderRef = useRef(false);
-	const [sender, settSender] = useState(false);
-	const [feilmelding, settFeilmelding] = useState<string | null>(null);
-	const [respons, settRespons] = useState<BeregningResponse | null>(null);
+export function Innsendingstidslinje({ feilmelding, respons }: Props) {
 	const [utvidedeKjeder, settUtvidedeKjeder] = useState<Set<string>>(
 		() => new Set(),
 	);
@@ -212,7 +188,16 @@ function SendInnOppdragsXMLInnhold() {
 	const allePerioder = kjeder.flatMap((kjede) =>
 		kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
 	);
-	const [tidslinjeStart, settTidslinjeStart] = useState<Date | null>(null);
+	const [tidslinjeStart, settTidslinjeStart] = useState<Date | null>(() =>
+		tidligsteMåned(allePerioder),
+	);
+	const [forrigeRespons, settForrigeRespons] = useState(respons);
+	if (respons !== forrigeRespons) {
+		settForrigeRespons(respons);
+		settValgtPeriode(null);
+		settUtvidedeKjeder(new Set());
+		settTidslinjeStart(tidligsteMåned(allePerioder));
+	}
 	const tidslinjeSlutt = tidslinjeStart
 		? new Date(
 				tidslinjeStart.getFullYear(),
@@ -227,169 +212,16 @@ function SendInnOppdragsXMLInnhold() {
 				: start,
 		);
 	};
-	const fjernResultat = () => {
-		settFeilmelding(null);
-		settRespons(null);
-		settValgtPeriode(null);
-		settUtvidedeKjeder(new Set());
-		settTidslinjeStart(null);
-	};
-
-	const handterInnsending = async (hendelse: SubmitEvent<HTMLFormElement>) => {
-		hendelse.preventDefault();
-		if (senderRef.current) return;
-
-		fjernResultat();
-		const {
-			fom,
-			tom,
-			fomGyldig,
-			tomGyldig,
-			beregningsTidspunkt,
-		} = fellesOpplysninger;
-		const feltfeil: FellesFeltfeil[] = [];
-		if (!fomGyldig) {
-			feltfeil.push({ felt: "fom", melding: "Oppgi en gyldig fra-dato." });
-		}
-		if (!tomGyldig) {
-			feltfeil.push({ felt: "tom", melding: "Oppgi en gyldig til-dato." });
-		} else if (fom && tom && fom > tom) {
-			feltfeil.push({
-				felt: "tom",
-				melding: "Til-datoen må være lik eller etter fra-datoen.",
-			});
-		}
-		settFellesfeil(feltfeil);
-		const trekkResultat = lesTrekk(trekkUtkast);
-		settTrekkfeil(trekkResultat.ok ? [] : trekkResultat.feil);
-		if (feltfeil.length > 0 || !trekkResultat.ok) return;
-
-		senderRef.current = true;
-		settSender(true);
-        console.log("***")
-		try {
-			const response = await postBeregn({
-				xml: resultat.innsendinger
-					.map((innsending) => innsending.xml)
-					.filter((xml) => xml !== undefined),
-				...(fom ? { fom } : {}),
-				...(tom ? { tom } : {}),
-				...(beregningsTidspunkt ? { beregningsTidspunkt } : {}),
-				...(skattekortUtkast.aktiv
-					? { skattekort: lesSkattekort(skattekortUtkast) }
-					: {}),
-				trekk: trekkResultat.trekk,
-			});
-            console.log("*** " , response)
-			settRespons(response);
-			const perioder = response.oppdragstidslinje.kjeder.flatMap((kjede) =>
-				kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
-			);
-			if (perioder.length === 0) {
-				settTidslinjeStart(null);
-			} else {
-				const tidligsteDato = new Date(
-					Math.min(
-						...perioder.map((periode) => new Date(periode.fraDato).getTime()),
-					),
-				);
-				settTidslinjeStart(
-					new Date(tidligsteDato.getFullYear(), tidligsteDato.getMonth(), 1),
-				);
-			}
-		} catch (error) {
-            console.log("ERROR " ,error)
-			if (error instanceof HttpStatusCodeError && error.apiMessage) {
-				settFeilmelding(error.apiMessage);
-			}
-		} finally {
-			senderRef.current = false;
-			settSender(false);
-		}
-	};
 
 	return (
-		<VStack
-			align="center"
-			gap="space-32"
-			paddingBlock="space-32"
-			className={styles.laboratorium}
+		<Box
+			borderColor="neutral-subtle"
+			borderWidth="1"
+			borderRadius="12"
+			background="info-moderateA"
+			asChild
 		>
-			<SkjemalenkeMeldinger
-				nullstilt={nullstilt}
-				lagringsfeil={lagringsfeil}
-				bekreftNullstilling={bekreftNullstilling}
-			/>
-			<Box
-				as="section"
-				className={styles["laboratorium__panel--xml"]}
-				width="100%"
-				padding="space-32"
-				borderWidth="1"
-				borderColor="neutral-subtle"
-				borderRadius="12"
-				aria-labelledby="lab-heading"
-			>
-				<VStack gap="space-24" asChild>
-					<form onSubmit={handterInnsending} aria-busy={sender}>
-						<InnsendingerSkjema />
-
-						<SkattekortSkjema
-							utkast={skattekortUtkast}
-							sender={sender}
-							onChange={(utkast) => {
-								fjernResultat();
-								settSkjema((verdi) => ({ ...verdi, skattekortUtkast: utkast }));
-							}}
-						/>
-
-						<TrekkSkjema
-							utkast={trekkUtkast}
-							feil={trekkfeil}
-							sender={sender}
-							onChange={(oppdater) => {
-								fjernResultat();
-								settTrekkfeil([]);
-								settSkjema((verdi) => ({
-									...verdi,
-									trekkUtkast: oppdater(verdi.trekkUtkast),
-								}));
-							}}
-						/>
-
-						<FellesBeregningsfelt
-							verdi={fellesOpplysninger}
-							feil={fellesfeil}
-							sender={sender}
-							onChange={(endringer) => {
-								fjernResultat();
-								settFellesfeil([]);
-								settSkjema((verdi) => ({
-									...verdi,
-									fellesOpplysninger: {
-										...verdi.fellesOpplysninger,
-										...endringer,
-									},
-								}));
-							}}
-						/>
-
-						<HStack justify="end">
-							<Button type="submit" variant="primary" size="medium">
-								Send inn
-							</Button>
-						</HStack>
-					</form>
-				</VStack>
-			</Box>
-			<VStack
-				as="section"
-				gap="space-16"
-				className={styles.laboratorium__tidslinje}
-				width="100%"
-				padding="space-32"
-				aria-labelledby="tidslinje-heading"
-			>
+			<VStack width="100%" padding="space-32" gap="space-16">
 				<Heading id="tidslinje-heading" level="2" size="medium">
 					Innsendingstidslinje
 				</Heading>
@@ -585,12 +417,7 @@ function SendInnOppdragsXMLInnhold() {
 																		content={`Fagsystem-ID: ${kjede.fagsystemId}`}
 																		maxChar={Number.MAX_SAFE_INTEGER}
 																	>
-																		<span
-																			role="note"
-																			// biome-ignore lint/a11y/noNoninteractiveTabindex: Keeps the full-ID tooltip available to keyboard users.
-																			tabIndex={0}
-																			aria-label={`Fagsystem-ID: ${kjede.fagsystemId}`}
-																		>
+																		<span>
 																			{formaterKortFagsystemId(
 																				kjede.fagsystemId,
 																			)}
@@ -661,19 +488,17 @@ function SendInnOppdragsXMLInnhold() {
 				>
 					{valgtPeriode && (
 						<Box
-							as="section"
+							background="default"
 							padding="space-24"
 							borderWidth="2"
 							borderRadius="12"
-							className={styles.laboratorium__periodedetaljer}
-							aria-labelledby="periodedetaljer-heading"
+							borderColor="neutral"
 						>
-							<Heading id="periodedetaljer-heading" level="3" size="small">
+							<Heading level="3" size="small">
 								Detaljer for valgt periode
 							</Heading>
 							<HGrid
-								as="dl"
-								columns="repeat(auto-fit, minmax(min(100%, 14rem), 1fr))"
+								columns="repeat(auto-fit, minmax(min(100%, 16rem), 1fr))"
 								gap="space-12"
 								marginBlock="space-20 space-0"
 							>
@@ -728,9 +553,6 @@ function SendInnOppdragsXMLInnhold() {
 					)}
 				</Box>
 			</VStack>
-			<Beregningsresultater
-				beregninger={respons?.beregningstidslinje?.beregninger ?? []}
-			/>
-		</VStack>
+		</Box>
 	);
 }

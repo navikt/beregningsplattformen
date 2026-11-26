@@ -1,0 +1,72 @@
+/* .laboratorium__tidslinje {
+	box-sizing: border-box;
+	border: 1px solid var(--ax-border-neutral-subtle);
+	border-radius: var(--ax-radius-12);
+	background: var(--ax-bg-info-moderateA);
+}
+
+.laboratorium__kjede {
+	background: var(--ax-bg-info-soft);
+}
+
+.laboratorium__tidslinjemetadata {
+	max-width: 12rem;
+	overflow-wrap: anywhere;
+}
+
+.laboratorium__historikketikett {
+	margin-inline-start: var(--ax-space-24);
+}
+
+.laboratorium__historikkperiode {
+	filter: saturate(62%) brightness(110%);
+}
+
+.laboratorium__periodedetaljer {
+	border-color: var(--ax-border-info);
+	background: var(--ax-bg-info-soft);
+}
+
+.laboratorium__feilmelding {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.laboratorium__tidslinje [data-timeline-popover] {
+	border-color: var(--ax-border-info);
+	background-color: var(--ax-bg-info-soft);
+}
+
+.laboratorium__detaljkort {
+	position: relative;
+	padding: var(--ax-space-12) var(--ax-space-16);
+	border: 1px solid var(--ax-border-subtle);
+	border-radius: var(--ax-radius-8);
+	background: var(--ax-bg-default);
+}
+
+.laboratorium__detaljkort dt {
+	padding-right: var(--ax-space-28);
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}
+
+.laboratorium__detaljkort dd {
+	margin: 0;
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+
+.laboratorium__detaljverditekst {
+	overflow-wrap: anywhere;
+}
+
+.laboratorium__saksbehandlerikon {
+	color: var(--ax-text-subtle);
+	cursor: help;
+}
+
+.laboratorium__kjedeid {
+	margin: var(--ax-space-16) 0 0;
+	overflow-wrap: anywhere;
+} */
