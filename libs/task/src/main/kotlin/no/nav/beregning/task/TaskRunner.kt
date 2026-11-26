@@ -23,9 +23,7 @@ import no.nav.beregning.task.trace.TaskTracer
 private val log = KotlinLogging.logger {}
 
 /**
- * 🔴 RØD SONE — hjertet i utbox-garantien og krasj-semantikken. Les sjekklisten i leveransen.
- *
- * Batch-plukkende motor: én poller henter [batchStorrelse] modne tasks i én kort transaksjon,
+ * Batch-plukkende motor: én poller henter [batchStorrelse] klare tasks i én kort transaksjon,
  * committer plukkingen (status PLUKKET), og legger dem på en intern kø. En worker-pool med
  * [antallWorkere] tråder utfører hver task i SIN EGEN transaksjon (FERDIG eller FEILET).
  *

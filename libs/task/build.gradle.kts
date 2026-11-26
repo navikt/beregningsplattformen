@@ -1,3 +1,7 @@
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.`java-library`
+import org.gradle.kotlin.dsl.kotlin
+
 plugins {
     kotlin("jvm")
     id("org.jlleitschuh.gradle.ktlint")
