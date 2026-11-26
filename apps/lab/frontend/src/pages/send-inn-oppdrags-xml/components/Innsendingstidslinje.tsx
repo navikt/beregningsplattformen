@@ -183,7 +183,8 @@ export function Innsendingstidslinje({ feilmelding, respons }: Props) {
 		periode: KjedePeriodeDTO;
 		historisk: boolean;
 	} | null>(null);
-	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(4);
+	const [tidslinjeMåneder, settTidslinjeMåneder] = useState(6);
+	const tidslinjeSteg = Math.floor(tidslinjeMåneder / 2);
 	const kjeder = respons?.oppdragstidslinje.kjeder ?? [];
 	const allePerioder = kjeder.flatMap((kjede) =>
 		kjede.kjedeVersjoner.flatMap((versjon) => versjon.kjedePerioder),
@@ -243,6 +244,30 @@ export function Innsendingstidslinje({ feilmelding, respons }: Props) {
 					tidslinjeSlutt && (
 						<>
 							<HStack justify="end" align="center" gap="space-8">
+								<HStack gap="space-4" wrap={false}>
+									<Box background="default" asChild>
+										<Button
+											type="button"
+											data-color="neutral"
+											variant="secondary"
+											size="small"
+											icon={<ChevronLeftIcon aria-hidden />}
+											aria-label="Forrige periode"
+											onClick={() => flyttTidslinje(-tidslinjeSteg)}
+										/>
+									</Box>
+									<Box background="default" asChild>
+										<Button
+											type="button"
+											data-color="neutral"
+											variant="secondary"
+											size="small"
+											icon={<ChevronRightIcon aria-hidden />}
+											aria-label="Neste periode"
+											onClick={() => flyttTidslinje(tidslinjeSteg)}
+										/>
+									</Box>
+								</HStack>
 								<ToggleGroup
 									aria-label="Antall måneder i perioden"
 									data-color="neutral"
@@ -250,39 +275,17 @@ export function Innsendingstidslinje({ feilmelding, respons }: Props) {
 									value={String(tidslinjeMåneder)}
 									onChange={(value) => settTidslinjeMåneder(Number(value))}
 								>
-									<ToggleGroup.Item value="2" label="2 måneder" />
-									<ToggleGroup.Item value="4" label="4 måneder" />
-									<ToggleGroup.Item value="8" label="8 måneder" />
+									<ToggleGroup.Item value="3" label="3 måneder" />
+									<ToggleGroup.Item value="6" label="6 måneder" />
+									<ToggleGroup.Item value="12" label="12 måneder" />
 								</ToggleGroup>
-								<HStack gap="space-4" wrap={false}>
-									<Button
-										type="button"
-										data-color="neutral"
-										variant="secondary"
-										size="small"
-										icon={<ChevronLeftIcon aria-hidden />}
-										aria-label="Forrige periode"
-										onClick={() => flyttTidslinje(-tidslinjeMåneder)}
-									/>
-									<Button
-										type="button"
-										data-color="neutral"
-										variant="secondary"
-										size="small"
-										icon={<ChevronRightIcon aria-hidden />}
-										aria-label="Neste periode"
-										onClick={() => flyttTidslinje(tidslinjeMåneder)}
-									/>
-								</HStack>
 							</HStack>
 							<Box
-								as="section"
-								minWidth="0"
+								background="default"
 								padding="space-16"
 								borderWidth="2"
 								borderColor="neutral"
 								borderRadius="12"
-								className={styles.laboratorium__kjede}
 							>
 								<Timeline startDate={tidslinjeStart} endDate={tidslinjeSlutt}>
 									{kjeder.flatMap((kjede) => {
@@ -500,7 +503,7 @@ export function Innsendingstidslinje({ feilmelding, respons }: Props) {
 							<HGrid
 								columns="repeat(auto-fit, minmax(min(100%, 16rem), 1fr))"
 								gap="space-12"
-								marginBlock="space-20 space-0"
+								marginBlock="space-20"
 							>
 								<Detaljkort label="Fagområde" verdi={valgtPeriode.fagområde} />
 								<Detaljkort
