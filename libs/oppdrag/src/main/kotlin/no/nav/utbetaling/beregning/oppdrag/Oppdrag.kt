@@ -36,6 +36,15 @@ sealed interface Oppdrag {
         val navn: String,
         val forekomster: List<Forekomst>,
     ) {
+        init {
+            if (forekomster.isNotEmpty()) {
+                val tagKeys = forekomster.first().tags.keys
+                require(forekomster.all { it.tags.keys == tagKeys }) {
+                    "Alle forekomster av en metrikk må ha samme tag typer!"
+                }
+            }
+        }
+
         data class Forekomst(
             val tags: Map<String, String>,
         )

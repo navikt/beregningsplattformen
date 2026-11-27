@@ -82,7 +82,7 @@ internal object InnsendteFeltMetrikker {
         tags: Map<String, String>,
     ) = setOf(
         Oppdrag.Metrikk.Forekomst(
-            tags +
+            tagKeys.associateWith { "" } + tags +
                 mapOf(
                     "felt" to gyldigMetrikknavn(),
                     "verdi" to metrikkverdi(value),

@@ -13,7 +13,7 @@ class MetrikkerTest :
             felt: String,
             tags: Map<String, String>,
         ) = Oppdrag.Metrikk.Forekomst(
-            tags = tags + ("felt" to felt),
+            tags = mapOf("kodeKlassifik" to "") + tags + ("felt" to felt),
         )
 
         test("Metrikker fra XML & JSON") {
