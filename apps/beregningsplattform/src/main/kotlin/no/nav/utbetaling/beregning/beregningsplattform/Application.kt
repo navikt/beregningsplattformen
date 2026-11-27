@@ -9,6 +9,9 @@ import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 
+import no.nav.utbetaling.beregning.beregningsmottak.Beregningslytter
+import no.nav.utbetaling.beregning.beregningsmottak.Beregningsmottak
+import no.nav.utbetaling.beregning.beregningsmottak.Stormaskinberegning
 import no.nav.utbetaling.beregning.beregningsplattform.config.ApplicationState
 import no.nav.utbetaling.beregning.beregningsplattform.config.PropertiesConfig
 import no.nav.utbetaling.beregning.beregningsplattform.config.applicationLifecycleConfig
@@ -69,14 +72,28 @@ private fun Application.beregningsplattform() {
             queueName = PropertiesConfig.mqProperties.oppdragXmlQueue,
         )
 
+    val beregningsmottak =
+        Beregningsmottak(
+            beregningslyttere =
+                listOf(
+                    object : Beregningslytter {
+                        override fun nyBeregning(beregning: Stormaskinberegning) {
+                            Log.info("Mottatt ny beregning fra stormaskin")
+                        }
+                    },
+                ),
+        )
+
     monitor.subscribe(ApplicationStarted) {
         Log.info("Bruker profil: ${PropertiesConfig.applicationProperties.profile}")
         oppdragXmlConsumer.start()
+        beregningsmottak.start()
         Log.info("Beregningsplattform applikasjonen startet og lytter på kø: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
     }
     monitor.subscribe(ApplicationStopping) {
         Log.info("Beregningsplattform applikasjonen stopper")
         oppdragXmlConsumer.close()
+        beregningsmottak.stop()
         Log.info("MQ-konsument avsluttet lytting på kø: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
     }
 }
