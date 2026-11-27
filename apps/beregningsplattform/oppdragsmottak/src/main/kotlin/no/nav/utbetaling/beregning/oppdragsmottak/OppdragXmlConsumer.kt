@@ -4,11 +4,11 @@ import com.ibm.mq.jakarta.jms.MQQueue
 import jakarta.jms.TextMessage
 
 import no.nav.utbetaling.beregning.log.secureLog
-import no.nav.utbetaling.beregning.oppdragsmottak.metrics.Metrics
 import no.nav.utbetaling.beregning.mq.DefaultMQ
 import no.nav.utbetaling.beregning.mq.DefaultMQConsumer
 import no.nav.utbetaling.beregning.mq.MQConfig
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
+import no.nav.utbetaling.beregning.oppdragsmottak.metrics.Metrics
 
 class OppdragXmlConsumer(
     mqConfig: MQConfig,

@@ -29,6 +29,11 @@ function formaterDato(dato: string) {
 	return `${dag}.${måned}.${år}`;
 }
 
+function formaterDatoTid(datoTid: string) {
+	const [dato, tid] = datoTid.split("T");
+	return `${formaterDato(dato)} ${tid.split(".")[0]}`;
+}
+
 function formaterEkstraInfo(info: EkstraInfo): string {
 	if (!info.template) return info.tekst ?? info.grunn;
 
@@ -84,11 +89,14 @@ function totalsum(poster: { beloep: string }[]) {
 
 function Metadata({ beregning }: { beregning: Beregning }) {
 	return (
-		<HGrid columns={{ xs: 1, sm: 2, lg: 4 }} gap="space-8">
+		<HGrid columns={{ xs: 1, sm: 2, lg: 5 }} gap="space-8">
 			<Felt label="Gjelder" verdi={beregning.gjelder} />
 			<Felt label="Status" verdi={beregning.status} />
 			<Felt label="KID" verdi={beregning.kidnummer ?? "Ikke oppgitt"} />
 			<Felt label="Mottaker" verdi={beregning.utbetalesTil} />
+			{beregning.beregnet && (
+				<Felt label="Beregnet" verdi={formaterDatoTid(beregning.beregnet)} />
+			)}
 		</HGrid>
 	);
 }

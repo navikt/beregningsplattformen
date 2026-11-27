@@ -1,6 +1,7 @@
 package no.nav.utbetaling.beregning.lab.beregning
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -17,6 +18,8 @@ data class BeregningDTO(
     val utbetalesTil: String,
     val kidnummer: String?,
     val status: String,
+    @Contextual
+    val beregnet: LocalDateTime,
     val delberegninger: List<DelberegningDTO>,
     val ekstraInfo: Set<EkstraInfo>,
 )
@@ -65,6 +68,7 @@ data class BeregningstidslinjeDTO(
                         kidnummer = beregning.kid,
                         status = beregning.status.name,
                         ekstraInfo = beregning.ekstraInfo,
+                        beregnet = beregning.beregnet,
                         // TODO: Her må det gjøres ting.
                         delberegninger =
                             beregning.delberegning.mapIndexed { delberegningIndex, delberegning ->

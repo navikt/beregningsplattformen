@@ -43,6 +43,7 @@ const beregningSchema = z.object({
 	utbetalesTil: z.string(),
 	kidnummer: z.string().nullable(),
 	status: z.string(),
+	beregnet: z.string().nullish(),
 	delberegninger: z.array(delberegningSchema),
 	ekstraInfo: z.array(ekstraInfoSchema),
 });
