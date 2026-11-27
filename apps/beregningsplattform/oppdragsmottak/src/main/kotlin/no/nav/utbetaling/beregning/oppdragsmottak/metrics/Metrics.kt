@@ -22,14 +22,16 @@ object Metrics {
                     is Oppdrag.Utbetaling -> "utbetaling"
                 }
 
-        oppdrag.metrikker.flatMap { it.forekomster }.forEach { forekomst ->
-            val tagsUtenFelt = forekomst.tags.minus("felt")
+        // Hvert felt er sin egen counter
+        oppdrag.metrikker.filter { it.navn == "innsendte_felt" }.flatMap { it.forekomster }.forEach { forekomst ->
+            val tagsUtenFelt = forekomst.tags.minus("felt").filter { (_, verdi) -> verdi.isNotBlank() }
             val felt = forekomst.tags.getValue("felt")
             val tags = (tagsUtenFelt + typeTag).map { (navn, verdi) -> Tag.of(navn, verdi) }
 
             prometheusMeterRegistryMottak.counter("${MOTTAK_METRICS_NAMESPACE}_$felt", tags).increment()
         }
 
+        // En counter per metrikk, feltene i innsendte_felt er en tag istedenfor en egen counter
         oppdrag.metrikker.forEach { metrikk ->
             metrikk.forekomster.forEach { forekomst ->
                 val tags = (forekomst.tags + typeTag).map { (navn, verdi) -> Tag.of(navn, verdi) }

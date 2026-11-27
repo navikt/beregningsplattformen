@@ -21,7 +21,7 @@ class MetricsTest :
         listOf("utbetaling", "simulering", "ugyldig_oppdrag", "ugyldig_kombinasjon").forEach { type ->
             test("registrerer felt og tagger for $type") {
                 val forekomst = forekomst()
-                val metrikker = listOf(Oppdrag.Metrikk("testfelt", forekomster = listOf(forekomst)))
+                val metrikker = listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = listOf(forekomst)))
                 val oppdrag =
                     when (type) {
                         "utbetaling" -> Oppdrag.Utbetaling(Oppdragstidslinje(), metrikker)
@@ -45,11 +45,11 @@ class MetricsTest :
         test("registrerer vilkårlige feltnavn og tagger fra oppdraget") {
             val forekomster =
                 listOf(
-                    forekomst(felt = "et_felt"),
+                    forekomst(felt = "et_felt", tags = mapOf("annen_tag" to "helt_annen_verdi")),
                     forekomst(felt = "et_annet_felt", tags = mapOf("annen_tag" to "annen_verdi")),
                 )
 
-            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = forekomster))))
+            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = forekomster))))
 
             Metrics.prometheusMeterRegistryMottak.relevanteMeters.size shouldBe 2
             forekomster.forEach { antall(it) shouldBe 1.0 }
@@ -65,7 +65,7 @@ class MetricsTest :
         test("teller hver forekomst av samme metrikk") {
             val forekomst = forekomst()
 
-            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = listOf(forekomst, forekomst)))))
+            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = listOf(forekomst, forekomst)))))
 
             antallFelt() shouldBe 2.0
             antall(forekomst) shouldBe 2.0
@@ -78,7 +78,7 @@ class MetricsTest :
                     forekomst(tags = mapOf("testtag" to "annen_verdi")),
                 )
 
-            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = forekomster))))
+            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = forekomster))))
 
             Metrics.prometheusMeterRegistryMottak.relevanteMeters.size shouldBe 2
             forekomster.forEach { antall(it) shouldBe 1.0 }
@@ -86,7 +86,7 @@ class MetricsTest :
 
         test("teller på nytt ved gjentatt behandling av samme oppdrag") {
             val forekomst = forekomst()
-            val oppdrag = Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = listOf(forekomst, forekomst))))
+            val oppdrag = Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = listOf(forekomst, forekomst))))
 
             repeat(2) { Metrics.registrerOppdrag(oppdrag) }
 
@@ -97,8 +97,8 @@ class MetricsTest :
         test("skiller tellere etter oppdragstype") {
             val forekomst = forekomst()
 
-            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = listOf(forekomst)))))
-            Metrics.registrerOppdrag(Oppdrag.Simulering(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = listOf(forekomst)))))
+            Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = listOf(forekomst)))))
+            Metrics.registrerOppdrag(Oppdrag.Simulering(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("innsendte_felt", forekomster = listOf(forekomst)))))
 
             antallFelt() shouldBe 2.0
             antall(forekomst, "utbetaling") shouldBe 1.0
