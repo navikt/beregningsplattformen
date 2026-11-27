@@ -8,7 +8,7 @@ import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
 internal const val MOTTAK_METRICS_NAMESPACE = "beregningsplattformen_beregningsplattform_mottak"
 
-internal object Metrics {
+object Metrics {
     val prometheusMeterRegistryMottak =
         PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
