@@ -37,7 +37,8 @@ internal class TrekkServiceTest :
             val trekkJson = """{"trekk"}"""
             val tidspktFoerMottak = LocalDateTime.now().minusSeconds(1)
 
-            service.createOrUpdateTrekkvedtakFromOs(trekkJson, trekk)
+            service.lagreTrekkvedtakBevis(trekkJson)
+            service.lagEllerOppdaterTrekkvedtak(trekk)
 
             val persistert =
                 dataSource
@@ -120,7 +121,8 @@ internal class TrekkServiceTest :
                         ),
                 )
 
-            service.createOrUpdateTrekkvedtakFromOs("""{"trekk med flere perioder og fagomraader"}""", trekk)
+            service.lagreTrekkvedtakBevis("""{"trekk med flere perioder og fagomraader"}""")
+            service.lagEllerOppdaterTrekkvedtak(trekk)
 
             val persistert =
                 dataSource
@@ -143,7 +145,7 @@ internal class TrekkServiceTest :
             test("persisterer satstype $satsType fra kodeTrekkAlternativ") {
                 val trekk = lagTrekk().copy(kodeTrekkAlternativ = "LOP${satsType.name}")
 
-                service.createOrUpdateTrekkvedtakFromOs("satstypemapping", trekk)
+                service.lagEllerOppdaterTrekkvedtak(trekk)
 
                 val persistert =
                     dataSource
@@ -156,7 +158,7 @@ internal class TrekkServiceTest :
 
         test("ruller tilbake naar trekktype er ugyldig") {
             shouldThrow<IllegalArgumentException> {
-                service.createOrUpdateTrekkvedtakFromOs("invalid trekkalternativ", lagTrekk().copy(kodeTrekkAlternativ = "LOPX"))
+                service.lagEllerOppdaterTrekkvedtak(lagTrekk().copy(kodeTrekkAlternativ = "LOPX"))
             }
 
             dataSource.rowCounts() shouldBe listOf(0, 0, 0, 0)

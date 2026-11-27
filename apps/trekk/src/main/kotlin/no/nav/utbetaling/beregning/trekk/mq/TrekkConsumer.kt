@@ -3,6 +3,9 @@ package no.nav.utbetaling.beregning.trekk.mq
 import kotlinx.serialization.json.Json
 
 import com.ibm.mq.jakarta.jms.MQQueue
+import jakarta.jms.Destination
+import jakarta.jms.Message
+import jakarta.jms.Queue
 import jakarta.jms.TextMessage
 
 import no.nav.utbetaling.beregning.log.Log
@@ -32,12 +35,19 @@ class TrekkConsumer(
     }
 
     private fun onMessage(message: TextMessage) {
-        val jmsMessage = message.getBody(String::class.java)
+        val jmsMessage =
+            runCatching { message.getBody(String::class.java) }
+                .getOrElse { exception ->
+                    Log.error("Kunne ikke lese beregningsdata. ${message.logContext()}. Feil:", exception)
+                    secureLog.error("Mottatt trekkvedtak fra OppdragZ feilet: $message")
+                    return
+                }
         runCatching {
-            secureLog.error("Mottatt trekkvedtak fra OppdragZ: $jmsMessage")
+            secureLog.info("Mottatt trekkvedtak fra OppdragZ: $jmsMessage")
+            trekkService.lagreTrekkvedtakBevis(jmsMessage)
             val trekkWrapper = Json.decodeFromString<TrekkDTO>(jmsMessage)
             val trekk = trekkWrapper.trekk ?: throw IllegalArgumentException("Trekkdata mangler i meldingen")
-            trekkService.createOrUpdateTrekkvedtakFromOs(jmsMessage, trekk)
+            trekkService.lagEllerOppdaterTrekkvedtak(trekk)
             Metrics.trekkOkCounter.inc()
             message.acknowledge()
         }.onFailure { exception ->
@@ -48,4 +58,12 @@ class TrekkConsumer(
             message.acknowledge()
         }
     }
+
+    private fun Message.logContext(): String = "messageId=${jmsMessageID ?: "ukjent"}, replyTo=${jmsReplyTo?.destinationName() ?: "mangler"}"
+
+    private fun Destination.destinationName(): String =
+        when (this) {
+            is Queue -> queueName
+            else -> toString()
+        }
 }

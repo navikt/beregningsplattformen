@@ -26,20 +26,21 @@ class TrekkService(
 ) {
     private val endringsplanlegger = TrekkvedtakEndringsplanlegger()
 
-    fun createOrUpdateTrekkvedtakFromOs(
-        trekkJson: String,
-        trekk: Trekk,
-    ) {
+    fun lagreTrekkvedtakBevis(trekkJson: String) =
         dataSource.transaction { session ->
             trekkvedtakHistorikkRepository.insertTrekkvedtak(trekkJson, session)
+        }
+
+    fun lagEllerOppdaterTrekkvedtak(trekk: Trekk) {
+        dataSource.transaction { session ->
             when (trekkvedtakRepository.existsByOsId(trekk.trekkvedtakId!!, session)) {
-                true -> updateTrekkvedtak(trekk, session)
-                false -> createTrekkvedtak(trekk, session)
+                true -> oppdaterTrekkvedtak(trekk, session)
+                false -> lagTrekkvedtak(trekk, session)
             }
         }
     }
 
-    fun createTrekkvedtak(
+    fun lagTrekkvedtak(
         newTrekkvedtak: Trekk,
         tx: TransactionalSession,
     ) {
@@ -64,7 +65,7 @@ class TrekkService(
         Log.info("Trekkvedtak opprettet med id: $trekkId")
     }
 
-    fun updateTrekkvedtak(
+    fun oppdaterTrekkvedtak(
         changedTrekkvedtak: Trekk,
         tx: TransactionalSession,
     ): Trekk {
