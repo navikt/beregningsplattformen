@@ -20,8 +20,8 @@ import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 import no.nav.utbetaling.beregning.jdbc.Jdbc
 import no.nav.utbetaling.beregning.jdbc.migrate
 import no.nav.utbetaling.beregning.log.Log
-import no.nav.utbetaling.beregning.oppdragsmottak.OppdragXmlConsumer
 import no.nav.utbetaling.beregning.mq.MQConfig
+import no.nav.utbetaling.beregning.oppdragsmottak.OppdragXmlConsumer
 
 fun main() {
     embeddedServer(Netty, port = 8080, module = Application::beregningsplattform).start(true)
