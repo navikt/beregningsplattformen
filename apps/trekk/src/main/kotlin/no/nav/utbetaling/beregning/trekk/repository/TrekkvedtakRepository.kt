@@ -134,7 +134,6 @@ class TrekkvedtakRepository {
                     kreditor_tss_id = :kreditorIdTss,
                     kreditor_trekk_id = :kreditorTrekkId,
                     kreditor_ref = :kreditorRef,
-                    trekkalt = :trekkalt,
                     belop_saldo = :belopSaldo,
                     kreditor_kid = :kreditorKid,
                     gyldig_tom = :gyldigTom,

@@ -47,6 +47,7 @@ class TrekkFagomraadeRepository {
                 """.trimIndent(),
                 mapOf(
                     "trekkvedtakId" to trekkvedtakId.id,
+                    "fagomraadeKode" to trekkFagomraade.fagomraadeKode,
                     "aktiv" to trekkFagomraade.aktiv,
                     "tidspktReg" to trekkFagomraade.tidspktReg,
                 ),

@@ -49,7 +49,7 @@ class TrekkperiodeRepository {
                     tidspkt_reg = :tidspktReg
                 WHERE trekkvedtak_id = :trekkvedtakId
                 AND dato_fom = :datoFom
-                AND dato_tom = :datoTom
+                AND dato_tom IS NOT DISTINCT FROM :datoTom
                 """.trimIndent(),
                 trekkperiode.asMap() + ("trekkvedtakId" to trekkvedtakId.id) + ("trekksatstype" to trekkperiode.satstype.name),
             ),
@@ -68,7 +68,7 @@ class TrekkperiodeRepository {
                 FROM trekkperiode
                 WHERE trekkvedtak_id = :trekkvedtakId
                 AND dato_fom = :datoFom
-                AND dato_tom = :datoTom
+                AND dato_tom IS NOT DISTINCT FROM :datoTom
                 """.trimIndent(),
                 mapOf(
                     "trekkvedtakId" to trekkvedtakId.id,
