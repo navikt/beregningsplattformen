@@ -1,10 +1,10 @@
-package no.nav.utbetaling.beregning.mottak
+package no.nav.utbetaling.beregning.oppdragsmottak
 
 import com.ibm.mq.jakarta.jms.MQQueue
 import jakarta.jms.TextMessage
 
 import no.nav.utbetaling.beregning.log.secureLog
-import no.nav.utbetaling.beregning.mottak.metrics.Metrics
+import no.nav.utbetaling.beregning.oppdragsmottak.metrics.Metrics
 import no.nav.utbetaling.beregning.mq.DefaultMQ
 import no.nav.utbetaling.beregning.mq.DefaultMQConsumer
 import no.nav.utbetaling.beregning.mq.MQConfig

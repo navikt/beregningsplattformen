@@ -8,7 +8,7 @@ plugins {
 group = "no.nav.utbetaling.beregning"
 
 dependencies {
-    implementation(project(":apps:beregningsplattform:mottak"))
+    implementation(project(":apps:beregningsplattform:oppdragsmottak"))
     implementation(project(":apps:beregningsplattform:skattekort"))
 
     // Libs

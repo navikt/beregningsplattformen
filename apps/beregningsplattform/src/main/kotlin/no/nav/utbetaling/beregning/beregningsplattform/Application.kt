@@ -20,7 +20,7 @@ import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 import no.nav.utbetaling.beregning.jdbc.Jdbc
 import no.nav.utbetaling.beregning.jdbc.migrate
 import no.nav.utbetaling.beregning.log.Log
-import no.nav.utbetaling.beregning.mottak.OppdragXmlConsumer
+import no.nav.utbetaling.beregning.oppdragsmottak.OppdragXmlConsumer
 import no.nav.utbetaling.beregning.mq.MQConfig
 
 fun main() {

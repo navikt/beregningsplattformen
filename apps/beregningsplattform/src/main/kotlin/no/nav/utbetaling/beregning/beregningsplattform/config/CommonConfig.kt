@@ -18,7 +18,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
 
-import no.nav.utbetaling.beregning.mottak.metrics.Metrics as MottakMetrics
+import no.nav.utbetaling.beregning.oppdragsmottak.metrics.Metrics as MottakMetrics
 import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 
 fun Application.commonConfig() {

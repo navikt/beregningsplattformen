@@ -1,4 +1,4 @@
-package no.nav.utbetaling.beregning.mottak.metrics
+package no.nav.utbetaling.beregning.oppdragsmottak.metrics
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
