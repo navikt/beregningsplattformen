@@ -6,9 +6,9 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 
-const val MOTTAK_METRICS_NAMESPACE = "beregningsplattformen_beregningsplattform_mottak"
+internal const val MOTTAK_METRICS_NAMESPACE = "beregningsplattformen_beregningsplattform_mottak"
 
-object Metrics {
+internal object Metrics {
     val prometheusMeterRegistryMottak =
         PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 

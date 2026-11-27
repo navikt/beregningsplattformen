@@ -12,7 +12,6 @@ import no.nav.utbetaling.beregning.jdbc.JdbcConfig
 
 private const val APPLICATION_CONF = "application"
 private const val AZUREAD_CONF = "azureAd"
-private const val MQ_CONF = "mq"
 private const val POSTGRES_CONF = "postgres"
 
 object PropertiesConfig {
@@ -33,10 +32,6 @@ object PropertiesConfig {
         config.property(AZUREAD_CONF).getAs<AzureAdProperties>()
     }
 
-    val mqProperties by lazy {
-        config.property(MQ_CONF).getAs<MQProperties>()
-    }
-
     val postgresProperties by lazy {
         config.property(POSTGRES_CONF).getAs<PostgresProperties>()
     }
@@ -55,17 +50,6 @@ object PropertiesConfig {
     data class AzureAdProperties(
         val clientId: String,
         val wellKnownUrl: String,
-    )
-
-    @Serializable
-    data class MQProperties(
-        val hostname: String,
-        val port: Int,
-        val manager: String,
-        val channel: String,
-        val oppdragXmlQueue: String,
-        val username: String,
-        val password: String,
     )
 
     @Serializable

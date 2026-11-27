@@ -78,6 +78,7 @@ spec:
           - name: "pgaudit.log_relation"
             value: "on"
   env:
+    # Beregningsmottak
     - name: BEREGNINGSMOTTAK_MQ_HOST
       value: mqls02.preprod.local
     - name: BEREGNINGSMOTTAK_MQ_PORT
@@ -88,6 +89,17 @@ spec:
       value: MQLS02
     - name: BEREGNINGSMOTTAK_MQ_QUEUE
       value: QA.Q1_DARE_POC.BEREGNINGSDATA_JSON
+    # Oppdragsmottak
+    - name: OPPDRAGSMOTTAK_MQ_HOST
+      value: mqls02.preprod.local
+    - name: OPPDRAGSMOTTAK_MQ_PORT
+      value: "1413"
+    - name: OPPDRAGSMOTTAK_MQ_CHANNEL
+      value: Q1_BEREGNINGSPLATTFO
+    - name: OPPDRAGSMOTTAK_MQ_MANAGER
+      value: MQLS02
+    - name: OPPDRAGSMOTTAK_MQ_QUEUE
+      value: QA.Q1_BEREGNINGSPLATTFORM.MOTTAK_XML
   envFrom:
-    - secret: beregningsplattformen-mottak-secrets
+    - secret: beregningsplattformen-oppdragsmottak-secrets
     - secret: beregningsplattformen-beregningsmottak-secrets

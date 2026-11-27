@@ -23,8 +23,7 @@ import no.nav.utbetaling.beregning.beregningsplattform.metrics.Metrics
 import no.nav.utbetaling.beregning.jdbc.Jdbc
 import no.nav.utbetaling.beregning.jdbc.migrate
 import no.nav.utbetaling.beregning.log.Log
-import no.nav.utbetaling.beregning.mq.MQConfig
-import no.nav.utbetaling.beregning.oppdragsmottak.OppdragXmlConsumer
+import no.nav.utbetaling.beregning.oppdragsmottak.Oppdragsmottak
 
 fun main() {
     embeddedServer(Netty, port = 8080, module = Application::beregningsplattform).start(true)
@@ -58,19 +57,7 @@ private fun Application.beregningsplattform() {
         dataSource = dataSource,
     )
 
-    val oppdragXmlConsumer =
-        OppdragXmlConsumer(
-            mqConfig =
-                MQConfig(
-                    host = PropertiesConfig.mqProperties.hostname,
-                    port = PropertiesConfig.mqProperties.port,
-                    channel = PropertiesConfig.mqProperties.channel,
-                    manager = PropertiesConfig.mqProperties.manager,
-                    username = PropertiesConfig.mqProperties.username,
-                    password = PropertiesConfig.mqProperties.password,
-                ),
-            queueName = PropertiesConfig.mqProperties.oppdragXmlQueue,
-        )
+    val oppdragsmottak = Oppdragsmottak()
 
     val beregningsmottak =
         Beregningsmottak(
@@ -86,15 +73,13 @@ private fun Application.beregningsplattform() {
 
     monitor.subscribe(ApplicationStarted) {
         Log.info("Bruker profil: ${PropertiesConfig.applicationProperties.profile}")
-        oppdragXmlConsumer.start()
+        oppdragsmottak.start()
         beregningsmottak.start()
-        Log.info("Beregningsplattform applikasjonen startet og lytter på kø: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
     }
     monitor.subscribe(ApplicationStopping) {
         Log.info("Beregningsplattform applikasjonen stopper")
-        oppdragXmlConsumer.close()
+        oppdragsmottak.stop()
         beregningsmottak.stop()
-        Log.info("MQ-konsument avsluttet lytting på kø: ${PropertiesConfig.mqProperties.oppdragXmlQueue}")
     }
 }
 
