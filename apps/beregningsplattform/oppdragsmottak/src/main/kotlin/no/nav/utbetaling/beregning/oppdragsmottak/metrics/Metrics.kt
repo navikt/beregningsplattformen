@@ -22,10 +22,12 @@ object Metrics {
                     is Oppdrag.Utbetaling -> "utbetaling"
                 }
 
-        oppdrag.metrikker.forEach { metrikk ->
-            val tags = (metrikk.tags + typeTag).map { (navn, verdi) -> Tag.of(navn, verdi) }
+        oppdrag.metrikker.flatMap { it.forekomster }.forEach { forekomst ->
+            val tagsUtenFelt = forekomst.tags.minus("felt")
+            val felt = forekomst.tags.getValue("felt")
+            val tags = (tagsUtenFelt + typeTag).map { (navn, verdi) -> Tag.of(navn, verdi) }
 
-            prometheusMeterRegistryMottak.counter("${MOTTAK_METRICS_NAMESPACE}_${metrikk.felt}", tags).increment()
+            prometheusMeterRegistryMottak.counter("${MOTTAK_METRICS_NAMESPACE}_$felt", tags).increment()
         }
     }
 }
