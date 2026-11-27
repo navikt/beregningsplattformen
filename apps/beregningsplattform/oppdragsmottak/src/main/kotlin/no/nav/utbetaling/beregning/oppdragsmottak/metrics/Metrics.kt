@@ -29,5 +29,12 @@ object Metrics {
 
             prometheusMeterRegistryMottak.counter("${MOTTAK_METRICS_NAMESPACE}_$felt", tags).increment()
         }
+
+        oppdrag.metrikker.forEach { metrikk ->
+            metrikk.forekomster.forEach { forekomst ->
+                val tags = (forekomst.tags + typeTag).map { (navn, verdi) -> Tag.of(navn, verdi) }
+                prometheusMeterRegistryMottak.counter(metrikk.navn, tags).increment()
+            }
+        }
     }
 }

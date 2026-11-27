@@ -3,6 +3,7 @@ package no.nav.utbetaling.beregning.oppdragsmottak.metrics
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.micrometer.core.instrument.Tag
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
 import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.Oppdragstidslinje
@@ -33,7 +34,7 @@ class MetricsTest :
 
                 antallFelt() shouldBe 1.0
                 antall(forekomst, type) shouldBe 1.0
-                Metrics.prometheusMeterRegistryMottak.meters
+                Metrics.prometheusMeterRegistryMottak.relevanteMeters
                     .single()
                     .id.tags
                     .associate { it.key to it.value } shouldBe
@@ -50,7 +51,7 @@ class MetricsTest :
 
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = forekomster))))
 
-            Metrics.prometheusMeterRegistryMottak.meters.size shouldBe 2
+            Metrics.prometheusMeterRegistryMottak.relevanteMeters.size shouldBe 2
             forekomster.forEach { antall(it) shouldBe 1.0 }
             forekomster.forEach { metrikk ->
                 Metrics.prometheusMeterRegistryMottak
@@ -79,7 +80,7 @@ class MetricsTest :
 
             Metrics.registrerOppdrag(Oppdrag.Utbetaling(Oppdragstidslinje(), listOf(Oppdrag.Metrikk("testmetrikk", forekomster = forekomster))))
 
-            Metrics.prometheusMeterRegistryMottak.meters.size shouldBe 2
+            Metrics.prometheusMeterRegistryMottak.relevanteMeters.size shouldBe 2
             forekomster.forEach { antall(it) shouldBe 1.0 }
         }
 
@@ -118,13 +119,14 @@ private fun forekomst(
 
 private val Oppdrag.Metrikk.Forekomst.felt get() = tags.getValue("felt")
 private val Oppdrag.Metrikk.Forekomst.tagsUtenFelt get() = tags.minus("felt")
+private val PrometheusMeterRegistry.relevanteMeters get() = meters.filter { it.id.name.startsWith("beregningsplattformen") }
 
 private fun resettCounters() {
-    Metrics.prometheusMeterRegistryMottak.meters.forEach { Metrics.prometheusMeterRegistryMottak.remove(it) }
+    Metrics.prometheusMeterRegistryMottak.relevanteMeters.forEach { Metrics.prometheusMeterRegistryMottak.remove(it) }
 }
 
 private fun antallFelt() =
-    Metrics.prometheusMeterRegistryMottak.meters.sumOf {
+    Metrics.prometheusMeterRegistryMottak.relevanteMeters.sumOf {
         Metrics.prometheusMeterRegistryMottak
             .get(it.id.name)
             .tags(it.id.tags)
