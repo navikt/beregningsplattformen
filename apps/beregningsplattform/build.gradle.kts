@@ -9,6 +9,7 @@ group = "no.nav.utbetaling.beregning"
 
 dependencies {
     implementation(project(":apps:beregningsplattform:oppdragsmottak"))
+    implementation(project(":apps:beregningsplattform:beregningsmottak"))
     implementation(project(":apps:beregningsplattform:skattekort"))
 
     // Libs
