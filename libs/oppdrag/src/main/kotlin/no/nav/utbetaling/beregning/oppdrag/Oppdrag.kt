@@ -4,7 +4,7 @@ import tools.jackson.databind.JsonNode
 
 import no.nav.utbetaling.beregning.oppdrag.intern.Aksjonskode
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat
-import no.nav.utbetaling.beregning.oppdrag.intern.Metrikker
+import no.nav.utbetaling.beregning.oppdrag.intern.InnsendteFeltMetrikker
 import no.nav.utbetaling.beregning.oppdrag.xml.Oppdrag110
 
 sealed interface Oppdrag {
@@ -33,9 +33,13 @@ sealed interface Oppdrag {
     ) : Oppdrag
 
     data class Metrikk(
-        val felt: String,
-        val tags: Map<String, String>,
-    )
+        val navn: String,
+        val forekomster: List<Forekomst>,
+    ) {
+        data class Forekomst(
+            val tags: Map<String, String>,
+        )
+    }
 
     companion object {
         fun fraXml(
@@ -60,7 +64,7 @@ sealed interface Oppdrag {
                 runCatching { oppdrag110() }.getOrElse { feil ->
                     return UgyldigOppdrag(feil, emptyList())
                 }
-            val metrikker = Metrikker.fra(oppdrag110.keys)
+            val metrikker = listOf(InnsendteFeltMetrikker.fra(oppdrag110.keys))
 
             val aksjonskoder =
                 oppdrag110.values

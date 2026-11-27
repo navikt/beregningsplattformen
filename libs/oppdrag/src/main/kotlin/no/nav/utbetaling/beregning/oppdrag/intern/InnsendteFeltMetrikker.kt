@@ -6,17 +6,21 @@ import no.nav.utbetaling.beregning.oppdrag.Oppdrag
 import no.nav.utbetaling.beregning.oppdrag.intern.FraXmlFormat.xmlMapper
 import no.nav.utbetaling.beregning.oppdrag.xml.XmlOppdrag
 
-internal object Metrikker {
+internal object InnsendteFeltMetrikker {
     fun fra(oppdrag: Iterable<JsonNode>) =
-        oppdrag.flatMap { node ->
-            fra(
-                node =
-                    when (node.erFraXml()) {
-                        true -> node
-                        false -> node.spesialhåndterJson()
-                    },
-            )
-        }
+        Oppdrag.Metrikk(
+            navn = "innsendte_felt",
+            forekomster =
+                oppdrag.flatMap { node ->
+                    fra(
+                        node =
+                            when (node.erFraXml()) {
+                                true -> node
+                                false -> node.spesialhåndterJson()
+                            },
+                    )
+                },
+        )
 
     private fun JsonNode.erFraXml() = hasNonNull("oppdrag-110")
 
@@ -30,7 +34,7 @@ internal object Metrikker {
         node: JsonNode,
         path: String = "",
         tags: Map<String, String> = emptyMap(),
-    ): Set<Oppdrag.Metrikk> {
+    ): Set<Oppdrag.Metrikk.Forekomst> {
         if (node.isNull || node.isMissingNode) {
             return emptySet()
         }
@@ -63,7 +67,7 @@ internal object Metrikker {
             else -> {
                 node
                     .verdi()
-                    ?.let { value -> path.lagMetrikk(value, tags) }
+                    ?.let { value -> path.lagForekomst(value, tags) }
                     ?: emptySet()
             }
         }
@@ -73,13 +77,16 @@ internal object Metrikker {
 
     private fun String.nestePath(key: String) = if (isEmpty()) key else "$this.$key"
 
-    private fun String.lagMetrikk(
+    private fun String.lagForekomst(
         value: String,
         tags: Map<String, String>,
     ) = setOf(
-        Oppdrag.Metrikk(
-            felt = gyldigMetrikknavn(),
-            tags = tags + ("verdi" to metrikkverdi(value)),
+        Oppdrag.Metrikk.Forekomst(
+            tags +
+                mapOf(
+                    "felt" to gyldigMetrikknavn(),
+                    "verdi" to metrikkverdi(value),
+                ),
         ),
     )
 
